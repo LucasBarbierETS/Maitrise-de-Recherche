@@ -1,0 +1,2 @@
+La fonction "variables_to_x0_lb_ub" permet de convertir une structure contenant les variables muettes
+ en 3 vecteurs permettant de définir le problème d'optimisaition

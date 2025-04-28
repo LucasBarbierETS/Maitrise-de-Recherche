@@ -1,0 +1,71 @@
+classdef classcavity < classsubelement
+
+% REFERENCE : 
+
+%%%%%%%%%%%%%%%%%%%%%%%%% PUBLIC PROPRIETIES %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%                          INPUT PARAMETERS
+% - L : depth of the cavity (m)
+%
+%%%%%%%%%%%%%%%%%%%%%%%%%%% PUBLIC METHODS %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%                          OUTPUT PARAMETERS
+% - obj.transfer_matrix(w) : coefficients of the equivalent fluid's transfer matrix
+%                                 obj.transfermatrix(Air, w).Tij (where (i, j)∈{1, 2}²)
+% - obj.Zs(w)              : surface impedence of the equivalent fluid
+
+    properties
+
+        Type = 'Cavity'
+
+        % Configuration (Héritée)
+        % 
+        %              .Thickness % (double) épaisseur de la cavité
+        %              .InputSurface
+        %              .OutputSurface
+
+    end
+    
+    methods 
+
+        function obj = classcavity(config) 
+            
+            obj@classsubelement(config);
+        end
+
+        function T = transfer_matrix(obj, env)
+
+
+            S = obj.Configuration.InputSection;
+            w = env.w;
+            air = env.air;
+            param = air.parameters;
+            c0 = param.c0;
+            k0 = w ./ c0;
+            Z0 = c0 * param.rho;
+            tck = obj.Configuration.Thickness;
+
+            T.T11 = cos(k0 * tck);
+            T.T12 = 1j * Z0 * sin(k0 * tck);
+            T.T21 = 1j *S/ Z0 * sin(k0 * tck);
+            T.T22 = cos(k0 * tck);
+        end
+
+        function Zs = surface_impedance(obj, env)
+
+            S = obj.Configuration.InputSection;
+            T = obj.transfer_matrix(env);
+            Zs = S * T.T11 ./ T.T21;
+        end
+    end
+
+    methods (Static, Access = public)
+    
+        function config = create_config(thickness, input_section, output_section)
+
+            config = struct();
+            config.Thickness = thickness;
+            config.InputSection = input_section;
+            config.OutputSection = output_section;
+        end
+
+    end
+end

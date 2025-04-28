@@ -1,0 +1,25 @@
+% On vide la fenêtre de commande
+clc
+
+% On ferme les instances d'applications ouvertes
+close all
+
+% On ouvre tous les chemins vers les applications
+% add_all_paths('C:\Users\lucas.barbier\OneDrive - ETS\CRIAQ-REAR\Maitrise LB\Apps')
+
+% % On lance les application secondaires sans arguments
+% air_parameters_window = Air_Parameters_App();
+% input_surface_window = Input_Surface_App();
+% configuration_name_window = Configuration_Name_App();
+
+% On lance l'application principale avec comme arguments les application secondaires
+% Main_App(air_parameters_window, input_surface_window, configuration_name_window);
+
+% Fermer toutes les instances précédentes de la classe MyApp
+delete(findall(0, 'Type', 'figure'));
+
+Test_App(env);
+
+
+
+ 

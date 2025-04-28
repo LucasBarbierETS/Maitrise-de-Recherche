@@ -1,0 +1,73 @@
+classdef classjunction 
+
+% References: 
+
+% [1] Dupont, Thomas, et al. "A Microstructure Material Design for
+% Low Frequency Sound Absorption." Applied Acoustics, vol. 136,
+% July 2018, pp. 86-93. 
+% DOI: 10.1016/j.apacoust.2018.02.016.
+
+% Description
+
+% 'classjunction' is a way to add a parallel grazing incidence waveguide called 'junction' in a main wave guide 
+% called 'wave guide' by considering the surface impedance of the junction, the curtain area thats is the surface 
+% of connexion between the junction and the wave guide and the average cross section area of the wave guide at 
+% the place where the connexion takes place.
+% for more explanation, see [1] fig.4
+  
+    properties
+
+        HandleAppBuilder = @(app, class_jcn) AppJunction.class_to_app(app, class_jcn);
+        Configuration
+        %            .JunctionElement
+    end
+    
+    methods
+
+        function obj = classjunction(config)  
+            obj.Configuration = config;
+        end
+
+        function TM = transfer_matrix(obj, env)
+            
+            % [1] eq.11
+            config = obj.Configuration;
+            w = env.w;
+            Ca = config.JunctionElement.Configuration.CurtainArea;
+            TM.T11 = ones(1, length(w));
+            TM.T12 = zeros(1, length(w));
+
+            % Toutes les surfaces d'impédance sortent en convention
+            % Pression - Vitesse. Pour repasser en Pression - Débit on doit
+            % considérer la surface ou s'applique la condition d'impédance
+            % de surface
+
+            TM.T21 = Ca ./ config.JunctionElement.surface_impedance(env); % Convention Pression-Débit
+            % TM.T21 = 1 ./ obj.Configuration.JunctionElement.surface_impedance(env); % Convention Pression-Vitesse
+            TM.T22 = ones(1, length(w));
+        end
+
+        function TL = transmission_loss(obj, env)
+            TM = obj.transfer_matrix(env);
+            S = obj.Configuration.InputSection;
+            param = env.air.parameters;
+            Z0 = param.Z0;
+            
+            % Si TM est formulé avec la convention Pression - Vitesse
+            % TL = 20 * log10(abs(0.5 * (TM.T11 + TM.T12/Z0 + Z0*TM.T21 + TM.T22)));
+
+            % Si TM est formulé avec la convention Pression - Débit
+            TL = 20 * log10(abs(0.5 * (TM.T11 + TM.T12*S/Z0 + Z0/S*TM.T21 + TM.T22)));
+        end   
+    end
+
+    methods (Static, Access = public)
+
+        function config = create_config(input_section, junction_element)
+            
+            config = struct();
+            config.InputSection = input_section;
+            config.JunctionElement = junction_element;
+        end
+    end
+end

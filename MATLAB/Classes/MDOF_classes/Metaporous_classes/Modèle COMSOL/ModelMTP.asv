@@ -1,0 +1,453 @@
+function out = ModelMTP(config, w)
+%
+% ModelMTP.m
+%
+% Model exported on Oct 30 2024, 06:29 by COMSOL 6.2.0.415.
+
+import com.comsol.model.*
+import com.comsol.model.util.*
+
+model = ModelUtil.create('Model');
+
+MTPw = config.MTPWidth;
+lt = config.LayersThickness;
+l = config.PlateThickness;
+pl = config.PlatesLength;
+N = config.NbPlates;
+
+model.param.set('W', [num2str(MTPw) '[m]'], 'impedance tube height');
+model.param.set('D12', '20[mm]', 'distance between microphones 1 and 2');
+model.param.set('D2S', '40[mm]', 'distance between microphones 2 and sample');
+
+
+%% Géométrie
+
+% Création d'un nouveau composant dans le modèle
+comp = model.component.create('comp1', true);
+% Création d'une géométrie 2D pour le composant
+geom = comp.geom.create('geom1', 2);
+
+
+% Création d'un rectangle pour représenter le tube d'impédance
+geom.create('tube1', 'Rectangle');
+% Positionnement du rectangle r1 dans le plan
+geom.feature('tube1').set('pos', {'-D12-D2S' '0'}); 
+% Définition des dimensions du rectangle r1
+geom.feature('tube1').set('size', {'D12' 'W'}); 
+% Création d'un autre rectangle pour le tube d'impédance
+geom.create('tube2', 'Rectangle');
+% Positionnement du rectangle r2
+geom.feature('tube2').set('pos', {'-D2S' '0'}); 
+% Définition des dimensions du rectangle r2
+geom.feature('tube2').set('size', {'D2S' 'W'});
+
+% Matériau
+
+% On ajoute la première couche de poreux, puis on ajoute successivement une
+% plaque à gauche, une couche de poreux, une plaque à droite, unc couche de
+% poreux. Au cours de la construction, on construit des boites
+% pour sélectionner les frontières internes du matériau
+
+mat_bnd_int = comp.selection.create('mat_bnd_int', 'Explicit');
+mat_bnd_int.label('Frontières internes dans le matériau');
+mat_bnd_int.geom('geom1', 1);
+
+% 1ère couche
+geom.create('porous1', 'Rectangle');
+geom.feature('porous1').set('size', {num2str(lt(1)) 'W'});
+geom.feature('porous1').set('pos', {'0' '0'});
+
+for i = 1:N/2
+
+    % Plaque gauche
+    name = ['plate', num2str(1 + 2*(i-1))];
+    width = num2str(pl(1 + 2*(i-1))); 
+    x_pos = num2str(sum(lt(1: 1 + 4*(i-1))));
+    geom.create(name, 'Rectangle');
+    geom.feature(name).set('size', {num2str(l) ['W-' width]});
+    geom.feature(name).set('pos', {x_pos '0'});
+    
+    geom.run;
+
+    % On sélection les arêtes internes de la couche de poreux à droite de la plaque
+    box = comp.selection.create(['box_', name], 'Box');
+    box.set('xmin', [x_pos '-0.01[mm]']);
+    box.set('xmax', [x_pos '+' num2str(l) '+0.01[mm]']);
+    box.set('ymin', '0.01[mm]');
+    box.set('ymax', ['W-' width '-0.01[mm]']);
+    box.set('entitydim', 1);
+    box.set('condition', 'intersects');
+    mat_bnd_int.add(box.entities(1));
+    
+    % Couche de poreux
+    name = ['porous', num2str(2 + 2*(i-1))];
+    thickness = num2str(lt(3 + 4*(i-1)));
+    x_pos = num2str(sum(lt(1: 2 + 4*(i-1))));
+    geom.create(name, 'Rectangle');
+    geom.feature(name).set('size', {thickness 'W'});
+    geom.feature(name).set('pos', {x_pos '0'});
+
+    % Plaque droite
+    name = ['plate', num2str(2 + 2*(i-1))];
+    width = num2str(pl(2 + 2*(i-1)));
+    x_pos = num2str(sum(lt(1: 3 + 4*(i-1))));
+    geom.create(name, 'Rectangle');
+    geom.feature(name).set('size', {num2str(l) ['W-', width]});
+    geom.feature(name).set('pos', {x_pos width});
+
+    geom.run;
+
+    % On sélection les arêtes internes de la couche de poreux à droite de la plaque
+    box = comp.selection.create(['box_', name], 'Box');
+    box.set('xmin', [x_pos '-0.01[mm]']);
+    box.set('xmax', [x_pos '+' num2str(l) '+0.01[mm]']);
+    box.set('ymin', [width '+0.01[mm]']);
+    box.set('ymax', 'W-0.01[mm]');
+    box.set('entitydim', 1);
+    box.set('condition', 'intersects');
+    mat_bnd_int.add(box.entities(1));
+
+    % Couche de poreux
+    name = ['porous', num2str(3 + 2*(i-1))];
+    thickness = num2str(lt(5 + 4*(i-1)));
+    x_pos = num2str(sum(lt(1: 4 + 4*(i-1))));
+    geom.create(name, 'Rectangle');
+    geom.feature(name).set('size', {thickness 'W'});
+    geom.feature(name).set('pos', {x_pos '0'});
+end
+
+% Exécution de la géométrie
+geom.run; 
+% Exécution finale pour finaliser les opérations géométriques
+geom.run('fin');
+
+% % Affichage de la géométrie dans le modèle
+mphgeom(model)
+
+
+%% Sélection des boites
+
+% On crée des boites pour sélectionner facilement des contours, des
+% surfaces, et leur appliquer des propriétés physiques.
+
+% Pour le tube d'impédance
+tube_sel = comp.selection.create('tube_sel', 'Box');
+tube_sel.label('Tube d''impédance');
+tube_sel.set('entitydim', 2); % On sélectionne des objets 2D
+tube_sel.set('xmin', '-D12-D2S');
+tube_sel.set('xmax', 0);
+tube_sel.set('condition', 'inside');
+
+% Pour le matériau
+mat_sel = comp.selection.create('mat_sel', 'Box');
+mat_sel.label('Matériau');
+mat_sel.set('entitydim', 2); % On sélectionne des objets 2D
+mat_sel.set('xmin', 0);
+mat_sel.set('condition', 'inside');
+
+% Pour le plan de la source acoustique
+source_bnd = comp.selection.create('source_bnd', 'Box');
+source_bnd.label('Source acoustique');
+source_bnd.set('entitydim', 1); % On sélectionne les arêtes
+source_bnd.set('xmin', '-D12-D2S-0.01[mm]');
+source_bnd.set('xmax', '-D12-D2S+0.01[mm]');
+source_bnd.set('condition', 'inside');
+
+% Pour le 2nd microphone
+mic2_bnd = comp.selection.create('mic2_bnd', 'Box');
+mic2_bnd.label('Microhpone 2');
+mic2_bnd.set('entitydim', 1); % On sélectionne les arêtes
+mic2_bnd.set('xmin', '-D2S-0.01[mm]');
+mic2_bnd.set('xmax', '-D2S+0.01[mm]');
+mic2_bnd.set('condition', 'inside');
+
+% Pour la frontière thermo-visqueuse entre les domaines thermo-visqueux et
+% acoustiques
+tva_bnd = comp.selection.create('tva_bnd', 'Box');
+tva_bnd.label('Frontières TVA');
+tva_bnd.set('entitydim', 1); % On sélectionne les arêtes
+tva_bnd.set('xmin', '-0.01[mm]');
+tva_bnd.set('xmax', '+0.01[mm]');
+tva_bnd.set('condition', 'inside');
+
+% Pour les frontières du domaine visquo-thermique
+
+% On créer une boite pour l'ensemble des frontières du matériau
+mat_bnd = comp.selection.create('mat_bnd', 'Box');
+mat_bnd.label('Frontières dans le matériau');
+mat_bnd.set('entitydim', 1); % On sélectionne des objets 1D
+mat_bnd.set('xmin', '+0.01[mm]');
+mat_bnd.set('condition', 'intersects');
+
+% On créer une boîte pour l'ensemble des frontières du tube
+tube_bnd = comp.selection.create('tube_bnd', 'Complement');
+tube_bnd.label('Frontières du tube');
+tube_bnd.set('entitydim', 1); % On sélectionne des objets 1D
+tube_bnd.set('input', {'mat_bnd', 'tva_bnd'}); 
+
+% On créer une boite pour l'ensemble des frontières externes du matériau
+
+% On créer une boîte pour l'ensemble des frontières du tube
+mat_bnd_ext = comp.selection.create('mat_bnd_ext', 'Complement');
+mat_bnd_ext.set('entitydim', 1); % On sélectionne des objets 1D
+mat_bnd_ext.label('Frontières externes dans le matériau');
+mat_bnd_ext.set('input', {'tube_bnd', 'tva_bnd', 'mat_bnd_int'}); 
+
+%% Définition du matériau
+
+comp.material.create('mat1', 'Common');
+comp.material('mat1').propertyGroup('def').func.create('eta', 'Piecewise');
+comp.material('mat1').propertyGroup('def').func.create('Cp', 'Piecewise');
+comp.material('mat1').propertyGroup('def').func.create('rho', 'Analytic');
+comp.material('mat1').propertyGroup('def').func.create('k', 'Piecewise');
+comp.material('mat1').propertyGroup('def').func.create('cs', 'Analytic');
+comp.material('mat1').propertyGroup('def').func.create('an1', 'Analytic');
+comp.material('mat1').propertyGroup('def').func.create('an2', 'Analytic');
+comp.material('mat1').propertyGroup.create('RefractiveIndex', 'Refractive index');
+comp.material('mat1').propertyGroup.create('NonlinearModel', 'Nonlinear model');
+comp.material('mat1').propertyGroup.create('idealGas', 'Ideal gas');
+comp.material('mat1').propertyGroup('idealGas').func.create('Cp', 'Piecewise');
+comp.material('mat1').label('Air');
+comp.material('mat1').set('family', 'air');
+comp.material('mat1').propertyGroup('def').func('eta').set('arg', 'T');
+comp.material('mat1').propertyGroup('def').func('eta').set('pieces', {'200.0' '1600.0' '-8.38278E-7+8.35717342E-8*T^1-7.69429583E-11*T^2+4.6437266E-14*T^3-1.06585607E-17*T^4'});
+comp.material('mat1').propertyGroup('def').func('eta').set('argunit', 'K');
+comp.material('mat1').propertyGroup('def').func('eta').set('fununit', 'Pa*s');
+comp.material('mat1').propertyGroup('def').func('Cp').set('arg', 'T');
+comp.material('mat1').propertyGroup('def').func('Cp').set('pieces', {'200.0' '1600.0' '1047.63657-0.372589265*T^1+9.45304214E-4*T^2-6.02409443E-7*T^3+1.2858961E-10*T^4'});
+comp.material('mat1').propertyGroup('def').func('Cp').set('argunit', 'K');
+comp.material('mat1').propertyGroup('def').func('Cp').set('fununit', 'J/(kg*K)');
+comp.material('mat1').propertyGroup('def').func('rho').set('expr', 'pA*0.02897/R_const[K*mol/J]/T');
+comp.material('mat1').propertyGroup('def').func('rho').set('args', {'pA' 'T'});
+comp.material('mat1').propertyGroup('def').func('rho').set('fununit', 'kg/m^3');
+comp.material('mat1').propertyGroup('def').func('rho').set('argunit', {'Pa' 'K'});
+comp.material('mat1').propertyGroup('def').func('rho').set('plotargs', {'pA' '101325' '101325'; 'T' '273.15' '293.15'});
+comp.material('mat1').propertyGroup('def').func('k').set('arg', 'T');
+comp.material('mat1').propertyGroup('def').func('k').set('pieces', {'200.0' '1600.0' '-0.00227583562+1.15480022E-4*T^1-7.90252856E-8*T^2+4.11702505E-11*T^3-7.43864331E-15*T^4'});
+comp.material('mat1').propertyGroup('def').func('k').set('argunit', 'K');
+comp.material('mat1').propertyGroup('def').func('k').set('fununit', 'W/(m*K)');
+comp.material('mat1').propertyGroup('def').func('cs').set('expr', 'sqrt(1.4*R_const[K*mol/J]/0.02897*T)');
+comp.material('mat1').propertyGroup('def').func('cs').set('args', {'T'});
+comp.material('mat1').propertyGroup('def').func('cs').set('fununit', 'm/s');
+comp.material('mat1').propertyGroup('def').func('cs').set('argunit', {'K'});
+comp.material('mat1').propertyGroup('def').func('cs').set('plotargs', {'T' '273.15' '373.15'});
+comp.material('mat1').propertyGroup('def').func('an1').set('funcname', 'alpha_p');
+comp.material('mat1').propertyGroup('def').func('an1').set('expr', '-1/rho(pA,T)*d(rho(pA,T),T)');
+comp.material('mat1').propertyGroup('def').func('an1').set('args', {'pA' 'T'});
+comp.material('mat1').propertyGroup('def').func('an1').set('fununit', '1/K');
+comp.material('mat1').propertyGroup('def').func('an1').set('argunit', {'Pa' 'K'});
+comp.material('mat1').propertyGroup('def').func('an1').set('plotargs', {'pA' '101325' '101325'; 'T' '273.15' '373.15'});
+comp.material('mat1').propertyGroup('def').func('an2').set('funcname', 'muB');
+comp.material('mat1').propertyGroup('def').func('an2').set('expr', '0.6*eta(T)');
+comp.material('mat1').propertyGroup('def').func('an2').set('args', {'T'});
+comp.material('mat1').propertyGroup('def').func('an2').set('fununit', 'Pa*s');
+comp.material('mat1').propertyGroup('def').func('an2').set('argunit', {'K'});
+comp.material('mat1').propertyGroup('def').func('an2').set('plotargs', {'T' '200' '1600'});
+comp.material('mat1').propertyGroup('def').set('thermalexpansioncoefficient', '');
+comp.material('mat1').propertyGroup('def').set('molarmass', '');
+comp.material('mat1').propertyGroup('def').set('bulkviscosity', '');
+comp.material('mat1').propertyGroup('def').set('thermalexpansioncoefficient', {'alpha_p(pA,T)' '0' '0' '0' 'alpha_p(pA,T)' '0' '0' '0' 'alpha_p(pA,T)'});
+comp.material('mat1').propertyGroup('def').set('molarmass', '0.02897[kg/mol]');
+comp.material('mat1').propertyGroup('def').set('bulkviscosity', 'muB(T)');
+comp.material('mat1').propertyGroup('def').set('relpermeability', {'1' '0' '0' '0' '1' '0' '0' '0' '1'});
+comp.material('mat1').propertyGroup('def').set('relpermittivity', {'1' '0' '0' '0' '1' '0' '0' '0' '1'});
+comp.material('mat1').propertyGroup('def').set('dynamicviscosity', 'eta(T)');
+comp.material('mat1').propertyGroup('def').set('ratioofspecificheat', '1.4');
+comp.material('mat1').propertyGroup('def').set('electricconductivity', {'0[S/m]' '0' '0' '0' '0[S/m]' '0' '0' '0' '0[S/m]'});
+comp.material('mat1').propertyGroup('def').set('heatcapacity', 'Cp(T)');
+comp.material('mat1').propertyGroup('def').set('density', 'rho(pA,T)');
+comp.material('mat1').propertyGroup('def').set('thermalconductivity', {'k(T)' '0' '0' '0' 'k(T)' '0' '0' '0' 'k(T)'});
+comp.material('mat1').propertyGroup('def').set('soundspeed', 'cs(T)');
+comp.material('mat1').propertyGroup('def').addInput('temperature');
+comp.material('mat1').propertyGroup('def').addInput('pressure');
+comp.material('mat1').propertyGroup('RefractiveIndex').set('n', {'1' '0' '0' '0' '1' '0' '0' '0' '1'});
+comp.material('mat1').propertyGroup('NonlinearModel').set('BA', '(def.gamma+1)/2');
+comp.material('mat1').propertyGroup('idealGas').func('Cp').label('Piecewise 2');
+comp.material('mat1').propertyGroup('idealGas').func('Cp').set('arg', 'T');
+comp.material('mat1').propertyGroup('idealGas').func('Cp').set('pieces', {'200.0' '1600.0' '1047.63657-0.372589265*T^1+9.45304214E-4*T^2-6.02409443E-7*T^3+1.2858961E-10*T^4'});
+comp.material('mat1').propertyGroup('idealGas').func('Cp').set('argunit', 'K');
+comp.material('mat1').propertyGroup('idealGas').func('Cp').set('fununit', 'J/(kg*K)');
+comp.material('mat1').propertyGroup('idealGas').set('Rs', 'R_const/Mn');
+comp.material('mat1').propertyGroup('idealGas').set('heatcapacity', 'Cp(T)');
+comp.material('mat1').propertyGroup('idealGas').set('ratioofspecificheat', '1.4');
+comp.material('mat1').propertyGroup('idealGas').set('molarmass', '0.02897');
+comp.material('mat1').propertyGroup('idealGas').addInput('temperature');
+comp.material('mat1').propertyGroup('idealGas').addInput('pressure');
+comp.material('mat1').materialType('nonSolid');
+
+%% Physique 
+
+% Création d'une physique acoustique de pression
+comp.physics.create('acpr', 'PressureAcoustics', 'geom1'); 
+comp.physics('acpr').selection.named('box1');  % Sélection du tube d'impédance
+
+% Création d'une physique thermoacoustique
+comp.physics.create('ta', 'ThermoacousticsSinglePhysics', 'geom1'); 
+comp.physics('ta').selection.named('box2');  % Sélection du matériau
+
+% Création d'une fonctionnalité de pression dans la physique acoustique
+comp.physics('acpr').create('pr1', 'Pressure', 1); 
+comp.physics('acpr').feature('pr1').selection.named('box3');  % Sélection du plan de la source
+comp.physics('acpr').feature('pr1').set('p0', 1);  % Définition de la pression initiale à 1 Pa
+
+% Configuration des multiphysiques
+comp.multiphysics.create('atb1', 'AcousticThermoacousticBoundary', 1); 
+comp.multiphysics('atb1').selection.named('box5'); % Sélection de la frontière thermo-visqueuse
+
+%% Maillage
+
+% Création d'un maillage nommé 'mesh1'
+comp.mesh.create('mesh1');  
+
+% Création d'une couche de bord dans le maillage
+comp.mesh('mesh1').create('bl1', 'BndLayer');  
+% Création d'un maillage triangulaire libre
+comp.mesh('mesh1').create('ftri1', 'FreeTri');  
+
+% Sélection de la boîte pour la couche de bord
+comp.mesh('mesh1').feature('bl1').selection.named('mat_sel');  
+% Création des propriétés de la couche de bord
+comp.mesh('mesh1').feature('bl1').create('blp', 'BndLayerProp');  
+% Sélection de la boîte pour les propriétés de la couche de bord
+comp.mesh('mesh1').feature('bl1').feature('blp').selection.named('mat_bnd_ext'); 
+
+% Sélection de la boîte pour le maillage triangulaire libre
+comp.mesh('mesh1').feature('ftri1').selection.named('tube_sel');  
+% Création d'une taille pour le maillage triangulaire
+comp.mesh('mesh1').feature('ftri1').create('size1', 'Size');  
+
+% Définition de l'automatisation de la taille du maillage
+comp.mesh('mesh1').feature('size').set('hauto', 2);  
+% Définition de l'angle de division pour la couche de bord
+comp.mesh('mesh1').feature('bl1').set('splitdivangle', 25);  
+% Définition du nombre de couches dans la couche de bord
+comp.mesh('mesh1').feature('bl1').feature('blp').set('blnlayers', 6);  
+% Définition de l'étirement de la couche de bord
+comp.mesh('mesh1').feature('bl1').feature('blp').set('blstretch', 1.1);  
+
+% Exécution du maillage
+comp.mesh('mesh1').run;  
+% Appel de la fonction mphmesh pour générer le maillage
+mphmesh(model);  
+
+
+%% Etude
+
+% Création d'une étude nommée 'std1'
+model.study.create('std1');  
+% Création d'un type d'étude de fréquence
+model.study('std1').create('freq', 'Frequency');  
+% Définition de la liste des fréquences à partir des valeurs de w
+model.study('std1').feature('freq').set('plist', num2str(w/2/pi));  
+
+% Création d'une solution nommée 'sol1'
+model.sol.create('sol1');  
+% Attachement de l'étude 'std1' à la solution 'sol1'
+model.sol('sol1').study('std1');  
+model.sol('sol1').attach('std1');  
+% Création d'une étape d'étude
+model.sol('sol1').create('st1', 'StudyStep');  
+% Création d'une variable
+model.sol('sol1').create('v1', 'Variables');  
+% Création d'un solveur stationnaire
+model.sol('sol1').create('s1', 'Stationary');  
+% Création d'un pas paramétrique dans le solveur stationnaire
+model.sol('sol1').feature('s1').create('p1', 'Parametric');  
+% Création d'un solveur entièrement couplé
+model.sol('sol1').feature('s1').create('fc1', 'FullyCoupled');  
+% Création d'un solveur direct
+model.sol('sol1').feature('s1').create('d1', 'Direct');  
+% Suppression de la définition du couplage
+model.sol('sol1').feature('s1').feature.remove('fcDef');  
+
+% Réattachement de l'étude 'std1' à la solution 'sol1'
+model.sol('sol1').attach('std1');  
+% Étiquetage de l'étape d'étude
+model.sol('sol1').feature('st1').label('Compile Equations: Frequency Domain');  
+% Étiquetage des variables dépendantes
+model.sol('sol1').feature('v1').label('Dependent Variables 1.1');  
+% Définition du contrôle de la liste des variables
+model.sol('sol1').feature('v1').set('clistctrl', {'p1'});  
+% Nom de la variable
+model.sol('sol1').feature('v1').set('cname', {'freq'});   
+% Définition de la liste des fréquences avec unités
+model.sol('sol1').feature('v1').set('clist',  cellstr(join(string(w/2/pi)+"[Hz]")));  
+
+% Étiquetage du solveur stationnaire
+model.sol('sol1').feature('s1').label('Stationary Solver 1.1');  
+% Étiquetage de la définition du solveur direct
+model.sol('sol1').feature('s1').feature('dDef').label('Direct 2');  
+% Étiquetage de la définition avancée
+model.sol('sol1').feature('s1').feature('aDef').label('Advanced 1');  
+% Activation du traitement complexe
+model.sol('sol1').feature('s1').feature('aDef').set('complexfun', true);  
+% Étiquetage du pas paramétrique
+model.sol('sol1').feature('s1').feature('p1').label('Parametric 1.1');  
+% Définition du nom du paramètre
+model.sol('sol1').feature('s1').feature('p1').set('pname', {'freq'});  
+% Définition de la liste des paramètres
+model.sol('sol1').feature('s1').feature('p1').set('plistarr', cellstr(num2str(w/2/pi)));  
+
+% Définition des unités du paramètre
+model.sol('sol1').feature('s1').feature('p1').set('punit', {'Hz'});  
+% Définition du mode de continuation du paramètre
+model.sol('sol1').feature('s1').feature('p1').set('pcontinuationmode', 'no');  
+% Définition de l'utilisation automatique des solutions précédentes
+model.sol('sol1').feature('s1').feature('p1').set('preusesol', 'auto');  
+% Étiquetage du couplage entièrement couplé
+model.sol('sol1').feature('s1').feature('fc1').label('Fully Coupled 1.1');  
+% Étiquetage du solveur direct
+model.sol('sol1').feature('s1').feature('d1').label('Direct 1.1');  
+% Définition du solveur de système linéaire
+model.sol('sol1').feature('s1').feature('d1').set('linsolver', 'pardiso');  
+% Définition du paramètre de perturbation du pivot
+model.sol('sol1').feature('s1').feature('d1').set('pivotperturb', 1.0E-13);  
+% Exécution de toutes les étapes de la solution
+model.sol('sol1').runAll;  
+
+
+%% Résultat
+
+% Création d'un objet de ligne d'évaluation nommé 'av1'
+model.result.numerical.create('av1', 'AvLine');  
+
+% Sélection du microphone 2
+model.result.numerical('av1').selection.named('box4');  
+model.result.numerical('av1').set('probetag', 'Microphone 2');  
+
+% création d'une table de résultats
+model.result.table.create('tbl1', 'Table');
+model.result.numerical('av1').set('table', 'tbl1');
+model.result.table('tbl1').comments('acoustic indicators');
+model.result.numerical('av1').label('acoustic indicators');
+
+model.result.numerical('av1').set('expr', {['1-abs((exp(-j*ta.omega/acpr.c*D12)-acpr.p_t)' ...
+    '/(acpr.p_t-exp(j*ta.omega/acpr.c*D12))*exp(2*j*ta.omega/acpr.c*(D2S+D12)))^2']});
+model.result.numerical('av1').set('unit', {'1'});
+model.result.numerical('av1').set('descr', {'Sound absorption'});
+
+model.result.numerical('av1').setIndex('expr', ['real((exp(-j*ta.omega/acpr.c*D12)-acpr.p_t)' ...
+    '/(acpr.p_t-exp(j*ta.omega/acpr.c*D12))*exp(2*j*ta.omega/acpr.c*(D2S+D12)))'], 1);
+model.result.numerical('av1').setIndex('descr', 'Re(R)', 1);
+model.result.numerical('av1').setIndex('unit', '1', 1);
+
+model.result.numerical('av1').setIndex('expr', ['imag((exp(-j*ta.omega/acpr.c*D12)-acpr.p_t)' ...
+    '/(acpr.p_t-exp(j*ta.omega/acpr.c*D12))*exp(2*j*ta.omega/acpr.c*(D2S+D12)))'], 2);
+model.result.numerical('av1').setIndex('descr', 'Im(R)', 2);
+model.result.numerical('av1').setIndex('unit', '1', 2);
+
+model.result.numerical('av1').setIndex('expr', ['real((1+(exp(-j*ta.omega/acpr.c*D12)-acpr.p_t)' ...
+    '/(acpr.p_t-exp(j*ta.omega/acpr.c*D12))*exp(2*j*ta.omega/acpr.c*(D2S+D12)))' ...
+    '/(1-(exp(-j*ta.omega/acpr.c*D12)-acpr.p_t)/(acpr.p_t-exp(j*ta.omega/acpr.c*D12))' ...
+    '*exp(2*j*ta.omega/acpr.c*(D2S+D12))))'], 3);
+model.result.numerical('av1').setIndex('descr', 'Re(Zns)', 3);
+
+model.result.numerical('av1').setIndex('expr', ['imag((1+(exp(-j*ta.omega/acpr.c*D12)-acpr.p_t)' ...
+    '/(acpr.p_t-exp(j*ta.omega/acpr.c*D12))*exp(2*j*ta.omega/acpr.c*(D2S+D12)))' ...
+    '/(1-(exp(-j*ta.omega/acpr.c*D12)-acpr.p_t)/(acpr.p_t-exp(j*ta.omega/acpr.c*D12))' ...
+    '*exp(2*j*ta.omega/acpr.c*(D2S+D12))))'], 4);
+model.result.numerical('av1').setIndex('descr', 'Im(Zns)', 4);
+
+model.result.numerical('av1').setResult; 
+
+out = model;

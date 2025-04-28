@@ -1,0 +1,9 @@
+Metadata-Version: 2.1
+Name: multiQWL_cost_function-R2024b
+Version: 24.2
+Summary: A Python interface to multiQWL_cost_function
+Home-page: https://www.mathworks.com/
+Author: MathWorks
+Platform: Linux
+Platform: Windows
+Platform: macOS

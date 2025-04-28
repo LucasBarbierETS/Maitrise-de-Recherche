@@ -1,0 +1,146 @@
+% Optimisation du rayons des perforations (r), de l'épaisseur des plaques (t), de la porosité des plaques (phi) et de l'ordre de la fonction de profil des rayons (n) avec buildMLPSBH
+clear workspace
+close all
+clc
+
+% Importation de tous les chemins
+addpath ('C:\Users\Utilisateur\OneDrive - ETS\CRIAQ-REAR\Maitrise LB\Functions') 
+add_all_paths('C:\Users\Utilisateur\OneDrive - ETS\CRIAQ-REAR\Maitrise LB');
+
+% Création de l'environnement
+[air, w] = create_environnement(23, 100800, 50, 1, 5000);
+
+% configuration initiale (validation)
+
+R = 30e-3;              % First perforated area radius
+L = 40e-3;              % Total length
+N = 10;                 % Number of feature units
+rend = 1e-3;            % End radius
+r = 0.15e-3;            % Holes radius
+t = 1e-3;               % MPPs thickness
+phi = 0.02;             % Perforation ratio
+n = 1;                  % Radius profil function's order
+
+% ct = (L - N*t)/N;     % cavity thickness
+ct = @(t) (L - N*t)/N;  % cavity thickness
+
+lambda_QWL = L * 4;
+freq_QWL = 340 / lambda_QWL;
+
+% gabarit
+
+fm3dB = 800; % (Hz)
+Q = 15;
+alpha_max = 1;
+
+% fonction handle pour le gabarit
+
+% gabarit = classgabarit({@classgabarit.band_pass, f_peak, bandwidth, 15, 1}).build_gabarit(w);
+alpha_g = @(w) high_pass(w, fm3dB, Q, alpha_max);
+% plot(f,alpha_g(w),"--");
+
+
+%% Paramètres de l'optimisation
+
+% fonction coût (somme des écarts au carré entre le modèle et le gabarit)
+
+cost_function = @(params, air, w) sum((classMLPSBH_Cylindrical(classMLPSBH_Cylindrical.create_config(R, R, {R, rend, n}, params(2), params(1), t, ct(t), 'Hankel', 'Bezancon', false, N)).alpha(air, w) - alpha_g(w)).^2);
+objective = @(params) cost_function(params, air, w);
+
+% valeur initiale des paramètres
+
+x0 = [r phi]; % holes radius, plates thickness, plates porosity, order
+
+% Bornes inf et sup
+
+lb = [0.1e-3  0.01];
+ub = [1.5e-3  0.03];
+
+% Contraintes
+
+% Options d'optimisation
+
+n_starts = 2; % Nombre de points de départ pour algo multiStart
+optionsmultistart = optimset('Algorithm', 'interior-point', 'Disp', 'iter');  % algorithme adapté aux problèmes de programmation non linéaire
+
+% Création du problème pour Global Search, MultiStart et Genetic algoryhtm
+
+problem = createOptimProblem('fmincon', 'objective', objective, 'x0', x0, ...
+'lb', lb, 'ub', ub, 'options', optionsmultistart);
+
+%% Algorythmes d'optimisation
+
+% Variables de sortie :  - xopti : valeurs des paramètres optimisées
+%                        - fval : évaluation de la fonction coût
+%                        - eflag : état de convergence de la méthode d'optimisation
+
+% MultiStart
+
+rng; % For reproducibility
+tic;
+[xoptiMs, fvalMs, eflagMs, ouputMs, solutionsMs] = run(MultiStart, problem, n_starts);
+timeMs = toc;
+
+% % GlobalSearch
+% 
+% gs = GlobalSearch('Display', 'iter'); % Crée un objet GlobalSearch avec affichage des itérations
+% rng; % For reproducibility
+% tic;
+% [xoptiGs, fvalGs, eflagGs, outputGs] = run(gs, problem); % Exécute l'optimisation GlobalSearch
+% timeGs = toc;
+% 
+% % Genetic Algorithm 
+% 
+% rng; % For reproducibility
+% tic;
+% [xoptiGa, fvalGa, eflagGa, outputGa, populationGa, scoresGa] = ga(objective, length(x0), [], [], [], [], lb, ub, [], [], []);
+% timeGa = toc;
+
+
+%% Résultats
+
+% Evaluation des solutions obtenues avec les différents algorythmes
+
+Ms_sol = classMLPSBH_Cylindrical(classMLPSBH_Cylindrical.create_config(R, R, {R, rend, n}, xoptiMs(2) , xoptiMs(1), t, ct(t), 'Hankel', 'Bezancon', false, N));
+% Gs_sol = buildMLPSBH(R, {R, rend, xoptiGs(4)}, xoptiGs(3), xoptiGs(1), xoptiGs(2), ct(xoptiGs(2)), true, N);
+% Ga_sol = buildMLPSBH(R, {R, rend, xoptiGa(4)}, xoptiGa(3), xoptiGa(1), xoptiGa(2), ct(xoptiGa(2)), true, N);
+
+% Tracé des solutions obtenus
+
+figure()
+hold on
+plot(w / (2*pi), alpha_g(w), "--", w / (2*pi), Ms_sol.alpha(air, w));
+
+% On affiche une ligne verticale à la fréquence quart d'onde
+xline(freq_QWL);
+
+legend('gabarit', 'MultiStart', "fréquence 1/4 d'onde");
+
+% figure()
+% plot(f, alpha_g(w) ,"--", f, Ms_sol.alpha(air, w), f, Gs_sol.alpha(air, w), f, Ga_sol.alpha(air, w));
+% legend('gabarit', 'MultiStart', 'GlobalSearch', 'Genetic algorythm');
+
+% Schéma des solution obtenues
+
+drawMLPSBH(Ms_sol.Configuration);
+
+% Valeurs des paramètres pour chaque algorythme
+
+% values = table (["lower bound"; "MultiStart"; "upper dound"], [lb(1); xoptiMs(1); ub(1)], [lb(2); xoptiMs(2); ub(2)], [lb(3); xoptiMs(3); ub(3)], [lb(4); xoptiMs(4); ub(4)]);
+% % values = table (["MultiStart"; "GlobalSearch";"Genetic algorythm"], [xoptiMs(1); xoptiGs(1); xoptiGa(1)], [xoptiMs(2); xoptiGs(2); xoptiGa(2)], [xoptiMs(3); xoptiGs(3); xoptiGa(3)], [xoptiMs(4); xoptiGs(4); xoptiGa(4)]);
+% values.Properties.VariableNames = ["Algoryhtm" "holes radius" "plates thickness" "plates porosity" "order"];
+% display(values);
+% 
+% % Performance des algorythmes
+% perf = table("MultiStart", timeMs, fvalMs, eflagMs);
+% % perf = table(["MultiStart"; "GlobalSearch";"Genetic algorythm"], [timeMs; timeGs; timeGa], [fvalMs; fvalGs; fvalGa], [eflagMs; eflagGs; eflagGa]);
+% perf.Properties.VariableNames = ["Algoryhtm" "Duration" "Cost Value" "Flag"];
+% display(perf);
+
+%% Enregistrement de la configuration
+
+% date = datestr(datetime(), 'yyyy_mm_dd_HH_MM_SS');
+% path = 'C:\Users\Utilisateur\OneDrive - ETS\CRIAQ-REAR\Maitrise LB\Configurations\MLPSBH\MLPSBH_Cylindrical';
+% filename = ['config_optim_MLPSBH_Cylindrical_ ', date, '.csv'];
+% 
+% export_struct_to_CSV(Ms_sol.Configuration, fullfile(path, filename));

@@ -1,0 +1,108 @@
+classdef MPPSBHc < classelement
+
+    %% Schéma de référence
+    % perso_ouvrir_lien_Zotero('zotero://open-pdf/library/items/AH7QFLYS?page=3&annotation=A3FY7857')
+    
+    methods
+        function obj = MPPSBHc(config)
+        
+            % Appel du constructeur de la classe parente
+            obj@classelement(classelement.create_config({}, 'closed'));
+               
+            if nargin > 0    
+                % Tranfert des champs de la configuration d'appel vers la configuration de classe
+                obj.Configuration = perso_transfer_fields(config, obj.Configuration);
+    
+                cavr = config.CavitiesRadius;
+                pp = config.PlatesPorosity;
+                phr = config.PlatesHolesRadius;
+                pppr = config.PlatesPerforatedPartRadius;
+                pt = config.PlatesThickness;
+                ct = config.CavitiesThickness;
+
+                % On ajoute péridiquement la cellule plaque + cavité
+                for i = 1:length(pp)
+
+                    obj.Configuration.ListOfSubelements{end+1} = Cell_MPPSBHc(Cell_MPPSBHc.create_config(pp(i), phr(i), pt(i), ...
+                    ct(i), cavr, pppr(i), pppr(i+1)));
+                end
+            end 
+        end
+    end
+
+    methods (Static, Access = public)
+        
+        function config = create_config(number_of_plates, cavities_radius, plates_perforated_part_radius, plates_porosity, ...
+        plates_holes_radius, plates_thickness, cavities_thickness)
+            
+            config = {};
+            config.NumberOfPlates = number_of_plates;
+            config.EndStatus = 'closed';
+
+            % Paramètres globaux
+            config.CavitiesRadius = cavities_radius;
+            config.InputSection = pi*cavities_radius^2;
+
+            % Paramètres variables en fonction de la cellule
+            config.PlatesThickness = perso_interp_config(plates_thickness, number_of_plates);
+            config.CavitiesThickness = perso_interp_config(cavities_thickness, number_of_plates);
+            config.PlatesPerforatedPartRadius = perso_interp_config(plates_perforated_part_radius, number_of_plates + 1);
+            config.PlatesHolesRadius = perso_interp_config(plates_holes_radius, number_of_plates);
+            config.PlatesPorosity = perso_interp_config(plates_porosity, number_of_plates);            
+        end
+    
+        function validate()
+
+            % Référence : perso_ouvrir_lien_Zotero('zotero://open-pdf/library/items/AH7QFLYS?page=5&annotation=T6WRXCT8')
+
+            % close all 
+            figure()
+            hold on
+            title('Validation Cylindrical MPPSBH');
+            
+            % Paramètres de la configuration
+            R = 30e-3;
+            L = 100e-3;
+            N = 10;
+            rend = 1e-3;
+            d = 0.2e-3;
+            t = 0.2e-3;
+            phi = 0.04;
+            
+            % création de l'environnement
+            env = create_environnement(23, 100800, 22, 1, 5000, 5000);
+
+            %% Profil linéaire
+            
+            % calcul de la réponse du modèle analytique
+            alpha_model = MPPSBHc(MPPSBHc.create_config(N, R, {{R, rend, N+1, 1}}, {phi}, {d/2}, {t}, {L/N - t})).alpha(env);
+
+            % importation des données de références
+            data = csvread('validation MPPSBHc profil linéaire.txt');
+            [x_data, y_data] = interpole_et_lisse(data(:, 1), data(:, 2), 1000, 0.05);
+
+            plot(env.w / (2*pi), alpha_model, 'Color', 'g', 'LineWidth', 1, 'DisplayName', 'Profil linéaire - Modèle');
+            plot(x_data, y_data, 'Color', 'g','LineWidth', 1, 'LineStyle', '--', 'DisplayName', 'Profil linéaire - Données de références');
+
+            %% Profil quadratique
+
+            % calcul de la réponse du modèle analytique
+            alpha_model = MPPSBHc(MPPSBHc.create_config(N, R, {{R, rend, N+1, 0.5}}, {phi}, {d/2}, {t}, {L/N - t})).alpha(env);
+
+            % importation des données de références
+            data = csvread('validation MPPSBHc profil quadratique.txt');
+            [x_data, y_data] = interpole_et_lisse(data(:, 1), data(:, 2), 1000, 0.05);
+
+            plot(env.w / (2*pi), alpha_model, 'Color', 'b', 'LineWidth', 1, 'DisplayName', 'Profil quadratique - Modèle');
+            plot(x_data, y_data, 'Color', 'b','LineWidth', 1, 'LineStyle', '--', 'DisplayName', 'Profil quaratique - Données de références');
+
+            
+            % affichage des résultats
+            xlabel("Fréquence (Hz)");
+            ylabel("Coefficient d'Absorption");
+            ylim([0 1]);
+            xlim([0 3000]);
+            legend();
+        end
+    end
+end

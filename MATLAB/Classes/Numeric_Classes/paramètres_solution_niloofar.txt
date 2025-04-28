@@ -1,0 +1,8 @@
+H "54 [mm]" hauteur
+W "30 [mm]" largeur
+l "1 [mm]" "épaisseur des plaques"
+d "1 [mm]" incrément
+m "5 [mm]" "espace avant 1ère plaque gauche"
+n "7.4 [mm]" "espace avant 1ère plaque droit"
+a1 "8 [mm]" "longueur de la 1ère plaque gauche"
+b1 "8 [mm]" "longueur de la 1ère plaque droite"

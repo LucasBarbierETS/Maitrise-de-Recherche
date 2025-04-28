@@ -1,0 +1,41 @@
+classdef AppSubelement < AppObject
+
+    methods
+        function obj = AppSubelement(varargin)
+            
+            % varargin = {type, app_config, ...
+
+            obj@AppObject();
+            
+            % Si le type de sous-élement est donné
+            if nargin > 0
+                obj.Type = varargin{1};
+
+                % Si la configuration d'application est donnée
+                if nargin > 1
+                    obj.AppConfig = varargin{2};
+                end
+            end
+        end
+
+        function class_obj = app_to_class(obj, app)
+        % Cette méthode retourne l'objet de classe associé
+        % au sous-élement d'application
+
+         class_obj = obj.Type.HandleClassObject( ...
+             obj.Type.HandleClassConfig(obj.AppConfig));
+        end
+    end
+
+    methods (Static)
+
+        function app_sblm = class_to_app(app, class_sblm)
+        % Cette méthode permet de construire un élement d'application
+        % à partir d'un objet de classe
+
+            type_sblm = class_sblm.HandleType(app, class_sblm);
+            app_config_sblm = type_sblm.HandleAppConfig(class_sblm.Configuration);
+            app_sblm = AppSubelement(type_sblm, app_config_sblm);
+        end   
+    end
+end

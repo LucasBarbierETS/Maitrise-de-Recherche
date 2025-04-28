@@ -1,0 +1,14 @@
+'Gabarits' function are functions that return a profile of absorption coefficient. They are used in optimisation processes
+to reach an desired curve for an acoustic structure.
+
+As input arguments, they take : 
+	- w : a frequency (rad/s) support vector that is the reference
+
+	- f : the importants frequency (Hz) of the profil 
+     (f_peak for narrow passband, [f-3dB_min  f-3dB_min] for large passband, f-3dB for lowpass or high pass, etc.)
+
+	- Q : the quality factor to describe how smooth the profil is
+
+	- alpha : the value of the absorption coefficient on the peak/ passband of the profile
+
+You can add together several differents gabarits in a 'classgabarit' object. 
