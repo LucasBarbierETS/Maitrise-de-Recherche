@@ -9,6 +9,9 @@ perso_add_all_paths('E:\Montréal 2023 - 2025\Maitrise LB\MATLAB');
 % addpath 'C:\Users\AQ99270\ETS\GRAM - TD - GTO365 - CRIAQ-REAR - CRIAQ-REAR\Maitrise LB\MATLAB'
 % add_all_paths('C:\Users\AQ99270\ETS\GRAM - TD - GTO365 - CRIAQ-REAR - CRIAQ-REAR\Maitrise LB\MATLAB')
 
+%% Mise à jour du répertoire GitHub
+perso_commit();
+
 %% Création de l'environnement
 
 % Milieu 
