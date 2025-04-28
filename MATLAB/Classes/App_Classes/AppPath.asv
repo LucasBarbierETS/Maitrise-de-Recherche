@@ -1,0 +1,80 @@
+classdef AppPath < handle
+
+    properties
+
+        Content  % Cell array pour contenir les sous-éléments (AppElement, AppSubelement, AppJunction)
+       Navigator
+    end
+
+    methods
+       
+        function obj = AppContainer(app, varargin)
+
+            % varargin = {content, ...
+
+            % On associe l'objet au différent objets graphiques auquels on
+            % souhaite avoir accès
+            obj.Navigator = app.Graph.obj.Navigators.Navigator;
+
+            if nargin > 1
+                
+                obj.Content = varargin{1}; 
+            end
+        end
+        
+        function add_content(obj, content, varargin)
+        % Cette fonction permet d'insérer un objet de classe dans le contenant courant 
+        % à une position donnée. Le contenu qui suit est alors déplacé et
+        % réindexé.
+
+        % varargin = {position, ...
+
+            % On définie l'emplacement de réception du contenu
+            if nargin > 2
+                index = varargin{1};
+            else
+                index = length(obj.Content) + 1;
+            end
+
+            % On vérifie si la position est valide
+            if index < 1 || index > length(obj.Content) + 1
+                error('Position invalide.');
+            end
+
+            % On créer un lien rétroactif
+            content.Container = obj;
+            
+            % On ajoute le contenu à la position souhaitée
+            obj.Content = [obj.Content(1:index-1), {content}, obj.Content(index:end)];
+        end
+        
+        
+        
+        
+
+        
+        
+        function scatter(obj, app)
+        % Cette méthode consiste à afficher les marqueurs des sous-élements
+        % contenus dans obj.Content
+
+            cla(obj.Navigator.UIObject);
+
+            % On indique que la superposition de tracé est possible
+            obj.Navigator.UIObject.NextPlot = 'add';
+            
+            % On affiche les marqueurs un par un 
+            for i = 1:length(obj.Content)
+                scatter = scatter(obj.Navigator, 1, i, 'Marker', obj.Content{i}.Type.Marker, ...
+                                                       'MarkerEdgeColor', obj.Content{i}.Type.Color);  
+                
+                scatte
+            end
+
+            obj.Navigator.resize();
+        end
+   
+    end
+end
+
+

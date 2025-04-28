@@ -1,0 +1,102 @@
+classdef classrectangularcell < classelement
+
+    %% References:
+
+    % [1] Dupont, Thomas, et al. "A Microstructure Material Design for
+    % Low Frequency Sound Absorption." Applied Acoustics, vol. 136,
+    % July 2018, pp. 86-93.
+    % DOI: 10.1016/j.apacoust.2018.02.016.
+
+    %% Description
+
+    % Cette classe d'objet appartient au groupe des classes d'élements ouverts
+
+    % Un objet de type "classrectangularcell" représente une cavité fine dans laquelle la propagation serait partiellement ou totalement radiale
+    % (basée sur les fonctions de Hankel). Pour modéliser ce type de cellule on doit considérer la dimension longitudinale de la cellule
+    % (son épaisseur) qui induit un déphasage entre les surfaces d'entrée et de sortie et une dimension annulaire qui détermine son comportement acoustique
+    % Pour cela on ajoute en série trois bloc élementaire :
+    % - une cavité (rectangulaire) à propagation longitudinale, de section égale à celle du port central, sans pertes pariétales,
+    %   associée à la première moitié de l'épaisseur réelle de la cavité
+    % - une cavité modélisée par une jonction acoustique associée à une admittance volumique
+    % - une seconde cavité (rectangulaire) identique à la première
+
+    % La construction est le versant rectangulaire de la classe d'élement "classannularcell"
+
+    %% A modifier
+
+    % - réduire le nombre de variables en considérant des cavités de forme carré
+
+    %% Properties
+
+    properties
+
+        Type = 'RectangularCell'
+
+        Configuration % voir rectangularcellconfig
+
+    end
+
+    %% Methods
+
+    methods
+
+        function obj = classrectangularcell(rectangular_cell_configuration)
+
+            % On appelle le constructeur de classe "classelement"
+            obj@classelement({}, "opened");
+
+            obj.Configuration = rectangular_cell_configuration;
+
+            mpli = obj.Configuration.MainPoreLengthIn;
+            mpwi = obj.Configuration.MainPoreWidthIn;
+            mplo = obj.Configuration.MainPoreLengthOut;
+            mpwo = obj.Configuration.MainPoreWidthOut;
+            mpl = (mpli + mplo) / 2;
+            mpw = (mpwi + mpwo) / 2;
+            cl = obj.Configuration.CavityLength;
+            cw = obj.Configuration.CavityWidth;
+            ct = obj.Configuration.CavityThickness;
+            cm = obj.Configuration.CavityModel;
+
+            % Demi-pore d'entrée
+            obj.ListOfSubelements{end+1} = classcavity(ct/2);
+
+            % Changement de section d'entrée
+            obj.ListOfSubelements{end+1} = classsectionchange(mpli * mpwi, mpl * mpw);
+
+            % Cavité annulaire
+            annular_cavity = classrectangularcavity(mpl, mpw, cl, cw, ct, cm);
+            obj.ListOfSubelements{end+1} = classjunction_rectangular(annular_cavity, mpli, mpwi, mplo, mpwo, ct);
+
+            % Changement de section de sortie
+            obj.ListOfSubelements{end+1} = classsectionchange(mpl * mpw, mplo * mpwo);
+
+            % Demi-pore de sortie
+            obj.ListOfSubelements{end+1} = classcavity(ct/2);
+
+        end
+    end
+
+    methods (Static, Access = public)
+
+        function config = create_config(main_pore_length_in, main_pore_length_out, main_pore_width_in, ...
+                main_pore_width_out, cavity_length, cavity_width, cavity_thickness, ...
+                cavity_model)
+
+            config = struct();
+            config.MainPoreLengthIn = main_pore_length_in;
+            config.MainPoreLengthOut = main_pore_length_out;
+            config.MainPoreWidthIn = main_pore_width_in;
+            config.MainPoreWidthOut = main_pore_width_out;
+            config.CavityLength = cavity_length;
+            config.CavityWidth = cavity_width;
+            config.CavityThickness = cavity_thickness;
+            config.CavityModel = cavity_model;
+
+        end
+
+    end
+end
+
+
+

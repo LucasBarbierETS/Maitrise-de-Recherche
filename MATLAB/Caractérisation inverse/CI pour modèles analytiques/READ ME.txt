@@ -1,0 +1,12 @@
+La caractérisation inverse a pour but de trouver quelle sont les valeurs d'entrée d'un modèle à partir de ses valeurs de sortie. En particulier on 
+on connait des modèles qui décrivent un certains nombre de solutions à partir de termes correctifs qui sont établis à partir d'hypothèses théoriques parfois 
+assez restrictives. 
+L'idée serait de partir de l'hypothèse que le modèle étudié est en mesure de décrire une solution dont on connait le comportement et de chercher quelles 
+sont les corrections à prendre en compte pour l'ajuster au mieux. 
+Cette méthode permettrait aussi d'identifier qu'un modèle est incomplet si aucun ajustement avec les données n'est possible. 
+Pour cela il faut mettre en place un processus d'optimisation des valeurs d'entrée d'un modèle à partir d'une fonction coût établie sur la base de données
+précises. Les valeurs d'entrée pourraient être préalablement initialisée à partir des différents modèles de prédiction existants.
+
+
+Sur le site https://automeris.io/wpd/ il est possible d'extraire les coordonnées d'un tracé sur un graphe à partir d'une image
+Ensuite il faut copier les données sur un fichier .txt et remplacer les virgules par des points et les point-virgule par des espaces.

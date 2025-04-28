@@ -1,0 +1,65 @@
+=======================================================
+SolidWorks Macro Automation — RectangularMLPSBH Project
+=======================================================
+
+Ce projet permet de générer automatiquement une géométrie SolidWorks
+à partir d'une structure MATLAB décrivant des plaques et cavités superposées.
+
+Dossier :
+E:\OneDrive - ETS\CRIAQ-REAR\Maitrise LB\MATLAB\Classes\MDOF_classes\MLPSBH_classes\RectangularMLPSBH
+
+-------------
+📁 Fichiers clés
+-------------
+- exportAndLaunchSW.m      ← Script principal à appeler depuis MATLAB
+- build_from_mat.py        ← Script Python qui lit la structure .mat et construit la géométrie dans SolidWorks
+- structure_config.mat     ← Fichier .mat généré automatiquement à partir de la structure `config`
+
+------------------------
+🔧 Prérequis à installer
+------------------------
+1. MATLAB (2020a ou +)
+2. Python 3.x (accessible via terminal ou depuis MATLAB)
+3. Bibliothèques Python :
+   - pywin32
+   - scipy
+   (commande : pip install pywin32 scipy)
+
+4. SolidWorks installé (avec accès aux macros via COM)
+
+-------------------------
+🚀 Étapes d'utilisation
+-------------------------
+
+1. Ouvrir MATLAB et se placer dans le dossier :
+   E:\OneDrive - ETS\CRIAQ-REAR\Maitrise LB\MATLAB\Classes\MDOF_classes\MLPSBH_classes\RectangularMLPSBH
+
+2. Créer ta structure `config` contenant les champs :
+   - plaques (dimensions, épaisseur, etc.)
+   - cavités (profondeur, largeur, espacement, etc.)
+
+3. Appeler :
+   >> exportAndLaunchSW(config)
+
+4. Le script :
+   - Sauvegarde `structure_config.mat`
+   - Appelle `build_from_mat.py` automatiquement
+   - Lance SolidWorks et construit le modèle
+
+---------------------
+📌 Remarques utiles
+---------------------
+- Tu peux modifier le nom du fichier exporté en ajoutant un second argument :
+   >> exportAndLaunchSW(config, 'ma_configuration_personnalisée')
+
+- Le fichier Python peut être déplacé, mais pense à adapter le chemin dans le script MATLAB.
+
+- SolidWorks doit être installé avec accès COM (pas en version "étudiant limitée").
+
+-----------------------
+📤 Pour exporter la pièce
+-----------------------
+Tu peux ajouter dans le script Python une étape pour :
+- Sauvegarder la pièce (`.SLDPRT`)
+- Exporter en `.STEP` ou `.IGES` automatiquement
+

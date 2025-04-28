@@ -1,0 +1,35 @@
+Nom de la fonction
+replace_fields
+
+Description
+
+La fonction replace_fields remplace les variables muettes dans une structure d'entrée (S_in) 
+par leurs valeurs réelles fournies dans une structure de paramètres (params). 
+Cette fonction utilise une approche récursive pour parcourir toutes les sous-structures, 
+les cell arrays, les chaînes de caractères et les vecteurs numériques contenus dans la structure d'entrée.
+
+Variables d'entrée
+
+S_in : (struct) La structure d'entrée contenant des variables muettes sous forme de chaînes de caractères.
+
+params : (struct) La structure de paramètres contenant les valeurs réelles associées aux variables muettes.
+
+Variables de sortie
+
+S_out : (struct) La structure de sortie, copie de S_in mais avec les variables muettes remplacées par leurs valeurs réelles extraites de params.
+
+Détails de la fonction
+
+replace_fields(S_in, params) :
+
+Appelle la fonction récursive recursiveReplace pour effectuer le remplacement des variables muettes.
+
+recursiveReplace(S_in, params) :
+
+Initialise S_out comme une copie de S_in.
+Parcourt les champs de S_in.
+Si un champ est une structure, appelle récursivement recursiveReplace.
+Si un champ est un cell array, parcourt chaque élément et remplace les variables muettes par leurs valeurs réelles.
+Si un champ est une chaîne de caractères et correspond à une clé dans params, remplace la chaîne par la valeur réelle.
+Si un champ est un vecteur numérique, le convertit en cell array.
+Conserve la valeur initiale pour tous les autres types de champs.

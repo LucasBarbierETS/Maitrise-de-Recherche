@@ -1,0 +1,173 @@
+clc,clear 
+addpath('E:\ETS\Acoustique\Blocs\Classes')
+addpath('E:\ETS\Acoustique\AppBell\Functions')
+
+temp = 20;
+ps = 1e5;
+hr = 20;
+
+
+
+fmin = input("Bande de frequences pour l'optimisation, borne inf [Hz] :");
+fmax = input("Bande de frequences pour l'optimisation, borne sup [Hz] :");
+fstep = input("Bande de frequences pour l'optimisation, pas [Hz] :");
+f_opti = fmin:fstep:fmax;
+f = 1:f_opti(end)+200;
+w=2*pi*f;
+
+w_opti = 2*pi*f_opti;
+
+
+r_col1 = 2e-3;
+l_col1 = 1.1e-3;
+r_cav1 = 22.22e-3;
+l_cav1 = 10e-3;
+r_col2 = 2e-3;
+l_col2 = 1e-3;
+r_cav2 = 22.22e-3;
+l_cav2 = 20e-3;
+
+N =2; %nombre de resonateur d'Helmholtz
+
+PUC_area =pi*r_cav2^2;%periodic until cell
+
+air = classair(temp,ps,hr);
+
+%vecteur initial
+x0 = [r_col1,l_col1,r_cav1,l_cav1,r_col2,l_col2,r_cav2,l_cav2];
+
+% bornes sup et inf
+lb =repmat([1e-3 1e-3 3e-3  1e-3] ,[1 N]);%borne inf
+ub =repmat([5e-2 1e-1 1e-1  1e-1] ,[1 N]);%borne sup
+% longueur max
+l_max = 10e-2;
+
+
+%===== contraintes
+% Aineq*x ≤ bineq
+%  x(2)-x(1)<=0; %inequality
+Aineq  = zeros(length(x0));
+bineq = zeros(length(x0),1);
+% % impose : Rcols <= Rcav <=> Rcols-Rcav <= 0
+for i =1:N
+    Aineq (1+4*(i-1),1+4*(i-1))=1;%pour rcoli
+    Aineq (1+4*(i-1),3+4*(i-1))=-1;%pour rcavi
+end
+
+%===== alpha initial
+R_init = optitest(x0,air,w,PUC_area);%obj_optitest(x,air,w,sample_area);% initial reflexion coefficient 
+alpha0 = 1-abs(R_init).^2;
+% initial sound absoprtion 
+figure;
+hold on;
+plot(f,alpha0,"-",'linewidth',2,"displayname",num2str(2)+"xRH : vecteur initial");
+patch([f_opti(1) f_opti(end) f_opti(end) f_opti(1)], [0 0 1 1],"green", "facealpha",0.1,"displayname","study area")
+pause(0.5)
+
+%===== Options
+nombre_points_depart = 20;%nombre de points de depart pour algo multi start
+
+optionsmultistart = optimset('Algorithm','interior-point');
+
+optionsgraph = optimset('Disp','iter','PlotFcns',{'optimplotfval','optimplotx'});%,'OutputFcn',@peaksPlotIterates);
+optionsmultistart= optimset(optionsmultistart,optionsgraph);
+optionGsMS = [];%optionsgraph;
+
+% optionsGa = optimoptions('ga','Disp','iter','PlotFcns','gaplotbestf');
+optionsGa = optimoptions('ga','MaxGenerations',800,'MaxStallGenerations', 50);
+
+%% ===================== Optimisation 
+
+% fonction objectif
+objectif = @(x)obj_optitest(x,air,w_opti,PUC_area);
+nlcontraintes = @(x)nlc_optitest(x,l_max);
+
+% création du problème pour Global Search and Multi start
+problem = createOptimProblem('fmincon','objective',objectif,'x0',x0,'Aineq',Aineq,'bineq',bineq,...
+        'lb',lb,'ub',ub,'nonlcon',nlcontraintes,'options',optionGsMS);
+
+%% =====================  Multi start
+rng default % For reproducibility
+
+% ms = MultiStart;
+
+tic;
+[xoptiMs, fvalMs,eflagMs,ouputMs,solutionsMs]=run(MultiStart,problem,nombre_points_depart);
+% sum([solutionsMs.X(:4*(1:end/4)) solutionsMs.X(:,2*(1:end/4))])
+% solutionsMs.X(:,1)
+tempsMs = toc
+% tableResults('MultiStart',:) = num2cell([xoptiMs,fvalMs,0,timeMs,0]);
+ 
+
+%% genetic algorithm 
+
+rng default % For reproducibility
+% x = ga(fun,nvars,A,b,[],[],lb,ub,nonlcon,IntCon,options)
+
+tic;
+[xoptiGa,fvalGa,exitflagGa,outputGa,populationGa,scoresGa] = ga(objectif,...
+    length(x0),Aineq,bineq,[],[],lb,ub,nlcontraintes,[],optionsGa);
+timeGa = toc
+
+
+%% ===== absorption
+% f_opti = 500:10:1000;
+% w_opti = 2*pi*f_opti;
+% objectif = @(x)obj_optitest(x,air,w_opti,sample_area);
+% 
+% tic
+% fval0 = objectif(x0);
+% toc
+
+fval0 = objectif(x0);
+
+%% =====================  => Résultats
+
+alphaMs = 1-abs(optitest(xoptiMs,air,w,PUC_area)).^2;
+alphaGa =1-abs(optitest(xoptiGa,air,w,PUC_area)).^2;
+[~, fpics0 ] = findpeaks(alpha0,f);
+[~, fpicsMs ] = findpeaks(alphaMs,f);
+[~, fpicsGa ] = findpeaks(alphaGa,f);
+
+if length(fpicsGa) < N
+    fpicsGa(end+1) = NaN
+    
+end
+%===== Table des resultats
+% les lignes correspondent à chaque solution 
+Rcols_mm = round([x0(1:4:end) ; xoptiMs(1:4:end) ; xoptiGa(1:4:end)]*1E3);
+Lcols_mm = round([x0(2:4:end) ; xoptiMs(2:4:end)  ; xoptiGa(2:4:end)]*1E3);
+Rcavs_mm = round([x0(3:4:end) ; xoptiMs(3:4:end)  ; xoptiGa(3:4:end) ]*1E3);
+Lcavs_mm = round([x0(4:4:end) ; xoptiMs(4:4:end) ; xoptiGa(4:4:end)]*1E3);
+Ltotale_mm = round([max(sum(x0(2:2:4)),sum(x0(6:2:8))) ; max(sum(xoptiMs(2:2:4)),sum(xoptiMs(6:2:8))) ; max(sum(xoptiGa(2:2:4)),sum(xoptiGa(6:2:8)))]*1E3);
+
+fonction_cout = [fval0 ;fvalMs; fvalGa];
+frequences_pics = [ fpics0(1:N);fpicsMs(1:N);fpicsGa(1:N)];
+temps = [ 0;tempsMs;timeGa];
+
+tableResultats = table(Rcols_mm,Lcols_mm,Rcavs_mm,Lcavs_mm,Ltotale_mm,fonction_cout,frequences_pics,temps);
+tableResultats.Properties.RowNames = ["init" "Ms" "GA"];
+tableResultats
+
+save("optiresults_"+replace(string(datetime ),':','_')+".mat", 'tableResultats');
+%% =====================  => Affichage
+
+plot(f,alphaMs,"--",'linewidth',2,"displayname",num2str(2)+"xRH : opti Ms");
+plot(f,alphaGa,"--",'linewidth',2,"displayname",num2str(2)+"xRH : opti Ga");
+
+% plot(fvis,ones(1,length(fvis)),'*',"displayname","Résonance")
+grid on
+% legend("location","northwest");
+legend
+xlabel('Fréquence [Hz]');ylabel("Coefficient d'absorption [1]");
+grid on;
+title("axe des X en linéaire")
+ylim([0 1])
+title("Absorption pour "+N+" résonateur d'Helmholtz")
+xlim([0 1000])
+
+seed = rng;
+
+save(strjoin(string(clock))+".mat")
+
+

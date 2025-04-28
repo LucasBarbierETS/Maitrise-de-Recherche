@@ -1,0 +1,122 @@
+% Optimisation d'un MDOF composé de 4 cavités 1/4 d'onde, chacune recouverte par une MPP
+
+close all
+
+%% valeurs initiales en fonction du types de variable
+
+init_value = struct();
+init_value.slits_width = 5e-3;
+init_value.plates_porosity = 0.1;
+init_value.plates_perforations_dimensions = 0.001;
+init_value.cavities_thickness = 97e-3/3;
+
+%% bornes inf et sup en fonction des types de variable
+
+bound = struct();
+bound.slits_width = [2e-3 29e-3];
+bound.plates_porosity = [0.001 0.1];
+bound.plates_perforations_dimensions = [10e-5 3e-3];
+bound.cavities_thickness = [2e-3 98e-3];
+
+%% répertoire des "variables muettes"
+
+variables = struct();
+
+variables.w1 = [init_value.slits_width, bound.slits_width(1), bound.slits_width(2)];
+variables.w2 = [init_value.slits_width, bound.slits_width(1), bound.slits_width(2)];
+% variables.w3 = [init_value.slits_width, bound.slits_width(1), bound.slits_width(2)];
+% variables.t1 = [init_value.cavities_thickness, bound.cavities_thickness(1), bound.cavities_thickness(2)];
+% variables.t2 = [init_value.cavities_thickness, bound.cavities_thickness(1), bound.cavities_thickness(2)];
+% variables.t3 = [init_value.cavities_thickness, bound.cavities_thickness(1), bound.cavities_thickness(2)];
+variables.p1 = [init_value.plates_porosity, bound.plates_porosity(1), bound.plates_porosity(2)];
+variables.r1 = [init_value.plates_perforations_dimensions, bound.plates_perforations_dimensions(1), bound.plates_perforations_dimensions(2)];
+
+%% données du problèmes
+
+[x0, lb, ub] = variables_to_x0_lb_ub(variables);
+
+%% gabarit
+
+% On veut un maximum d'absorption entre 300 et 600 Hz
+g = @(env) (env.w / (2*pi) > 140 & env.w / (2*pi) < 220);
+
+
+%% Paramètres de l'optimisation
+
+new_config = @(params) feval(@(variables) sol_bf.create_config(30e-3^2, 30e-3, 30e-3, ...
+                                       [variables.w1(1) variables.w2(1)], ... % variables.w3(1)], ...
+                                       variables.p1(1), variables.r1(1), 2e-3, ...
+                                       48e-3, ... [variables.t1(1), variables.t2(1)], ... [variables.t1(1), variables.t2(1), variables.t3(1)], ...
+                                       'Hankel', 'Bezançon', 'true', false, 2), ...
+                                       x0_to_variables(params, variables));
+
+buildMPPSBH = @(params) sol_bf(new_config(params));
+cost_function = @(params, env) sum(((buildMPPSBH(params).alpha(env) - g(env)) .* (g(env) > 0.1)).^2);
+objective = @(params) cost_function(params, env);
+
+%% Fonction handle pour les contraintes
+
+function [c, ceq] = contraintes(params)
+    c = [];
+    ceq = []; 
+    % ceq = params(3) + params(4) - 96e-3;
+    % ceq = params(4) + params(5) + params (6) - 97e-3;
+end
+
+% Options d'optimisation
+
+n_starts = 1; % Nombre de points de départ pour algo multiStart
+optionsmultistart = optimset('Algorithm', 'interior-point', 'Disp', 'iter');  % algorithme adapté aux problèmes de programmation non linéaire
+
+% Création du problème pour Global Search, MultiStart et Genetic algoryhtm
+
+problem = createOptimProblem('fmincon', 'objective', objective, ...
+    'x0', x0,'lb', lb, 'ub', ub, ... % limites et valeurs initiales
+    'nonlcon', @contraintes, ...
+    'options', optionsmultistart); 
+
+%% Algorythmes d'optimisation
+
+% Variables de sortie :  - xopti : valeurs des paramètres optimisées
+%                        - fval : évaluation de la fonction coût
+%                        - eflag : état de convergence de la méthode d'optimisation
+
+% MultiStart
+
+rng; % For reproducibility
+tic;
+[xoptiMs, fvalMs, eflagMs, ouputMs, solutionsMs] = run(MultiStart, problem, n_starts);
+timeMs = toc;
+
+% % GlobalSearch
+% 
+% gs = GlobalSearch('Display', 'iter'); % Crée un objet GlobalSearch avec affichage des itérations
+% rng; % For reproducibility
+% tic;
+% [xoptiGs, fvalGs, eflagGs, outputGs] = run(gs, problem); % Exécute l'optimisation GlobalSearch
+% timeGs = toc;
+% 
+% % Genetic Algorithm 
+% 
+% rng; % For reproducibility
+% tic;
+% [xoptiGa, fvalGa, eflagGa, outputGa, populationGa, scoresGa] = ga(objective, length(x0), [], [], [], [], lb, ub, [], [], []);
+% timeGa = toc;
+
+
+%% Résultats
+
+% Evaluation des solutions obtenues avec les différents algorythmes
+
+sol_bf_lin_config = new_config(xoptiMs);
+sol_bf_lin = sol_bf(sol_bf_lin_config);
+
+% Gs_sol = buildMLPSBH(R, {R, rend, xoptiGs(4)}, xoptiGs(3), xoptiGs(1), xoptiGs(2), ct(xoptiGs(2)), true, N);
+% Ga_sol = buildMLPSBH(R, {R, rend, xoptiGa(4)}, xoptiGa(3), xoptiGa(1), xoptiGa(2), ct(xoptiGa(2)), true, N);
+
+% Tracé des solutions obtenus
+
+figure()
+plot(env.w/(2*pi), g(env) ,"--", env.w/ (2*pi), sol_bf_lin.alpha(env));
+legend('gabarit', 'MultiStart');
+xlim([0 2000]);

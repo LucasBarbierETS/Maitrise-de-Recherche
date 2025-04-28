@@ -1,0 +1,19 @@
+classdef AppScatter < handle
+
+    properties
+        Parent % Objet de classe Appelement, AppSubelement ou AppJunction (parent)
+        HandleScatter % Objet graphique (enfant)
+    end
+    
+    methods
+        function obj = AppScatter(parent) % Cette méthode initialise l'objet et le relie à l'objet parent    
+            obj.Parent = parent;
+        end
+
+        function scatter(obj) % Cette méthode crée/ met à jour HandleScatter
+            obj.HandleScatter = scatter(obj.Parent.Container.Axes.UIObject, 1, obj.Parent.Index);
+        end 
+    end
+
+end
+

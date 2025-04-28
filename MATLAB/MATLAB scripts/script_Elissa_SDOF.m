@@ -1,0 +1,25 @@
+% Script pour le liner de Elissa
+
+% % Paramètres de la plaque 
+% r = 0.99e-3/2; % rayon des perforations 
+% s = pi()*r^2*7; %  surface des perforations
+% S = 3*sqrt(3)/2*5.69e-3^2; % surface de la plaque (hexagone)
+% phi = s/S;
+% t = 0.64e-3;
+
+t = 16e-3; % honeycomb cavity height
+l = 2.5e-3; % honeycomb cavity radius
+e = 3e-3; % perforated sheet thickness
+r = 0.4e-3; % holes radius
+phi = 2*pi()*r^2/(sqrt(3)*l^2);
+
+% Paramètres de la cavité
+L = 38.1e-3;
+
+MPP = classMPP_Circular(classMPP_Circular.create_config(phi, r, e, 1));
+cav = classcavity(classcavity.create_config(t, 1));
+solution = classelement(classelement.create_config({MPP, cav}, 'closed', 1));
+
+solution.plot_alpha(env, 'solution SDOF');
+solution.plot_surface_impedance(env);
+

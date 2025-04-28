@@ -1,0 +1,29 @@
+L'optimisation que l'on veut développer se veut généralisable à différents types de structures. Ces structures, propres aux classes auquelles
+elles sont associées contient des 'double' comprenants soit une valeur unique soit un vecteur. On peut supposer que par la suite, les structures 
+pourront contenir elles-mêmes d'autres structures lorsqu'elle seront associées à des classes d'assemblages.
+
+Exemple : classmultiQWL
+
+config.Radius = [r1 r2 r3]
+config.Length = [l1 l2 l3]
+config.Shape = [{'circle'}, {'circle'}, {'circle'}]
+config.TotalSurface = S
+
+Dans le but de développer une méthode d'optimisation à géométrie variable, le choix qui a été fait consiste à opérer l'optimisation sur des 
+variables muettes qui sont attribuées à des paramètres réels au sein des structures. Les variables sont stockées dans une structure 'params'.
+A chaque champs sont associées la valeur courante, la limite inférieure et la limite supérieure du processus d'optimisation.
+
+params.a = [0.2 0.1 1]
+params.b = [0.5 0.3 2]
+
+L'attribution des variables est fait à l'extérieur du code d'optimisation. Pour ce faire le contenu des structures est encapsulé dans 
+des 'cell array'. De cette manière il est possible de faire correspondre certains paramètres réelles avec des variables muettes
+
+config.Radius = {[r1] 'a' [r3]}
+config.Length = {'b' 'b' 'b'}
+config.Shape = {'circle' 'circle' 'circle'}
+config.TotalSurface = {S}
+
+La structure à optimiser est fournie sous cette forme et une methode externe permet d'évaluer la structure à chaque itération du processus à partir 
+du vecteur des valeurs courantes associées aux variables muettes du problème.
+

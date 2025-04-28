@@ -1,0 +1,29 @@
+
+%% Lancement du script d'optimisation de la solution basse fréquence
+% optimisation_tonale_BF();
+
+%% Etude en fontion du rayon des perforations
+figure()
+hold on
+r = linspace(25e-5, 1e-3, 5);
+for i = 1:length(r)
+    config = sol_bf_lin_config; % récupération de la configuration optimisée
+    config.TopPlateHolesRadius = r(i);
+    current_sol = sol_bf(config);
+    plot(env.w/(2*pi), current_sol.alpha(env), 'DisplayName', ['r = ', num2str(r(i))]);
+end
+
+legend();
+
+%% Etude en fontion du taux de porosité
+figure()
+hold on
+phi = linspace(2e-2, 14e-2, 7);
+for i = 1:length(r)
+    config = sol_bf_lin_config;
+    config.TopPlatePorosity = phi(i);
+    current_sol = sol_bf(config);
+    plot(env.w/(2*pi), current_sol.alpha(env), 'DisplayName', ['r = ', num2str(r(i))]);
+end
+
+legend();

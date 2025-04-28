@@ -1,0 +1,50 @@
+- classMLPSBH
+
+	'classMLPSBH' object is a sonic-black-hole (SBH) structure built 
+	with multi-layered perforated plates and annular cavities (MLP)
+
+	'classMLPSBH' takes as input a structure (config) containing:
+
+		- config.SBH_radius : (scalar) the radius of the sample
+
+		- config.plates_perforated_area_radius : a cell array containing the plate-perforated-area-radius of each plate
+		- config.plates_porosity : a cell array containing the porosity of the perforated part of each plate
+		- config.plates_holes_radius : a cell array containing the radius of holes of each plate
+		- config.plates_thickness : a cell array containing the thickness of each plate	
+
+		- config.cavities_thickness : a cell array containing the thickness of each annular cavity
+		- config.HankelModel : (boolean) 'true' for Hankel's model, 'false' for model based on the volume of cavities (see classannularcavity)	
+
+
+- build_classMLPSBH
+
+	'build_classMLPSBH' is a function that use hyperparameters to create the input-structure of classMLPSBH 
+	to diminish the number of degrees of freedom 
+
+	Each hyperparameter can take several forms : 
+
+		- SBH_radius : R (scalar) : radius of the sample
+
+		- plates_perforated_area_radius : - ppar (scalar) : radius of all plates
+			   			  - [rin, rend, order] (vector) : radius of the first plate's perforated area, residual radius, radius function order
+		           			  - [r1, ..., rN] (vector) : radius of each plate
+
+		- porosity : - phi (scalar) ; porosity of all plates
+			     - [phi1, ..., phiN] (vector) : porosity of each plate
+
+		- holes_radius : - hr (scalar) : holes radius of all plates
+			     	 - [hr1, ..., hrN] (vector) : holes radius of each plate
+
+		- plates_thickness : - pt (scalar) : thickness of all plates
+			     	     - [pt1, ..., ptN] (vector) : holes radius of each plate
+
+		- cavities_thickness : ct (scalar) : thickness of all plates
+			     	     - [ct1, ..., ctN] (vector) : holes radius of each plate
+
+		- hankel_model : (boolean) 'true' or 'false'
+
+
+
+
+
+		

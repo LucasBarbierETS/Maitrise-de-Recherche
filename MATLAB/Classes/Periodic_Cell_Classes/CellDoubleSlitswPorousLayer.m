@@ -1,0 +1,72 @@
+classdef CellDoubleSlitswPorousLayer < classelement    
+    
+    methods
+        function obj = CellDoubleSlitswPorousLayer(config)
+
+            % Appel du constructeur de la classe parente
+            obj@classelement(classelement.create_config({}, 'opened'));
+
+            % On transfert les champs de la structure d'appel vers ceux de
+            % a structure de classe
+            perso_transfer_fields(config, obj.Configuration);
+
+            % Paramètres de la cellule
+            cd = config.CellDepth;
+            ciw = config.CellInnerWidth;
+            cow = config.CellOuterWidth;
+
+            % Paramètres des fentes
+            st = config.SlitsThickness;
+
+            % Paramètres de la couche poreuse
+            lw = config.LayerWidth;
+            lp = config.LayerPorosity;
+            ltor = config.LayerTortuosity;
+            lsig = config.LayerResistivity;
+            vl = config.CaracteristicViscousLength;
+            tl = config.CaracteristicThermalLength;
+            lt = config.LayerThickness;
+
+            % Paramètres de la cavité
+            ct = config.CavityThickness;
+            cw = config.CavityWidth;
+
+            
+            obj.Configuration.ListOfSubelements{end+1} = classQWL_Slit( ...
+            classQWL_Slit.create_config(st, ciw, cd*ciw));
+
+            obj.Configuration.ListOfSubelements{end+1} = classJCA_Rigid( ...
+            classJCA_Rigid.create_config(lp, ltor, lsig, vl, tl, lt, cd*lw));
+
+            obj.Configuration.ListOfSubelements{end+1} = classQWL_Slit( ...
+            classQWL_Slit.create_config(st, ciw, cd*ciw));
+
+            obj.Configuration.ListOfSubelements{end+1} = CellBilateralCavity( ...
+            CellBilateralCavity.create_config(ct, cd, cw, ciw, cow));
+        end
+    end
+
+    methods (Static)
+        function config = create_config(cell_depth, slits_thickness, ...
+                cell_inner_width, cell_outer_width, layer_width, layer_porosity, layer_tortuosity, layer_resistivity,...
+                caracteristic_viscous_length, caracteristic_thermal_length, ...
+                layer_thickness, cavity_thickness, cavity_width)
+
+            config = struct();
+            config.CellDepth = cell_depth;
+            config.CellInnerWidth = cell_outer_width;
+            config.CellOuterWidth = cell_inner_width;
+            config.SlitsThickness = slits_thickness;
+            config.LayerWidth = layer_width;
+            config.LayerPorosity = layer_porosity;
+            config.LayerTortuosity = layer_tortuosity;
+            config.LayerResistivity = layer_resistivity;
+            config.CaracteristicViscousLength = caracteristic_viscous_length;
+            config.CaracteristicThermalLength = caracteristic_thermal_length;
+            config.LayerThickness = layer_thickness;
+            config.CavityThickness = cavity_thickness;
+            config.CavityWidth = cavity_width;
+        end
+    end
+end
+

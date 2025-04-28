@@ -1,0 +1,16 @@
+Les classes et méthodes définies dans ce dossier tiennent compte d'un certain nombre de convention : 
+
+- les variables d'état acoustique sont la pression et la vitesse acoustique. Ce choix à des répercussions sur l'enchainement des elements dans une structure.
+  D'après le principe de conservation des débits, il faut s'assurer que chaque section de sortie est égale à la section d'entrée de l'élement suivant.
+  Si ce n'est pas le cas, il faut utiliser des élements 'classsectionchange' qui n'ont pour but que d'adapter les sections entre elles.
+  Par ailleurs il faut faire attention à ce qui est considérer comme section d'entrée : 
+  
+  Exemple  : 
+  Dans le cas du modèle des MLPSBH, les plaques sont perforées sur une surface circulaire en générale inférieure à la sectionde l'échantillon. Ainsi on peut 
+  formuler deux porosité, celle de la partie centrale et celle de la plaque entière.
+  - Si on se base sur la porosité de la partie centrale seulement : 
+	1) Il faut considérer un changement de section entre la section de l'échantillon et celle de la plaque à l'entrée de celle-ci.
+	2) Le common pore qui suit la plaque à le même rayon que celle-ci donc je changement de section n'est pas nécessaire
+	3) Pour tenir compte de la correction de longueur de rayonnement, il faut tenir compte de la porosité réelle soit celle de la plaque dans 
+	   son intégralité. Si on a procéder auparavant à un changement de section, il faut récupérer les données du changement de section et recalculer 
+	   artificiemmelement le terme de rayonnement réel

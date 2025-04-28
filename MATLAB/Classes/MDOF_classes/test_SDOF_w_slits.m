@@ -1,0 +1,40 @@
+
+% Ce script permet de construire une solution constituée d'une plaque
+% perforée suivie par une succession de cavités et de fentes.
+
+% Paramètres globaux
+input_section = 30e-3^2;
+solution_depth = 30e-3; % profondeur (solution projetée en 2D)
+
+% Paramètres de la plaque
+plate_porosity = 0.05;
+plate_holes_radius = 1e-4;
+plate_thickness = 1e-3;
+
+% Paramètres des cavités 
+cavities_thickness = 15.5e-3;
+cavities_width = 30e-3;
+
+% Paramètres des fentes
+slits_number = 5;
+slits_thickness = 1e-3;
+first_slit_width = 2e-3;
+last_slit_width = 2e-3;
+
+cell_thickness = cavities_thickness + slits_thickness;
+
+L = (slits_number - 1) * cell_thickness;
+profil = @(i) feval(profilSBH(L, first_slit_width, last_slit_width, 1),((i-1) * cell_thickness));
+
+
+list_of_subelements = {};
+list_of_subelements{end+1} = CellMPP(CellMPP.create_config(plate_porosity, ...
+    plate_holes_radius, plate_thickness, cavities_thickness, solution_depth, ...
+    cavities_width, cavities_width, first_slit_width));
+
+for i = 1:slits_number
+    list_of_subelements{end+1} = CellSlit(CellSlit.create_config(slits_thickness, ...
+    cavities_thickness, solution_depth, cavities_width, profil(i), profil(i+1)));
+end
+
+SDOF_w_slits = classelement(classelement.create_config(list_of_subelements, 'closed', input_section));
