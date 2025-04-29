@@ -58,7 +58,6 @@ classdef classMTP < classelement
 
         function obj = classMTP(config)
             
-            % On appelle le supeconstructueur. obj hérite des propriétés .ListOfSubelements et .EndStatus
             obj@classelement(config);
         end 
 
@@ -96,7 +95,7 @@ classdef classMTP < classelement
             plates_length = zeros(1, nb_plates);
             layers_thickness = zeros(1, nb_plates*2 + 1); 
             
-            % première couche
+            % Première couche
             layers_thickness(1)  = m;
             
             for i = 1: nb_plates/2
@@ -111,7 +110,6 @@ classdef classMTP < classelement
             config.PlatesLength = plates_length;
             config.LayersThickness = layers_thickness;
             config.Thickness = sum(config.LayersThickness);
-
          end
        
         function config = define_porous_media(config, porosity, tortuosity, resistivity, viscous_caracteristic_length, ...

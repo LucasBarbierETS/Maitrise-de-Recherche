@@ -215,7 +215,7 @@ classdef classMPPSBH_Rectangular < classelement
 
     methods (Static, Access = public)
 
-        % Définition 
+        % Définition de la configuration à partir des paramètres JCA
         function config = create_config(number_of_plates, cavities_depth, cavities_width, slits_width, ...
         plates_holes_radius, plates_perforated_part_porosity, ...
         plates_thickness, cavities_thickness)
@@ -234,17 +234,7 @@ classdef classMPPSBH_Rectangular < classelement
             config.CavitiesThickness = perso_interp_config(cavities_thickness, number_of_plates);
             config.SlitsWidth = perso_interp_config(slits_width, number_of_plates + 1);
             config.PlatesHolesRadius = perso_interp_config(plates_holes_radius, number_of_plates);
-
-            % Définition de la porosité à partir de la répartition des perforations
-            % config.PlatesDepthHolesNumber = plates_depth_holes_number;
-            % config.PlatesWidthHolesNumber = plates_width_holes_number;
-            % plates_holes_number = plates_depth_holes_number{:} .* plates_width_holes_number{:};
-            % plates_perforated_surface = pi*plates_holes_radius{:}.^2 .* plates_holes_number;
-            % plates_perforated_part_porosity = plates_perforated_surface ./ (slits_width{:} * cavities_depth);
             config.PlatesPerforatedPartPorosity = perso_interp_config({plates_perforated_part_porosity}, number_of_plates);         
-
-            % Définition de la largeur de la fente en fonction du nombre de perforations en largeur et du rayon de perforation
-            % On part du principe 
         end
         
         % Définition de la configuration à partir de la géomètrie concrète
@@ -257,7 +247,7 @@ classdef classMPPSBH_Rectangular < classelement
             config.NumberOfPlates = number_of_plates;
             config.EndStatus = 'closed';
 
-            % Paramètres glbaux
+            % Paramètres globaux
             config.CavitiesDepth = cavities_depth;
             config.CavitiesWidth = cavities_width;
             config.InputSection = cavities_width*cavities_depth;
@@ -280,7 +270,6 @@ classdef classMPPSBH_Rectangular < classelement
             config.PlatesRealPorosity = plates_perforated_surface / (cavities_width * cavities_depth);
         end
 
-    
         function validate()
 
             % close all 

@@ -29,7 +29,7 @@ classdef Cell_MPPSBHr < classelement
             SMPP = ciw*cd;
             Scav = pmw*cd;
 
-            % Plaque perforée
+            % Plaque perforée (Modèle de Maa)
             obj.Configuration.ListOfSubelements{end+1} = classMPP_Circular(classMPP_Maa.create_config(pp, phr, pt, SMPP));
 
             % Cavité cylindrique

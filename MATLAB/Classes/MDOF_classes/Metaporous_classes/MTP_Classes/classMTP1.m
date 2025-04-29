@@ -33,7 +33,7 @@ classdef classMTP1 < classMTP
             % On parcourt les plaques successives
             for i = 1:length(config.PlatesLength)
 
-                % volume de la i-ème plaque
+                % volume (2D) de la i-ème plaque
                 plate_volume = config.PlatesLength(i) * config.LayersThickness(2*i);
                 % épaisseur de la i-ème cellule plaque + cavité
                 cell_thickness = sum(config.LayersThickness(2*i: 2*i + 1));
@@ -50,6 +50,43 @@ classdef classMTP1 < classMTP
                 porous_layer.EquivalentParameters = @(obj, env) modifiedequivalentparameters(obj, nui, env);
                 obj.Configuration.ListOfSubelements{end + 1} = porous_layer;
             end
+        end
+
+        % Définition de la configuration à partir de la géomètrie concrète
+
+        MTP_width, plates_thickness, added_length, left_spacing, right_spacing, ... 
+                 first_left_plate_length, first_right_plate_length, nb_plates, input_section
+
+        function config = create_explicit_config(number_of_plates, cavities_depth, cavities_width, slits_width, ...
+            plates_holes_radius, plates_width_holes_distance, ...
+            plates_depth_holes_number, plates_width_holes_number, ...
+            plates_thickness, cavities_thickness) 
+
+            config = {};
+            config.NumberOfPlates = number_of_plates;
+            config.EndStatus = 'closed';
+
+            % Paramètres globaux
+            config.CavitiesDepth = cavities_depth;
+            config.CavitiesWidth = cavities_width;
+            config.InputSection = cavities_width*cavities_depth;
+
+            % Paramètres variables en fonction des cellules
+            config.PlatesThickness = perso_interp_config(plates_thickness, number_of_plates);
+            config.CavitiesThickness = perso_interp_config(cavities_thickness, number_of_plates);
+            config.PlatesHolesRadius = perso_interp_config(plates_holes_radius, number_of_plates); % r
+            config.PlatesDepthHolesNumber = perso_interp_config(plates_depth_holes_number, number_of_plates); % m
+            config.PlatesWidthHolesNumber = perso_interp_config(plates_width_holes_number, number_of_plates); % n
+            config.PlatesWidthHolesDistance = perso_interp_config(plates_width_holes_distance, number_of_plates); % d
+
+            % Définition de la largeur de la fente en fonction du nombre de perforations en largeur et du rayon de perforation
+            config.SlitsWidth = perso_interp_config({plates_width_holes_distance{:} .* plates_width_holes_number{:}}, number_of_plates+1);
+            
+            % Définition de la porosité à partir de la répartition des perforations
+            plates_holes_number = plates_depth_holes_number{:} .* plates_width_holes_number{:};
+            plates_perforated_surface = pi*plates_holes_radius{:}.^2 .* plates_holes_number;
+            config.PlatesPerforatedPartPorosity = plates_perforated_surface ./ (slits_width{:} * cavities_depth);
+            config.PlatesRealPorosity = plates_perforated_surface / (cavities_width * cavities_depth);
         end
     end
 end
