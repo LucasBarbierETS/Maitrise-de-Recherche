@@ -1,4 +1,4 @@
-function perso_commit()
+function perso_commit(message)
 % perso_commit(commit_message)
 %   Committe tous les fichiers du dossier MATLAB avec un message donné
 
@@ -14,7 +14,7 @@ function perso_commit()
     system(sprintf('git add "%s"', repo_path));
 
     % Faire le commit
-    commit_command = sprintf('git commit -m "%s"', datetime('now'));
+    commit_command = sprintf('git commit -m "%s"', message);
     status = system(commit_command);
 
     if status == 0

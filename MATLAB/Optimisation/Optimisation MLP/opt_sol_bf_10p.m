@@ -2,8 +2,10 @@
 
 NS = 1; % Nombre de solutions
 NV = 4; % Nombre de variables pour chaque solution
-N =  10; %  Nombre de plaques pour chaque solution
-perforations_radius_values = [4.75e-4, 5e-4, 5.25e-4, 5.5e-4, 5.75e-4, 6e-4, 6.25e-4];
+N =  6; %  Nombre de plaques pour chaque solution
+% N =  10; %  Nombre de plaques pour chaque solution
+% perforations_radius_values = [4.5e-4 4.75e-4, 5e-4, 5.25e-4, 5.5e-4, 5.75e-4, 6e-4, 6.25e-4];
+perforations_radius_values = [4.5e-4 4.75e-4];
 eval_r = @(i) perforations_radius_values(i);
 f_min_bf = 150;
 f_max_bf = 400;
@@ -14,21 +16,21 @@ f_max_lb_hf = 1500;
 
 %% Paramètres géométriques invariants
 cavities_depth = 28e-3;
-cavities_width = 28e-3;
+cavities_width = 29e-3; % parois inter-cellulaire de 1mm
 plates_thickness = 2e-3;
 total_thickness = 100e-3;
 rigid_backing_thickness = 2e-3;
 
 %% Valeurs initiales en fonction du types de variable
-r_init = randi([1, 7], N, 1, NS);
-dw_init = transpose(4*eval_r(r_init));
-pd_init = randi([7, 11], N, 1, NS);
-pw_init = randi([1, 6], N, 1, NS);
+r_init = randi([1, 2], N, 1, NS);
+dw_init = transpose(4 * eval_r(r_init));
+pd_init = randi([8, 11], N, 1, NS);
+pw_init = randi([1, 7], N, 1, NS);
 x0 = horzcat([r_init, dw_init, pd_init, pw_init]);
 
 %% Matrices des bornes INF et SUP en fonction des types de variable
-lb = repmat([1, 2*eval_r(7), 1, 1], N, 1, NS);  
-ub = repmat([7, 5e-3, 11, 11], N, 1, NS); 
+lb = repmat([1, 4 * eval_r(2), 5, 1], N, 1, NS);  
+ub = repmat([2, 35e-4, 11, 10], N, 1, NS); 
 
 %% Contrainte sur les variables entières
 intcon = find(repmat([1 0 1 1], N, 1, NS)); 
@@ -80,11 +82,11 @@ objective = @(x0) cost_function(reshape(x0, N, NV, NS), env);
 
 options = optimoptions('ga', ...
                        'Display', 'iter', ...
-                       'PlotFcn', {@gaplotbestf, @gaplotpareto}, ...
+                       'PlotFcn', {@gaplotbestf, @gaplotmaxconstr, @gaplotbestindiv}, ...
                        'FunctionTolerance', 1e-6, ...
                        'MaxStallGenerations', 20, ...
                        'MaxGenerations', 200, ...
-                       'MutationFcn', @mutationuniform, ... % Mutation uniforme
+                       'MutationFcn', @mutationadaptfeasible, ... 
                        'InitialPopulationMatrix', reshape(x0, 1, [])); 
 
 rng; % For reproducibility"
