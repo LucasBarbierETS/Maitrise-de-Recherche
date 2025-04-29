@@ -10,14 +10,14 @@ function [c, ceq] = perso_MPPSBHr_nonlconf(x, NV, NS, N, cavities_width, cavitie
     pw  = (x_mat(:, 4, :));           % nb de perfo largeur
 
     % Calcul des rayons réels
-    r = eval_r(r)';
+    r = eval_r(r);
 
     % Contraintes non linéaires existantes :
     sw = pw .* dw;
     % c1 = 4*r - dw;                        % dw > 4r (espacement inter-perforations)
     c2 = sw - cavities_width;             % sw < cav_width
     c4 = pw - pd;                         % pd > pw
-    c5 = vertcat(sw(2:end), 0) - sw;      % sw(i + 1) < sw(i) (monotonie des profils) 
+    c5 = cat(1, sw(2:end, :, :), zeros(1, 1, NS)) - sw + 1e-3;      % sw(i + 1) < sw(i) (monotonie des profils) 
 
     % Calcul de la porosité : (pi * r^2 * pd) /  dw
     porosity = (pi * r.^2 .* pd .* pw) / (cavities_depth * cavities_width);
