@@ -1,13 +1,8 @@
 %% Chemins d'accès
+root = 'E:\Montréal 2023 - 2025\Maitrise LB';
 
-% addpath 'C:\Users\Utilisateur\OneDrive - ETS\CRIAQ-REAR\Maitrise LB\MATLAB' 
-% add_all_paths('C:\Users\Utilisateur\OneDrive - ETS\CRIAQ-REAR\Maitrise LB\MATLAB');
-
-addpath 'E:\Montréal 2023 - 2025\Maitrise LB\MATLAB\Functions' 
-perso_add_all_paths('E:\Montréal 2023 - 2025\Maitrise LB\MATLAB');
-
-% addpath 'C:\Users\AQ99270\ETS\GRAM - TD - GTO365 - CRIAQ-REAR - CRIAQ-REAR\Maitrise LB\MATLAB'
-% add_all_paths('C:\Users\AQ99270\ETS\GRAM - TD - GTO365 - CRIAQ-REAR - CRIAQ-REAR\Maitrise LB\MATLAB')
+addpath([root, '\MATLAB\Functions'])
+perso_add_all_paths([root, '\MATLAB']);
 
 %% Importation des mises à jour depuis GitHub
 system('git pull');
