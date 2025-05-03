@@ -12,45 +12,13 @@
     
     properties
 
-        ListOfElements % cell contenant des objets de type class
-        InputSection
+        Configuration
     end
     
     methods
-        function obj = classelementassembly(list_of_elements)
+        function obj = classelementassembly(config)
 
-            obj.ListOfElements = list_of_elements;
-
-            % Parcours la liste des élements. Si l'un d'entre eux est
-            % ouvert, on ferme les autres. Si aucun n'est ouvert on ouvre
-            % le premier
-
-            have_opened = 0;
-            for i = 1:length(obj.ListOfElements)
-                % Si l'élement est ouvert et que c'est le premier
-                if (strcmp(obj.ListOfElements{i}.Configuration.EndStatus, 'opened'))
-                    if (have_opened == 0)
-                       have_opened = 1;
-                    else
-                        obj.ListOfElements{i}.Configuration.EndStatus = 'closed';
-                    end
-                end
-            end
-
-            if have_opened == 0
-                obj.ListOfElements{i}.Configuration.EndStatus = 'opened';
-            
-            end
-
-            % On récupère la liste des ratios de surfaces
-            sum_section = 0;
-            r = zeros(1, length(obj.ListOfElements));
-            
-            for i = 1:length(obj.ListOfElements)
-                sum_section = sum_section + obj.ListOfElements{i}.Configuration.InputSection;
-            end
-
-            obj.InputSection = sum_section;
+            obj.Configuration = config;
         end
         
         function TM = transfer_matrix(obj, env)
@@ -64,24 +32,24 @@
             
             opened_elements = [];
             closed_elements = [];
-            TM_list = cell(1, length(obj.ListOfElements));
-            Y_list = cell(1, length(obj.ListOfElements));
+            TM_list = cell(1, length(obj.Configuration.ListOfElements));
+            Y_list = cell(1, length(obj.Configuration.ListOfElements));
 
             % On récupère la liste des ratios de surfaces
-            r = zeros(1, length(obj.ListOfElements));
-            for i = 1:length(obj.ListOfElements)
-                r(i) = obj.ListOfElements{i}.Configuration.InputSection;
+            r = zeros(1, length(obj.Configuration.ListOfElements));
+            for i = 1:length(obj.Configuration.ListOfElements)
+                r(i) = obj.Configuration.ListOfElements{i}.Configuration.InputSection;
             end
 
-            r = r./obj.InputSection;
+            r = r./obj.Configuration.InputSection;
 
-            for i = 1:length(obj.ListOfElements)
+            for i = 1:length(obj.Configuration.ListOfElements)
 
                 % fprintf('\nclass(obj) : %s\n',class(obj))
                 % fprintf('\nclass(obj.ListOfElements) : %s\n',class(obj.ListOfElements))
                 % fprintf('\nclass(obj.ListOfElements{%d}) : %s\n', i, class(obj.ListOfElements{i}))
 
-                if strcmp(obj.ListOfElements{i}.Configuration.EndStatus, 'opened')
+                if strcmp(obj.Configuration.ListOfElements{i}.Configuration.EndStatus, 'opened')
                     opened_elements = [opened_elements, i]; % list of the indexes of open elements
                 else
                     closed_elements = [closed_elements, i]; % list of indexes of closed elements
@@ -91,9 +59,9 @@
                 % formulées en pression - débit. On fait la transformation
                 % inverse pour revenir en pression - vitesse.
 
-                TM = obj.ListOfElements{i}.transfer_matrix(env);
-                TM.T12 = TM.T12 / obj.ListOfElements{i}.Configuration.InputSection;
-                TM.T21 = TM.T21 / obj.ListOfElements{i}.Configuration.InputSection;
+                TM = obj.Configuration.ListOfElements{i}.transfer_matrix(env);
+                TM.T12 = TM.T12 / obj.Configuration.ListOfElements{i}.Configuration.InputSection;
+                TM.T21 = TM.T21 / obj.Configuration.ListOfElements{i}.Configuration.InputSection;
                 TM_list{i} = TM;
                 Y_list{i} = admittance(TM_list{i});
             end
@@ -111,7 +79,7 @@
 
             % opened and closed cells
 
-            for i = 1:length(obj.ListOfElements)
+            for i = 1:length(obj.Configuration.ListOfElements)
                 riyi11 = riyi11 + r(i) .* Y_list{i}.Y11;
             end
 
@@ -197,6 +165,46 @@
             alpha = obj.alpha(env);
             mean_alpha = mean(alpha(mask(env)));
         end
-    end     
+    end 
+
+    methods (Static, Access = public)
+
+        function config = create_config(list_of_elements)
+
+            config = struct();
+            config.ListOfElements = list_of_elements;
+
+            % Parcours la liste des élements. Si l'un d'entre eux est
+            % ouvert, on ferme les autres. Si aucun n'est ouvert on ouvre
+            % le premier
+
+            have_opened = 0;
+            for i = 1:length(config.ListOfElements)
+                % Si l'élement est ouvert et que c'est le premier
+                if (strcmp(config.ListOfElements{i}.Configuration.EndStatus, 'opened'))
+                    if (have_opened == 0)
+                       have_opened = 1;
+                    else
+                        config.ListOfElements{i}.Configuration.EndStatus = 'closed';
+                    end
+                end
+            end
+
+            if have_opened == 0
+                config.ListOfElements{i}.Configuration.EndStatus = 'opened';
+            
+            end
+
+            % On récupère la liste des ratios de surfaces
+            sum_section = 0;
+            r = zeros(1, length(config.ListOfElements));
+            
+            for i = 1:length(config.ListOfElements)
+                sum_section = sum_section + config.ListOfElements{i}.Configuration.InputSection;
+            end
+
+            config.InputSection = sum_section;
+        end
+    end
 end
 

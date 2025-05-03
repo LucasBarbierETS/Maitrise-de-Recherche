@@ -29,7 +29,6 @@ classdef classcavity < classsubelement
 
         function T = transfer_matrix(obj, env)
 
-
             S = obj.Configuration.InputSection;
             w = env.w;
             air = env.air;

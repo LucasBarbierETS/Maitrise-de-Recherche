@@ -19,7 +19,7 @@ classdef classelement
         end
         
         function TM = transfer_matrix(obj, env)
-
+                
             config = obj.Configuration;
             
             TM = config.ListOfSubelements{1}.transfer_matrix(env);

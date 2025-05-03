@@ -22,7 +22,7 @@ classdef classMPPSBH_Rectangular < classelement
                 for i = 1:length(pp)
 
                     obj.Configuration.ListOfSubelements{end+1} = Cell_MPPSBHr(Cell_MPPSBHr.create_config(pp(i), phr(i), pt(i), ...
-                    ct(i), cavd, cavw, sw(i),  sw(i+1)));
+                    ct(i), cavd, cavw, sw(i), sw(i+1)));
                 end 
             end
         end
@@ -250,7 +250,7 @@ classdef classMPPSBH_Rectangular < classelement
             % Paramètres globaux
             config.CavitiesDepth = cavities_depth;
             config.CavitiesWidth = cavities_width;
-            config.InputSection = cavities_width*cavities_depth;
+            config.InputSection = cavities_width * cavities_depth;
 
             % Paramètres variables en fonction des cellules
             config.PlatesThickness = perso_interp_config(plates_thickness, number_of_plates);
