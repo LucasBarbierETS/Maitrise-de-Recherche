@@ -46,7 +46,6 @@ classdef classJCA_Rigid < classsubelement
 
             % On appelle le superconstructeur à vide.
             obj@classsubelement(config)
-
         end
 
         function ep = equivalent_parameters(obj, env)
@@ -143,7 +142,6 @@ classdef classJCA_Rigid < classsubelement
             config.JCAParameters = struct();
             config.Thickness = NaN;
             config.InputSection = NaN;
-            config.OutputSection = NaN;
             config.JCAParameters.Porosity = NaN;
             config.JCAParameters.Tortuosity = NaN;
             config.JCAParameters.AirFlowResistivity = NaN;

@@ -59,7 +59,7 @@ mphsave(Tube_assembly.Configuration.ComsolModel, ['E:\OneDrive - ETS\CRIAQ-REAR\
                                             'validation numérique assemblage'])
 
 % Critères d'évaluation
-assembly = classelementassembly({MPPSBH_bf_1, MPPSBH_lb_hf_1, MPPSBH_mb_mf_1, MPPSBH_lb_hf_2});
+assembly = classelementassembly(classelementassembly.create_config({MPPSBH_bf_1, MPPSBH_lb_hf_1, MPPSBH_mb_mf_1, MPPSBH_lb_hf_2}));
 alpha_mean_assembly_bf = assembly.alpha_mean(env, f_min_bf, f_max_bf);
 alpha_mean_assembly_mb_mf = assembly.alpha_mean(env, f_min_mb_mf, f_max_lb_hf);
 alpha_mean_assembly_lb_hf = assembly.alpha_mean(env, f_min_lb_hf, f_max_lb_hf);

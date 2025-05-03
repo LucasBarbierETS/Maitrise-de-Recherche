@@ -58,12 +58,11 @@ classdef classMPP_Circular < classJCA_Rigid
             % On tient compte de la correction de longueur dans la tortuosité
             tor = 1 + tc / t;
 
-            perforations_section = s * phi;
+            % Utilisé pour définir la section d'entrée réelle de la matrice de transfert
+            perforations_section = s * phi; 
 
             % On créer la configuration 
             config = perso_transfer_fields(classJCA_Rigid.create_config(phi, tor, sig, rh, rh, t, perforations_section), config);
-
-            config.PerforationsSection = perforations_section;
 
             % On appelle le superconstructeur 
             obj@classJCA_Rigid(config);
@@ -114,15 +113,18 @@ classdef classMPP_Circular < classJCA_Rigid
             D = 20e-3; % épaisseur de la cavité arrière
             Porous = classJCA_Rigid(classJCA_Rigid.create_config(phip, torp, sigp, vlp, tlp, D, s));
 
+            % section change
+            section_change = classcavity(classcavity.create_config(0, s));
+
             % création de l'environnement
             env = create_environnement(23, 100800, 22, 1, 5000, 5000);
             
             % création de l'élement composé d'une plaque et d'une cavité
  
-            E = classelement(classelement.create_config({MPP, Porous}, 'closed', s));
+            % E = classelement(classelement.create_config({section_change, MPP, Porous}, 'closed', s));
             
             cavity = classcavity(classcavity.create_config(0.099, s));
-            % E = classelement(classelement.create_config({MPP, cavity}, 'closed', s));
+            E = classelement(classelement.create_config({MPP, cavity}, 'closed', s));
             % E = classelement({SC1, MPP, SC2, cavity}, 'closed');
 
             alpha_model = E.alpha(env);
