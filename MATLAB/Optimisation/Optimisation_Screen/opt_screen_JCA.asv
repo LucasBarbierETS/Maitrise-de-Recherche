@@ -11,8 +11,8 @@ function x_opti = opt_screen_JCA(solution, distance, screen_thickness, env, scre
         screen_thickness double
         env
         screen_handle function_handle = @(phi, tor, sig, vl, tl, t, s) classJCA_Rigid(classJCA_Rigid.create_config(phi, tor, sig, vl, tl, t, s))
-        x0 = [0.99, 1.02, 10900, 0.1e-3, 0.13e-3]
-        lb = [0, 0, 0, 0, 0]
+        x0 = [0.99, 
+        lb = 1 % dumb
         ub double = [1, 3, 1e6, 1e-3, 1e-3]
     end
 
@@ -41,8 +41,8 @@ function x_opti = opt_screen_JCA(solution, distance, screen_thickness, env, scre
     objective = @(params) cost_function(params, env);
 
     % On optimise à l'aide de l'algorithme génétique
-    options = optimoptions('ga', 'Display', 'iter', 'MaxGenerations', 5,'InitialPopulationMatrix', x0);
-    [x_opti, ~] = ga(objective, length(ub), [], [], [], [], lb, ub, [], [], options);
+    options = optimoptions('ga', 'Display', 'iter', 'MaxGenerations', 5);
+    [x_opti, ~] = ga(objective, length(ub), [], [], [], [], [], ub, [], [], options);
 
     % Résultats
     figure()
@@ -51,6 +51,3 @@ function x_opti = opt_screen_JCA(solution, distance, screen_thickness, env, scre
     plot(env.w/(2*pi), serial_handle_assembly(num2cell(x_opti)).alpha(env), 'DisplayName', 'avec écran résistif optimisé');
     legend();
 end
-
-%% Script d'éxécution de la fonction
-

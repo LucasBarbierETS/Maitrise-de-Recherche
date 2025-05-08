@@ -51,7 +51,7 @@ classdef classMPP_Maa
             MMPP = (rho * t) / phi * (1 + 1 ./ sqrt(9 + (K.^2) / 2) + 0.85 * (d / t));
 
             %% Impédance de surface de la plaque
-            Zs = RMPP + 1j*env.w .* MMPP;
+            Zs = RMPP + 1j * env.w .* MMPP;
         end
 
         function TM = transfer_matrix(obj, env)

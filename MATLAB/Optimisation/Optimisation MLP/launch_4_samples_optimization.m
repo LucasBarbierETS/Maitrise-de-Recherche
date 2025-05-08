@@ -3,34 +3,33 @@
 mphstart;
 launch_environnement;
 
-root = 'E:\OneDrive - ETS\CRIAQ-REAR\Maitrise LB\Présentations\Présentations Thomas\25.04.08 - résultats optimisation pour Hutchinson';
+filepath = [root, '\Présentations\Présentations Thomas\25.04.08 - résultats optimisation pour Hutchinson';
 
 %% Script d'optimisation basse fréquence (1 solution)
 % opt_sol_bf_10p;
 
 % Sauvegarde
-% save([root, '\optimisation finale basse fréquence 1 solutions.mat']);
+% save([filepath, '\optimisation finale basse fréquence 1 solutions.mat']);
 
-load([root, '\optimisation finale basse fréquence 1 solution.mat'])
+load([filepath, '\optimisation finale basse fréquence 1 solution.mat'])
 
 %% Exports 
-MPPSBH_bf_1.export_plate_hole_coordinates([root, '\MPPSBH_bf_1'], '_bf_1');
-
-MPPSBH_bf_1.export_report([root, '\MPPSBH_bf_1\Rapport de configuration.xlsx']);
+MPPSBH_bf_1.export_plate_hole_coordinates([filepath, '\MPPSBH_bf_1'], '_bf_1');
+MPPSBH_bf_1.export_report([filepath, '\MPPSBH_bf_1\Rapport de configuration.xlsx']);
 % clear
 
 %% Script d'optimisation moyenne fréquence (1 solution)
 % opt_sol_mb_mf_10p;
 
 % Sauvegarde
-% save([root, '\optimisation finale moyenne fréquence 1 solutions.mat']);
+% save([filepath, '\optimisation finale moyenne fréquence 1 solutions.mat']);
 
-load([root '\optimisation finale moyenne fréquence 1 solutions.mat']);
+load([filepath, '\optimisation finale moyenne fréquence 1 solutions.mat']);
 
 %% Export des coordonées des perforations
-MPPSBH_mb_mf_1.export_plate_hole_coordinates([root, '\MPPSBH_mb_mf_1'], '_mb_mf_1');
+MPPSBH_mb_mf_1.export_plate_hole_coordinates([filepath, '\MPPSBH_mb_mf_1'], '_mb_mf_1');
 
-MPPSBH_mb_mf_1.export_report([root, '\MPPSBH_mb_mf_1\Rapport de configuration.xlsx']);
+MPPSBH_mb_mf_1.export_report([filepath, '\MPPSBH_mb_mf_1\Rapport de configuration.xlsx']);
 % clear 
 
 %% Script d'optimisation haute fréquence (1 solution)
@@ -39,21 +38,20 @@ MPPSBH_mb_mf_1.export_report([root, '\MPPSBH_mb_mf_1\Rapport de configuration.xl
 % Sauvegarde
 % save([root, '\optimisation finale haute fréquence 2 solutions.mat']);
 
-load([root, '\optimisation finale haute fréquence 2 solutions.mat'])
+load([filepath, '\optimisation finale haute fréquence 2 solutions.mat'])
 
 %% Export des coordonées des perforations
-MPPSBH_lb_hf_1.export_plate_hole_coordinates([root, '\MPPSBH_lb_hf_1'], '_lb_hf_1');
-MPPSBH_lb_hf_1.export_report([root, '\MPPSBH_lb_hf_1\Rapport de configuration.xlsx']);
-MPPSBH_lb_hf_2.export_plate_hole_coordinates([root, '\MPPSBH_lb_hf_2'], '_lb_hf_2');
-MPPSBH_lb_hf_2.export_report([root, '\MPPSBH_lb_hf_2\Rapport de configuration.xlsx']);
-clear
+MPPSBH_lb_hf_1.export_plate_hole_coordinates([filepath, '\MPPSBH_lb_hf_1'], '_lb_hf_1');
+MPPSBH_lb_hf_1.export_report([filepath, '\MPPSBH_lb_hf_1\Rapport de configuration.xlsx']);
+MPPSBH_lb_hf_2.export_plate_hole_coordinates([filepath, '\MPPSBH_lb_hf_2'], '_lb_hf_2');
+MPPSBH_lb_hf_2.export_report([filepath, '\MPPSBH_lb_hf_2\Rapport de configuration.xlsx']);
 
 %% Assemblage
 
 % Validation numérique assemblage
 Tube_assembly = ImpedanceTube2D(ImpedanceTube2D.create_config({MPPSBH_bf_1, MPPSBH_lb_hf_1, MPPSBH_mb_mf_1, MPPSBH_lb_hf_2}));
 Tube_assembly = Tube_assembly.lauch_tube_measurement();
-Tube_assembly.plot_alpha(env, 'assemblage');
+Tube_assembly.plot_alpha(env, 'Assemblage');
 mphsave(Tube_assembly.Configuration.ComsolModel, ['E:\OneDrive - ETS\CRIAQ-REAR\Maitrise LB\' ...
                                             'Présentations\Présentations Thomas\25.04.08 - résultats optimisation pour Hutchinson\' ...
                                             'validation numérique assemblage'])
