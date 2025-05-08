@@ -3,7 +3,7 @@
 NS = 4; % Nombre de solutions
 NV = 4; % Nombre de variables pour chaque solution
 N =  1; %  Nombre de plaques (différentes) pour chaque solution
-% N =  10; %  Nombre de plaques pour chaque solution
+NP = 6; % Nombre de plaques effectives
 % perforations_radius_values = [4.5e-4 4.75e-4, 5e-4, 5.25e-4, 5.5e-4, 5.75e-4, 6e-4, 6.25e-4];
 perforations_radius_values = [4.5e-4 4.75e-4];
 eval_r = @(i) perforations_radius_values(i);
@@ -49,14 +49,14 @@ g_bf = @(env) (env.w / (2*pi) > f_min_bf & env.w / (2*pi) < f_max_lb_hf);
 
 %% Fonction coût
 
-x0_to_MPPSBH_i = @(x0, i) classMPPSBH_Rectangular(classMPPSBH_Rectangular.create_explicit_config(10, cavities_depth, cavities_width, ...
+x0_to_MPPSBH_i = @(x0, i) classMPPSBH_Rectangular(classMPPSBH_Rectangular.create_explicit_config(NP, cavities_depth, cavities_width, ...
                                                                                                 {transpose(x0(:, 2, i) .* x0(:, 4, i))}, ... % largeur des fentes
                                                                                                 {eval_r(x0(:, 1, i))}, ...  % rayon des perforations
                                                                                                 {transpose(x0(:, 2, i))}, ... % distance entre les perforations dans le sens de la largeur
                                                                                                 {transpose(x0(:, 3, i))}, ... % nombre de perforations dans le sens de la profondeur
                                                                                                 {transpose(x0(:, 4, i))}, ... % nombre de perforations dans le sens de la largeur
                                                                                                 {plates_thickness}, ... épaisseur des plaques
-                                                                                                {round((total_thickness - rigid_backing_thickness - plates_thickness*N) / N, 4)}));
+                                                                                                {round((total_thickness - rigid_backing_thickness - plates_thickness*NP) / NP, 4)})); % épaisseur des cavités
 
 x0_to_list_of_MPPSBH = @(x0, NS) arrayfun(@(i) x0_to_MPPSBH_i(x0, i), 1:NS, 'UniformOutput', false);
 

@@ -107,14 +107,14 @@ classdef classMPP_Circular < classJCA_Rigid
             cavity = classcavity(classcavity.create_config(D1, s));
 
             % foam 1
-            phip1 = 0.99;
-            torp1 = 1.02;
-            sigp1 = 10900;
-            vlp1 = 100e-6;
+            phip1 = 0.98;
+            torp1 = 1.5;
+            sigp1 = 50000;
+            vlp1 = 34e-6;
             tlp1 = 130e-6;
             
             % foam 2
-            phip2 = 0.98;
+            phip2 = 0.99;
             torp2 = 1.5;
             sigp2 = 50000;
             vlp2 = 34e-6;
@@ -159,8 +159,7 @@ classdef classMPP_Circular < classJCA_Rigid
             subtitle("Atalla2007 - fig. 4 - p. 10")
 
             plot(env.w / (2*pi), E2.alpha(env), 'Color', 'b', 'LineWidth', 1, 'DisplayName', 'modèle foam 1');
-            % plot(env.w / (2*pi), E2_2.alpha(env), 'Color', 'r',
-            % 'LineWidth', 1, 'DisplayName', 'modèle foam 2'); % la référence s'est trompée de mousse
+            plot(env.w / (2*pi), E2_2.alpha(env), 'Color', 'r', 'LineWidth', 1, 'DisplayName', 'modèle foam 2');
             plot(x_data2, y_data2, 'Color', 'g','LineWidth', 1, 'LineStyle', '--','DisplayName', 'Données de références');
             legend()
         end

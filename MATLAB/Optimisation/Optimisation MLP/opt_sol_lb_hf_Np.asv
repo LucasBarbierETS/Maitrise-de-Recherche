@@ -23,13 +23,13 @@ top_plate_thickness = 1e-3;
 plates_thickness = 2e-3;
 total_thickness = 100e-3;
 rigid_backing_thickness = 2e-3;
-cavities_thickness = (total_thickness - rigid_backing_thickness - plates_thickness*(N-1)) / N;
+cavities_thickness = (total_thickness - rigid_backing_thickness - plates_thickness*(N-1) - top_plate_thickness) / N;
 
 %% Valeurs initiales en fonction du types de variable
 r_init = randi([1, 2], N, 1, NS, NP);
 dw_init = reshape(3 * eval_r(r_init), N, 1, NS, NP);
-pd_init = randi([8, 12], N, 1, NS, NP);
-pw_init = randi([1, 12], N, 1, NS, NP);
+pd_init = randi([8, 11], N, 1, NS, NP);
+pw_init = randi([1, 11], N, 1, NS, NP);
 
 x0 = horzcat([r_init, dw_init, pd_init, pw_init]); % cat(2, ...
 % x0 = cat(2, pd_init, pw_init);

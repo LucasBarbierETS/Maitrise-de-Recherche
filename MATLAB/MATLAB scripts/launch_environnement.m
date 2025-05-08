@@ -5,7 +5,7 @@ addpath([root, '\MATLAB\Functions'])
 perso_add_all_paths([root, '\MATLAB']);
 
 %% Importation des mises à jour depuis GitHub
-system('git pull');
+% system('git pull');
 
 %% Création de l'environnement
 
