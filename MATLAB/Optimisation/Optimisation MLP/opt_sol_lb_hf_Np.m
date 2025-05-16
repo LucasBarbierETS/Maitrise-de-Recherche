@@ -50,9 +50,10 @@ intcon = find(repmat([1 0 1 1], N, 1, NS));
 % Définition du handle avec paramètres capturés
 handle_perso_nonlcon = @(x) perso_MPPSBHr_nonlconf(x, NV, NS, N, cavities_width, cavities_depth, eval_r);
 
-%% Gabarit
+%% Gabarits
 
 % Définition des plages fréquentielles d'interet pour la fonction cout
+g_bf = @(env) (env.w / (2*pi) > f_min_bf & env.w / (2*pi) < f_max_bf);
 g_lb_hf = @(env) (env.w / (2*pi) > f_min_bf & env.w / (2*pi) < f_max_lb_hf);
 
 %% Fonction coût
@@ -77,13 +78,15 @@ x0_to_MPPSBH_i = @(x0, i) classMPPSBH_Rectangular(classMPPSBH_Rectangular.create
 %                                                                                                 {plates_thickness}, ... épaisseur des plaques
 %                                                                                                 {round((total_thickness - rigid_backing_thickness - plates_thickness*N) / N, 4)}));
 
-x0_to_list_of_MPPSBH = @(x0, NS) arrayfun(@(i) x0_to_MPPSBH_i(x0, i), 1:NS, 'UniformOutput', false);
-
+% x0 arrive sous la forme d'un vecteur ligne de longueur N * NV * NS
+x0_to_list_of_MPPSBH = @(x0, NS) arrayfun(@(i) x0_to_MPPSBH_i(reshape(x0, N, NV, NS), i), 1:NS, 'UniformOutput', false);
 params_to_MPPSBH_assembly = @(x0) classelementassembly(classelementassembly.create_config(x0_to_list_of_MPPSBH(x0, NS)));
 
-cost_function = @(x0, env) sum(((params_to_MPPSBH_assembly(x0).alpha(env) - g_lb_hf(env)) .* (g_lb_hf(env) > 0.1)).^2);
+% Fonctions coût
+cost_function_bf = @(x0, env) sum(((params_to_MPPSBH_assembly(x0).alpha(env) - g_bf(env)) .* (g_bf(env) > 0.1)).^2);
+cost_function_lb_hf = @(x0, env) sum(((params_to_MPPSBH_assembly(x0).alpha(env) - g_lb_hf(env)) .* (g_lb_hf(env) > 0.1)).^2);
 
-objective = @(x0) cost_function(reshape(x0, N, NV, NS), env);
+objective = @(x0) [cost_function_bf(x0, env), cost_function_lb_hf(x0, env)];
 
 % Genetic Algorithm
 
@@ -91,7 +94,7 @@ objective = @(x0) cost_function(reshape(x0, N, NV, NS), env);
 
 options = optimoptions('ga', ...
                        'Display', 'iter', ...
-                       'PlotFcn',  {@gaplotbestf, @gaplotmaxconstr, @gaplotbestindiv}, ... % {@gaplotfeasibility}, ... % {@perso_plotMaxDistancePlotFcn}
+                       'PlotFcn',  {@gaplotpareto,@gaplotscorediversity},... {@gaplotbestf, @gaplotmaxconstr, @gaplotbestindiv}, ... {@gaplotfeasibility}, ... % {@perso_plotMaxDistancePlotFcn}
                        'PopulationSize', size(x0_sorted, 4), ... % nombre de points dans la population initiale
                        'FunctionTolerance', 1e-2, ...
                        'ConstraintTolerance', 1, ...
@@ -105,8 +108,24 @@ options = optimoptions('ga', ...
 
 rng; % For reproducibility"
 tic;
-[xopti_lb_hf, fval, eflag, output, population, scores] = ga(objective, numel(x0_sorted(:, :, :, 1)), [], [], [], [], lb, ub, handle_perso_nonlcon, intcon, options);
+[xopti_lb_hf, fval, eflag, output, population, scores] = gamultiobj(objective, numel(x0_sorted(:, :, :, 1)), [], [], [], [], lb, ub, handle_perso_nonlcon, intcon, options);
 timeGa = toc;
+
+% Affichage des scores 
+figure()
+hold on
+% On trie les meileurs scores obtenus
+[filtered_scores, filtered_index] = perso_convex_pareto_filter(scores);
+scatter(filtered_scores(:, 1), filtered_scores(:, 2), 'r');
+
+% Affichage des courbes d'absorption
+[sorted_scores_opti, sorted_index_opti] = sort(fval);
+xopti_to_cell_array_of_MPPSBH_assembly_alpha = @(x, env) arrayfun(@(i) params_to_MPPSBH_assembly(x(i, :)).alpha(env), 1:size(x, 1), 'UniformOutput', false);
+cell_of_MPPSBH_assembly_alpha_to_mean_alpha = @(alpha_cell_array, gabarit) arrayfun(@(i) mean(alpha_cell_array{i}(gabarit)), 1:size(alpha_cell_array, 2), 'UniformOutput', false);
+filtered_alpha = xopti_to_cell_array_of_MPPSBH_assembly_alpha(xopti_lb_hf(sorted_index_opti(:, 1), :), env);
+mean_alpha_bf = cell_of_MPPSBH_assembly_alpha_to_mean_alpha(filtered_alpha, g_bf(env));
+mean_alpha_lb_hf = cell_of_MPPSBH_assembly_alpha_to_mean_alpha(filtered_alpha, g_lb_hf(env));
+perso_interactive_multi_plot(env.w /(2*pi), filtered_alpha, mean_alpha_bf, mean_alpha_lb_hf);
 
 % % Multistart
 % 
@@ -152,23 +171,23 @@ MPPSBH_lb_hf_4_config = MPPSBH_lb_hf_4.Configuration;
 % Affichage graphique
 figure()
 plot(env.w/(2*pi), g_lb_hf(env) , "--", env.w/ (2*pi), assembly_lb_hf_opti.alpha(env));
-xlim([0 2000]);
+perso_configure_alpha_figure(2000);
 
 % Indicateurs
 alpha_mean_lb_hf_in_band = assembly_lb_hf_opti.alpha_mean(env, f_min_lb_hf, f_max_lb_hf);
 alpha_mean_lb_hf_out_band = assembly_lb_hf_opti.alpha_mean(env, f_min_bf, f_max_mb_mf);
 alpha_mean = assembly_lb_hf_opti.alpha_mean(env, f_min_bf, f_max_lb_hf);
 
-%% Validation numérique
+% Validation numérique
 % Tube_lb_hf = ImpedanceTube2D(ImpedanceTube2D.create_config(assembly_lb_hf_opti.Configuration.ListOfElements));
 % Tube_lb_hf = Tube_lb_hf.lauch_tube_measurement();
 % Tube_lb_hf.plot_alpha(env, f_min_bf, f_max_lb_hf, 'solution large bande');
 % mphsave(Tube_lb_hf.Configuration.ComsolModel, ['E:\Montréal 2023 - 2025\Maitrise LB\Présentations\Présentation groupe REAR\25.05.08 - configurations finales pour 1ère itération\' ...
 %                                                'validation numérique de la solution fournie par ETS'])
 
-%% Sauvegarde des rapport
+% Sauvegarde des rapports de configuration
 % report_root = 'E:\Montréal 2023 - 2025\Maitrise LB\Présentations\Présentation groupe REAR\25.05.08 - configurations finales pour 1ère itération\';
-MPPSBH_lb_hf_1.export_report([report_root, 'rapport de configuration - solution 1.xlsx'])
-MPPSBH_lb_hf_2.export_report([report_root, 'rapport de configuration - solution 2.xlsx'])
-MPPSBH_lb_hf_3.export_report([report_root, 'rapport de configuration - solution 3.xlsx'])
-MPPSBH_lb_hf_4.export_report([report_root, 'rapport de configuration - solution 4.xlsx'])
+% MPPSBH_lb_hf_1.export_report([report_root, 'rapport de configuration - solution 1.xlsx'])
+% MPPSBH_lb_hf_2.export_report([report_root, 'rapport de configuration - solution 2.xlsx'])
+% MPPSBH_lb_hf_3.export_report([report_root, 'rapport de configuration - solution 3.xlsx'])
+% MPPSBH_lb_hf_4.export_report([report_root, 'rapport de configuration - solution 4.xlsx'])
