@@ -20,5 +20,5 @@ fmax = 5000;
 points = 5000;
 
 % Niveau sonore
-dB = 130;
+dB = 150;
 env = create_environnement(t, sp, hum, fmin, fmax, points, dB);

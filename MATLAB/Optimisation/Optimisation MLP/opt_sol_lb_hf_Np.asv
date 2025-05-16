@@ -23,13 +23,13 @@ top_plate_thickness = 1e-3;
 plates_thickness = 2e-3;
 total_thickness = 100e-3;
 rigid_backing_thickness = 2e-3;
-cavities_thickness = (total_thickness - rigid_backing_thickness - plates_thickness*(N-1) - top_plate_thickness) / N;
+cavities_thickness = (total_thickness - rigid_backing_thickness - plates_thickness*(N-1)) / N;
 
 %% Valeurs initiales en fonction du types de variable
 r_init = randi([1, 2], N, 1, NS, NP);
 dw_init = reshape(3 * eval_r(r_init), N, 1, NS, NP);
-pd_init = randi([8, 11], N, 1, NS, NP);
-pw_init = randi([1, 11], N, 1, NS, NP);
+pd_init = randi([8, 12], N, 1, NS, NP);
+pw_init = randi([1, 12], N, 1, NS, NP);
 
 x0 = horzcat([r_init, dw_init, pd_init, pw_init]); % cat(2, ...
 % x0 = cat(2, pd_init, pw_init);
@@ -154,17 +154,15 @@ figure()
 plot(env.w/(2*pi), g_lb_hf(env) , "--", env.w/ (2*pi), assembly_lb_hf_opti.alpha(env));
 xlim([0 2000]);
 
-% % Validation numérique
-% Tube_lb_hf = ImpedanceTube2D(ImpedanceTube2D.create_config(assembly_lb_hf_opti.ListOfElements));
-% Tube_lb_hf = Tube_lb_hf.lauch_tube_measurement();
-% Tube_lb_hf.plot_alpha(env, 'solution large bande');
-% mphsave(Tube_lb_hf.Configuration.ComsolModel, ['E:\OneDrive - ETS\CRIAQ-REAR\Maitrise LB\' ...
-%                                             'Présentations\Présentations Thomas\25.04.08 - résultats optimisation pour Hutchinson\' ...
-%                                             'validation numérique haute fréquence 2 solutions'])
 
 % Indicateurs
 alpha_mean_lb_hf_in_band = assembly_lb_hf_opti.alpha_mean(env, f_min_lb_hf, f_max_lb_hf);
 alpha_mean_lb_hf_out_band = assembly_lb_hf_opti.alpha_mean(env, f_min_bf, f_max_mb_mf);
 alpha_mean = assembly_lb_hf_opti.alpha_mean(env, f_min_bf, f_max_lb_hf);
 
-
+% Validation numérique
+Tube_lb_hf = ImpedanceTube2D(ImpedanceTube2D.create_config(assembly_lb_hf_opti.Configuration.ListOfElements));
+Tube_lb_hf = Tube_lb_hf.lauch_tube_measurement();
+Tube_lb_hf.plot_alpha(env, f_min_bf, f_max_lb_hf, 'solution large bande');
+mphsave(Tube_lb_hf.Configuration.ComsolModel, ['E:\Montréal 2023 - 2025\Maitrise LB\Présentations\Présentation groupe REAR\25.05.08 - configurations finales pour 1ère itération\' ...
+                                            'validation numérique de la solution ETS])

@@ -154,17 +154,21 @@ figure()
 plot(env.w/(2*pi), g_lb_hf(env) , "--", env.w/ (2*pi), assembly_lb_hf_opti.alpha(env));
 xlim([0 2000]);
 
-% % Validation numérique
-% Tube_lb_hf = ImpedanceTube2D(ImpedanceTube2D.create_config(assembly_lb_hf_opti.ListOfElements));
-% Tube_lb_hf = Tube_lb_hf.lauch_tube_measurement();
-% Tube_lb_hf.plot_alpha(env, 'solution large bande');
-% mphsave(Tube_lb_hf.Configuration.ComsolModel, ['E:\OneDrive - ETS\CRIAQ-REAR\Maitrise LB\' ...
-%                                             'Présentations\Présentations Thomas\25.04.08 - résultats optimisation pour Hutchinson\' ...
-%                                             'validation numérique haute fréquence 2 solutions'])
-
 % Indicateurs
 alpha_mean_lb_hf_in_band = assembly_lb_hf_opti.alpha_mean(env, f_min_lb_hf, f_max_lb_hf);
 alpha_mean_lb_hf_out_band = assembly_lb_hf_opti.alpha_mean(env, f_min_bf, f_max_mb_mf);
 alpha_mean = assembly_lb_hf_opti.alpha_mean(env, f_min_bf, f_max_lb_hf);
 
+%% Validation numérique
+% Tube_lb_hf = ImpedanceTube2D(ImpedanceTube2D.create_config(assembly_lb_hf_opti.Configuration.ListOfElements));
+% Tube_lb_hf = Tube_lb_hf.lauch_tube_measurement();
+% Tube_lb_hf.plot_alpha(env, f_min_bf, f_max_lb_hf, 'solution large bande');
+% mphsave(Tube_lb_hf.Configuration.ComsolModel, ['E:\Montréal 2023 - 2025\Maitrise LB\Présentations\Présentation groupe REAR\25.05.08 - configurations finales pour 1ère itération\' ...
+%                                                'validation numérique de la solution fournie par ETS'])
 
+%% Sauvegarde des rapport
+% report_root = 'E:\Montréal 2023 - 2025\Maitrise LB\Présentations\Présentation groupe REAR\25.05.08 - configurations finales pour 1ère itération\';
+MPPSBH_lb_hf_1.export_report([report_root, 'rapport de configuration - solution 1.xlsx'])
+MPPSBH_lb_hf_2.export_report([report_root, 'rapport de configuration - solution 2.xlsx'])
+MPPSBH_lb_hf_3.export_report([report_root, 'rapport de configuration - solution 3.xlsx'])
+MPPSBH_lb_hf_4.export_report([report_root, 'rapport de configuration - solution 4.xlsx'])

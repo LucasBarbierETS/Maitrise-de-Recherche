@@ -48,7 +48,7 @@ classdef classelement
             % TL = 20 * log10(abs(0.5 * (TM.T11 + TM.T12/Z0 + Z0*TM.T21 + TM.T22)));
 
             % Convention Pression - Débit
-            TL = 20 * log10(abs(0.5 * (TM.T11 + TM.T12*S/Z0 + Z0/S*TM.T21 + TM.T22)));
+            TL = 20 * log10(abs(0.5 * (TM.T11 + TM.T12 * S/Z0 + Z0/S * TM.T21 + TM.T22)));
         end 
 
         function alpha = alpha(obj, env) % retourne le vecteur coefficient d'absorption
@@ -58,12 +58,13 @@ classdef classelement
             alpha = 1 - abs((Zs - Z0) ./ (Zs + Z0)).^2;
         end
 
-        function mean = alpha_mean(obj, env, f_min, f_max)
+        function mean_alpha = alpha_mean(obj, env, f_min, f_max)
             mask = @(env) (env.w / (2*pi) > f_min & env.w / (2*pi) < f_max);
-            mean = mean(obj.alpha(env))
+            alpha = obj.alpha(env);
+            mean_alpha = mean(alpha(mask));
         end
 
-        function [f_max, alpha_max] = alpha_peak(obj, env) 
+        function [peak_frequencies, peak_alpha] = alpha_peak(obj, env) 
             % Retourne les fréquences et les amplitudes des pics d'absorption (y compris les maximums locaux)
             
             % Calculer la fonction alpha à partir de l'objet et de l'environnement
@@ -80,8 +81,8 @@ classdef classelement
             max_indices = find(local_maxs);
             
             % Calculer les fréquences correspondantes à ces maximums
-            f_max = env.w(max_indices) / (2 * pi);
-            alpha_max = a(max_indices);
+            peak_frequencies = env.w(max_indices) / (2 * pi);
+            peak_alpha = a(max_indices);
         end
 
         function disp_subelements_parameters_table(obj, env)
@@ -141,7 +142,7 @@ classdef classelement
             end
         end
 
-        function obj = plot_alpha(obj, env, name)
+        function obj = plot_alpha(obj, env, f_min, f_max, name)
 
             % figure()
             hold on
@@ -149,13 +150,19 @@ classdef classelement
             % Résultats analytiques
             alpha = obj.alpha(env);
             f = env.w / (2 * pi);
-            plot(f, alpha, 'DisplayName', [name ' - Résultat Analytique'])
+            plot(f, alpha, 'color', 'b', 'DisplayName', [name ' - Résultat Analytique'])
+            yline(obj.alpha_mean(env, f_min, f_max), '--b', ...
+                  sprintf('Valeur : %.2f', obj.alpha_mean(env, f_min, f_max)), 'LabelHorizontalAlignment', 'left', 'LabelVerticalAlignment', 'top');
             
             % Résultats numériques
             if isfield(obj.Configuration, 'ComsolModel')
                 data = mphtable(obj.Configuration.ComsolModel, 'tbl1').data;
                 obj.Configuration.Alpha2D = data;
-                plot(data(:, 1), data(:, 2), 'LineStyle', '--', 'DisplayName', [name ' - Résultat FEM'])
+                plot(data(:, 1), data(:, 2), 'LineStyle', 'o--r', 'DisplayName', [name ' - Résultat FEM'])
+                m = (data(:, 1) > f_min & data(:, 1) < f_max);
+                yline(mean(data(m, 2)), '--r', ...
+                      sprintf('Valeur : %.2f', mean(data(m, 2))), 'LabelHorizontalAlignment', 'right', 'LabelVerticalAlignment', 'top');
+
             end
 
             % Résultats numériques 3D

@@ -29,24 +29,24 @@ classdef ImpedanceTube2D
             assembly = classelementassembly(classelementassembly.create_config(obj.Configuration.ListOfSolutions)); 
             alpha_model = assembly.alpha(env);
             f = env.w / (2 * pi);
-            p1 = plot(f, alpha_model, 'color', 'b', 'DisplayName', [name ' - Résultat Analytique']);
+            p1 = plot(f, alpha_model, 'color', 'b', 'DisplayName', [name ' - Résultat Analytique'])
             yline(assembly.alpha_mean(env, f_min, f_max), '--b', ...
                   sprintf('%.2f', assembly.alpha_mean(env, f_min, f_max)), 'LabelHorizontalAlignment', 'right', 'LabelVerticalAlignment', 'top');
            
             % Résultats numériques
             if isfield(obj.Configuration, 'Data2D')
                 data = obj.Configuration.Data2D;
-                p2 = plot(data(:, 1), data(:, 2), '--r', 'DisplayName', [name ' - Résultat FEM']);
+                p2 = plot(data(:, 1), data(:, 2), '--r', 'DisplayName', [name ' - Résultat FEM'])
                 m = (data(:, 1) > f_min & data(:, 1) < f_max);
                 yline(mean(data(m, 2)), '--r', ...
-                      sprintf('%.2f', mean(data(m, 2))), 'LabelHorizontalAlignment', 'right', 'LabelVerticalAlignment', 'bottom');
+                      sprintf('Valeur : %.2f', mean(data(m, 2))), 'LabelHorizontalAlignment', 'right', 'LabelVerticalAlignment', 'bottom');
             end
 
             xlabel("Fréquence (Hz)")
             ylabel("Coefficient d'Absorption")
             xlim([0 2000]);
             ylim([0 1]);
-            legend([p1, p2], 'Location', 'best');
+            legend(, );
         end
     end
 
