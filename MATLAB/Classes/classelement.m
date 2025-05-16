@@ -19,13 +19,26 @@ classdef classelement
         end
         
         function TM = transfer_matrix(obj, env)
-                
+            % On vérifie que l'élement ne contient pas un sous-élement
+            % importé. Sinon on calcule la matrice de transfert des blocs
+            % placés en amont du sous-élement importé et on calcule les
+            % coefficient T11 et T22 de la matrice globale en utilisant
+            % l'impédance de surface du bloc importé directement
+
             config = obj.Configuration;
             
             TM = config.ListOfSubelements{1}.transfer_matrix(env);
             if length(config.ListOfSubelements) > 1
                 for i = 2:length(config.ListOfSubelements)
-                    TM = matprod(TM, config.ListOfSubelements{i}.transfer_matrix(env));
+                    if ~isa(config.ListOfSubelements{i}, 'classsubelement_imported')
+                        TM = matprod(TM, config.ListOfSubelements{i}.transfer_matrix(env));
+                    else
+                        % perso_ouvrir_lien_Obsidian('obsidian://open?vault=Maitrise%20REAR&file=Notes%20atomiques%2FNote%20Matlab%20-%20Imp%C3%A9dance%20de%20surface%20compos%C3%A9e')
+                        S = config.ListOfSubelements{i}.Configuration.InputSection;
+                        TM.T11 = TM.T11 .* config.ListOfSubelements{i}.surface_impedance(env)/S + TM.T12;
+                        TM.T21 = TM.T21 .* config.ListOfSubelements{i}.surface_impedance(env)/S + TM.T22;
+                        return
+                    end
                 end
             end
         end
@@ -171,12 +184,7 @@ classdef classelement
                 obj.Configuration.Alpha3D = data;
                 plot(data(:, 1), data(:, 2), 'LineStyle', '--', 'DisplayName', [name ' - Résultat FEM 3D'])
             end
-         
-            xlabel("Fréquence (Hz)")
-            ylabel("Coefficient d'Absorption")
-            xlim([0 2000])
-            ylim([0 1])
-            legend()
+            perso_configure_alpha_figure(2000);
         end
 
         function obj = plot_surface_impedance(obj, env)
