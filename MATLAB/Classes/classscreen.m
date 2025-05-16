@@ -11,13 +11,13 @@ classdef classscreen
         
         function Zs = surface_impedance(obj, env)
             % Référence : perso_ouvrir_lien_Zotero('zotero://open-pdf/library/items/WJN4AENC?page=201&annotation=QSJ8GIKM');
-            Zs = repmat(obj.Configuration.FlowResistivity*obj.Configuration.ScreenThickness, length(env.w));
+            Zs = repmat(obj.Configuration.FlowResistivity*obj.Configuration.ScreenThickness, 1, length(env.w));
         end
 
         function TM = transfer_matrix(obj, env)
             % Référence : perso_ouvrir_lien_Zotero('zotero://open-pdf/library/items/CMZQ7B9B?page=179&annotation=DYDM3PP2');
             TM.T11 = ones(1, length(env.w));
-            TM.T12 = obj.surface_impedance(env);
+            TM.T12 = obj.surface_impedance(env) / obj.Configuration.InputSection;
             TM.T21 = zeros(1, length(env.w));
             TM.T22 = ones(1, length(env.w));
         end

@@ -91,7 +91,7 @@
                 rjyj12 = rjyj12 + r(opened_elements(j)) .* Y_list{opened_elements(j)}.Y12;
             end
 
-            %closed cells
+            % closed cells
 
             for k = 1:length(closed_elements)
                 bigsumk = bigsumk + r(closed_elements(k)) .* Y_list{closed_elements(k)}.Y12 .* Y_list{closed_elements(k)}.Y21 ./ Y_list{closed_elements(k)}.Y22;

@@ -1,9 +1,9 @@
-classdef classelement_imported < classelement
+classdef classsubelement_imported < classsubelement
 
     methods
-        function obj = classelement_imported(config)
+        function obj = classsubelement_imported(config)
             
-            obj@classelement(config)
+            obj@classsubelement(config)
         end
 
         function Zs = surface_impedance(obj, env)
@@ -54,14 +54,20 @@ classdef classelement_imported < classelement
         function validate(env)
             
             analytical_element = classMPPSBH_Rectangular(classMPPSBH_Rectangular.create_config(10, 30e-3, 30e-3, {29e-3}, {1e-3}, {5e-2}, {1e-3}, {9e-3}));
-            imported_element = classelement_imported(classelement_imported.create_config(env.w/(2*pi), ...
-                                                                                         analytical_element.surface_impedance(env), ...
-                                                                                         analytical_element.Configuration.InputSection)); 
+            resistive_screen = classscreen(classscreen.create_config(1e5, 2e-3, analytical_element.Configuration.InputSection));
+            imported_element = classelement(classelement.create_config({resistive_screen, ...
+                                                                        classsubelement_imported(classsubelement_imported.create_config(env.w / (2*pi), ...
+                                                                                                                                        analytical_element.surface_impedance(env), ...
+                                                                                                                                        analytical_element.Configuration.InputSection) ...
+                                                                                                                                        ) ...
+                                                                        })); 
             figure()
             hold on
             plot(env.w/(2*pi), analytical_element.alpha(env), 'DisplayName', 'Résultat direct')
             plot(env.w/(2*pi), imported_element.alpha(env), 'DisplayName', 'Résultat importé')
             legend()
+            perso_configure_alpha_figure(2000);
         end
     end
 end
+
