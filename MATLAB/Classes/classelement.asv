@@ -19,7 +19,7 @@ classdef classelement
         end
         
         function TM = transfer_matrix(obj, env)
-
+                
             config = obj.Configuration;
             
             TM = config.ListOfSubelements{1}.transfer_matrix(env);
@@ -60,15 +60,28 @@ classdef classelement
 
         function mean = alpha_mean(obj, env, f_min, f_max)
             mask = @(env) (env.w / (2*pi) > f_min & env.w / (2*pi) < f_max);
-            mean = mean(obj.alpha(env, ))
+            mean = mean(obj.alpha(env))
         end
 
-        function fpeak = alpha_peak(obj, env) % retourne la fréquence et l'amplitude du pic d'absorption
-
+        function [f_max, alpha_max] = alpha_peak(obj, env) 
+            % Retourne les fréquences et les amplitudes des pics d'absorption (y compris les maximums locaux)
+            
+            % Calculer la fonction alpha à partir de l'objet et de l'environnement
             a = obj.alpha(env);
-            maxFunction = @max;
-            m = a == maxFunction(a);
-            fpeak = w(m) / (2 * pi);
+            
+            % Identifier les maximums locaux dans la fonction alpha
+            % On compare chaque valeur avec ses voisins gauche et droit
+            local_maxs = (a(2:end-1) > a(1:end-2)) & (a(2:end-1) > a(3:end)); % Conditions pour des maximums locaux
+            
+            % Inclure les bords si nécessaire (maximum global ou bords)
+            local_maxs = [a(1) > a(2), local_maxs, a(end) > a(end-1)]; 
+            
+            % Récupérer les indices des maximums locaux
+            max_indices = find(local_maxs);
+            
+            % Calculer les fréquences correspondantes à ces maximums
+            f_max = env.w(max_indices) / (2 * pi);
+            alpha_max = a(max_indices);
         end
 
         function disp_subelements_parameters_table(obj, env)
@@ -128,7 +141,7 @@ classdef classelement
             end
         end
 
-        function obj = plot_alpha(obj, env, name)
+        function obj = plot_alpha(obj, env, f_min, f_max, name)
 
             % figure()
             hold on
@@ -136,13 +149,19 @@ classdef classelement
             % Résultats analytiques
             alpha = obj.alpha(env);
             f = env.w / (2 * pi);
-            plot(f, alpha, 'DisplayName', [name ' - Résultat Analytique'])
+            plot(f, alpha, 'color', 'b', 'DisplayName', [name ' - Résultat Analytique'])
+            yline(obj.alpha_mean(env, f_min, f_max), '--b', ...
+                  sprintf('Valeur : %.2f', obj.alpha_mean(env, f_min, f_max)), 'LabelHorizontalAlignment', 'left', 'LabelVerticalAlignment', 'top');
             
             % Résultats numériques
             if isfield(obj.Configuration, 'ComsolModel')
                 data = mphtable(obj.Configuration.ComsolModel, 'tbl1').data;
                 obj.Configuration.Alpha2D = data;
-                plot(data(:, 1), data(:, 2), 'LineStyle', '--', 'DisplayName', [name ' - Résultat FEM'])
+                plot(data(:, 1), data(:, 2), 'LineStyle', 'o--r', 'DisplayName', [name ' - Résultat FEM'])
+                m = (data(:, 1) > f_min & data(:, 1) < f_max);
+                yline(mean(data(m, 2)), '--r', ...
+                      sprintf('Valeur : %.2f', obj.alpha_mean(env, f_min, f_max)), 'LabelHorizontalAlignment', 'left', 'LabelVerticalAlignment', 'top');
+
             end
 
             % Résultats numériques 3D

@@ -38,19 +38,34 @@ classdef classMPP_Circular_HL < classMPP_Circular
     methods
 
         function obj = classMPP_Circular_HL(config)
-            
+
+            % Cette méthode permet de créer une configuration d'appel spéciale dans le cas ou les perforations
+            % de la MPP sont cylindriques. 
+            % Les variables manquantes sont suspendues pour être appelées plus tard dans l'environnement env.
+                
             obj@classMPP_Circular(config)
 
             phi = config.PlatePorosity;
             pr = config.PerforationsRadius;
             t = config.PlateThickness;        
             
-            obj.Configuration.AirFlowResistivity = @(env) classMPP_Circular_HL.air_flow_resistivity(env, phi, pr, t);
+            % La résistivité tient compte du niveau sonore dans l'expression de la 
+            % resistance non linéaire avec le coefficient de décharge Cd, et la pression rms 
+            % dans l'orifice Pi
 
-            obj.Configuration.Toruosity = @(env) classMPP_Circular_HL.tortuosity(env, phi, pr, t);
+            % La résistivité au passage de l'air augmente lorsque le niveau
+            % sonore augmente
+            
+            % Résistivité au passage de l'air ([5], p. 7, eq. 27)
+            obj.Configuration.AirFlowResistivity = @(env) classMPP_Circular_HL.air_flow_resistivity(env, phi, pr);
+            
+            % La tortuosité diminue lorsque le niveau sonore augmente. En effet les turbulences
+            % ont tendances tendance à diminuer les phénomènes de radiation
+
+            % Tortuosité non linéaire ([5], p. 7, eq. 28)
+            obj.Configuration.Toruosity = @(env) classMPP_Circular_HL.tortuosity(env, phi, pr);
         end
     end
-
      methods (Static, Access = public)
         
          function f = f(env, phi)
@@ -65,7 +80,7 @@ classdef classMPP_Circular_HL < classMPP_Circular
                 * (1 - phi^2) / phi^2);
          end
 
-         function sig = air_flow_resistivity(env, phi, pr, t)
+         function sig = air_flow_resistivity(env, phi, pr)
 
             beta = 1.6; % [5] p.8
             Cd = 0.76; % [5] p.8
@@ -76,7 +91,7 @@ classdef classMPP_Circular_HL < classMPP_Circular
                 * (-1/2 + classMPP_Circular_HL.f(env, phi));
          end
 
-         function tor = tortuosity(env, phi, pr, t)
+         function tor = tortuosity(env, phi, pr)
              
             psi = 4/3; 
             a = [1.0 -1.4092 0.0 0.33818 0.0 0.06793 -0.02287 0.003015 -0.01614];
