@@ -67,6 +67,25 @@ classdef classsubelement
             Zs = S * TM.T11 ./ TM.T21; 
         end
 
+        function TM_inv = transfer_matrix_inverse(obj, env)
+            % On récupère la matrice de transfert
+            TM = obj.transfer_matrix(env);
+        
+            % Calcul du déterminant de TM
+            det_TM = TM.T11 .* TM.T22 - TM.T12 .* TM.T21;
+        
+            % Vérification que le déterminant est non nul
+            if det_TM == 0
+                error('La matrice de transfert est singulière et ne peut pas être inversée.');
+            end
+        
+            % Calcul de l'inverse de la matrice de transfert
+            TM_inv.T11 = TM.T22 ./ det_TM;
+            TM_inv.T12 = -TM.T12 ./ det_TM;
+            TM_inv.T21 = -TM.T21 ./ det_TM;
+            TM_inv.T22 = TM.T11 ./ det_TM;
+        end
+
         function alpha = alpha(obj, env) 
 
             Zs = obj.surface_impedance(env);
@@ -75,17 +94,12 @@ classdef classsubelement
             alpha = 1 - abs((Zs - Z0) ./ (Zs + Z0)).^2;
         end
 
-        function plot_alpha(obj, env)
-
-            figure()
+        function plot_alpha(obj, env, name)
+            
             hold on
             alpha = obj.alpha(env);
             f = env.w / (2 * pi);
-            plot(f, alpha)
-            xlabel("Fréquence (Hz)")
-            ylabel("Coefficient d'Absorption")
-            ylim([0 1])
-            xlim([0  f(end)])
+            plot(f, alpha, 'DisplayName', name)
         end
     end
 end

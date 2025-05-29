@@ -33,6 +33,7 @@ classdef classelement
                     if ~isa(config.ListOfSubelements{i}, 'classsubelement_imported')
                         TM = matprod(TM, config.ListOfSubelements{i}.transfer_matrix(env));
                     else
+                        % exlications
                         % perso_ouvrir_lien_Obsidian('obsidian://open?vault=Maitrise%20REAR&file=Notes%20atomiques%2FNote%20Matlab%20-%20Imp%C3%A9dance%20de%20surface%20compos%C3%A9e')
                         S = config.ListOfSubelements{i}.Configuration.InputSection;
                         TM.T11 = TM.T11 .* config.ListOfSubelements{i}.surface_impedance(env)/S + TM.T12;
@@ -43,12 +44,89 @@ classdef classelement
             end
         end
 
-        function Zs = surface_impedance(obj, env)
-            
-            TM = obj.transfer_matrix(env);
+        function Zs = surface_impedance(obj, env, varargin)
+
+            if nargin > 0
+                TM = varargin{1};
+            else
+                TM = obj.transfer_matrix(env);
+            end
+
             S = obj.Configuration.InputSection;
             % On revient en convention pression - vitesse
             Zs = S * TM.T11 ./ TM.T21; % rigid wall
+        end
+
+        function Zs_iter = surface_impedance_iter(obj, env)
+
+            % explications
+            % perso_ouvrir_lien_Obsidian('obsidian://open?vault=Maitrise%20REAR&file=Notes%20atomiques%2FProc%C3%A9dure%20it%C3%A9rative%20pour%20obtenir%20l''imp%C3%A9dance%20de%20surface%20non-lin%C3%A9aire%20d''une%20solution%20multi-plaques')
+
+            % Algorithme
+            %
+            % Initialisation
+            % u_rms(1, :) = zeros(1, length(env.w)) (vecteur des débits RMS à l'entrée des sous-élements, lignes par lignes)
+            % p_rms(1, :) = P_rms_top (matrices des pression RMS à l'entrée des sous-élements, lignes par lignes)
+            %
+            % Pour le i_ème sous-élement : 
+            % - on regarde si c'est un handle, si oui appelle l'objet avec le veteur u_rms(i, :) donné en argument
+            % - on ajoute la matrice de transfert à la liste en cours
+            % - on calcule la matrice inverse
+            % - on définit u_rms(i+1) et p_rms(i+1, :) à partir de la matrice inverse et de u_rms(i) et p_rms(i, :)
+            % 
+            % Evaluation itérative
+            % - on calcule la surface d'impedance obtenue à partir de la matrice de transfert composée
+            % - on calcule la nouvelle vitesse rms de surface new_u_rms à partir de p_rms(1, :) et de la surface d'impédance obtenue 
+            % - condition de convergence : max(u_rms(1, :) - new_u_rms) < seuil
+
+            config = obj.Configuration;
+            
+            u_rms = zeros(length(config.ListOfSubelements) + 1, length(env.w));
+            p_rms  = zeros(length(config.ListOfSubelements) + 1, length(env.w));
+
+            tol = 1e-3;  % Tolérance pour la convergence
+            max_iter = 100;  % Nombre maximum d'itérations
+            iter = 0;
+            converged = false;
+            
+            while ~converged && iter < max_iter
+                iter = iter + 1;
+
+                for i =  1:length(config.ListOfSubelements)
+                    sblm = config.ListOfSubelements{i};
+                    if isa(config.ListOfSubelements{i}, 'function_handle')
+                        sblm = sblm(u_rms(i, :));
+                    end
+                
+                    % Mise à jour de la matrice de transfert globale
+                    if exist('TM', 'var')
+                        TM = matprod(TM, sblm.transfer_matrix(env));
+                    else
+                        TM = sblm.transfer_matrix(env);
+                    end
+                
+                    % Calcul de la matrice de transfert inverse du sous-élement courant
+                    TM_inv = sblm.transfer_matrix_inverse(env);
+                    
+                    % Calcul des vitesses et pressions RMS à la sortie du sous-élément courant
+                    p_rms(i+1, :) = TM_inv.T11 .* p_rms(i, :) + TM_inv.T12 .* u_rms(i, :);
+                    u_rms(i+1, :) = @(next_input_section) TM_inv.T21 .* p_rms(i, :) + TM_inv.T22 .* u_rms(i, :);
+                end
+
+                % Vérification du critère de convergence
+                Zs = obj.surface_impedance(env, TM);
+                new_u_rms = p_rms ./ abs(Zs) * obj.Configuration.InputSection;
+
+                convergence_criterium = max(abs(new_u_rms - u_rms(1, :)));
+                if convergence_criterium < tol
+                    converged = true;
+                    Zs_iter = Zs;
+                else
+                    u_rms(1, :) = new_u_rms;
+                end
+            end
+
+
         end
 
         function TL = transmission_loss(obj, env)
@@ -74,7 +152,7 @@ classdef classelement
         function mean_alpha = alpha_mean(obj, env, f_min, f_max)
             mask = @(env) (env.w / (2*pi) > f_min & env.w / (2*pi) < f_max);
             alpha = obj.alpha(env);
-            mean_alpha = mean(alpha(mask));
+            mean_alpha = mean(alpha(mask(env)));
         end
 
         function [peak_frequencies, peak_alpha] = alpha_peak(obj, env) 
@@ -165,7 +243,10 @@ classdef classelement
             f = env.w / (2 * pi);
             plot(f, alpha, 'color', 'b', 'DisplayName', [name ' - Résultat Analytique'])
             yline(obj.alpha_mean(env, f_min, f_max), '--b', ...
-                  sprintf('Valeur : %.2f', obj.alpha_mean(env, f_min, f_max)), 'LabelHorizontalAlignment', 'left', 'LabelVerticalAlignment', 'top');
+                  ['alpha moyen an. ', num2str(f_min), ' - ', num2str(f_max), ' Hz : ', num2str(obj.alpha_mean(env, f_min, f_max), 2)], ...
+                  'LabelHorizontalAlignment', 'left', ...
+                  'LabelVerticalAlignment', 'top', ...
+                  'HandleVisibility', 'off');
             
             % Résultats numériques
             if isfield(obj.Configuration, 'ComsolModel')
@@ -174,8 +255,10 @@ classdef classelement
                 plot(data(:, 1), data(:, 2), 'LineStyle', 'o--r', 'DisplayName', [name ' - Résultat FEM'])
                 m = (data(:, 1) > f_min & data(:, 1) < f_max);
                 yline(mean(data(m, 2)), '--r', ...
-                      sprintf('Valeur : %.2f', mean(data(m, 2))), 'LabelHorizontalAlignment', 'right', 'LabelVerticalAlignment', 'top');
-
+                      ['alpha moyen FEM ', num2str(f_min), ' - ', num2str(f_max), ' Hz : ', num2str(obj.alpha_mean(env, f_min, f_max), 2)], ...
+                      'LabelHorizontalAlignment', 'right', ...
+                      'LabelVerticalAlignment', 'top', ...
+                      'HandleVisibility', 'off');
             end
 
             % Résultats numériques 3D

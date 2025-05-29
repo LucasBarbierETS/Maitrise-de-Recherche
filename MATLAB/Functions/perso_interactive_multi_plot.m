@@ -1,4 +1,4 @@
-function perso_interactive_multi_plot(x, y, mean_bf, mean_lb_hf)
+function perso_interactive_multi_plot(x, y, mean_bf, mean_lb_hf, f_max)
     % data : Cell array contenant les coordonnées de chaque tracé {x, y}
     
     % Paramètres initiaux
@@ -10,14 +10,16 @@ function perso_interactive_multi_plot(x, y, mean_bf, mean_lb_hf)
                  'NumberTitle', 'on', ...
                  'Position', [100, 100, 800, 600]);
 
+    
     % Créer l'axe pour le tracé
     ax = axes('Parent', fig, 'Position', [0.1, 0.2, 0.8, 0.7]);
     hPlot = plot(ax, x, y{currentIndex}, 'LineWidth', 1);
     mean_bf_line = yline(ax, mean_bf{currentIndex}, '--b', sprintf('Moyenne 150-400 : %.2f', mean_bf{currentIndex}), 'LabelHorizontalAlignment', 'left', 'LabelVerticalAlignment', 'top');
     mean_lb_hf_line = yline(ax, mean_lb_hf{currentIndex}, '--r', sprintf('Moyenne 150-1500 : %.2f', mean_lb_hf{currentIndex}), 'LabelHorizontalAlignment', 'right', 'LabelVerticalAlignment', 'bottom');
     title(ax, sprintf('Tracé %d / %d', currentIndex, numPlots));
-    perso_configure_alpha_figure(2000);
+    perso_configure_alpha_figure(f_max);
     grid on;
+    hold on
     legend("off");
     
     % Bouton Précédent

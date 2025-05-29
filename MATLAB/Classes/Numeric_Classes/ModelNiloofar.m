@@ -45,33 +45,60 @@ frc = geom.create(['sol' num2str(index) '_frc'], 'Rectangle');
 frc.set('pos', {['sol' num2str(index) '_xl'], ['-sol' num2str(index) '_flt']});
 frc.set('size', {['sol' num2str(index) '_w'], ['sol' num2str(index) '_flt']});
 
+geom.run;
+
 for i = 1:N
-    % Création d'un rectangle pour la plaque gauche i
+    % Création d'un rectangle pour la ième plaque gauche - couche d'air à droite
     lp = geom.create(['sol' num2str(index) '_lp' num2str(i)], 'Rectangle');
-    lp.set('pos', {['sol' num2str(index) '_xl+sol' num2str(index) '_a1+' num2str(i-1) '*sol' num2str(index) '_d'], ['-sol' num2str(index) '_flt-' num2str(i-1) '*sol' num2str(index) '_m-' num2str(i) '*sol' num2str(index) '_l']}); % {xl+a1, -i*(m+l)}
-    lp.set('size', {['sol' num2str(index) '_w-(sol' num2str(index) '_a1+' num2str(i-1) '*sol' num2str(index) '_d)'], ['sol' num2str(index) '_l']}); % {w-a1, l}
+    lp.set('pos', {['sol' num2str(index) '_xl+sol' num2str(index) '_a1+' num2str(i-1) '*sol' num2str(index) '_d'], ... xl + a1 + (i-1)*d
+                   ['-sol' num2str(index) '_flt-' num2str(i-1) '*sol' num2str(index) '_m-' num2str(i) '*sol' num2str(index) '_l']}); % -flt - (i-1)*m - i*l
+
+    lp.set('size', {['sol' num2str(index) '_w-(sol' num2str(index) '_a1+' num2str(i-1) '*sol' num2str(index) '_d)'], ... w - a1 + (i-1)*d
+                   ['sol' num2str(index) '_l']}); % l
     
+    geom.run;
+
     % Création pour la cavité i-1
     lc1 = geom.create(['sol' num2str(index) '_lc' num2str(i)], 'Rectangle');
-    lc1.set('pos', {['sol' num2str(index) '_xl'], ['-sol' num2str(index) '_flt-' num2str(i-2) '*sol' num2str(index) '_m-' num2str(i-1) '*sol' num2str(index) '_l-sol' num2str(index) '_n']}); % {xl, -(i-1)*(m+l)-n}
-    lc1.set('size', {['sol' num2str(index) '_w'] ['sol' num2str(index) '_n-sol' num2str(index) '_m-sol' num2str(index) '_l']}); % {w, n-m-l}
+    lc1.set('pos', {['sol' num2str(index) '_xl'], ... xl
+                    ['-sol' num2str(index) '_flt-' num2str(i-2) '*sol' num2str(index) '_m-' num2str(i-1) '*sol' num2str(index) '_l-sol' num2str(index) '_n']}); % -flt -(i-2)*m -(i-1)*l) - n
+
+    lc1.set('size', {['sol' num2str(index) '_w'], ... w 
+                     ['sol' num2str(index) '_n-sol' num2str(index) '_m-sol' num2str(index) '_l']}); % n-m-l
+
+    geom.run;
 
     % Création d'un rectangle pour la plaque droite i
     rp = geom.create(['sol' num2str(index) '_rp' num2str(i)], 'Rectangle');
-    rp.set('pos', {['sol' num2str(index) '_xl'], ['-sol' num2str(index) '_flt-' num2str(i-2) '*sol' num2str(index) '_m-' num2str(i-1) '*sol' num2str(index) '_l-sol' num2str(index) '_n-sol' num2str(index) '_l']}); % {xl, -(i-1)*(m+l)-(n+l)}
-    rp.set('size', {['sol' num2str(index) '_w-(sol' num2str(index) '_b1+' num2str(i-1) '*sol' num2str(index) '_d)'], ['sol' num2str(index) '_l']}); % {w-b1, l}
+    rp.set('pos', {['sol' num2str(index) '_xl'], ... xl
+                   ['-sol' num2str(index) '_flt-' ... -flt
+                   num2str(i-2) '*sol' num2str(index) '_m-' ... -(i-2)*m
+                   num2str(i-1) '*sol' num2str(index) '_l-' ... -(i-1)*l
+                   'sol' num2str(index) '_n-sol' num2str(index) '_l']}); % -(n+l)
+
+    rp.set('size', {['sol' num2str(index) '_w-(sol' num2str(index) '_b1+' num2str(i-1) '*sol' num2str(index) '_d)'], ... w - b1 + (i-1)*d
+                    ['sol' num2str(index) '_l']}); % l
+
+    geom.run;
 
     % Création pour la cavité i-2
-    lc2 = geom.create(['sol' num2str(index) '_rc' num2str(i)], 'Rectangle');
-    lc2.set('pos', {['sol' num2str(index) '_xl'] ['-sol' num2str(index) '_flt-' num2str(i) '*sol' num2str(index) '_m-' num2str(i+1) '*sol' num2str(index) '_l+sol' num2str(index) '_l']}); % {xl, -(i+1)*(m+l) + l}
-    lc2.set('size', {['sol' num2str(index) '_w'] ['2*sol' num2str(index) '_m-sol' num2str(index) '_n']}); % {w, 2m-n}
+    rc2 = geom.create(['sol' num2str(index) '_rc' num2str(i)], 'Rectangle');
+    rc2.set('pos', {['sol' num2str(index) '_xl'] ... xl
+                    ['-sol' num2str(index) '_flt' ... -flt
+                    '-' num2str(i) '*sol' num2str(index) '_m' ... -i*m
+                    '-' num2str(i+1) '*sol' num2str(index) '_l' ... -(i+1)*l
+                    '+sol' num2str(index) '_l']}); % + l
+
+    rc2.set('size', {['sol' num2str(index) '_w'] ... w
+                     ['2*sol' num2str(index) '_m-sol' num2str(index) '_n']}); % 2m-n
+
+    geom.run;
 end
 
-% Création pour le fond de la cavité
-lc2 = geom.create(['sol' num2str(index) '_lrc'], 'Rectangle');
-lc2.set('pos', {['sol' num2str(index) '_xl'] ['-sol' num2str(index) '_L']});
-lc2.set('size', {['sol' num2str(index) '_w'] ['-sol' num2str(index) '_flt-' num2str(N) '*sol' num2str(index) '_m-' num2str(N+1) '*sol' num2str(index) '_l+sol' num2str(index) '_l+sol' num2str(index) '_L']}); % {w, 2m-n}
-
+% % Création pour le fond de la cavité
+% lrc = geom.create(['sol' num2str(index) '_lrc'], 'Rectangle');
+% lrc.set('pos', {['sol' num2str(index) '_xl'] ['-sol' num2str(index) '_L']});
+% lrc.set('size', {['sol' num2str(index) '_w'] ['-sol' num2str(index) '_flt-' num2str(N) '*sol' num2str(index) '_m-' num2str(N+1) '*sol' num2str(index) '_l+sol' num2str(index) '_l+sol' num2str(index) '_L']}); % {w, 2m-n}
 
 geom.run;
 
@@ -153,7 +180,6 @@ box_bnd_lyr_tv.set('xmin', ['sol' num2str(index) '_xl-0.01[mm]']);
 % JCAfirstplate.propertyGroup('PoroacousticsModel').set('Rf', num2str(JCAparam.AirFlowResistivity(env)));
 % % Application du matériau i+1 à la i-ème plaque
 % JCAfirstplate.selection.named(['sol' num2str(index) '_MPP1']);
-
 
 %% Physique 
 

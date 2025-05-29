@@ -1,0 +1,157 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<svg
+   viewBox="0 0 143.86599 143.866"
+   width="143.866"
+   height="143.866"
+   version="1.1"
+   id="svg23"
+   sodipodi:docname="perforations_plaque_2.svg"
+   inkscape:version="1.4 (86a8ad7, 2024-10-11)"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:svg="http://www.w3.org/2000/svg">
+  <sodipodi:namedview
+     id="namedview23"
+     pagecolor="#ffffff"
+     bordercolor="#000000"
+     borderopacity="0.25"
+     inkscape:showpageshadow="2"
+     inkscape:pageopacity="0.0"
+     inkscape:pagecheckerboard="0"
+     inkscape:deskcolor="#d1d1d1"
+     showgrid="false"
+     inkscape:zoom="3.7644509"
+     inkscape:cx="68.137427"
+     inkscape:cy="78.497504"
+     inkscape:window-width="1920"
+     inkscape:window-height="1017"
+     inkscape:window-x="-8"
+     inkscape:window-y="-8"
+     inkscape:window-maximized="1"
+     inkscape:current-layer="g23" />
+  <desc
+     id="desc1">perforations_plaque_2.dxf - scale = 1.000000, origin = (0.000000, 0.000000), method = manual</desc>
+  <defs
+     id="defs4">
+    <marker
+       id="DistanceX"
+       orient="auto"
+       refX="0"
+       refY="0"
+       style="overflow:visible">
+      <path
+         d="M 3,-3 -3,3 M 0,-5 V 5"
+         style="stroke:#000000;stroke-width:0.5"
+         id="path1" />
+    </marker>
+    <pattern
+       id="Hatch"
+       patternUnits="userSpaceOnUse"
+       width="8"
+       height="8"
+       x="0"
+       y="0">
+      <path
+         d="M8 4 l-4,4"
+         stroke="#000000"
+         stroke-width="0.25"
+         linecap="square"
+         id="path2" />
+      <path
+         d="M6 2 l-4,4"
+         stroke="#000000"
+         stroke-width="0.25"
+         linecap="square"
+         id="path3" />
+      <path
+         d="M4 0 l-4,4"
+         stroke="#000000"
+         stroke-width="0.25"
+         linecap="square"
+         id="path4" />
+    </pattern>
+  </defs>
+  <g
+     inkscape:groupmode="layer"
+     inkscape:label="0"
+     id="g23"
+     transform="translate(-215.88933,-613.997)">
+    <path
+       d="m 278.27003,721.20521 a 1.700787,1.700787 0 0 0 -3.40157,0 1.700787,1.700787 0 0 0 3.40157,0 z"
+       style="fill:none;stroke:#ff0000"
+       id="path5" />
+    <path
+       d="m 278.27003,703.56742 a 1.700787,1.700787 0 0 0 -3.40157,0 1.700787,1.700787 0 0 0 3.40157,0 z"
+       style="fill:none;stroke:#ff0000"
+       id="path6" />
+    <path
+       d="m 278.27003,685.92962 a 1.700787,1.700787 0 0 0 -3.40157,0 1.700787,1.700787 0 0 0 3.40157,0 z"
+       style="fill:none;stroke:#ff0000"
+       id="path7" />
+    <path
+       d="m 278.27003,668.29182 a 1.700787,1.700787 0 0 0 -3.40157,0 1.700787,1.700787 0 0 0 3.40157,0 z"
+       style="fill:none;stroke:#ff0000"
+       id="path8" />
+    <path
+       d="m 278.27003,650.65403 a 1.700787,1.700787 0 0 0 -3.40157,0 1.700787,1.700787 0 0 0 3.40157,0 z"
+       style="fill:none;stroke:#ff0000"
+       id="path9" />
+    <path
+       d="m 289.52319,721.20521 a 1.70079,1.70079 0 0 0 -3.40158,0 1.70079,1.70079 0 0 0 3.40158,0 z"
+       style="fill:none;stroke:#ff0000"
+       id="path10" />
+    <path
+       d="m 289.52319,703.56742 a 1.70079,1.70079 0 0 0 -3.40158,0 1.70079,1.70079 0 0 0 3.40158,0 z"
+       style="fill:none;stroke:#ff0000"
+       id="path11" />
+    <path
+       d="m 289.52319,685.92962 a 1.70079,1.70079 0 0 0 -3.40158,0 1.70079,1.70079 0 0 0 3.40158,0 z"
+       style="fill:none;stroke:#ff0000"
+       id="path12" />
+    <path
+       d="m 289.52319,668.29182 a 1.70079,1.70079 0 0 0 -3.40158,0 1.70079,1.70079 0 0 0 3.40158,0 z"
+       style="fill:none;stroke:#ff0000"
+       id="path13" />
+    <path
+       d="m 289.52319,650.65403 a 1.70079,1.70079 0 0 0 -3.40158,0 1.70079,1.70079 0 0 0 3.40158,0 z"
+       style="fill:none;stroke:#ff0000"
+       id="path14" />
+    <path
+       d="m 300.77635,721.20521 a 1.70079,1.70079 0 0 0 -3.40158,0 1.70079,1.70079 0 0 0 3.40158,0 z"
+       style="fill:none;stroke:#ff0000"
+       id="path15" />
+    <path
+       d="m 300.77635,703.56742 a 1.70079,1.70079 0 0 0 -3.40158,0 1.70079,1.70079 0 0 0 3.40158,0 z"
+       style="fill:none;stroke:#ff0000"
+       id="path16" />
+    <path
+       d="m 300.77635,685.92962 a 1.70079,1.70079 0 0 0 -3.40158,0 1.70079,1.70079 0 0 0 3.40158,0 z"
+       style="fill:none;stroke:#ff0000"
+       id="path17" />
+    <path
+       d="m 300.77635,668.29182 a 1.70079,1.70079 0 0 0 -3.40158,0 1.70079,1.70079 0 0 0 3.40158,0 z"
+       style="fill:none;stroke:#ff0000"
+       id="path18" />
+    <path
+       d="m 300.77635,650.65403 a 1.70079,1.70079 0 0 0 -3.40158,0 1.70079,1.70079 0 0 0 3.40158,0 z"
+       style="fill:none;stroke:#ff0000"
+       id="path19" />
+    <path
+       style="fill:none;stroke:#000000"
+       d="m 216.38933,757.363 h 142.866"
+       id="path20" />
+    <path
+       style="fill:none;stroke:#000000"
+       d="M 359.25533,757.363 V 614.497"
+       id="path21" />
+    <path
+       style="fill:none;stroke:#000000"
+       d="m 359.25533,614.497 h -142.866"
+       id="path22" />
+    <path
+       style="fill:none;stroke:#000000"
+       d="M 216.38933,614.497 V 757.363"
+       id="path23" />
+  </g>
+</svg>

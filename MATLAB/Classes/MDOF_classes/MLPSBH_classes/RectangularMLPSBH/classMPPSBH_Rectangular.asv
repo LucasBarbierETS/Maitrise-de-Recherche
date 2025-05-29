@@ -79,20 +79,20 @@ classdef classMPPSBH_Rectangular < classelement
                     error('[✗] Impossible de créer le fichier : %s', filename);
                 end
         
-                fprintf(fileID, 'X,Y,R\n');  % En-tête CSV
+                fprintf(fileID, 'X,Y,R \n ');  % En-tête CSV
         
                 for j = 1:size(hole_coordinates, 1)
-                    fprintf(fileID, '%.2f,%.2f,%.3f\n', ...
+                    fprintf(fileID, '%.2f,%.2f,%.3f \n ', ...
                         hole_coordinates(j, 1), ...
                         hole_coordinates(j, 2), ...
                         hole_radius);
                 end
         
                 fclose(fileID);
-                fprintf('[✓] Coordonnées exportées : %s\n', filename);
+                fprintf('[✓] Coordonnées exportées : %s \n ', filename);
             end
         
-            fprintf('[✓] Tous les fichiers de coordonnées ont été exportés dans : %s\n', coord_dir);
+            fprintf('[✓] Tous les fichiers de coordonnées ont été exportés dans : %s \n ', coord_dir);
         end
 
         function launch_in_solidworks(obj, folder_name)
@@ -105,9 +105,9 @@ classdef classMPPSBH_Rectangular < classelement
             % === 2. Création du dossier principal si nécessaire ===
             if ~exist(output_dir, 'dir')
                 mkdir(output_dir);
-                fprintf('[✓] Dossier créé : %s\n', output_dir);
+                fprintf('[✓] Dossier créé : %s \n ', output_dir);
             else
-                fprintf('[i] Dossier déjà existant : %s\n', output_dir);
+                fprintf('[i] Dossier déjà existant : %s \n ', output_dir);
             end
         
             % === 3. Exporter les coordonnées ===
@@ -117,7 +117,7 @@ classdef classMPPSBH_Rectangular < classelement
             py_script = 'E:\OneDrive - ETS\CRIAQ-REAR\Maitrise LB\MATLAB\Classes\MDOF_classes\MLPSBH_classes\RectangularMLPSBH\MATLAB to SOLIDWORKS\build_MPPSBH_from_json.py';
             command = sprintf('python "%s" "%s"', py_script, output_dir);
         
-            fprintf('[▶] Lancement du script Python :\n%s\n', command);
+            fprintf('[▶] Lancement du script Python : \n %s \n ', command);
             [status, output] = system(command);
             disp(output);
         
@@ -125,11 +125,11 @@ classdef classMPPSBH_Rectangular < classelement
             if status ~= 0
                 error('[✗] Échec de l’exécution Python.');
             else
-                fprintf('[✓] Script Python terminé avec succès.\n');
+                fprintf('[✓] Script Python terminé avec succès. \n ');
             end
         
             % === 6. Ouverture automatique du dossier ===
-            fprintf('[📂] Ouverture du dossier dans l’explorateur...\n');
+            fprintf('[📂] Ouverture du dossier dans l’explorateur... \n ');
             system(sprintf('explorer "%s"', output_dir));
         end
     
@@ -241,16 +241,13 @@ classdef classMPPSBH_Rectangular < classelement
                 Excel.Quit();
                 delete(Excel);
                 
-                fprintf("✅ Rapport créé avec succès : %s\n", filename);
+                fprintf("✅ Rapport créé avec succès : %s \n ", filename);
             catch ME
                 error("Erreur lors de l’écriture Excel : %s", ME.message);
             end
         end
 
-        function export_DXF(obj)
-
-            outputFolder = uigetdir();
-            
+        function export_DXF(obj, outputFolder)
             config = obj.Configuration;
             externalWidth = 37.8;
             externalDepth = 37.8;
@@ -261,23 +258,28 @@ classdef classMPPSBH_Rectangular < classelement
             
             % Nombre de plaques
             numPlates = config.NumberOfPlates;
-
+            
+            % Vérifier si le dossier existe, sinon le créer
+            if ~exist(outputFolder, 'dir')
+                mkdir(outputFolder);
+            end
+            
             % Paramètre de kerf
             kerf = 0.1; % Exemple : ajuster selon votre machine laser, ici 0.1 mm
             
             % Générer un fichier DXF pour chaque plaque
             for plateIdx = 1:numPlates
                 % Nom du fichier DXF pour cette plaque
-                outputFilename = fullfile(outputFolder, sprintf('perforations_plaque_%d.pj', plateIdx));
+                outputFilename = fullfile(outputFolder, sprintf('perforations_plaque_%d.dxf', plateIdx));
                 
                 % Ouvrir le fichier DXF pour cette plaque
                 fileID = fopen(outputFilename, 'w');
                 
                 % Écrire l'en-tête DXF
-                fprintf(fileID, '0\nSECTION\n2\nHEADER\n0\nENDSEC\n');
-                fprintf(fileID, '0\nSECTION\n2\nTABLES\n0\nENDSEC\n');
-                fprintf(fileID, '0\nSECTION\n2\nBLOCKS\n0\nENDSEC\n');
-                fprintf(fileID, '0\nSECTION\n2\nENTITIES\n');
+                fprintf(fileID, '0 \n SECTION \n 2 \n HEADER \n 0 \n ENDSEC \n ');
+                fprintf(fileID, '0 \n SECTION \n 2 \n TABLES \n 0 \n ENDSEC \n ');
+                fprintf(fileID, '0 \n SECTION \n 2 \n BLOCKS \n 0 \n ENDSEC \n ');
+                fprintf(fileID, '0 \n SECTION \n 2 \n ENTITIES \n ');
                 
                 % Récupérer les informations de perforations pour cette plaque
                 radius = config.PlatesHolesRadius(plateIdx) * 1e3;
@@ -299,17 +301,22 @@ classdef classMPPSBH_Rectangular < classelement
                         y = yOffset + (j - 1) * ySpacing;
                         
                         numpasses = 5; % Nombre de couches concentriques
-
+                        
+                        % Couleurs pour les cercles concentriques
+                        colors = [63, 64, 65, 66, 67]; % Rouge, bleu, vert, jaune, magenta
                         
                         % Générer les cercles concentriques avec couleurs progressives
                         for k = 1:numpasses
                             % Rayon de chaque conche concentrique
-                            concheRadius = radius - k * kerf/2; % Réduction progressive du rayon
+                            concheRadius = adjustedRadius - k * kerk/2; % Réduction progressive du rayon
+                            
+                            % Couleur pour chaque cercle (le centre est rouge, puis bleu, etc.)
+                            colorCode = colors(k); % Assigner la couleur correspondante
                             
                             % Cercle concentrique avec une épaisseur minimale du tracé
                             %                  forme      calque        couleur  transparence              coordonnées                 rayon      
-                            fprintf(fileID, '0\nCIRCLE\n8\n0\n62\n%d\n370\n-1\n10\n%f\n20\n%f\n30\n0.0\n40\n%f\n', ...
-                                    k, x, y, concheRadius);
+                            fprintf(fileID, '0 \n CIRCLE \n 8 \n 0 \n 62 \n %d \n 370 \n -1 \n 10 \n %f \n 20 \n %f \n 30 \n 0.0 \n 40 \n %f \n', ...
+                                    colorCode, x, y, concheRadius);
                         end
                     end
                 end
@@ -323,25 +330,25 @@ classdef classMPPSBH_Rectangular < classelement
                 y0 = 0;
                 
                 % Tracer les 4 côtés du carré avec des entités LINE, noir (couleur 7)
-                fprintf(fileID, '0\nLINE\n8\n0\n62\n7\n370\n-1\n10\n%f\n20\n%f\n30\n0.0\n11\n%f\n21\n%f\n31\n0.0\n', ...
+                fprintf(fileID, '0 \n LINE \n 8 \n 0 \n 62 \n 7 \n 370 \n -1 \n 10 \n %f \n 20 \n %f \n 30 \n 0.0 \n 11 \n %f \n 21 \n %f \n 31 \n 0.0 \n ', ...
                         x0, y0, x0+width, y0); % Bas
                 
-                fprintf(fileID, '0\nLINE\n8\n0\n62\n7\n370\n-1\n10\n%f\n20\n%f\n30\n0.0\n11\n%f\n21\n%f\n31\n0.0\n', ...
+                fprintf(fileID, '0 \n LINE \n 8 \n 0 \n 62 \n 7 \n 370 \n -1 \n 10 \n %f \n 20 \n %f \n 30 \n 0.0 \n 11 \n %f \n 21 \n %f \n 31 \n 0.0 \n ', ...
                         x0+width, y0, x0+width, y0+height); % Droite
                 
-                fprintf(fileID, '0\nLINE\n8\n0\n62\n7\n370\n-1\n10\n%f\n20\n%f\n30\n0.0\n11\n%f\n21\n%f\n31\n0.0\n', ...
+                fprintf(fileID, '0 \n LINE \n 8 \n 0 \n 62 \n 7 \n 370 \n -1 \n 10 \n %f \n 20 \n %f \n 30 \n 0.0 \n 11 \n %f \n 21 \n %f \n 31 \n 0.0 \n ', ...
                         x0+width, y0+height, x0, y0+height); % Haut
                 
-                fprintf(fileID, '0\nLINE\n8\n0\n62\n7\n370\n-1\n10\n%f\n20\n%f\n30\n0.0\n11\n%f\n21\n%f\n31\n0.0\n', ...
+                fprintf(fileID, '0 \n LINE \n 8 \n 0 \n 62 \n 7 \n 370 \n -1 \n 10 \n %f \n 20 \n %f \n 30 \n 0.0 \n 11 \n %f \n 21 \n %f \n 31 \n 0.0 \n ', ...
                         x0, y0+height, x0, y0); % Gauche
                         
                 % Fermer la section des entités
-                fprintf(fileID, '0\nENDSEC\n');
+                fprintf(fileID, '0 \n ENDSEC \n ');
                 
                 % Écrire la fin du fichier DXF
-                fprintf(fileID, '0\nSECTION\n2\nOBJECTS\n0\nENDSEC\n');
-                fprintf(fileID, '0\nENDSEC\n');
-                fprintf(fileID, '0\nEOF\n');
+                fprintf(fileID, '0 \n SECTION \n 2 \n OBJECTS \n 0 \n ENDSEC \n ');
+                fprintf(fileID, '0 \n ENDSEC \n ');
+                fprintf(fileID, '0 \n EOF \n ');
                 
                 % Fermer le fichier
                 fclose(fileID);
@@ -394,7 +401,7 @@ classdef classMPPSBH_Rectangular < classelement
             % Paramètres variables en fonction des cellules
             config.PlatesThickness = perso_interp_config(plates_thickness, number_of_plates);
             config.CavitiesThickness = perso_interp_config(cavities_thickness, number_of_plates);
-            config.PlatesHolesRadius = reshape(perso_interp_config(plates_holes_radius, number_of_plates), 1, []); % r
+            config.PlatesHolesRadius = perso_interp_config(plates_holes_radius, number_of_plates); % r
             config.PlatesDepthHolesNumber = perso_interp_config(plates_depth_holes_number, number_of_plates); % m
             config.PlatesWidthHolesNumber = perso_interp_config(plates_width_holes_number, number_of_plates); % n
             config.PlatesWidthHolesDistance = perso_interp_config(plates_width_holes_distance, number_of_plates); % d
@@ -404,8 +411,8 @@ classdef classMPPSBH_Rectangular < classelement
             
             % Définition de la porosité à partir de la répartition des perforations
             plates_holes_number = cell2mat(plates_depth_holes_number) .* cell2mat(plates_width_holes_number);
-            plates_perforated_surface = pi*reshape(cell2mat(plates_holes_radius), 1, []).^2 .* plates_holes_number;
-            config.PlatesPerforatedPartPorosity = reshape(plates_perforated_surface ./ (cell2mat(slits_width) * cavities_depth), 1, []);
+            plates_perforated_surface = pi*cell2mat(plates_holes_radius).^2 .* plates_holes_number;
+            config.PlatesPerforatedPartPorosity = plates_perforated_surface ./ (cell2mat(slits_width) * cavities_depth);
             config.PlatesRealPorosity = plates_perforated_surface / (cavities_width * cavities_depth);
         end
 

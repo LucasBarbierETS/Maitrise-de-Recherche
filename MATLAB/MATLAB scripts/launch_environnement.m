@@ -1,6 +1,9 @@
-%% Chemins d'accès
-root = 'E:\Montréal 2023 - 2025\Maitrise LB';
+%% Lancement du serveur COMSOL (si disponible)
+% system('comsolmphserver');
+% mphstart;
 
+%% Ajout des chemins d'accès
+root = 'E:\Montréal 2023 - 2025\Maitrise LB';
 addpath([root, '\MATLAB\Functions'])
 perso_add_all_paths([root, '\MATLAB']);
 
@@ -20,5 +23,4 @@ fmax = 5000;
 points = 5000;
 
 % Niveau sonore
-dB = 150;
-env = create_environnement(t, sp, hum, fmin, fmax, points, dB);
+env = @(varargin) create_environnement(t, sp, hum, fmin, fmax, points, varargin{1});

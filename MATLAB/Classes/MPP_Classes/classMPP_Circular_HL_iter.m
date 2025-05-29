@@ -43,16 +43,18 @@ classdef classMPP_Circular_HL_iter < classMPP_Circular
             obj@classMPP_Circular(config)
 
             p = inputParser;
-            addOptional(p, 'Va', 0, @isnumeric)
+            addOptional(p, 'u_rms', 0, @isnumeric)
             parse(p, varargin{:});
-            Va = p.Results.Va;
+            u_rms = p.Results.u_rms;
             
             phi = config.PlatePorosity;
             pr = config.PerforationsRadius;
-            t = config.PlateThickness;        
-            
-            obj.Configuration.AirFlowResistivity = @(env) classMPP_Circular_HL_iter.air_flow_resistivity(env, Va, phi, pr, t);
-            obj.Configuration.Toruosity = @(env) classMPP_Circular_HL_iter.tortuosity(env, Va, phi, pr, t);
+            t = config.PlateThickness;  
+            S = obj.Configuration.InputSection;
+
+            % On encapsule les méthodes non linéaires dans la définiton des paramètres JCA
+            obj.Configuration.AirFlowResistivity = @(env) classMPP_Circular_HL_iter.air_flow_resistivity(env, u_rms, phi, pr, t, S);
+            obj.Configuration.Tortuosity = @(env) classMPP_Circular_HL_iter.tortuosity(env, u_rms, phi, pr, t, S);
         end
 
         function surface_impedance(obj, env, varargin)
@@ -100,28 +102,47 @@ classdef classMPP_Circular_HL_iter < classMPP_Circular
 
     methods (Static, Access = public)
 
-        function sig = air_flow_resistivity(env, Va, phi, pr, t)
+        function sig = air_flow_resistivity(env, u_rms, phi, pr, t, S)
 
             beta = 1.6; % [5] p.8
             Cd = 0.76; % [5] p.8
 
             % Résistivité au passage de l'air ([5], p. 7, eq. 20)
             sig = 8 * env.air.parameters.eta / (phi * pr^2) ... 
-                + beta * env.air.parameters.rho * (1 - phi^2) / (pi * t * phi * Cd^2) * Va;
+                + beta * env.air.parameters.rho * (1 - phi^2) / (pi * t * phi * Cd^2) * u_rms/S;
         end
 
-        function tor = tortuosity(env, Va, phi, pr, t)
+        function tor = tortuosity(env, u_rms, phi, pr, t, S)
              
             psi = 4/3; 
             a = [1.0 -1.4092 0.0 0.33818 0.0 0.06793 -0.02287 0.003015 -0.01614];
             sum_a = dot(a, sqrt(phi).^(0:length(a)-1));
 
             % Tortuosité non linéaire ([5], p. 7, eq. 22, 23)
-            tor = 1 + 2 * psi / (t * (1 + Va / (phi * env.c0))) ...
+            tor = 1 + 2 * psi / (t * (1 + u_rms/S / (phi * env.c0))) ...
             * 0.48 * sqrt(pi * pr^2) * sum_a;
         end
 
         function validate()
+
+        % Courbe de référence
+        perso_ouvrir_lien_Zotero('zotero://open-pdf/library/items/C3F2ZIGB?page=145&annotation=I8FZCE7A');
+
+        s = 1; % section arbitraire
+        t = 0.86;
+        d = 1.517e-3;
+        phi = 0.0523;
+        cd = 25e-3;
+        dB1 = 125;
+        dB2 = 150;
+
+        MPP = classMPP_Circular_HL_iter(classMPP_Circular.create_config(phi, d/2, t, s));
+        cavity = classcavity(classcavity.create_config(cd, s));
+        E = classelement(classelement.create_config({MPP, cavity}, 'closed', s));
+
+        
+        env = create_environnement(t, sp, hum, fmin, fmax, points, dB1)
+        % E.plot_alpha(env, ) 
         end
     end
 end

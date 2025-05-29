@@ -13,7 +13,13 @@ function [c, ceq] = perso_MPPSBHr_nonlconf(x, NV, NS, N, cavities_width, cavitie
     % pw  = fix(x_mat(:, 2, :));        % nb de perforation en largeur
 
     % % Calcul des rayons réels
+    % r = transpose(eval_r(r));
     r = eval_r(r);
+
+    % Si la profondeur est 1, assure que la sortie reste 3D avec une profondeur de 1
+    if size(r, 3) == 1
+        r = reshape(r, [size(r, 1), size(r, 2), 1]);
+    end
     % r = repmat(eval_r(1), N, 1, NS);
     % dw = repmat(3 * eval_r(1), N, 1, NS);
     

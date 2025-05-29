@@ -1,5 +1,6 @@
 function dataStruct = perso_load_mecanum_files(folderPath)
-    files = dir(fullfile(folderPath, '*.txt'));  % Trouver tous les fichiers .txt
+    
+    files = dir(folderPath);  % Trouver tous les fichiers .txt
     dataStruct = struct();  % Initialisation de la structure
     
     for i = 1:length(files)

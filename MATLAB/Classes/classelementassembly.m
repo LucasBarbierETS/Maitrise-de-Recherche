@@ -146,18 +146,10 @@
 
         function obj = plot_alpha(obj, env, name)
 
-            hold on
-            
             % Résultats analytiques
             alpha = obj.alpha(env);
             f = env.w / (2 * pi);
             plot(f, alpha, 'DisplayName', [name ' - Résultat Analytique'])
-
-            xlabel("Fréquence (Hz)")
-            ylabel("Coefficient d'Absorption")
-            xlim([0 f(end)])
-            ylim([0 1])
-            legend()
         end
     
         function mean_alpha = alpha_mean(obj, env, f_min, f_max)
