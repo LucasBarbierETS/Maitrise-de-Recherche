@@ -241,7 +241,7 @@ classdef classelement
                 % perso_figure('Zs');
                 % perso_plot_surface_impedance(Zs, env)
 
-                new_u_rms = abs(p_rms) ./ abs(Zs) * obj.input_section();
+                new_u_rms = abs(p_rms) ./ abs(Zs) * obj.Configuration.Surface;
                 % new_u_rms = abs(p_rms) ./ abs(Zs);
 
                 % % debog (suite)

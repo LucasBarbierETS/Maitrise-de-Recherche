@@ -39,8 +39,8 @@ classdef classjunction < classsubelement
             % considérer la surface ou s'applique la condition d'impédance
             % de surface
 
-            TM.T21 = Ca ./ config.JunctionElement.surface_impedance(env) * S; % Convention Pression-Débit
-            % TM.T21 = Ca ./ config.JunctionElement.surface_impedance(env); % Convention Pression-Débit
+            % TM.T21 = Ca ./ config.JunctionElement.surface_impedance(env) * S; % Convention Pression-Débit
+            TM.T21 = Ca ./ config.JunctionElement.surface_impedance(env); % Convention Pression-Débit
             % TM.T21 = 1 ./ obj.Configuration.JunctionElement.surface_impedance(env); % Convention Pression-Vitesse
             TM.T22 = ones(1, length(w));
         end

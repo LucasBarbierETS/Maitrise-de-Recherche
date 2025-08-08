@@ -75,14 +75,14 @@ properties
                 hr = config.PlatesHolesRadius;
                 pt = config.PlatesThickness;
                 ct = config.CavitiesThickness;
-                ptc = config.PlatesThicknessCorrection;
+                % ptc = config.PlatesThicknessCorrection;
                 
                 % Modèles et options
                 cm = config.CavitiesModel;
                 
                 % Plaque perforée centrale (première MPP circulaire)
-                obj.Configuration.ListOfSubelements{end+1} = classMPP_Circular(classMPP_Circular.create_config(pp(1), hr(1), pt(1), pi*ppar(1)^2, ptc(1)));
-                % obj.Configuration.ListOfSubelements{end+1} = classMPP_Circular(classMPP_Circular.create_config(pp(1), hr(1), pt(1), pi*ppar(1)^2));
+                % obj.Configuration.ListOfSubelements{end+1} = classMPP_Circular(classMPP_Circular.create_config(pp(1), hr(1), pt(1), pi*ppar(1)^2, ptc(1)));
+                obj.Configuration.ListOfSubelements{end+1} = classMPP_Circular(classMPP_Circular.create_config(pp(1), hr(1), pt(1), pi*ppar(1)^2));
                 
                 % Boucle sur les cavités et plaques
                 for i = 1:length(ct) - 1
@@ -97,8 +97,8 @@ properties
                     obj.Configuration.ListOfSubelements{end+1} = classannularcell(classannularcell.create_config(ppar(i), ppar(i+1), cavr, ct(i), cm));
                 
                     % MPP suivante
-                    obj.Configuration.ListOfSubelements{end+1} = classMPP_Circular(classMPP_Circular.create_config(pp(i+1), hr(i+1), pt(i+1), pi*ppar(i+1)^2, ptc(i+1)));
-                    % obj.Configuration.ListOfSubelements{end+1} = classMPP_Circular(classMPP_Circular.create_config(pp(i+1), hr(i+1), pt(i+1), pi*ppar(i+1)^2));
+                    obj.Configuration.ListOfSubelements{end+1} = classMPP_Circular(classMPP_Circular.create_config(pp(i+1), hr(i+1), pt(i+1), pi*ppar(i+1)^2));
+                    % obj.Configuration.ListOfSubelements{end+1} = classMPP_Circular(classMPP_Circular.create_config(pp(i+1), hr(i+1), pt(i+1), pi*ppar(i+1)^2, ptc(i+1)));
                 end
                 
                 % Traitement de la dernière cavité
@@ -327,7 +327,7 @@ properties
             %% Données de référence : A microstructure material design for low frequency sound absorption, fig.3
 
             % création de l'objet de classe
-            config = classMLPSBH_Cylindrical.create_config(1, 14.5e-3, 13e-3, 2e-3, ...
+            config = classMLPSBH_Cylindrical.create_config(pi*15e-3^2, 14.5e-3, 13e-3, 2e-3, ...
             1, 2e-3, 1e-3, 1e-3, 'Hankel', 'Bezançon', false, 15);
             MLPSBH = classMLPSBH_Cylindrical(config);
             MLPSBH_config = MLPSBH.Configuration;
@@ -347,11 +347,11 @@ properties
             subplot(1, 2, 2);
             hold on
             plot(env.w/ (2*pi), alpha_model, 'Color', 'b', 'LineWidth', 1);
-            % plot(x_data, y_data, 'Color', 'g','LineWidth', 1, 'LineStyle', '--');
+            plot(x_data, y_data, 'Color', 'g','LineWidth', 1, 'LineStyle', '--');
             legend('Modèle', 'Données de références')
             xlabel("Fréquence (Hz)")
             ylabel("Coefficient d'Absorption")
-            % ylim([0 1])
+            ylim([0 1])
             subtitle("configuration multi-annulaire -  Dupont2018")
 
         end

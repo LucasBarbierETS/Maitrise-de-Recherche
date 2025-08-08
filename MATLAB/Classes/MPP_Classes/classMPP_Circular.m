@@ -70,7 +70,7 @@ classdef classMPP_Circular < classJCA_Rigid
 
     methods (Static, Access = public)
 
-        function config = create_config(porosity, perforations_radius, thickness, width, depth)
+        function config = create_config(porosity, perforations_radius, thickness, surface)
             
             % Cette méthode permet de créer une configuration d'appel spéciale dans le cas ou les perforations de la MPP sont cylindriques
             
@@ -78,10 +78,8 @@ classdef classMPP_Circular < classJCA_Rigid
             config.Porosity = porosity;
             config.PerforationsRadius = perforations_radius;
             config.Thickness = thickness;
-            config.Width = width;
-            config.Depth = depth;
-            config.Surface = width * depth;
-            config.Section = width * depth * porosity;
+            config.Surface = surface;
+            config.Section = surface * porosity;
         end   
 
         function config = create_explicit_rectangular_plate_config(thickness, perforations_radius, ...
