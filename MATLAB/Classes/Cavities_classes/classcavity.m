@@ -44,7 +44,7 @@ classdef classcavity < classsubelement
         
         function T = transfer_matrix(obj, env)
             
-            S = obj.input_section();
+            S = obj.Configuration.Section;
             w = env.w;
             air = env.air;
             param = air.parameters;
@@ -61,7 +61,7 @@ classdef classcavity < classsubelement
 
         function Zs = surface_impedance(obj, env)
 
-            S = obj.input_section();
+            S = obj.Configuration.Surface;
             T = obj.transfer_matrix(env);
             Zs = S * T.T11 ./ T.T21;
         end
@@ -80,6 +80,7 @@ classdef classcavity < classsubelement
             [config.Width, w] = deal(width);
             [config.Depth, d] = deal(depth);
             config.Section = w * d;
+            config.Surface = w * d;
         end
 
     end

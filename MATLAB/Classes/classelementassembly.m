@@ -26,7 +26,7 @@
             s = 0;
             loe = obj.Configuration.ListOfElements;
             for i = 1:length(loe)
-                s = s + obj.Configuration.ListOfElements{i}.input_section();
+                s = s + obj.Configuration.ListOfElements{i}.Configuration.S;
             end
         end
         
@@ -35,10 +35,10 @@
             % On récupère la liste des ratios de surfaces
             r = zeros(1, length(obj.Configuration.ListOfElements));
             for i = 1:length(obj.Configuration.ListOfElements)
-                r(i) = obj.Configuration.ListOfElements{i}.input_section();
+                r(i) = obj.Configuration.ListOfElements{i}.Configuration.Surface;
             end
 
-            r = r./obj.input_section();
+            r = r./obj.Configuration.Surface;
         end
         
         function TM = transfer_matrix(obj, env)
@@ -150,7 +150,7 @@
                 for i = 1:length(elem_list)
                     elem = elem_list{i};
                     TM = elem.transfer_matrix(env);
-                    Ysum = Ysum + r(i) * TM.T21 ./ TM.T11 / elem.input_section();
+                    Ysum = Ysum + r(i) * TM.T21 ./ TM.T11 / elem.Configuration.Surface;
                 end
 
                 Zs = 1 ./ Ysum;
@@ -238,14 +238,14 @@
             end
 
             % On récupère la liste des ratios de surfaces
-            sum_section = 0;
-            r = zeros(1, length(config.ListOfElements));
+            sum_surface = 0;
+            % r = zeros(1, length(config.ListOfElements));
             
             for i = 1:length(config.ListOfElements)
-                sum_section = sum_section + config.ListOfElements{i}.input_section();
+                sum_surface = sum_surface + config.ListOfElements{i}.Configuration.Surface;
             end
 
-            config.InputSection = sum_section;
+            config.Surface = sum_surface;
         end
     end
 end

@@ -9,14 +9,7 @@ classdef classsubelement_imported < classsubelement
             
             obj@classsubelement(config)
         end
-
-        function s = input_section(obj)
-
-            config = obj.Configuration;
-            s = config.Width * config.Depth;
-        end
-
-        
+  
         function [Zs, obj] = surface_impedance(obj, env)
             
             % Cette fonction récupère le vecteur support de l'environnement env.w /(2*pi), 
@@ -67,6 +60,7 @@ classdef classsubelement_imported < classsubelement
             [config.Width, w] = deal(width);
             [config.Depth, d] = deal(depth);
             config.Section = w*d;
+            config.Surface = w*d;
         end
 
         function validate(env)

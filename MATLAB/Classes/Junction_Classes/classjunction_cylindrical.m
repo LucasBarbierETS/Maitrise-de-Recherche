@@ -30,11 +30,6 @@ classdef classjunction_cylindrical < classjunction
 
             obj@classjunction(config)
         end
-    
-        function s = input_section(obj)
-            config = obj.Configuration;
-            s = pi*config.MainPoreRadius^2;
-        end
     end
 
     methods (Static, Access = public)
@@ -44,6 +39,7 @@ classdef classjunction_cylindrical < classjunction
             config = struct();
             config.JunctionElement = junction_element;
             config.MainPoreRadius = junction_radius;
+            config.Section = pi*junction_radius^2;
             config.JunctionThickness = junction_thickness;
             config.CurtainArea = classjunction_cylindrical.curtain_area(config);
             config.JunctionElement.Configuration.CurtainArea = config.CurtainArea;

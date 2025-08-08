@@ -35,8 +35,13 @@ classdef classelement
                     
                     % exlications
                     % perso_ouvrir_lien_Obsidian('obsidian://open?vault=Maitrise%20REAR&file=Notes%20atomiques%2FNote%20Matlab%20-%20Imp%C3%A9dance%20de%20surface%20compos%C3%A9e')
-                    S = config.ListOfSubelements{i}.input_section();
-                    TM.T11 = TM.T11 .* config.ListOfSubelements{i}.surface_impedance(env)/S + TM.T12;
+                    S = config.ListOfSubelements{i}.Configuration.Surface;
+                    % Debug
+                    try
+                        TM.T11 = TM.T11 .* config.ListOfSubelements{i}.surface_impedance(env)/S + TM.T12;
+                    catch
+                        sprinf('pause!');
+                    end
                     TM.T21 = TM.T21 .* config.ListOfSubelements{i}.surface_impedance(env)/S + TM.T22;
                     return
 

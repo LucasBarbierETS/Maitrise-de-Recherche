@@ -347,11 +347,11 @@ properties
             subplot(1, 2, 2);
             hold on
             plot(env.w/ (2*pi), alpha_model, 'Color', 'b', 'LineWidth', 1);
-            plot(x_data, y_data, 'Color', 'g','LineWidth', 1, 'LineStyle', '--');
+            % plot(x_data, y_data, 'Color', 'g','LineWidth', 1, 'LineStyle', '--');
             legend('Modèle', 'Données de références')
             xlabel("Fréquence (Hz)")
             ylabel("Coefficient d'Absorption")
-            ylim([0 1])
+            % ylim([0 1])
             subtitle("configuration multi-annulaire -  Dupont2018")
 
         end

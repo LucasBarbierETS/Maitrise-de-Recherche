@@ -58,7 +58,7 @@ classdef classsubelement
 
             % On suppose qu'il y a une terminaison rigide à l'extrémité du sous-élément
             TM = obj.transfer_matrix(env);
-            S = obj.input_section();
+            S = obj.Configuration.Surface;
 
             % Si TM est formulé avec la convention Pression - Vitesse
             % Zs = TM.T11 ./ TM.T21; 

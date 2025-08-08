@@ -6,6 +6,10 @@ function M = matprod(M1,M2)
 
     a = M2.T11;
     b = M2.T12;
+    % Debog
+    if ~isfield(M2, 'T21')
+        sprintf('pause!')
+    end
     c = M2.T21;
     d = M2.T22;
     

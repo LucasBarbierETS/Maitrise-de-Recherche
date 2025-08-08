@@ -137,8 +137,7 @@ classdef classMPP_Circular < classJCA_Rigid
             tlp2 = 130e-6;
             D2 = 20e-3; % épaisseur de la cavité arrière
 
-            Porous1 = classJCA_Rigid(classJCA_Rigid.create_config(phip1, torp1, sigp1, vlp1, tlp1, D2, s));
-            Porous2 = classJCA_Rigid(classJCA_Rigid.create_config(phip2, torp2, sigp2, vlp2, tlp2, D2, s));
+            Porous1 = classJCA_Rigid(classJCA_Rigid.create_config(s, D2, phip1, torp1, sigp1, vlp1, tlp1));
 
             % création de l'environnement
             env = create_environnement(23, 100800, 22, 1, 5000, 5000);
@@ -146,7 +145,6 @@ classdef classMPP_Circular < classJCA_Rigid
             % Création des éléments
             E1 = classelement(classelement.create_config({MPP, cavity}, 'closed', s)); % fig.3
             E2 = classelement(classelement.create_config({MPP, Porous1}, 'closed', s)); % fig.4
-            % E2_2 = classelement(classelement.create_config({MPP, Porous2}, 'closed')); % fig.4
 
             % importation des données de références
             data1 = csvread('Atalla2007_fig3_black_square.txt');

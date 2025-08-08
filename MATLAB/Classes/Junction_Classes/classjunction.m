@@ -23,11 +23,6 @@ classdef classjunction < classsubelement
             obj.HandleAppBuilder = @(app, class_jcn) AppJunction.class_to_app(app, class_jcn);
         end
 
-        function s = input_section(obj)
-
-            config = obj.Configuration;
-            s = config.JunctionWidth * config.JunctionDepth;
-        end
         
         function TM = transfer_matrix(obj, env)
             
@@ -35,6 +30,7 @@ classdef classjunction < classsubelement
             config = obj.Configuration;
             w = env.w;
             Ca = config.JunctionElement.Configuration.CurtainArea;
+            S = config.Section;
             TM.T11 = ones(1, length(w));
             TM.T12 = zeros(1, length(w));
 
@@ -43,7 +39,7 @@ classdef classjunction < classsubelement
             % considérer la surface ou s'applique la condition d'impédance
             % de surface
 
-            TM.T21 = Ca ./ config.JunctionElement.surface_impedance(env) * obj.input_section(); % Convention Pression-Débit
+            TM.T21 = Ca ./ config.JunctionElement.surface_impedance(env) * S; % Convention Pression-Débit
             % TM.T21 = Ca ./ config.JunctionElement.surface_impedance(env); % Convention Pression-Débit
             % TM.T21 = 1 ./ obj.Configuration.JunctionElement.surface_impedance(env); % Convention Pression-Vitesse
             TM.T22 = ones(1, length(w));
@@ -71,6 +67,7 @@ classdef classjunction < classsubelement
             config.JunctionElement = junction_element;
             config.JunctionWidth = junction_width;
             config.JunctionDepth = junction_depth;
+            config.Section = junction_width * junction_depth;
         end
     end
 end

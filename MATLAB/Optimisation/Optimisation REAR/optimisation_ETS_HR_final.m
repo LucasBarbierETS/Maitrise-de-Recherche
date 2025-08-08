@@ -44,7 +44,7 @@ dB = 100;
 total_thickness = 102e-3;
 total_depth = 120e-3; 
 total_width = 72e-3;
-total_input_section = total_depth * total_width;
+total_input_surface = total_depth * total_width;
 
 % Epaisseur de l'interstice
 air_gap_thickness = 1e-3;
@@ -57,7 +57,7 @@ top_plate_thickness = 1e-3;
 % Solution ETS
 ETS_cavities_width = 28e-3; % bords externes : 30 mm
 ETS_cavities_depth = 28e-3; % bords externes : 30 mm
-ETS_input_section = ETS_cavities_depth * ETS_cavities_width;
+ETS_input_surface = 30e-3^2;
 plates_thickness = 2e-3;
 plates_holes_radius = 4.5e-4;
 rigid_backing_thickness = 1e-3;
@@ -66,12 +66,14 @@ rigid_backing_thickness = 1e-3;
 Poly_cavities_width = 28e-3; % bords externes : 30 mm
 Poly_cavities_depth = 28e-3; % bords externes : 30 mm
 Poly_cavities_input_section = Poly_cavities_width * Poly_cavities_depth; 
+Poly_input_surface = 30e-3^2;
 
 % Solutions HR
 yellow_cavities_thickness = total_thickness - top_plate_thickness - air_gap_thickness - rigid_backing_thickness;
 yellow_cavities_width = 10e-3; % bords externes : 12 mm
 yellow_cavities_depth = 30e-3; % bords externes : 30 mm
 yellow_cavities_input_section = yellow_cavities_width * yellow_cavities_depth;
+yc_input_surface = 12e-3*30e-3;
 
 %% Structure des variables optimisées
 
@@ -207,11 +209,11 @@ surface_impedance = data(:, 2) + 1i * data(:, 3);
 [Zs, imported_Poly_subelement] = classsubelement_imported(classsubelement_imported.create_config( ...
         frequency_support, surface_impedance, Poly_cavities_width, Poly_cavities_depth)).surface_impedance(env(dB));
 
-imported_Poly_element = classelement(classelement.create_config({imported_Poly_subelement}, 'closed'));
+imported_Poly_element = classelement(classelement.create_config({imported_Poly_subelement}, 'closed', Poly_input_surface));
 imported_element_assembly = classelementassembly(classelementassembly.create_config(repmat({imported_Poly_element}, 1, 4)));
 
 numerical_Poly_subelement = classNiloofar(classNiloofar.create_config(99e-3, 28e-3, 118e-3, 1e-3, 5e-4, 9e-3, 5e-3, 7.4e-3, 8e-3, 8e-3, 15));
-numerical_Poly_element = classelement(classelement.create_config({numerical_Poly_subelement}, 'closed'));
+numerical_Poly_element = classelement(classelement.create_config({numerical_Poly_subelement}, 'closed', Poly_input_surface));
 numerical_Poly_element_assembly = classelementassembly(classelementassembly.create_config(repmat({numerical_Poly_element}, 1, 4)));
 
 % Debog
@@ -253,7 +255,7 @@ Objets.MPPSBH_i = @(x_ETS, i) classMPPSBH_Rectangular( ...
 Objets.MPPSBH_element_i = @(x_ETS, i) classelement( ...
     classelement.create_config({ ...
     classcavity(classcavity.create_config(ETS_cavities_thickness, ETS_cavities_width, ETS_cavities_depth)) ...
-    Objets.MPPSBH_i(x_ETS, i)}, 'closed'));
+    Objets.MPPSBH_i(x_ETS, i)}, 'closed', ETS_input_surface));
 
 % % Debog : MPPSBH_element_i
 % figure();
@@ -277,7 +279,7 @@ air_gap = classcavity(classcavity.create_config(air_gap_thickness, total_width, 
 % Cavité Jaune
 % yellow_cavity = classcavity(classcavity.create_config(yellow_cavities_thickness, yellow_cavities_width, yellow_cavities_depth));
 yellow_cavity = classQWL_Slit(classQWL_Slit.create_config(yellow_cavities_thickness, yellow_cavities_width, yellow_cavities_depth));
-yellow_cavity_element = classelement(classelement.create_config({yellow_cavity}, 'closed'));
+yellow_cavity_element = classelement(classelement.create_config({yellow_cavity}, 'closed', yc_input_surface));
 
 % % Debog :  Affichage des performance de la cavité jaune
 % figure();
@@ -290,7 +292,7 @@ Contributions = struct();
 Contributions.contribution_MPPSBH_element_i = @(x, i) classelement(classelement.create_config( ...
     {perso_modify_subelement_dimensions(top_plate(x_TP1(x)), ETS_cavities_width, ETS_cavities_depth), ...
      perso_modify_subelement_dimensions(air_gap, ETS_cavities_width, ETS_cavities_depth), ...
-     Objets.MPPSBH_element_i(x_ETS(x), i)}, 'closed'));
+     Objets.MPPSBH_element_i(x_ETS(x), i)}, 'closed', ETS_input_surface));
 
 Contributions.contribution_cell_of_MPPSBH_element = @(x) arrayfun(@(i) ...
     Contributions.contribution_MPPSBH_element_i(x, i), 1:NS ,'UniformOutput', false);
@@ -298,12 +300,12 @@ Contributions.contribution_cell_of_MPPSBH_element = @(x) arrayfun(@(i) ...
 Contributions.contribution_Poly_element = @(x) classelement(classelement.create_config( ...
     {perso_modify_subelement_dimensions(top_plate(x_TP2(x)), Poly_cavities_width, Poly_cavities_depth), ...
      perso_modify_subelement_dimensions(air_gap, Poly_cavities_width, Poly_cavities_depth), ...
-     imported_Poly_subelement}, 'closed'));
+     imported_Poly_subelement}, 'closed', Poly_input_surface));
 
 Contributions.contribution_Poly_numerical_element = @(x) classelement(classelement.create_config( ...
     {perso_modify_subelement_dimensions(top_plate(x_TP2(x)), Poly_cavities_width, Poly_cavities_depth), ...
      perso_modify_subelement_dimensions(air_gap, Poly_cavities_width, Poly_cavities_depth), ...
-     numerical_Poly_subelement}, 'closed'));
+     numerical_Poly_subelement}, 'closed', Poly_input_surface));
 
 Contributions.cell_of_Poly_element_contribution = @(x) arrayfun(@(i) ...
     Contributions.contribution_Poly_element(x), 1:NS ,'UniformOutput', false);
@@ -311,7 +313,7 @@ Contributions.cell_of_Poly_element_contribution = @(x) arrayfun(@(i) ...
 Contributions.contribution_ETS_yellow_cavity = @(x) classelement(classelement.create_config( ...
     {perso_modify_subelement_dimensions(top_plate(x_TP1(x)), yellow_cavities_width, yellow_cavities_depth), ...
      perso_modify_subelement_dimensions(air_gap, yellow_cavities_width, yellow_cavities_depth), ...
-     yellow_cavity}, 'closed'));
+     yellow_cavity}, 'closed', yc_input_surface));
 
 Contributions.cell_of_ETS_yellow_cavity_contributions = @(x) arrayfun(@(i) ...
     Contributions.contribution_ETS_yellow_cavity(x), 1:4 ,'UniformOutput', false);
@@ -319,7 +321,7 @@ Contributions.cell_of_ETS_yellow_cavity_contributions = @(x) arrayfun(@(i) ...
 Contributions.contribution_Poly_yellow_cavity = @(x) classelement(classelement.create_config( ...
     {perso_modify_subelement_dimensions(top_plate(x_TP2(x)), yellow_cavities_width, yellow_cavities_depth), ...
      perso_modify_subelement_dimensions(air_gap, yellow_cavities_width, yellow_cavities_depth), ...
-     yellow_cavity}, 'closed'));
+     yellow_cavity}, 'closed', yc_input_surface));
 
 Contributions.cell_of_Poly_yellow_cavity_contributions = @(x) arrayfun(@(i) ...
     Contributions.contribution_Poly_yellow_cavity(x), 1:4 ,'UniformOutput', false);
@@ -344,10 +346,10 @@ Modules.module_Poly_sans_HR = @(x) classelementassembly(classelementassembly.cre
 Cartouches = struct();
 
 Cartouches.cartouche_ETS = @(x) classelement(classelement.create_config( ...
-    {top_plate(x_TP1(x)), air_gap, Modules.module_ETS(x)}, 'closed'));
+    {top_plate(x_TP1(x)), air_gap, Modules.module_ETS(x)}, 'closed', total_input_surface));
 
 Cartouches.cartouche_ETS_sans_HR = @(x) classelement(classelement.create_config( ...
-    {top_plate(x_TP1(x)), air_gap, Modules.module_ETS_sans_HR(x)}, 'closed'));
+    {top_plate(x_TP1(x)), air_gap, Modules.module_ETS_sans_HR(x)}, 'closed', total_input_surface));
 
 Cartouches.cartouche_ETS_contributions = @(x) classelementassembly(classelementassembly.create_config( ...
     [Contributions.contribution_cell_of_MPPSBH_element(x), Contributions.cell_of_ETS_yellow_cavity_contributions(x)]));
@@ -356,10 +358,10 @@ Cartouches.cartouche_ETS_sans_HR_contributions = @(x) classelementassembly(class
     Contributions.contribution_cell_of_MPPSBH_element(x)));
 
 Cartouches.cartouche_Poly = @(x) classelement(classelement.create_config( ...
-    {top_plate(x_TP2(x)), air_gap, Modules.module_Poly(x)}, 'closed'));
+    {top_plate(x_TP2(x)), air_gap, Modules.module_Poly(x)}, 'closed', total_input_surface));
 
 Cartouches.cartouche_Poly_sans_HR = @(x) classelement(classelement.create_config( ...
-    {top_plate(x_TP2(x)), air_gap, Modules.module_Poly_sans_HR(x)}, 'closed'));
+    {top_plate(x_TP2(x)), air_gap, Modules.module_Poly_sans_HR(x)}, 'closed', total_input_surface));
 
 Cartouches.cartouche_Poly_contributions = @(x) classelementassembly(classelementassembly.create_config( ...
     [Contributions.cell_of_Poly_element_contribution(x), Contributions.cell_of_Poly_yellow_cavity_contributions(x)]));

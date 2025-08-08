@@ -81,7 +81,12 @@ classdef classJCA_Rigid < classsubelement
             %%%%%% Champoux-Allard model ([5] tableau p. 24) %%%%%%
             
             % densité effective (effets visqueux) 
-            H = phi^2 * vl^2 * sig.^2 ./ (4 * tor.^2 * rho .* eta); % fréquence caractéristique visqueuse
+            try 
+                H = phi^2 * vl^2 * sig.^2 ./ (4 * tor.^2 * rho .* eta); % fréquence caractéristique visqueuse
+            catch
+                sprintf('pause!');
+            end
+            
             % % debog
             % plot(phi^2 * vl^2 * sig.^2)
             % close();
@@ -146,6 +151,7 @@ classdef classJCA_Rigid < classsubelement
             
             config = struct();
             config.Section = NaN;
+            config.Surface = NaN;
             config.Thickness = NaN;
             config.Porosity = NaN;
             config.Tortuosity = NaN;
@@ -156,6 +162,7 @@ classdef classJCA_Rigid < classsubelement
             % Si la méthode n'est pas appelée à vide
             if nargin > 0
                 config.Section = section;
+                config.Surface = section;
                 config.Thickness = thickness;
                 config.Porosity = porosity;
                 config.Tortuosity = tortuosity;
@@ -188,12 +195,12 @@ classdef classJCA_Rigid < classsubelement
             env = create_environnement(23, 100800, 22, 1, 2000, 200, 145);
 
             % création de l'objet de classe
-            E = classJCA_Rigid(classJCA_Rigid.create_config(phi, tor, sig, vl, tl, d, s));
+            E = classJCA_Rigid(classJCA_Rigid.create_config(s, d, phi, tor, sig, vl, tl));
             alpha_model = E.alpha(env);
 
             % importation des données de références
             data = csvread('Verdière2013_fig4_E.txt');
-            [x_data, y_data] = interpole_et_lisse(data(:, 1), data(:, 2), 1000, 0.05);
+            [x_data, y_data] = perso_interpole_et_lisse(data(:, 1), data(:, 2), 1000, 0.05);
 
             % affichage des résultats
             subplot(1, 1, 1)

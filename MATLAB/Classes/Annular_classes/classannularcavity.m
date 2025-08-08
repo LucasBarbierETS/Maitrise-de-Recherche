@@ -60,7 +60,7 @@ classdef classannularcavity < classsubelement
                 case 'Hankel'
 
                     % récupération des paramètres JCA de la cavité annulaire
-                    JCA_Rigid_config = classJCA_Rigid.create_config(1, 1, 12 * eta / hde^2, hde, hde, rde, 1); % surface d'entrée arbitraire
+                    JCA_Rigid_config = classJCA_Rigid.create_config(1, rde, 1, 1, 12 * eta / hde^2, hde, hde); % surface d'entrée arbitraire
                     slitJCA = classJCA_Rigid(JCA_Rigid_config);
                     kde = slitJCA.equivalent_parameters(env).keq;
                     Zde = slitJCA.equivalent_parameters(env).Zeq; 
