@@ -1,0 +1,17 @@
+{
+	"nodes":[
+		{"id":"d9928540a898a0e9","x":-520,"y":-60,"width":365,"height":120,"type":"text","text":"l'écoulement peut être une source de bruit aéroacoustique au niveau de la paroi d'un conduit"},
+		{"id":"45d48fd481a2f510","type":"text","text":"un écoulement est caractérisé par un couche limite visqueuse","x":160,"y":-60,"width":380,"height":120},
+		{"id":"3facc3a4e1d9d035","x":-200,"y":-360,"width":380,"height":120,"type":"text","text":"les écoulements sont caractérisés par un profil d'écoulement"},
+		{"id":"10145a80ff72162e","x":-220,"y":200,"width":250,"height":120,"type":"text","text":"l'écoulement déforme le champ acoustique "},
+		{"id":"ff6864a2b360756f","x":137,"y":305,"width":283,"height":75,"type":"text","text":"convection acoustique"},
+		{"id":"58e06fa7f0cda6a0","x":-580,"y":343,"width":320,"height":120,"type":"text","text":"l'écoulement perturbe le comportement acoustique d'un liner"},
+		{"id":"111878665e975e42","x":-705,"y":560,"width":250,"height":140,"type":"text","text":"[[relation entre couche limite visqueuse et couche limite acoustique]]"},
+		{"id":"e81d0842044cc665","x":-155,"y":630,"width":302,"height":117,"type":"text","text":"[[reduction du diamètre effectif d'une perforation à cause de l'écoulement]] "}
+	],
+	"edges":[
+		{"id":"c8742561da08326e","fromNode":"10145a80ff72162e","fromSide":"right","toNode":"ff6864a2b360756f","toSide":"left"},
+		{"id":"5c4e940195726a46","fromNode":"58e06fa7f0cda6a0","fromSide":"bottom","toNode":"111878665e975e42","toSide":"top"},
+		{"id":"e321476d19c8d233","fromNode":"58e06fa7f0cda6a0","fromSide":"right","toNode":"e81d0842044cc665","toSide":"left"}
+	]
+}

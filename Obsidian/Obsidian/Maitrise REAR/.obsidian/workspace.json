@@ -1,0 +1,297 @@
+{
+  "main": {
+    "id": "ad391a376f7c3043",
+    "type": "split",
+    "children": [
+      {
+        "id": "e16c7d5ce3d7761e",
+        "type": "tabs",
+        "children": [
+          {
+            "id": "3a0cf21a21763d92",
+            "type": "leaf",
+            "state": {
+              "type": "markdown",
+              "state": {
+                "file": "Notes atomiques/Présentation du cahier des charges acoustique.md",
+                "mode": "source",
+                "source": false
+              },
+              "icon": "lucide-file",
+              "title": "Présentation du cahier des charges acoustique"
+            }
+          },
+          {
+            "id": "9caa4ef74507aac0",
+            "type": "leaf",
+            "state": {
+              "type": "markdown",
+              "state": {
+                "file": "Notes atomiques/Reconcevoir la réduction de bruit en aéronautique.md",
+                "mode": "source",
+                "source": false
+              },
+              "icon": "lucide-file",
+              "title": "Reconcevoir la réduction de bruit en aéronautique"
+            }
+          },
+          {
+            "id": "ade8a83dcffe06c1",
+            "type": "leaf",
+            "state": {
+              "type": "markdown",
+              "state": {
+                "file": "Zotero/lafontFeasibilityAcousticLiner/Feasibility of an acoustic liner applied to a Fenestron.md",
+                "mode": "source",
+                "source": false
+              },
+              "icon": "lucide-file",
+              "title": "Feasibility of an acoustic liner applied to a Fenestron"
+            }
+          },
+          {
+            "id": "103b55b8daed2678",
+            "type": "leaf",
+            "state": {
+              "type": "markdown",
+              "state": {
+                "file": "Notes atomiques/Rêverie de la vibration.md",
+                "mode": "source",
+                "source": false
+              },
+              "icon": "lucide-file",
+              "title": "Rêverie de la vibration"
+            }
+          }
+        ],
+        "currentTab": 3
+      }
+    ],
+    "direction": "vertical"
+  },
+  "left": {
+    "id": "ea8b3019ef4a9cd7",
+    "type": "split",
+    "children": [
+      {
+        "id": "d9ce1179178ea475",
+        "type": "tabs",
+        "children": [
+          {
+            "id": "49abef286cac1424",
+            "type": "leaf",
+            "state": {
+              "type": "file-explorer",
+              "state": {
+                "sortOrder": "alphabetical",
+                "autoReveal": false
+              },
+              "icon": "lucide-folder-closed",
+              "title": "Files"
+            }
+          },
+          {
+            "id": "678aea2de9b46fb4",
+            "type": "leaf",
+            "state": {
+              "type": "search",
+              "state": {
+                "query": "",
+                "matchingCase": false,
+                "explainSearch": false,
+                "collapseAll": true,
+                "extraContext": false,
+                "sortOrder": "alphabetical"
+              },
+              "icon": "lucide-search",
+              "title": "Search"
+            }
+          },
+          {
+            "id": "d1dfd65b68971134",
+            "type": "leaf",
+            "state": {
+              "type": "bookmarks",
+              "state": {},
+              "icon": "lucide-bookmark",
+              "title": "Bookmarks"
+            }
+          }
+        ],
+        "currentTab": 1
+      }
+    ],
+    "direction": "horizontal",
+    "width": 259.5
+  },
+  "right": {
+    "id": "2afa7ea527d3110b",
+    "type": "split",
+    "children": [
+      {
+        "id": "951c3f47166e2dc5",
+        "type": "tabs",
+        "children": [
+          {
+            "id": "bd022db38e12a0ed",
+            "type": "leaf",
+            "state": {
+              "type": "calendar",
+              "state": {},
+              "icon": "calendar-with-checkmark",
+              "title": "Calendar"
+            }
+          },
+          {
+            "id": "100651754210d67b",
+            "type": "leaf",
+            "state": {
+              "type": "backlink",
+              "state": {
+                "file": "Notes journalières/2025-07-18.md",
+                "collapseAll": false,
+                "extraContext": false,
+                "sortOrder": "alphabetical",
+                "showSearch": false,
+                "searchQuery": "",
+                "backlinkCollapsed": false,
+                "unlinkedCollapsed": true
+              },
+              "icon": "links-coming-in",
+              "title": "Backlinks for 2025-07-18"
+            }
+          },
+          {
+            "id": "d62a2ba75494cc84",
+            "type": "leaf",
+            "state": {
+              "type": "outgoing-link",
+              "state": {
+                "file": "Notes atomiques/Relations entre impédance de surface, grandeurs acoustiques et grandeurs RMS.md",
+                "linksCollapsed": false,
+                "unlinkedCollapsed": true
+              },
+              "icon": "links-going-out",
+              "title": "Outgoing links from Relations entre impédance de surface, grandeurs acoustiques et grandeurs RMS"
+            }
+          },
+          {
+            "id": "7b49ef6017c8ac42",
+            "type": "leaf",
+            "state": {
+              "type": "tag",
+              "state": {
+                "sortOrder": "frequency",
+                "useHierarchy": true,
+                "showSearch": false,
+                "searchQuery": ""
+              },
+              "icon": "lucide-tags",
+              "title": "Tags"
+            }
+          },
+          {
+            "id": "530fb724e48b066c",
+            "type": "leaf",
+            "state": {
+              "type": "outline",
+              "state": {
+                "file": "Notes journalières/2025-03-27.md",
+                "followCursor": false,
+                "showSearch": false,
+                "searchQuery": ""
+              },
+              "icon": "lucide-list",
+              "title": "Outline of 2025-03-27"
+            }
+          },
+          {
+            "id": "245460b161ed5479",
+            "type": "leaf",
+            "state": {
+              "type": "smart-gantt",
+              "state": {},
+              "icon": "egg",
+              "title": "Smart Gantt"
+            }
+          }
+        ]
+      }
+    ],
+    "direction": "horizontal",
+    "width": 217.5
+  },
+  "left-ribbon": {
+    "hiddenItems": {
+      "switcher:Open quick switcher": false,
+      "graph:Open graph view": false,
+      "canvas:Create new canvas": false,
+      "daily-notes:Open today's daily note": false,
+      "templates:Insert template": false,
+      "command-palette:Open command palette": false,
+      "zotero-sync-client:Sync with Zotero": false,
+      "templater-obsidian:Templater": false,
+      "obsidian-kanban:Create new board": false,
+      "smart-gantt:Smart Gantt": false
+    }
+  },
+  "active": "103b55b8daed2678",
+  "lastOpenFiles": [
+    "Notes atomiques/Rêverie de la vibration.md",
+    "Notes atomiques/Reconcevoir la réduction de bruit en aéronautique.md",
+    "Notes atomiques/Présentation du cahier des charges acoustique.md",
+    "Zotero/simon2022/Faisabilité d'un revêtement acoustique furtif basé sur l'impédance - application aéronautique.md",
+    "Notes atomiques/Revue des méthodologies.md",
+    "Zotero/rendonAeroacousticInvestigationDucted/Aeroacoustic Investigation of a Ducted Tail Rotor Using the Lattice-Boltzmann Method.md",
+    "Zotero/pongratzACOUSTICLINERDESIGN/ACOUSTIC LINER DESIGN FOR FENESTRON® NOISE REDUCTION.md",
+    "Zotero/rendonAeroacousticInvestigationDucted/Images/rendonAeroacousticInvestigationDucted-6-x44-y41.png",
+    "Zotero/rendonAeroacousticInvestigationDucted/Images",
+    "Zotero/rendonAeroacousticInvestigationDucted",
+    "Zotero/lafontFeasibilityAcousticLiner/Feasibility of an acoustic liner applied to a Fenestron.md",
+    "Zotero/lafontFeasibilityAcousticLiner",
+    "Zotero/coulon2016/METHODOLOGIE DE CONCEPTION ACOUSTIQUE DES SILENCIEUX D’UN MOTEUR DEUX TEMPS ÉQUIPANT UNE MOTONEIGE.md",
+    "Zotero/coulon2016/Images/coulon2016-68-x47-y430.png",
+    "Zotero/coulon2016/Images",
+    "Zotero/coulon2016",
+    "Notes atomiques/Table des matières.md",
+    "Zotero/simon2022",
+    "Notes atomiques/Enjeux liés à la complexité d'une problématique d'aéroacoustique.md",
+    "Notes atomiques/Propagation of Sound in Porous Media.md",
+    "Concepts/Coefficient d'absorption.md",
+    "Notes atomiques/Flux d'énergie acoustique.md",
+    "Notes atomiques/Introduction aux phénomènes acoustiques.md",
+    "Notes atomiques/Coefficient de réflexion.md",
+    "Notes atomiques/Acoustics of Ducts and Mufflers.md",
+    "Notes atomiques/Revue empirique des phénomènes liés à l'écoulement (doppler, sifflements au niveau des perforations, etc.).md",
+    "Notes atomiques/Relations entre impédance de surface, grandeurs acoustiques et grandeurs RMS.md",
+    "Notes atomiques/Distinction entre un comportement dépendant de l'angle d'incidence (MPP cavités non séparés) et réduction de l'énergie incident normalement à cause de l'angle.md",
+    "Notes atomiques/Prise en compte de l'impédance de surface d'un traitement en incidence rasante.md",
+    "Notes atomiques/Etude en 2D de la propagation en conduite traitée.md",
+    "Notes atomiques/Equation d'Helmholtz convectée pour une reformulation de l'impédance de surface.md",
+    "Notes atomiques/Matrice de transfert des éléments simples.md",
+    "Notes atomiques/Solutions générales de l'équation des ondes.md",
+    "Images collées/Pasted image 20250722105836.png",
+    "Notes atomiques MdmM/Nombre d'onde.md",
+    "Images collées/Pasted image 20250718100314.png",
+    "Images collées/Pasted image 20250718092847.png",
+    "Images collées/Pasted image 20250718092720.png",
+    "Zotero/redmannAeroacousticLinerApplications2013/Images/redmannAeroacousticLinerApplications2013-2-x70-y537.png",
+    "Zotero/redmannAeroacousticLinerApplications2013/Images/redmannAeroacousticLinerApplications2013-11-x59-y481.png",
+    "Zotero/redmannAeroacousticLinerApplications2013/Images",
+    "Zotero/redmannAeroacousticLinerApplications2013",
+    "Zotero/pongratzACOUSTICLINERDESIGN/Images/pongratzACOUSTICLINERDESIGN-9-x65-y601.png",
+    "Zotero/pongratzACOUSTICLINERDESIGN/Images/pongratzACOUSTICLINERDESIGN-9-x60-y219.png",
+    "Zotero/pongratzACOUSTICLINERDESIGN/Images",
+    "Zotero/pongratzACOUSTICLINERDESIGN",
+    "Diagramme du projet QTD3.canvas",
+    "Cartographie des approches industrielles pour la réduction de bruit en aéronautique.canvas",
+    "Notes atomiques MdmM/Sujet de discussion.canvas",
+    "Notes atomiques MdmM/Sans titre.canvas",
+    "Notes atomiques MdmM/Sans titre 1.canvas",
+    "Notes atomiques MdmM/Revue de Littérature.canvas",
+    "Notes atomiques MdmM/Prise en compte de l'écoulement.canvas",
+    "Notes atomiques MdmM/optimisation d'un liner à profondeur variable pour une conduite.canvas",
+    "Notes atomiques MdmM/Objectifs de ma maitrise.canvas",
+    "Notes atomiques MdmM/Méthodologie.canvas"
+  ]
+}

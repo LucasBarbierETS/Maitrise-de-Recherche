@@ -14,7 +14,7 @@ function env = create_environnement(temperature, static_pressure, relative_humid
 
     % Si l'utilisateur à indiqué un niveau de pression sonore (totale)
     if nargin > 6
-        p_rms = env.p_ref * 10^(varargin{1}/20);
+        p_rms = env.p_ref * 10.^(varargin{1}/20);
         env.p_rms = p_rms;
     end
 end

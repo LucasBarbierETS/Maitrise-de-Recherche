@@ -1,0 +1,5 @@
+- [ ] Comparer avec et sans cavités annulaires
+- [ ] Tests en incidence normale avec seulement la plaque (pas de fond rigide)
+- [x] Construire un échantillon ✅ 2025-03-27
+- [ ] Ajouter un écran résistif dans les simulations
+- [ ] Refaire les mesures expérimentales avec le nouvel échantillon

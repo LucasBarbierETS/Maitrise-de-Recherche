@@ -1,0 +1,243 @@
+{
+  "main": {
+    "id": "17c361fc01a70204",
+    "type": "split",
+    "children": [
+      {
+        "id": "2549eba520ca3c09",
+        "type": "tabs",
+        "children": [
+          {
+            "id": "0ef5948b51970770",
+            "type": "leaf",
+            "state": {
+              "type": "markdown",
+              "state": {
+                "file": "Articles MdmM/design d'un liner acoutique (AIRBUS).md",
+                "mode": "source",
+                "source": false,
+                "backlinks": true,
+                "backlinkOpts": {
+                  "collapseAll": false,
+                  "extraContext": false,
+                  "sortOrder": "alphabetical",
+                  "showSearch": false,
+                  "searchQuery": "",
+                  "backlinkCollapsed": false,
+                  "unlinkedCollapsed": true
+                }
+              },
+              "icon": "lucide-file",
+              "title": "design d'un liner acoutique (AIRBUS)"
+            }
+          }
+        ]
+      }
+    ],
+    "direction": "vertical"
+  },
+  "left": {
+    "id": "d499b376ea5bc39d",
+    "type": "split",
+    "children": [
+      {
+        "id": "949e35453cf1fbfd",
+        "type": "tabs",
+        "children": [
+          {
+            "id": "623d4dee6ae78e47",
+            "type": "leaf",
+            "state": {
+              "type": "search",
+              "state": {
+                "query": "",
+                "matchingCase": false,
+                "explainSearch": false,
+                "collapseAll": true,
+                "extraContext": false,
+                "sortOrder": "alphabetical"
+              },
+              "icon": "lucide-search",
+              "title": "Search"
+            }
+          },
+          {
+            "id": "5921c77d4cc49546",
+            "type": "leaf",
+            "state": {
+              "type": "bookmarks",
+              "state": {},
+              "icon": "lucide-bookmark",
+              "title": "Bookmarks"
+            }
+          },
+          {
+            "id": "1d841a0475182e4a",
+            "type": "leaf",
+            "state": {
+              "type": "file-explorer",
+              "state": {
+                "sortOrder": "alphabetical",
+                "autoReveal": false
+              },
+              "icon": "lucide-folder-closed",
+              "title": "Files"
+            }
+          }
+        ]
+      }
+    ],
+    "direction": "horizontal",
+    "width": 295.5
+  },
+  "right": {
+    "id": "907a18ecc2c7964d",
+    "type": "split",
+    "children": [
+      {
+        "id": "b7fe320b44f4badd",
+        "type": "tabs",
+        "children": [
+          {
+            "id": "36248a69aafed1fc",
+            "type": "leaf",
+            "state": {
+              "type": "tag",
+              "state": {
+                "sortOrder": "frequency",
+                "useHierarchy": true,
+                "showSearch": false,
+                "searchQuery": ""
+              },
+              "icon": "lucide-tags",
+              "title": "Tags"
+            }
+          },
+          {
+            "id": "54896d5c9fc3589e",
+            "type": "leaf",
+            "state": {
+              "type": "backlink",
+              "state": {
+                "file": "Articles MdmM/design d'un liner acoutique (AIRBUS).md",
+                "collapseAll": false,
+                "extraContext": false,
+                "sortOrder": "alphabetical",
+                "showSearch": false,
+                "searchQuery": "",
+                "backlinkCollapsed": false,
+                "unlinkedCollapsed": true
+              },
+              "icon": "links-coming-in",
+              "title": "Backlinks for design d'un liner acoutique (AIRBUS)"
+            }
+          },
+          {
+            "id": "8a2319f338bb44b8",
+            "type": "leaf",
+            "state": {
+              "type": "outgoing-link",
+              "state": {
+                "file": "Articles MdmM/design d'un liner acoutique (AIRBUS).md",
+                "linksCollapsed": false,
+                "unlinkedCollapsed": true
+              },
+              "icon": "links-going-out",
+              "title": "Outgoing links from design d'un liner acoutique (AIRBUS)"
+            }
+          },
+          {
+            "id": "9326abb4a5016741",
+            "type": "leaf",
+            "state": {
+              "type": "outline",
+              "state": {
+                "file": "Articles/design d'un liner acoutique (AIRBUS).md"
+              },
+              "icon": "lucide-list",
+              "title": "Plan de design d'un liner acoutique (AIRBUS)"
+            }
+          }
+        ],
+        "currentTab": 1
+      }
+    ],
+    "direction": "horizontal",
+    "width": 200
+  },
+  "left-ribbon": {
+    "hiddenItems": {
+      "switcher:Open quick switcher": false,
+      "graph:Open graph view": false,
+      "canvas:Create new canvas": false,
+      "daily-notes:Open today's daily note": false,
+      "templates:Insert template": false,
+      "command-palette:Open command palette": false,
+      "templater-obsidian:Templater": false,
+      "smart-gantt:Smart Gantt": false,
+      "obsidian-kanban:Create new board": false,
+      "obisidian-note-linker:Note Linker": false,
+      "sheet-plus:Create excel file": false,
+      "obsidian-full-calendar:Open Full Calendar": false
+    }
+  },
+  "active": "623d4dee6ae78e47",
+  "lastOpenFiles": [
+    "Articles MdmM/winklerHighFidelityModeling2021/winklerHighFidelityModeling2021.md",
+    "Notes atomiques MdmM/processus industriel pour le design de liner acoustique.md",
+    "Notes atomiques MdmM/outils et méthodes numérique de haute précision pour le design de traitement acoustique.md",
+    "Notes atomiques MdmM/Optimisation d'un liner à profondeurs variables.md",
+    "prise en compte de l'écoulement.md",
+    "Notes atomiques MdmM/liner acoustique pour le carénage d'un rotor.md",
+    "Notes atomiques MdmM/Revolutionary Vertical Lift Technolgy (RVLT).md",
+    "Notes atomiques MdmM/modèle réaliste de l'impédance de surface d'un liner.md",
+    "Articles MdmM/jones2022/jones2022.md",
+    "Notes atomiques MdmM/équations d'Euler.md",
+    "Notes atomiques MdmM/équations d'Euler harmonique.md",
+    "Notes atomiques MdmM/équations aux dérivées partielles décrivant la propagation acoustique.md",
+    "Notes atomiques MdmM/équation de bernuilli.md",
+    "Notes atomiques MdmM/équation de Helmholtz convectée en 2D.md",
+    "Notes atomiques MdmM/équation de Bernouilli.md",
+    "Notes atomiques MdmM/équation d'Euler linéarisée en 2D.md",
+    "Notes atomiques MdmM/énergie d'un fluide.md",
+    "Notes atomiques MdmM/écoulement uniforme.md",
+    "Notes atomiques MdmM/écoulement rasant.md",
+    "Notes atomiques MdmM/écoulement laminaire.md",
+    "Notes atomiques MdmM/[[équation de Helmholtz convectée en 2D.md",
+    "Notes atomiques MdmM/écoulement fluide dans un tube.md",
+    "Notes atomiques MdmM/vitesse de l'écoulement dans le rotor.md",
+    "Notes atomiques MdmM/Zwikker - Kosten Transmission Line (ZKTL).md",
+    "Notes atomiques MdmM/viscosité dynamique.md",
+    "Notes atomiques MdmM/vena contracta.md",
+    "Notes atomiques MdmM/Sujet de discussion.canvas",
+    "Notes atomiques MdmM/Sans titre.canvas",
+    "Notes atomiques MdmM/Sans titre 1.canvas",
+    "Notes atomiques MdmM/Revue de Littérature.canvas",
+    "Notes atomiques MdmM/Prise en compte de l'écoulement.canvas",
+    "Notes atomiques MdmM/Pasted image 20240712172157.png",
+    "Notes atomiques MdmM/Pasted image 20240712150318.png",
+    "Notes atomiques MdmM/Pasted image 20240707213134.png",
+    "Notes atomiques MdmM/Pasted image 20240707213020.png",
+    "Notes atomiques MdmM/Pasted image 20240707212943.png",
+    "Notes atomiques MdmM/Pasted image 20240705191401.png",
+    "Notes atomiques MdmM/Pasted image 20240627232513.png",
+    "Notes atomiques MdmM/optimisation d'un liner à profondeur variable pour une conduite.canvas",
+    "Notes atomiques MdmM/Objectifs de ma maitrise.canvas",
+    "Notes atomiques MdmM/Méthodologie.canvas",
+    "Notes atomiques MdmM/Liens entre les différents articles.canvas",
+    "Notes atomiques MdmM/Atteindre une impédance idéale.canvas",
+    "Notes atomiques MdmM",
+    "Articles MdmM 1/zhang2023/Figures/image-4-x303-y349.png",
+    "Articles MdmM 1/winklerHighFidelityModeling2021/Figures/image-3-x90-y255.png",
+    "Articles MdmM 1/winklerHighFidelityModeling2021/Figures/image-3-x74-y76.png",
+    "Articles MdmM 1/zhang2023/Figures",
+    "Articles MdmM 1/winklerHighFidelityModeling2021/Figures",
+    "Articles MdmM 1/watson2006/Figures",
+    "Articles MdmM 1/stephens2008/Figures",
+    "Articles MdmM 1/simon2021/Figures",
+    "Articles MdmM 1/roncen2021/Figures",
+    "Articles MdmM 1/marinova2020/Figures",
+    "Articles MdmM 1/lafont2020/Figures",
+    "Articles MdmM 1/jones2022/Figures"
+  ]
+}

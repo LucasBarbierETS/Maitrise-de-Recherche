@@ -1,0 +1,2 @@
+
+Dans ce modèle de l'[[application OPAL]], l'utilisateur peut définir une géométrie 2D dans laquelle résoudre l'équation d'Euler linéarisée. Il est possible de choisir une autre équation aux dérivés partielles hyperbolique

@@ -15,43 +15,54 @@ classdef Cell_MPPSBHr < classelement
             obj.Configuration = perso_transfer_fields(config, obj.Configuration);
 
             % Paramètres de la plaque
-            pp = config.PlatePorosity;
+            p = config.Porosity;
             phr = config.PlateHolesRadius;
-            pt = config.PlateThickness;
+            t = config.Thickness;
             
             % Paramètres de la cellule
             ct = config.CavityThickness;
             cd = config.CavityDepth;
             cw = config.CavityWidth;
+
             ciw = config.CellInnerWidth;
             cow = config.CellOuterWidth;
-            pmw = (ciw + cow)/2; % pore mean radius
-            SMPP = ciw*cd;
-            Scav = pmw*cd;
+            pmw = (ciw + cow)/2; % pore mean width
+
+            cid = config.CellInnerDepth;
+            cod = config.CellOuterDepth;
+            pmd = (cid + cod)/2; % pore mean depth
+
+            cm = config.CavityMethod;
 
             % Plaque perforée (Modèle de Maa)
-            obj.Configuration.ListOfSubelements{end+1} = classMPP_Circular(classMPP_Maa.create_config(pp, phr, pt, SMPP));
+            obj.Configuration.ListOfSubelements{end+1} = classMPP_Circular(classMPP_Circular.create_config(p, phr, t, ciw, cid));
 
             % Cavité cylindrique
-            obj.Configuration.ListOfSubelements{end+1} = classcavity(classcavity.create_config(ct, Scav));
+            obj.Configuration.ListOfSubelements{end+1} = classcavity(classcavity.create_config(ct/2, ciw, cid));
 
-            % Cavité cubique en parallèle
-            cc = classcubicalcavity(classcubicalcavity.create_config(pmw, cw, cd, ct));
-            obj.Configuration.ListOfSubelements{end+1} = classjunction(classjunction.create_config(Scav, cc));
+            if strcmp(cm, 'volume')
+                % Cavité cubique en parallèle
+                cc = classcubicalcavity(classcubicalcavity.create_config(pmw, pmd, cw, cd, ct));
+                obj.Configuration.ListOfSubelements{end+1} = classjunction(classjunction.create_config(cc, pmw, pmd));
+            end
+
+            % Cavité cylindrique
+            obj.Configuration.ListOfSubelements{end+1} = classcavity(classcavity.create_config(ct/2, pmw, pmd));
         end
     end
 
     methods (Static)
 
-        function config = create_config(plate_porosity, plate_holes_radius, plate_thickness, ...
-                cavity_thickness, cavity_depth, cavity_width, cell_inner_width, cell_outer_width)
+        function config = create_config(porosity, plate_holes_radius, thickness, ...
+                cavity_thickness, cavity_depth, cavity_width, cell_inner_width, cell_outer_width, ...
+                cell_inner_depth, cell_outer_depth, cavity_method)
 
             config = struct();
 
             % Paramètres de la plaque
-            config.PlatePorosity = plate_porosity;
+            config.Porosity = porosity;
             config.PlateHolesRadius = plate_holes_radius;
-            config.PlateThickness = plate_thickness;
+            config.Thickness = thickness;
 
             % Paramètres de la cellule
             config.CavityThickness = cavity_thickness;
@@ -59,6 +70,11 @@ classdef Cell_MPPSBHr < classelement
             config.CavityWidth = cavity_width;
             config.CellInnerWidth = cell_inner_width;
             config.CellOuterWidth = cell_outer_width;
+            config.Section = cell_inner_width * cell_inner_depth;
+            % config.Section = cavity_width * cavity_depth;
+            config.CellInnerDepth = cell_inner_depth;
+            config.CellOuterDepth = cell_outer_depth;
+            config.CavityMethod = cavity_method;
         end
 
         function type = type(app)

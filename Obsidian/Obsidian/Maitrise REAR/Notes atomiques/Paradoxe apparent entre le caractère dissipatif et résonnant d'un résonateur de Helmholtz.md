@@ -1,0 +1,1 @@
+Intuitivement le résonateur de Helmholtz dissipe de l'énergie par perte visquo-thermique mais si on s'arrête à cette lecture on ne comprend pas le phénomène de résonnance qui à lieu par exemple lorsqu'on souffle sur l'entrée d'une bouteille de bière. [[Excitation d'un résonateur de Helmholtz par un écoulement rasant]] 

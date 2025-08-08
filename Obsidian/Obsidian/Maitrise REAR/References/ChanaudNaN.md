@@ -1,0 +1,5 @@
+[🇿](zotero://select/groups/2456963/items/HRGG7TMC)
+
+[[People/R.C. Chanaud]] 
+# EFFECTS OF GEOMETRY ON THE RESONANCE FREQUENCY OF HELMHOLTZ RESONATORS, PART II (NaN)
+

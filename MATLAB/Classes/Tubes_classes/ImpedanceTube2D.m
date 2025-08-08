@@ -10,42 +10,38 @@ classdef ImpedanceTube2D
             obj.Configuration = config;
         end
 
-        function obj = lauch_tube_measurement(obj)
-            env = create_environnement(28, 108000, 50, 1, 5000, 200, 130);
+        function obj = lauch_tube_measurement(obj, env)
             obj.Configuration.ComsolModel = ImpedanceTube2DModel(obj.Configuration.ListOfSolutions, env);
             obj.Configuration.Data2D = mphtable(obj.Configuration.ComsolModel, 'tbl1').data;
         end
 
-        function obj = plot_alpha(obj, env, f_min, f_max, name)
+        function obj = plot_alpha(obj, env, name) % f_min, f_max,
 
             figure()
             hold on
 
             % Limites fréquentielles
-            xline(f_min, '--k');
-            xline(f_max, '--k');
+            % xline(f_min, '--k');
+            % xline(f_max, '--k');
 
             % Résultats analytiques
             assembly = classelementassembly(classelementassembly.create_config(obj.Configuration.ListOfSolutions)); 
             alpha_model = assembly.alpha(env);
             f = env.w / (2 * pi);
-            p1 = plot(f, alpha_model, 'color', 'b', 'DisplayName', [name ' - Résultat Analytique']);
-            yline(assembly.alpha_mean(env, f_min, f_max), '--b', ...
-                  sprintf('%.2f', assembly.alpha_mean(env, f_min, f_max)), 'LabelHorizontalAlignment', 'right', 'LabelVerticalAlignment', 'top');
+            p1 = plot(f, alpha_model, 'color', 'b', 'DisplayName', name);
+            % yline(assembly.alpha_mean(env, f_min, f_max), '--b', ...
+            %       sprintf('%.2f', assembly.alpha_mean(env, f_min, f_max)), 'LabelHorizontalAlignment', 'right', 'LabelVerticalAlignment', 'top');
            
             % Résultats numériques
             if isfield(obj.Configuration, 'Data2D')
                 data = obj.Configuration.Data2D;
-                p2 = plot(data(:, 1), data(:, 2), '--r', 'DisplayName', [name ' - Résultat FEM']);
-                m = (data(:, 1) > f_min & data(:, 1) < f_max);
-                yline(mean(data(m, 2)), '--r', ...
-                      sprintf('%.2f', mean(data(m, 2))), 'LabelHorizontalAlignment', 'right', 'LabelVerticalAlignment', 'bottom');
+                p2 = plot(data(:, 1), data(:, 2), '--r', 'DisplayName', name);
+                % m = (data(:, 1) > f_min & data(:, 1) < f_max);
+                % yline(mean(data(m, 2)), '--r', ...
+                %       sprintf('%.2f', mean(data(m, 2))), 'LabelHorizontalAlignment', 'right', 'LabelVerticalAlignment', 'bottom');
             end
 
-            xlabel("Fréquence (Hz)")
-            ylabel("Coefficient d'Absorption")
-            xlim([0 2000]);
-            ylim([0 1]);
+            perso_configure_alpha_figure(2000);
             legend([p1, p2], 'Location', 'best');
         end
     end

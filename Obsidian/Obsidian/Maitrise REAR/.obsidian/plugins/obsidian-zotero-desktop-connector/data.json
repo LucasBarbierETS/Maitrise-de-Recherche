@@ -1,0 +1,30 @@
+{
+  "database": "Zotero",
+  "noteImportFolder": "Zotero - Imported Articles",
+  "pdfExportImageDPI": 120,
+  "pdfExportImageFormat": "png",
+  "pdfExportImageQuality": 90,
+  "citeFormats": [
+    {
+      "name": "Bibliography",
+      "format": "formatted-bibliography",
+      "cslStyle": "chicago-annotated-bibliography"
+    },
+    {
+      "name": "Cite",
+      "format": "formatted-citation"
+    }
+  ],
+  "exportFormats": [
+    {
+      "name": "Import #1",
+      "outputPathTemplate": "Zotero/{{citekey}}/{{title}}.md",
+      "imageOutputPathTemplate": "Zotero/{{citekey}}/Images/",
+      "imageBaseNameTemplate": "{{citekey}} ",
+      "templatePath": "Templates/zotero Template V2.1.md"
+    }
+  ],
+  "citeSuggestTemplate": "[[{{citekey}}]]",
+  "openNoteAfterImport": false,
+  "whichNotesToOpenAfterImport": "first-imported-note"
+}

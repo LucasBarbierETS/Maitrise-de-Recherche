@@ -1,0 +1,11 @@
+{
+	"nodes":[
+		{"id":"4e726047f54b4fd3","type":"text","text":"théorème fondamentaux : unicité des solutions","x":-240,"y":50,"width":285,"height":60},
+		{"id":"6b0e5da3dc944f7e","type":"text","text":"vision mécaniste/ vision ondulatoire/ modale","x":-240,"y":-280,"width":250,"height":60},
+		{"id":"c70cb313aedde591","type":"text","text":"dualité entre interférence et dissipation","x":15,"y":-180,"width":250,"height":60},
+		{"id":"8b240e27f9405d61","type":"text","text":"vision transitoire/ vision permanente","x":-280,"y":-100,"width":250,"height":60},
+		{"id":"ce1d604b0c77ff60","type":"text","text":"étude du concept d'impédance :valeur épistémologique, aspect relatif, histoire du concept, utilisation comme interface entre modèle","x":100,"y":-50,"width":270,"height":200},
+		{"id":"b28b06e7cc22a86f","x":45,"y":-500,"width":250,"height":180,"type":"text","text":"[[Obstacles épistémologiques à la saisie du concept de résonnance ]] "}
+	],
+	"edges":[]
+}

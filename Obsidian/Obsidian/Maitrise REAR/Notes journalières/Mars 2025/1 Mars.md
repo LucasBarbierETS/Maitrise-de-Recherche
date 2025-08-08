@@ -1,0 +1,7 @@
+Concernant l'interprétation du problème de couplage entre le système acoustique et le tube à l'extérieur, il faut changer la manière de poser le problème. On peut par exemple **considérer l'entrée de la solution acoustique comme une interface imperméable**. Changer le problème de cette façon modifie l'intégralité du fonctionnement acoustique
+- pas de turbulences aérodynamiques créatrices de bruit
+- pas de création de gradient de pression à l'origine d'un détournement des lignes de courant en direction de la cavité
+
+
+Le problème de la séparation des modèles pose la question des équations du couplage, des équivalences définies, des interactions qu'on veut virtuellement reproduire et leurs rapports entre elle. Il faut que de part et d'autre de l'interface on ait une interprétabilité de ces phénomènes, vulgairement qu'on sache quoi en faire.
+Par exemple dans le tube avec écoulement, si il n'y a pas de perforations alors il n'y pas de turbulences particulières liées à la présence de perforations. Il y a seulement le gradient de vitesse moyenne lié à la viscosité de l'air (mais vu qu'il n'est pas très visqueux on constate le développement de d'une couche limite turbulente constante le long de la paroi). Ce phénomène est propre au déploiement d'un écoulement d'air dans un conduit et peut déja être en lui même un terme de source 

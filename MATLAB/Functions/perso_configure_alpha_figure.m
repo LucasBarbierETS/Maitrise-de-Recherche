@@ -5,3 +5,4 @@ function perso_configure_alpha_figure(f_max)
     ylim([0 1])
     legend()
 end
+

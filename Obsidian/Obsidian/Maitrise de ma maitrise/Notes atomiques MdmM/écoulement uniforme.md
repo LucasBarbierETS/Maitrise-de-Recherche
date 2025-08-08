@@ -1,0 +1,1 @@
+On considère que la  [[couche limite de cisaillement]] est infiniement fine.

@@ -1,0 +1,25 @@
+{
+	"nodes":[
+		{"id":"5431cc278a200951","type":"text","text":"[[Problématique - Etude, Caractérisation et dimensionnement de solutions acoustiques pour des applications industrielles en condition d'excitation réalistes]] ","x":-180,"y":-140,"width":340,"height":160},
+		{"id":"e4c0e56bfa8f63db","type":"text","text":"Création des outils","x":327,"y":-170,"width":250,"height":60},
+		{"id":"1e4ce4452087e81f","type":"text","text":"Mesures expérimentales","x":285,"y":20,"width":250,"height":60},
+		{"id":"139a216d9af41f37","type":"text","text":"[[Modélisation du problème acoustique]]","x":149,"y":-340,"width":250,"height":60},
+		{"id":"dcae73a46542c229","type":"text","text":"[[Dimensionnement des solutions acoustiques]] ","x":100,"y":197,"width":250,"height":58},
+		{"id":"284562b0f55d4c55","type":"text","text":"Optimisation","x":-260,"y":197,"width":250,"height":60},
+		{"id":"29dc142f7b6172d7","type":"text","text":"[[Cadre épistémologique]]","x":-580,"y":-230,"width":250,"height":60},
+		{"id":"ad4c5ba63cb69499","type":"text","text":"[[Application dans le cadre du projet REAR - traitement acoustique du carénage du rotor]] ","x":-560,"y":80,"width":320,"height":100},
+		{"id":"9523023b0fa04509","type":"text","text":"[[Etat de l'art sur les méthodologies de réduction de bruit dans l'industrie aéronautique]]","x":-260,"y":-460,"width":320,"height":120},
+		{"id":"c671ca028c03f912","type":"text","text":"[[Introduction]] ","x":-430,"y":-310,"width":250,"height":60}
+	],
+	"edges":[
+		{"id":"849de0c1e0b904c9","fromNode":"5431cc278a200951","fromSide":"left","toNode":"29dc142f7b6172d7","toSide":"right","toEnd":"none","label":"1"},
+		{"id":"d5f3ab45fc1faf43","fromNode":"5431cc278a200951","fromSide":"top","toNode":"9523023b0fa04509","toSide":"bottom","toEnd":"none","label":"2"},
+		{"id":"e06ace76a79aea23","fromNode":"5431cc278a200951","fromSide":"top","toNode":"139a216d9af41f37","toSide":"bottom","toEnd":"none","label":"3"},
+		{"id":"e63f3b91f978e8b0","fromNode":"5431cc278a200951","fromSide":"left","toNode":"ad4c5ba63cb69499","toSide":"top","toEnd":"none","label":"8"},
+		{"id":"c6ed11e6d699da74","fromNode":"5431cc278a200951","fromSide":"right","toNode":"1e4ce4452087e81f","toSide":"left","label":"5"},
+		{"id":"dc17575433e07e69","fromNode":"5431cc278a200951","fromSide":"bottom","toNode":"284562b0f55d4c55","toSide":"top","label":"7"},
+		{"id":"83d832907a7061f6","fromNode":"5431cc278a200951","fromSide":"right","toNode":"e4c0e56bfa8f63db","toSide":"left","label":"4"},
+		{"id":"640f5053bfc1ee9f","fromNode":"5431cc278a200951","fromSide":"bottom","toNode":"dcae73a46542c229","toSide":"top","label":"6"},
+		{"id":"3bee8138a23effe0","fromNode":"c671ca028c03f912","fromSide":"right","toNode":"5431cc278a200951","toSide":"left"}
+	]
+}

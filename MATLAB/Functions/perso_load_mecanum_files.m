@@ -1,4 +1,10 @@
-function dataStruct = perso_load_mecanum_files(folderPath)
+function dataStruct = perso_load_mecanum_files(varargin)
+    
+    if nargin == 0
+        folderPath = uigetdir();
+    else
+        folderPath = varargin{1};
+    end
     
     files = dir(folderPath);  % Trouver tous les fichiers .txt
     dataStruct = struct();  % Initialisation de la structure

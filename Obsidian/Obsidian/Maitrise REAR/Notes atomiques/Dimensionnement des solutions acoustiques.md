@@ -1,0 +1,3 @@
+Cette partie s'intéresse aux enjeux du dimensionnement des solutions acoustiques et de leur assemblage. Pour cela on va décrire qualitativement ces enjeux ainsi que la manière de les définir lors du processus l'optimisation. On s'intéressera plus en détail à certaines solutions pour lequel le dimensionnement prend une part importante du développement.
+
+[[Enjeux de dimensionnement pour un résonateur de Helmholtz]] 

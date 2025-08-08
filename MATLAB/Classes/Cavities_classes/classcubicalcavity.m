@@ -17,12 +17,13 @@ classdef classcubicalcavity < classsubelement
          
             mpw = config.MainPoreWidth;
             cw  = config.CavityWidth;
+            mpd = config.MainPoreDepth;
             cd = config.CavityDepth;
             ct = config.CavityThickness;
             Ca = config.CurtainArea;
                     
             % Calcul du volume de la cavité :
-            Vcav = ct * cd * (cw - mpw); % Différence des volumes de deux cubes
+            Vcav = ct * (cd - mpd) * (cw - mpw); % Différence des volumes de deux cubes
             % Si on considère que la surface ou s'applique l'admittance
             % voit a chaque fois la moitié du volume seulement, il faut
             % alors divise ce volume par 2.
@@ -51,16 +52,17 @@ classdef classcubicalcavity < classsubelement
 
     methods (Static, Access = public)
 
-        function config = create_config(main_pore_width, cavity_width, cavity_depth, cavity_thickness)
+        function config = create_config(main_pore_width, main_pore_depth, cavity_width, cavity_depth, cavity_thickness)
 
             config = struct();
             config.MainPoreWidth = main_pore_width;
-            config.CavityWidth = cavity_width;
-            config.CavityDepth = cavity_depth;
+            config.MainPoreDepth = main_pore_depth;
+            [config.CavityWidth, w] = deal(cavity_width);
+            [config.CavityDepth, d] = deal(cavity_depth);
+            config.Section = w * d;
             config.CavityThickness = cavity_thickness;
-            config.CurtainArea = 2*cavity_thickness*cavity_depth;
+            config.CurtainArea = 2 * cavity_thickness * (main_pore_width + main_pore_depth);
         end
-
     end
 end
 

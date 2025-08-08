@@ -58,7 +58,7 @@ classdef classsubelement
 
             % On suppose qu'il y a une terminaison rigide à l'extrémité du sous-élément
             TM = obj.transfer_matrix(env);
-            S = obj.Configuration.InputSection;
+            S = obj.input_section();
 
             % Si TM est formulé avec la convention Pression - Vitesse
             % Zs = TM.T11 ./ TM.T21; 
@@ -67,9 +67,16 @@ classdef classsubelement
             Zs = S * TM.T11 ./ TM.T21; 
         end
 
-        function TM_inv = transfer_matrix_inverse(obj, env)
+        function [TM, TM_inv] = inverse_transfer_matrix(obj, env) % (p2, u2) = TM_inv * (p1, u1)
+            
             % On récupère la matrice de transfert
             TM = obj.transfer_matrix(env);
+
+            % % debog : Tracé des termes complexes de la matrice de transfert du sous-élement
+            % perso_figure('TM')
+            % clf
+            % perso_plot_transfer_matrix(TM, env);  
+            % close();
         
             % Calcul du déterminant de TM
             det_TM = TM.T11 .* TM.T22 - TM.T12 .* TM.T21;
@@ -85,6 +92,28 @@ classdef classsubelement
             TM_inv.T21 = -TM.T21 ./ det_TM;
             TM_inv.T22 = TM.T11 ./ det_TM;
         end
+
+        function [TM, p2, u2] = transfer_matrix_iter(obj, env, p1, u1) 
+
+            [TM, TM_inv] = obj.inverse_transfer_matrix(env);
+
+            % % debog : Tracé des termes complexes de la matrice de transfert du sous-élement
+            % perso_figure('TM')
+            % clf
+            % perso_plot_transfer_matrix(TM, env, ['type d''objet : ', class(obj)]);  
+            % close();
+
+            % % debog : Tracé des termes complexes de la matrice de transfert inverse du sous-élement
+            % perso_figure('TM')
+            % clf
+            % perso_plot_transfer_matrix(TM_inv, env, ['type d''objet : ', class(obj)]);  
+            % close();
+
+            p2 = TM_inv.T11 .* p1 + TM_inv.T12 .* u1;
+            u2 = TM_inv.T21 .* p1 + TM_inv.T22 .* u1;
+        end
+        
+        %%%
 
         function alpha = alpha(obj, env) 
 

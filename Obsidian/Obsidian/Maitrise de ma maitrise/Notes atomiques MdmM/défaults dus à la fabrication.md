@@ -1,0 +1,1 @@
+(rugosité, porosité, rigidité)

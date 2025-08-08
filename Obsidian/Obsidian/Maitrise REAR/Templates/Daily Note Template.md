@@ -1,0 +1,32 @@
+
+## Taches
+##### ➕ Crées à cette date
+##### 🔺En retard!
+```dataviewjs 
+const date = dv.current().file.name; // Récupère la date de la note
+dv.taskList(dv.pages().file.tasks
+  .where(t => !t.completed && t.due && t.due.toISODate() < date), false);
+```
+
+##### ⏳ Planifiées pour cette date
+```dataviewjs
+const date = dv.current().file.name; // Récupère la date de la note
+const today = dv.date("today"); // Date d'aujourd'hui
+
+const tasks = dv.pages().file.tasks
+  .where(t => 
+    !t.completed && // Tâche non terminée
+    (t.scheduled && t.scheduled.toISODate() === date || 
+    (t.start && (t.start.toISODate() === date || t.start <= today))) && 
+    today <= dv.date(date) // La date d'aujourd'hui ne doit pas être supérieure à la date de la note
+  ); 
+
+dv.taskList(tasks, false);
+```
+##### 📅 A finir pour cette date
+```dataviewjs
+const date = dv.current().file.name; // Récupère la date de la note
+dv.taskList(dv.pages().file.tasks
+  .where(t => t.due && t.due.toISODate() === date), false);
+```
+## Remarques 

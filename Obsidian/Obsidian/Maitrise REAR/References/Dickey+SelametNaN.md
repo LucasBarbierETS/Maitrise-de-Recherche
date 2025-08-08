@@ -1,0 +1,5 @@
+[🇿](zotero://select/groups/2456963/items/8UQ3IEFE)
+
+[[People/N.S. Dickey]] [[People/A. Selamet]] 
+# HELMHOLTZ RESONATORS: ONE-DIMENSIONAL LIMIT FOR SMALL CAVITY LENGTH-TO-DIAMETER RATIOS (NaN)
+

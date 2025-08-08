@@ -1,0 +1,1 @@
+Les forts niveaux sont un type d'effect non linéaires

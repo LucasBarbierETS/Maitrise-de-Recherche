@@ -1,0 +1,1 @@
+C'est la partie réelle de l'[[impédance de surface normalisée d'une plaque perforée]].

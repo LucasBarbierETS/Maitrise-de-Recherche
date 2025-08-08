@@ -4,7 +4,7 @@ classdef classMPPSBH_Rectangular < classelement
         function obj = classMPPSBH_Rectangular(config)
         
             % Appel du constructeur de la classe parente
-            obj@classelement(classelement.create_config({}, 'closed'));
+            obj@classelement(classelement.create_config({}, 'closed', []));
                
             if nargin > 0    
                 % Transfert des champs de la configuration d'appel vers la configuration de classe
@@ -12,23 +12,33 @@ classdef classMPPSBH_Rectangular < classelement
     
                 cavw = config.CavitiesWidth;
                 cavd = config.CavitiesDepth;
-                sw = config.SlitsWidth;
-                pp = config.PlatesPerforatedPartPorosity;
+                mpw = config.MainPoresWidth;
+                mpd = config.MainPoresDepth;
+                pppp = config.PlatesPerforatedPartPorosity;
+                % prp = config.PlatesRealPorosity;
                 phr = config.PlatesHolesRadius;
                 pt = config.PlatesThickness;
                 ct = config.CavitiesThickness;
+                cm = config.CavitiesMethod;
 
                 % On ajoute péridiquement la cellule plaque + cavité
-                for i = 1:length(pp)
+                for i = 1:length(pppp)
 
-                    obj.Configuration.ListOfSubelements{end+1} = Cell_MPPSBHr(Cell_MPPSBHr.create_config(pp(i), phr(i), pt(i), ...
-                    ct(i), cavd, cavw, sw(i), sw(i+1)));
+                    obj.Configuration.ListOfSubelements{end+1} = Cell_MPPSBHr(Cell_MPPSBHr.create_config(pppp(i), phr(i), pt(i), ...
+                    ct(i), cavd, cavw, mpw(i), mpw(i+1), mpd(i), mpd(i+1), cm{i}));
+
+                    % obj.Configuration.ListOfSubelements{end+1} = Cell_MPPSBHr(Cell_MPPSBHr.create_config(prp(i), phr(i), pt(i), ...
+                    % ct(i), cavd, cavw, mpw(i), mpw(i+1), mpd(i), mpd(i+1), cm(i));
                 end 
             end
         end
     
-        function output_model = set_COMSOL_2D_Model(obj, input_model, index, env)
-            output_model = ModelMPPSBH(obj.Configuration, input_model, index, env);
+        function output_model = set_COMSOL_2D_Model(obj, input_model, index, env, varargin)
+            output_model = ModelMPPSBH(obj.Configuration, input_model, index, env, varargin{:});
+        end
+
+        function output_model = set_COMSOL_3D_Model(obj, input_model, index, env)
+            output_model = ModelMPPSBH_3D(obj.Configuration, input_model, index, env);
         end
     
         function export_plate_hole_coordinates(obj, folder_name, sfx)
@@ -263,12 +273,12 @@ classdef classMPPSBH_Rectangular < classelement
             numPlates = config.NumberOfPlates;
 
             % Paramètre de kerf
-            kerf = 0.1; % Exemple : ajuster selon votre machine laser, ici 0.1 mm
+            kerf = 0.2; % Exemple : ajuster selon votre machine laser, ici 0.3 mm
             
             % Générer un fichier DXF pour chaque plaque
             for plateIdx = 1:numPlates
                 % Nom du fichier DXF pour cette plaque
-                outputFilename = fullfile(outputFolder, sprintf('perforations_plaque_%d.pj', plateIdx));
+                outputFilename = fullfile(outputFolder, sprintf('perforations_plaque_%d.dxf', plateIdx));
                 
                 % Ouvrir le fichier DXF pour cette plaque
                 fileID = fopen(outputFilename, 'w');
@@ -280,32 +290,34 @@ classdef classMPPSBH_Rectangular < classelement
                 fprintf(fileID, '0\nSECTION\n2\nENTITIES\n');
                 
                 % Récupérer les informations de perforations pour cette plaque
-                radius = config.PlatesHolesRadius(plateIdx) * 1e3;
-                numWidthHoles = config.PlatesWidthHolesNumber(plateIdx);
-                numDepthHoles = config.PlatesDepthHolesNumber(plateIdx);
-                holeDistance = config.PlatesWidthHolesDistance(plateIdx) * 1e3;
+                % r = config.PlatesHolesRadius(plateIdx) * 1e3;
+                pw = config.PlatesWidthHolesNumber(plateIdx);
+                pd = config.PlatesDepthHolesNumber(plateIdx);
+                dw = config.PlatesWidthHolesDistance(plateIdx) * 1e3;
+                dd = config.PlatesDepthHolesDistance(plateIdx) * 1e3;
                 
                 % Espacement des trous dans la direction X et Y
-                xSpacing = holeDistance;
-                ySpacing = cavityDepth / (numDepthHoles + 1);
+                xSpacing = dw;
+                ySpacing = dd;
         
-                xOffset = (externalWidth - (numWidthHoles - 1) * xSpacing) / 2;
-                yOffset = (externalDepth - (numDepthHoles - 1) * ySpacing) / 2;
+                xOffset = (externalWidth - (pw - 1) * xSpacing) / 2;
+                yOffset = (externalDepth - (pd - 1) * ySpacing) / 2;
                 
                 % Générer les cercles pour les perforations de la plaque
-                for i = 1:numWidthHoles
-                    for j = 1:numDepthHoles
+                for i = 1:pw
+                    for j = 1:pd
                         x = xOffset + (i - 1) * xSpacing;
                         y = yOffset + (j - 1) * ySpacing;
                         
-                        numpasses = 5; % Nombre de couches concentriques
+                        numpasses = 1; % Nombre de couches concentriques
 
                         
                         % Générer les cercles concentriques avec couleurs progressives
                         for k = 1:numpasses
                             % Rayon de chaque conche concentrique
-                            concheRadius = radius - k * kerf/2; % Réduction progressive du rayon
-                            
+                            % concheRadius = radius - k * kerf/2; % Réduction progressive du rayon
+                            concheRadius = 0.1;
+
                             % Cercle concentrique avec une épaisseur minimale du tracé
                             %                  forme      calque        couleur  transparence              coordonnées                 rayon      
                             fprintf(fileID, '0\nCIRCLE\n8\n0\n62\n%d\n370\n-1\n10\n%f\n20\n%f\n30\n0.0\n40\n%f\n', ...
@@ -349,14 +361,97 @@ classdef classMPPSBH_Rectangular < classelement
                 disp(['Fichier DXF généré : ', outputFilename]);
             end
         end
+   
+        function CNC_report(obj)
+
+            outputFolder = uigetdir();
+            config = obj.Configuration;
+            
+            % Récupérer les informations de l'objet
+            pw = config.PlatesWidthHolesNumber;
+            pd = config.PlatesDepthHolesNumber;
+            dw = config.PlatesWidthHolesDistance;
+            dd = config.PlatesDepthHolesDistance;
+            r = config.PlatesHolesRadius;
+            cw = config.CavitiesWidth;
+            cd = config.CavitiesDepth;
+            
+            % Nombre de plaques
+            numPlates = obj.Configuration.NumberOfPlates;
+            
+            % Boucle pour chaque plaque
+            for plateIdx = 1:numPlates
+
+                % Nom du fichier DXF pour cette plaque
+                outputFilename = fullfile(outputFolder, sprintf('CNC_perforations_plaque_%d.txt', plateIdx));
+                
+                % Ouvrir le fichier DXF pour cette plaque
+                fileID = fopen(outputFilename, 'w');
+
+                fprintf(fileID, 'Plaque %d:\n', plateIdx);
+                
+                % Position du trou inférieur gauche
+                x_position = 1e3 * (cw/2 - dw(plateIdx) * (pw(plateIdx) - 1)/2);
+                y_position = 1e3 * (cd/2 - dd(plateIdx) * (pd(plateIdx) - 1)/2);
+                fprintf(fileID, '  - Position du trou inférieur gauche : (%.3f, %.3f) mm\n', x_position, y_position);
+                
+                % Rayon des perforations
+                hole_radius = r(plateIdx) * 1e3;
+                fprintf(fileID, '  - Rayon des perforations : %.3f mm\n', hole_radius);
+                
+                % Offset entre chaque trou
+                offset_x = dw(plateIdx) * 1e3;
+                offset_y = dd(plateIdx) * 1e3;
+                fprintf(fileID, '  - Offset entre chaque trou : (%.3f, %.3f) mm\n\n', offset_x, offset_y);
+                
+                % Fermer le fichier
+                fclose(fileID);
+            end   
+        end
+    
+        function plot_2D_geometry(obj, varargin)
+
+            % Configuration de la fenêtre d'affichage
+            if nargin > 1
+                ax = varargin{1};
+                cla(ax);
+            else
+                ax = uiaxes();
+            end
+
+            hold(ax, "on");
+            axis(ax, "equal");
+
+            config = obj.Configuration;
+            cw = config.CavitiesWidth;
+            ct = config.CavitiesThickness;
+            mpw = config.MainPoresWidth;
+            pt = config.PlatesThickness;
+            pppp = config.PlatesPerforatedPartPorosity;
+
+            tt = 0; % total thickness
+
+            for i = config.NumberOfPlates:-1:1 % itération à rebours
+
+                % Tracé de la cavité i
+                rectangle(ax, 'Position', [-cw/2 tt cw ct(i)], 'Facecolor', [1 1 1]);
+                tt = tt + ct(i);
+
+                % Tracé du pore i
+                rectangle(ax, 'Position', [-mpw(i)/2 tt mpw(i) pt(i)], 'Facecolor', pppp(i) * [1 1 1]);
+                tt = tt + pt(i);
+            end
+        end
+    
     end
 
     methods (Static, Access = public)
 
         % Définition de la configuration à partir des paramètres JCA
-        function config = create_config(number_of_plates, cavities_depth, cavities_width, slits_width, ...
-        plates_holes_radius, plates_perforated_part_porosity, ...
-        plates_thickness, cavities_thickness)
+        function config = create_config(number_of_plates, cavities_depth, cavities_width, ...
+                main_pores_width, main_pores_depth, ...
+                plates_holes_radius, plates_perforated_part_porosity, ...
+                plates_thickness, cavities_thickness)
             
             config = {};
             config.ModelOptions = struct();
@@ -371,42 +466,137 @@ classdef classMPPSBH_Rectangular < classelement
             % Paramètres variables en fonction des cellules
             config.PlatesThickness = perso_interp_config(plates_thickness, number_of_plates);
             config.CavitiesThickness = perso_interp_config(cavities_thickness, number_of_plates);
-            config.SlitsWidth = perso_interp_config(slits_width, number_of_plates + 1);
+            config.MainPoresWidth = perso_interp_config(main_pores_width, number_of_plates + 1);
+            config.MainPoresDepth = perso_interp_config(main_pores_depth, number_of_plates + 1);
             config.PlatesHolesRadius = perso_interp_config(plates_holes_radius, number_of_plates);
             config.PlatesPerforatedPartPorosity = perso_interp_config(plates_perforated_part_porosity, number_of_plates);         
         end
         
-        % Définition de la configuration à partir de la géomètrie concrète
-        function config = create_explicit_config(number_of_plates, cavities_depth, cavities_width, slits_width, ...
-            plates_holes_radius, plates_width_holes_distance, ...
+        function config = create_explicit_slit_pattern_config(number_of_plates, cavities_depth, cavities_width, ...
+            plates_holes_radius, ...
+            plates_width_holes_distance, plates_depth_holes_distance, ...
             plates_depth_holes_number, plates_width_holes_number, ...
-            plates_thickness, cavities_thickness) 
+            plates_thickness, cavities_thickness, varargin) 
 
             config = {};
-            config.NumberOfPlates = number_of_plates;
+            [config.NumberOfPlates, N] = deal(number_of_plates);
             config.EndStatus = 'closed';
 
             % Paramètres globaux
-            config.CavitiesDepth = cavities_depth;
-            config.CavitiesWidth = cavities_width;
-            config.InputSection = cavities_width * cavities_depth;
+            [config.CavitiesDepth, cd] = deal(cavities_depth);
+            [config.CavitiesWidth, cw] = deal(cavities_width);
 
             % Paramètres variables en fonction des cellules
-            config.PlatesThickness = perso_interp_config(plates_thickness, number_of_plates);
-            config.CavitiesThickness = perso_interp_config(cavities_thickness, number_of_plates);
-            config.PlatesHolesRadius = reshape(perso_interp_config(plates_holes_radius, number_of_plates), 1, []); % r
-            config.PlatesDepthHolesNumber = perso_interp_config(plates_depth_holes_number, number_of_plates); % m
-            config.PlatesWidthHolesNumber = perso_interp_config(plates_width_holes_number, number_of_plates); % n
-            config.PlatesWidthHolesDistance = perso_interp_config(plates_width_holes_distance, number_of_plates); % d
+            config.PlatesThickness = perso_interp_config(plates_thickness, N);
+            config.CavitiesThickness = perso_interp_config(cavities_thickness, N);
+            [config.PlatesHolesRadius, hr] = deal(perso_interp_config(plates_holes_radius, N)); % r
+            [config.PlatesDepthHolesNumber, pd] = deal(perso_interp_config(plates_depth_holes_number, N)); % m
+            [config.PlatesWidthHolesNumber, pw] = deal(perso_interp_config(plates_width_holes_number, N)); % n
 
-            % Définition de la largeur de la fente en fonction du nombre de perforations en largeur et du rayon de perforation
-            config.SlitsWidth = perso_interp_config(num2cell(cell2mat(plates_width_holes_distance) .* cell2mat(plates_width_holes_number)), number_of_plates+1);
+            [config.PlatesWidthHolesDistance, dw] = deal(perso_interp_config(plates_width_holes_distance, N)); % d
+            [config.PlatesDepthHolesDistance, dd] = deal(perso_interp_config(plates_depth_holes_distance, N)); % d
+
+            [config.MainPoresWidth, mpw] = deal(perso_interp_config({2 * hr + (pw-1) .* dw}, N + 1));
+            [config.MainPoresDepth, mpd] = deal(perso_interp_config({2 * hr + (pd-1) .* dd}, N + 1));
             
             % Définition de la porosité à partir de la répartition des perforations
-            plates_holes_number = cell2mat(plates_depth_holes_number) .* cell2mat(plates_width_holes_number);
-            plates_perforated_surface = pi*reshape(cell2mat(plates_holes_radius), 1, []).^2 .* plates_holes_number;
-            config.PlatesPerforatedPartPorosity = reshape(plates_perforated_surface ./ (cell2mat(slits_width) * cavities_depth), 1, []);
-            config.PlatesRealPorosity = plates_perforated_surface / (cavities_width * cavities_depth);
+            Nh = pd .* pw; % nombre total de perforations
+            [plates_perforated_surface, Sperf] = deal(pi * hr.^2 .* Nh);
+            config.PlatesPerforatedPartPorosity = Sperf ./ (mpw(1:end-1) .* mpd(1:end-1));
+            config.PlatesRealPorosity = plates_perforated_surface / (cw * cd);
+
+            % Méthode de prise en compte des cavités latérales
+            if nargin > 10
+                config.CavitiesMethod = repmat(varargin(1), 1, N);
+            else
+                config.CavitiesMethod = repmat({'volume'}, 1, N);
+            end
+        end
+
+        function config = create_explicit_slit_pattern_config_without_first_plate(number_of_plates, cavities_depth, cavities_width, ...
+            plates_holes_radius, ...
+            plates_width_holes_distance, plates_depth_holes_distance, ...
+            plates_depth_holes_number, plates_width_holes_number, ...
+            plates_thickness, cavities_thickness, varargin) 
+
+            config = {};
+            [config.NumberOfPlates, N] = deal(number_of_plates);
+            config.EndStatus = 'closed';
+
+            % Paramètres globaux
+            [config.CavitiesDepth, cd] = deal(cavities_depth);
+            [config.CavitiesWidth, cw] = deal(cavities_width);
+
+            % Paramètres variables en fonction des cellules
+            config.PlatesThickness = perso_interp_config(plates_thickness, N);
+            config.CavitiesThickness = perso_interp_config(cavities_thickness, N);
+            [config.PlatesHolesRadius, hr] = deal(perso_interp_config(plates_holes_radius, N)); % r
+            [config.PlatesDepthHolesNumber, pd] = deal(perso_interp_config(plates_depth_holes_number, N)); % m
+            [config.PlatesWidthHolesNumber, pw] = deal(perso_interp_config(plates_width_holes_number, N)); % n
+
+            [config.PlatesWidthHolesDistance, dw] = deal(perso_interp_config(plates_width_holes_distance, N)); % d
+            [config.PlatesDepthHolesDistance, dd] = deal(perso_interp_config(plates_depth_holes_distance, N)); % d
+
+            [config.MainPoresWidth, mpw] = deal(perso_interp_config({2 * hr + (pw-1) .* dw}, N + 1));
+            [config.MainPoresDepth, mpd] = deal(perso_interp_config({2 * hr + (pd-1) .* dd}, N + 1));
+            
+            % Définition de la porosité à partir de la répartition des perforations
+            Nh = pd .* pw; % nombre total de perforations
+            [plates_perforated_surface, Sperf] = deal(pi * hr.^2 .* Nh);
+            config.PlatesPerforatedPartPorosity = Sperf ./ (mpw(1:end-1) .* mpd(1:end-1));
+            config.PlatesRealPorosity = plates_perforated_surface / (cw * cd);
+
+            % Méthode de prise en compte des cavités latérales
+            if nargin > 8
+                config.CavitiesMethod = repmat(varargin(1), 1, N);
+            else
+                config.CavitiesMethod = repmat({'volume'}, 1, N);
+            end
+        end
+
+        function config = create_explicit_square_pattern_config(number_of_plates, cavities_depth, cavities_width, ...
+            plates_holes_radius, plates_holes_distance, ...
+            plates_holes_number_for_each_row, ...
+            plates_thickness, cavities_thickness, varargin) 
+
+            config = {};
+            [config.NumberOfPlates, N] = deal(number_of_plates);
+            config.EndStatus = 'closed';
+
+            % Paramètres globaux
+            [config.CavitiesDepth, cd] = deal(cavities_depth);
+            [config.CavitiesWidth, cw] = deal(cavities_width);
+
+            % Paramètres variables en fonction des cellules
+            config.PlatesThickness = perso_interp_config(plates_thickness, N);
+            config.CavitiesThickness = perso_interp_config(cavities_thickness, N);
+            [config.PlatesHolesRadius, hr] = deal(perso_interp_config(plates_holes_radius, N));
+
+            [config.PlatesWidthHolesNumber, pw] = deal(perso_interp_config(plates_holes_number_for_each_row, N));
+            [config.PlatesDepthHolesNumber, pd] = deal(perso_interp_config(plates_holes_number_for_each_row, N));
+            [config.PlatesWidthHolesDistance, dw] = deal(perso_interp_config(plates_holes_distance, N));
+            [config.PlatesDepthHolesDistance, dd] = deal(perso_interp_config(plates_holes_distance, N));
+
+            [config.MainPoresWidth, mpw] = deal(perso_interp_config({2 * hr + (pw-1) .* dw}, N + 1));
+            [config.MainPoresDepth, mpd] = deal(perso_interp_config({2 * hr + (pd-1) .* dd}, N + 1));
+            
+            % Définition de la porosité à partir de la répartition des perforations
+            Nh = pd .* pw; % nombre total de perforations
+            [plates_perforated_surface, Sperf] = deal(pi * hr.^2 .* Nh);
+            config.PlatesPerforatedPartPorosity = deal(Sperf ./ (mpw(1:end-1) .* mpd(1:end-1)));
+            config.PlatesRealPorosity = plates_perforated_surface / (cw * cd);
+
+            % Méthode de prise en compte des cavités latérales
+            if nargin > 8
+                config.CavitiesMethod = repmat(varargin(1), 1, N);
+            else
+                config.CavitiesMethod = repmat({'volume'}, 1, N);
+            end
+
+            % Dimension de l'élement à la sortie
+            if nargin > 9
+                config.ElementWidth = varargin{2};
+            end
         end
 
         function validate()
@@ -426,28 +616,36 @@ classdef classMPPSBH_Rectangular < classelement
             phi = 0.03;
             
             % création de l'environnement
-            env = create_environnement(23, 100800, 22, 1, 5000, 5000);
+            env = create_environnement(23, 100800, 22, 1, 5000, 5000, 140);
 
             %% Profil linéaire
+            config = classMPPSBH_Rectangular.create_config( ...
+                N, R, R, {{R, rend, N+1, 1}}, {{R, rend, N+1, 1}}, ...
+                {d/2}, {phi}, {t}, {L/N - t});
             
-            % calcul de la réponse du modèle analytique
-            alpha_model = classMPPSBH_Rectangular(classMPPSBH_Rectangular.create_config(N, R, R, {{R, rend, N+1, 1}}, {phi}, {d/2}, {t}, {L/N - t})).alpha(env);
+            % calcul de la réponse des modèles analytiques
+            alpha_model = classMPPSBH_Rectangular(config).alpha(env);
+            alpha_model_HL = classMPPSBH_Rectangular_HL(config).alpha(env);
+            alpha_model_HL_fp = classMPPSBH_Rectangular_HL_first_plate(config).alpha(env);
 
-            plot(env.w / (2*pi), alpha_model, 'Color', 'g', 'LineWidth', 1, 'DisplayName', 'Profil linéaire - Modèle');
+
+            plot(env.w / (2*pi), alpha_model, 'Color', 'g', 'LineWidth', 1, 'DisplayName', 'Modèle linéaire');
+            plot(env.w / (2*pi), alpha_model_HL, 'Color', 'g', 'LineWidth', 1, 'DisplayName', 'Modèle forts niveaux');
+            plot(env.w / (2*pi), alpha_model_HL_fp, 'Color', 'g', 'LineWidth', 1, 'DisplayName', 'Modèle forts niveaux sur la première plaque');
 
             %% Profil quadratique
 
-            % calcul de la réponse du modèle analytique
-            alpha_model = classMPPSBH_Rectangular(classMPPSBH_Rectangular.create_config(N, R, R, {{R, rend, N+1, 0.5}}, {phi}, {d/2}, {t}, {L/N - t})).alpha(env);
-
-            plot(env.w / (2*pi), alpha_model, 'Color', 'b', 'LineWidth', 1, 'DisplayName', 'Profil quadratique - Modèle');
-            
-            % affichage des résultats
-            xlabel("Fréquence (Hz)");
-            ylabel("Coefficient d'Absorption");
-            ylim([0 1]);
-            xlim([0 3000]);
-            legend();
+            % % calcul de la réponse du modèle analytique
+            % alpha_model = classMPPSBH_Rectangular(classMPPSBH_Rectangular.create_config(N, R, R, {{R, rend, N+1, 0.5}}, {phi}, {d/2}, {t}, {L/N - t})).alpha(env);
+            % 
+            % plot(env.w / (2*pi), alpha_model, 'Color', 'b', 'LineWidth', 1, 'DisplayName', 'Profil quadratique - Modèle');
+            % 
+            % % affichage des résultats
+            % xlabel("Fréquence (Hz)");
+            % ylabel("Coefficient d'Absorption");
+            % ylim([0 1]);
+            % xlim([0 3000]);
+            % legend();
         end
     end
 end

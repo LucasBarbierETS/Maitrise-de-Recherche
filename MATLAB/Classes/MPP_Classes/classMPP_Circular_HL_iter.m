@@ -110,6 +110,15 @@ classdef classMPP_Circular_HL_iter < classMPP_Circular
             % Résistivité au passage de l'air ([5], p. 7, eq. 20)
             sig = 8 * env.air.parameters.eta / (phi * pr^2) ... 
                 + beta * env.air.parameters.rho * (1 - phi^2) / (pi * t * phi * Cd^2) * u_rms/S;
+            
+            % % debog : Tracé de la résistivité au passage de l'air en fonction de la fréquence
+            % perso_figure('u_rms_plates')
+            % plot(u_rms)
+
+            % % debog : Tracé de la résistivité au passage de l'air en fonction de la fréquence
+            % perso_figure('sig')
+            % plot(abs(sig))
+            % % % close();
         end
 
         function tor = tortuosity(env, u_rms, phi, pr, t, S)
@@ -119,8 +128,13 @@ classdef classMPP_Circular_HL_iter < classMPP_Circular
             sum_a = dot(a, sqrt(phi).^(0:length(a)-1));
 
             % Tortuosité non linéaire ([5], p. 7, eq. 22, 23)
-            tor = 1 + 2 * psi / (t * (1 + u_rms/S / (phi * env.c0))) ...
+            tor = 1 + 2 * psi ./ (t * (1 + u_rms/S / (phi * env.air.parameters.c0))) ...
             * 0.48 * sqrt(pi * pr^2) * sum_a;
+
+            % % debog : Tracé de la tortuosité en fonction de la fréquence
+            % perso_figure('tor')
+            % plot(tor);
+            % % % close();
         end
 
         function validate()

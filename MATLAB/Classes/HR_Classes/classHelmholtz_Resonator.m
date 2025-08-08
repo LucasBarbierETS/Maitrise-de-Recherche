@@ -37,7 +37,6 @@ classdef classHelmholtz_Resonator < classelement
             output_model = Model_HR_2D(obj.Configuration, input_model, index, env);
         end
         
-        
         function output_model = set_COMSOL_3D_Model(obj, input_model, index, env)
             output_model = Model_HR_3D(obj.Configuration, input_model, index, env);
         end
@@ -78,7 +77,7 @@ classdef classHelmholtz_Resonator < classelement
 
             % importation des données de références
             data = csvread('Mahesh, fig.4, p.6, blue.txt');
-            [x_data, y_data] = interpole_et_lisse(data(:, 1), data(:, 2), 1000, 0.05);
+            [x_data, y_data] = perso_interpole_et_lisse(data(:, 1), data(:, 2), 1000, 0.05);
             
             % affichage des résultats
             figure()

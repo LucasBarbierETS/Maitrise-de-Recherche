@@ -7,8 +7,9 @@ folderName = uigetdir();
 % NS = 2; % Nombre de solutions
 NS = 1; % Nombre de solutions
 
-NV = 4; % Nombre de variables pour chaque solution
-% NV = 2; % Nombre de variables pour chaque solution
+% NV = 4; % Nombre de variables pour chaque solution
+% NV = 3; % Nombre de variables pour chaque solution
+NV = 2; % Nombre de variables pour chaque solution
 
 % N =  6; % Nombre de plaques pour chaque solution
 N =  4; % Nombre de plaques pour chaque solution
@@ -17,7 +18,8 @@ N =  4; % Nombre de plaques pour chaque solution
 NP = 100; % Nombre de points de départ
 % NP = 10; % Nombre de points de départ
 
-perforations_radius_values = [4.5e-4 4.75e-4, 5e-4, 5.25e-4, 5.5e-4, 5.75e-4, 6e-4, 6.25e-4];
+% perforations_radius_values = [4.5e-4 4.75e-4, 5e-4, 5.25e-4, 5.5e-4, 5.75e-4, 6e-4, 6.25e-4];
+% perforations_radius_values = [3.85e-4 5.4e-4]; % 0.03, 0.04 inch de diamètre
 eval_r = @(index_mat) reshape(perforations_radius_values(index_mat), size(index_mat));
 f_min_bf = 150;
 f_max_bf = 400;
@@ -26,40 +28,50 @@ f_max_mf = 600;
 f_min_hf = 600;
 f_max_hf = 1500;
 
+dB = 100;
+
 %% Paramètres géométriques invariants
 cavities_depth = 28e-3;
 cavities_width = 28e-3; % parois inter-cellulaire de 2mm
 input_section = cavities_depth * cavities_width;
 
-top_plate_thickness = 1e-3;
-% top_plate_thickness = 2e-3;
+% top_plate_thickness = e-3;
+top_plate_thickness = 2e-3;
 
 plates_thickness = 2e-3;
 
-total_thickness = 100e-3;
-% total_thickness = 62e-3;
+% total_thickness = 100e-3;
+total_thickness = 64e-3;
 
 rigid_backing_thickness = 2e-3;
 cavities_thickness = (total_thickness - rigid_backing_thickness - plates_thickness * (N-1)) / N;
 
 %% Valeurs initiales en fonction du types de variable
-r_init = randi([1, 7], N, 1, NS, NP);
-dw_init = reshape(3 * eval_r(r_init), N, 1, NS, NP);
-pd_init = randi([5, 12], N, 1, NS, NP);
+% r_init = randi([1, 2], N, 1, NS, NP);
+dw_init = repmat(4 * 5.4e-4, N, 1, NS, NP);
+% pd_init = randi([5, 12], N, 1, NS, NP);
 pw_init = randi([1, 12], N, 1, NS, NP);
 
-x0 = horzcat([r_init, dw_init, pd_init, pw_init]); % cat(2, ...
+% x0 = horzcat([r_init, dw_init, pd_init, pw_init]); % cat(2, ...
+% x0 = horzcat([r_init, dw_init, pw_init]); % cat(2, ...
+x0 = horzcat([dw_init, pw_init]); % cat(2, ...
 % x0 = cat(2, pd_init, pw_init);
 x0_sorted = sort(x0, 1, "descend");
 
 %% Matrices des bornes INF et SUP en fonction des types de variable
-lb = repmat([1, 3 * eval_r(1), 5, 1], N, 1, NS);
+% lb = repmat([1, 3 * eval_r(1), 5, 1], N, 1, NS);
+% lb = repmat([1, 4 * eval_r(1), 1], N, 1, NS);
+lb = repmat([4 * 5.4e-4, 1], N, 1, NS);
 % lb = repmat([5, 1], N, 1, NS);
-ub = repmat([7, 6 * eval_r(1), 12, 12], N, 1, NS); 
+
+% ub = repmat([2, 6 * eval_r(1), 12, 12], N, 1, NS); 
+ub = repmat([7 * 5.4e-4, 12], N, 1, NS); 
 % ub = repmat([12, 12], N, 1, NS);
 
 %% Contrainte sur les variables entières
-intcon = find(repmat([1 0 1 1], N, 1, NS)); 
+% intcon = find(repmat([1 0 1 1], N, 1, NS)); 
+% intcon = find(repmat([1 0 1], N, 1, NS));
+intcon = find(repmat([0 1], N, 1, NS));
 % intcon = find(repmat([1 1], N, 1, NS)); 
 
 %% Fonction de définitions de la matrice de contraintes non linéaires  
@@ -81,14 +93,24 @@ g_bf_hf = @(env) (env.w / (2*pi) > f_min_bf & env.w / (2*pi) < f_max_hf);
 
 % --- Définition d'un élément MPPSBH à partir d'un sous-vecteur x0(:,:,i) ---
 
+% Construction à partir d'une configuration de type fente
+% x0_part_i_to_MPPSBH = @(x0, i) classMPPSBH_Rectangular( ...
+%     classMPPSBH_Rectangular.create_explicit_config( ...
+%         N, cavities_depth, cavities_width, ...
+%         {eval_r(x0(:, 1, i))}, ...                          % rayon des perforations
+%         {transpose(x0(:, 2, i))}, ...                       % distance entre perforations (dans le sens de la largeur)
+%         {transpose(x0(:, 3, i))}, ...                       % nombre de perforations en profondeur
+%         {transpose(x0(:, 4, i))}, ...                       % nombre de perforations en largeur
+%         {top_plate_thickness, plates_thickness}, ...        % épaisseur des plaques (supérieure + internes)
+%         {round((total_thickness - rigid_backing_thickness - plates_thickness * N) / N, 4)}));  % épaisseur de cavité
+
+% Construction à partir d'une configuration carrée
 x0_part_i_to_MPPSBH = @(x0, i) classMPPSBH_Rectangular( ...
-    classMPPSBH_Rectangular.create_explicit_config( ...
+    classMPPSBH_Rectangular.create_explicit_square_pattern_config( ...
         N, cavities_depth, cavities_width, ...
-        {transpose(x0(:, 2, i) .* x0(:, 4, i))}, ...        % largeur des fentes = pas * nb de trous
-        {eval_r(x0(:, 1, i))}, ...                          % rayon des perforations
-        {transpose(x0(:, 2, i))}, ...                       % distance entre perforations (dans le sens de la largeur)
-        {transpose(x0(:, 3, i))}, ...                       % nombre de perforations en profondeur
-        {transpose(x0(:, 4, i))}, ...                       % nombre de perforations en largeur
+        {5.4e-4}, ... {eval_r(x0(:, 1, i))}, ...                          % rayon des perforations
+        {transpose(x0(:, 1, i))}, ... {transpose(x0(:, 2, i))}, ...                       % distance entre perforations (dans le sens de la largeur)
+        {transpose(x0(:, 2, i))}, ... {transpose(x0(:, 3, i))}, ...                       % nombre de perforations en profondeur
         {top_plate_thickness, plates_thickness}, ...        % épaisseur des plaques (supérieure + internes)
         {round((total_thickness - rigid_backing_thickness - plates_thickness * N) / N, 4)}));  % épaisseur de cavité
 
@@ -130,14 +152,14 @@ x0_to_global_assembly = @(x0) ...
 % % tl = 209e-6;
 % % D = 98e-3;
 % % E = classJCA_Rigid(classJCA_Rigid.create_config(phi, tor, sig, vl, tl, D, input_section));
-% % surface_impedance = E.surface_impedance(env);
-% % frequency_support = env.w /(2*pi);
+% % surface_impedance = E.surface_impedance(env(dB));
+% % frequency_support = env(dB).w /(2*pi);
 % %
 % % solN = classNiloofar(classNiloofar.create_config(50e-3, 30e-3, 1e-3, 5e-4, 6e-3, 5e-3, 7.4e-3, 8e-3, 8e-3, 15, 30e-3^2));
 % % tubeN = ImpedanceTube2D(ImpedanceTube2D.create_config({solN}));
 % % tubeN = tubeN.lauch_tube_measurement();
 % % frequency_support = tubeN.Configuration.Data2D(:, 1);
-% % surface_impedance = env.air.parameters.Z0 * (tubeN.Configuration.Data2D(:, 5) + 1i * tubeN.Configuration.Data2D(:, 5));
+% % surface_impedance = env(dB).air.parameters.Z0 * (tubeN.Configuration.Data2D(:, 5) + 1i * tubeN.Configuration.Data2D(:, 5));
 % % 
 % % data = load([foldername, '\25.05.27- Niloofar solution - numercial evaluation - Surface impedance.txt']);
 % % frequency_support = data(:, 1);
@@ -147,7 +169,7 @@ x0_to_global_assembly = @(x0) ...
 % %     classsubelement_imported(classsubelement_imported.create_config( ...
 % %         frequency_support, surface_impedance, input_section));
 % % 
-% % imported_subelement(input_section).plot_alpha(env, 'Element importé');
+% % imported_subelement(input_section).plot_alpha(env(dB), 'Element importé');
 % % perso_configure_alpha_figure(frequency_support(end))
 % %
 % % % Vérification de l'élement importé
@@ -191,20 +213,20 @@ cost_function_bf_mf = @(x0, env) sum(((x0_to_global_assembly(x0).alpha(env) - g_
 cost_function_mf_hf = @(x0, env) sum(((x0_to_global_assembly(x0).alpha(env) - g_bf_mf(env)) .* (g_bf_hf(env) > 0.1)).^2);
 cost_function_bf_hf = @(x0, env) sum(((x0_to_global_assembly(x0).alpha(env) - g_bf_hf(env)) .* (g_bf_hf(env) > 0.1)).^2);
 
-objective = @(x0) [cost_function_bf(x0, env), cost_function_mf_hf(x0, env)];
+objective = @(x0) [cost_function_bf(x0, env(dB)), cost_function_mf(x0, env(dB))];
 
 %% Genetic Algorithm
 % gaplotfeasibility = @(options, state, flag) perso_gaplotfeasibility(handle_perso_nonlcon, options, state, flag);
 
 options = optimoptions('ga', ...
                        'Display', 'iter', ...
-                       'PlotFcn',  {@gaplotpareto, @gaplotscorediversity},... {@gaplotbestf, @gaplotmaxconstr, @gaplotbestindiv}, ... {@gaplotfeasibility}, ... % {@perso_plotMaxDistancePlotFcn}
+                       'PlotFcn',  {@gaplotpareto, @gaplotscorediversity}, ... {@gaplotbestf, @gaplotmaxconstr, @gaplotbestindiv}, ... {@gaplotfeasibility}, ... % {@perso_plotMaxDistancePlotFcn}
                        'PopulationSize', size(x0_sorted, 4), ... % nombre de points dans la population initiale
                        'FunctionTolerance', 1e-2, ...
                        'ConstraintTolerance', 1, ...
                        'MaxStallGenerations', 10, ...
                        'MaxGenerations', 100, ...
-                       'MutationFcn',  'mutationadaptfeasible',... {@mutationgaussian, 2, 0.5}, ... %'mutationuniform', ... 
+                       'MutationFcn', 'mutationadaptfeasible', ... {@mutationgaussian, 2, 0.5}, ... %'mutationuniform', ... 
                        'CrossoverFraction', 0.5, ...
                        'MigrationInterval', 10, ...
                        'MigrationFraction', 0.3, ...
@@ -228,14 +250,14 @@ cell_of_MPPSBH_assembly_alpha_to_mean_alpha = @(alpha_cell_array, gabarit) array
 % On récupère les vecteurs d'absorption des meilleures configurations
 [sorted_scores_opti, sorted_index_opti] = sort(fval);
 sorted_xopti = xopti_lb_hf(sorted_index_opti(:, 1), :);
-filtered_alpha = xopti_to_cell_array_of_global_assembly_alpha(sorted_xopti, env);
+filtered_alpha = xopti_to_cell_array_of_global_assembly_alpha(sorted_xopti, env(dB));
 
 % On récupère, pour ces vecteurs, les alphas moyens sur différentes bandes fréquentielles d'intérêt
-mean_alpha_bf = cell_of_MPPSBH_assembly_alpha_to_mean_alpha(filtered_alpha, g_bf(env));
-mean_alpha_lb_hf = cell_of_MPPSBH_assembly_alpha_to_mean_alpha(filtered_alpha, g_hf(env));
+mean_alpha_bf = cell_of_MPPSBH_assembly_alpha_to_mean_alpha(filtered_alpha, g_bf(env(dB)));
+mean_alpha_lb_hf = cell_of_MPPSBH_assembly_alpha_to_mean_alpha(filtered_alpha, g_hf(env(dB)));
 
 % Tracé interractif des meilleurs résultats de l'optimisation multi objectif
-perso_interactive_multi_plot(env.w /(2*pi), filtered_alpha, mean_alpha_bf, mean_alpha_lb_hf, 2000);
+perso_interactive_multi_plot(env(dB).w /(2*pi), filtered_alpha, mean_alpha_bf, mean_alpha_lb_hf, 2000);
 
 % % Multistart
 % 
@@ -246,8 +268,8 @@ perso_interactive_multi_plot(env.w /(2*pi), filtered_alpha, mean_alpha_bf, mean_
 % ms = MultiStart('UseParallel', true, 'Display', 'iter');
 % 
 % % Fonction d'affichage de l'absorption de la meilleure configuration
-% handle_plot_alpha = @(x, ~, ~) perso_plot_alpha(params_to_MPPSBH_assembly(reshape(x, N, NV, NS)).alpha(env), ...
-%                                           env, ...
+% handle_plot_alpha = @(x, ~, ~) perso_plot_alpha(params_to_MPPSBH_assembly(reshape(x, N, NV, NS)).alpha(env(dB)), ...
+%                                           env(dB), ...
 %                                           g_lb_hf);
 % % Définition du problème d'optimisation
 % options = optimoptions(@fmincon, ...
@@ -283,20 +305,20 @@ MPPSBH_lb_hf_1_config = MPPSBH_lb_hf_1.Configuration;
 % % Affichage graphique
 figure()
 hold on
-plot(env.w/(2*pi), g_hf(env) , "--", 'DisplayName', 'Gabarit');
-plot(env.w/ (2*pi), assembly_lb_hf_opti.alpha(env), 'DisplayName', 'Assemblage');
+plot(env(dB).w/(2*pi), g_hf(env(dB)) , "--", 'DisplayName', 'Gabarit');
+plot(env(dB).w/ (2*pi), assembly_lb_hf_opti.alpha(env(dB)), 'DisplayName', 'Assemblage');
 perso_configure_alpha_figure(2000);
-% 
+
 % % Indicateurs
-% alpha_mean_lb_hf_in_band = assembly_lb_hf_opti.alpha_mean(env, f_min_lb_hf, f_max_lb_hf);
-% alpha_mean_lb_hf_out_band = assembly_lb_hf_opti.alpha_mean(env, f_min_bf, f_max_mb_mf);
-% alpha_mean = assembly_lb_hf_opti.alpha_mean(env, f_min_bf, f_max_lb_hf);
+% alpha_mean_lb_hf_in_band = assembly_lb_hf_opti.alpha_mean(env(dB), f_min_lb_hf, f_max_lb_hf);
+% alpha_mean_lb_hf_out_band = assembly_lb_hf_opti.alpha_mean(env(dB), f_min_bf, f_max_mb_mf);
+% alpha_mean = assembly_lb_hf_opti.alpha_mean(env(dB), f_min_bf, f_max_lb_hf);
 
 % Validation numérique
 
 % Tube_lb_hf = ImpedanceTube2D(ImpedanceTube2D.create_config(assembly_lb_hf_opti.Configuration.ListOfElements));
 % Tube_lb_hf = Tube_lb_hf.lauch_tube_measurement();
-% Tube_lb_hf.plot_alpha(env, f_min_bf, f_max_lb_hf, 'solution large bande');
+% Tube_lb_hf.plot_alpha(env(dB), f_min_bf, f_max_lb_hf, 'solution large bande');
 % mphsave(Tube_lb_hf.Configuration.ComsolModel, ['E:\Montréal 2023 - 2025\Maitrise LB\Présentations\Présentation groupe REAR\25.05.08 - configurations finales pour 1ère itération\' ...
 %                                                'validation numérique de la solution fournie par ETS'])
 

@@ -1,0 +1,8 @@
+{
+	"nodes":[
+		{"id":"354c169c353659ce","type":"text","text":"modélisation du  champ acoustique dans une géométrie simplifiée avec une condition limite associée au liner","x":-880,"y":-520,"width":360,"height":180},
+		{"id":"6abbae067a95de4f","type":"file","file":"Notes atomiques MdmM/définition d'un besoin.md","x":-640,"y":-220,"width":400,"height":400},
+		{"id":"0396b493955fab73","type":"text","text":"calcul de l'impédance idéale du liner","x":-340,"y":-520,"width":440,"height":180}
+	],
+	"edges":[]
+}

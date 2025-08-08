@@ -1,0 +1,14 @@
+{
+	"nodes":[
+		{"id":"373681d78d627e84","type":"text","text":"","x":-125,"y":-30,"width":250,"height":60},
+		{"id":"33aa9a651fa5fa3f","type":"text","text":"BOEING","x":180,"y":-160,"width":250,"height":60},
+		{"id":"807e4fcec7fde789","type":"text","text":"Acteurs : \nNASA (design acoustique)\nBOEING (campagne de mesure)\nHexcel Corporation (fabrication)\n","x":-375,"y":-370,"width":250,"height":240},
+		{"id":"8dc05b66fe575aca","type":"text","text":"[[Design de la solution NASA MDOF Low Drag Liner|Design]] \n","x":-375,"y":120,"width":250,"height":60},
+		{"id":"923f2417809140c2","type":"text","text":"Fabrication ","x":-100,"y":120,"width":250,"height":60},
+		{"id":"7ececa7c54981ab6","type":"text","text":"Tests acoutiques (préparation et éxecution)","x":180,"y":120,"width":380,"height":60},
+		{"id":"43885b6f99936b21","type":"text","text":"Analyse des données","x":-20,"y":240,"width":250,"height":60}
+	],
+	"edges":[
+		{"id":"9e82b835d77b4ac1","fromNode":"373681d78d627e84","fromSide":"top","toNode":"807e4fcec7fde789","toSide":"bottom"}
+	]
+}

@@ -1,0 +1,11 @@
+{
+	"nodes":[
+		{"id":"258d09a3a4de9f0e","type":"file","file":"Articles MdmM/roncen2019/roncen2019.md","x":-740,"y":-100,"width":400,"height":160},
+		{"id":"6ff4308f4915776f","x":-480,"y":-500,"width":400,"height":140,"type":"file","file":"Notes atomiques MdmM/impact de l'écoulement sur l'extraction de l'impédance.md"},
+		{"id":"d4c2d8a843d9be64","type":"file","file":"Articles MdmM/jones2020/jones2020.md","x":-940,"y":-780,"width":400,"height":160}
+	],
+	"edges":[
+		{"id":"28c462ff4b7571b1","fromNode":"d4c2d8a843d9be64","fromSide":"bottom","toNode":"6ff4308f4915776f","toSide":"left"},
+		{"id":"ac9ef3cba32f77e6","fromNode":"258d09a3a4de9f0e","fromSide":"top","toNode":"6ff4308f4915776f","toSide":"bottom"}
+	]
+}

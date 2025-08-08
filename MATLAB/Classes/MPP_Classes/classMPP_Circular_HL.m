@@ -41,9 +41,9 @@ classdef classMPP_Circular_HL < classMPP_Circular
             
             obj@classMPP_Circular(config)
 
-            phi = config.PlatePorosity;
+            phi = config.Porosity;
             pr = config.PerforationsRadius;
-            t = config.PlateThickness;        
+            t = config.Thickness;        
             
             obj.Configuration.AirFlowResistivity = @(env) classMPP_Circular_HL.air_flow_resistivity(env, phi, pr, t);
 
@@ -60,7 +60,7 @@ classdef classMPP_Circular_HL < classMPP_Circular
             % niveau de pression. L'article de référence indique que cette expression est obtenue en utilisant une analogie de circuit
             % équivalent en appliquant l'équation de conservation de la quantité de mouvement sous la forme de la loi de Bernouilli
             % appliquée à un écoulement laminaire et incompressible
-            f = sqrt(1/4 + 2*sqrt(2) * env.p ...
+            f = sqrt(1/4 + 2*sqrt(2) * env.p_rms ...
                 / (env.air.parameters.rho * env.air.parameters.c0^2) ...
                 * (1 - phi^2) / phi^2);
          end

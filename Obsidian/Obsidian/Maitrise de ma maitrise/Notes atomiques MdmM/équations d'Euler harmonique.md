@@ -1,0 +1,1 @@
+On parle d'équations harmoniques lorsque la fonction étudiée s'exprime dans le domaine fréquentiel.

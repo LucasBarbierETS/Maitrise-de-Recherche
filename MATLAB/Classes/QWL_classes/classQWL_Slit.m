@@ -62,20 +62,29 @@ classdef classQWL_Slit < classQWL
             % obj.Length = length;
             % obj.Shape = shape;
         end
+    
+        function s = input_section(obj)
+            
+            config = obj.Configuration;
+            s = config.Width * config.Depth;
+        end
+
+        function output_model = set_COMSOL_2D_Model(obj, input_model, index, env, varargin)
+            output_model = ModelQWL_Slit(obj.Configuration, input_model, index, env, varargin{:});
+        end
     end
     
     methods (Static, Access = public)
 
-        function config = create_config(length, width, input_section)
+        function config = create_config(length, width, depth)
         
             config = struct();
             config.Length = length;
-            config.Width = width;
+            [config.Width, w] = deal(width);
+            [config.Depth, d] = deal(depth);
+            config.Section = w * d;
             config.PermeabilityCoefficient = 3; % [1] p. 8
             config.HydraulicRadius = width; % [1] p. 8
-            if nargin > 2
-                config.InputSection = input_section;
-            end
         end
 
         function sect = section(obj)

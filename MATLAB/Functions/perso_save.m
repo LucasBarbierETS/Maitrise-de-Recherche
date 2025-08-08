@@ -1,28 +1,19 @@
-function perso_save(dossier)
-    % Vérifie si le dossier existe, sinon le crée
-    if ~exist(dossier, 'dir')
-        mkdir(dossier);
+function perso_save(folder_path, file_name, varargin)
+    % Vérifier si le dossier existe, sinon le créer
+    if ~exist(folder_path, 'dir')
+        mkdir(folder_path);
     end
     
-    % Obtient les noms de toutes les variables de l'espace de travail
-    vars = who;
+    % Créer le chemin complet du fichier
+    fullfile_name = fullfile(folder_path, [file_name, '.mat']);
     
-    % Parcours de chaque variable
-    for i = 1:length(vars)
-        varName = vars{i};  % Nom de la variable
-        varValue = eval(varName);  % Valeur de la variable
-        
-        % Vérification si la variable est un objet de classe
-        if isobject(varValue)
-            % Si c'est un objet, on enregistre avec le type d'objet
-            className = class(varValue);
-            save(fullfile(dossier, [varName, '_', className, '.mat']), 'varValue');
-            fprintf('Objet de la classe "%s" sauvegardé sous "%s_%s.mat".\n', ...
-                    className, varName, className);
-        else
-            % Si ce n'est pas un objet, on enregistre normalement
-            save(fullfile(dossier, [varName, '.mat']), 'varValue');
-            fprintf('Variable "%s" sauvegardée sous "%s.mat".\n', varName, varName);
-        end
+    % Si des variables supplémentaires sont passées, les enregistrer
+    if nargin > 2
+        % Enregistrer les variables spécifiques passées en arguments
+        save(fullfile_name, varargin{:});
+    else
+        % Enregistrer toutes les variables de l'environnement de base
+        vars = who;  % Liste de toutes les variables dans l'environnement de base
+        save(fullfile_name, vars{:});  % Enregistrer toutes les variables dans le fichier
     end
 end

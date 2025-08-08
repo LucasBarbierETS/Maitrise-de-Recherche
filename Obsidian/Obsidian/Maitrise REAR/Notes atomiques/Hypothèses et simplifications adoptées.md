@@ -1,0 +1,3 @@
+1. Onde plane incident sur la solution avec un angle uniforme, une pression acoustique uniforme etc.
+2. *Rapport entre la différence de phase d'incidence, l'angle d'incidence et la surface de la solution unitaire* 
+3. *Hypothèse de réaction localisée* : illustration avec résonateur de Helmholtz, SDOF avec compartiment et sans compartiment. Développement à partir des modes de cavités, dimensions limites et fréquences de coupure.

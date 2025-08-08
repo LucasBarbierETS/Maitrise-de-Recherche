@@ -1,12 +1,23 @@
 classdef classsubelement_imported < classsubelement
 
+    properties
+        SurfaceImpedance
+    end
+
     methods
         function obj = classsubelement_imported(config)
             
             obj@classsubelement(config)
         end
 
-        function Zs = surface_impedance(obj, env)
+        function s = input_section(obj)
+
+            config = obj.Configuration;
+            s = config.Width * config.Depth;
+        end
+
+        
+        function [Zs, obj] = surface_impedance(obj, env)
             
             % Cette fonction récupère le vecteur support de l'environnement env.w /(2*pi), 
             % le compare au vecteur support importé obj.Configuration.FrequencySupport 
@@ -17,38 +28,45 @@ classdef classsubelement_imported < classsubelement
             % - si le point du support est en dehors du support importé, 
             %   on attribue la valeur NaN à l'impédance de surface
         
-            % Récupération du vecteur de fréquences de l'environnement
-            freq_env = env.w / (2 * pi);
-        
-            % Récupération des données de la configuration
-            freq_support = obj.Configuration.FrequencySupport;
-            Zs_imported = obj.Configuration.SurfaceImpedance;
-        
-            % Initialisation du vecteur d'impédance de surface
-            Zs = nan(size(freq_env));
-        
-            % Boucle sur chaque fréquence de l'environnement
-            for i = 1:length(freq_env)
-                % Vérification si la fréquence est dans l'intervalle supporté
-                if freq_env(i) >= min(freq_support) && freq_env(i) <= max(freq_support)
-                    % Interpolation linéaire de l'impédance complexe
-                    Zs(i) = interp1(freq_support, Zs_imported, freq_env(i), 'linear', NaN);
-                else
-                    % Fréquence en dehors du support, valeur NaN
-                    Zs(i) = NaN;
+            if isempty(obj.SurfaceImpedance)
+                % Récupération du vecteur de fréquences de l'environnement
+                freq_env = env.w / (2 * pi);
+            
+                % Récupération des données de la configuration
+                freq_support = obj.Configuration.FrequencySupport;
+                Zs_imported = obj.Configuration.SurfaceImpedance;
+            
+                % Initialisation du vecteur d'impédance de surface
+                Zs = nan(size(freq_env));
+            
+                % Boucle sur chaque fréquence de l'environnement
+                for i = 1:length(freq_env)
+                    % Vérification si la fréquence est dans l'intervalle supporté
+                    if freq_env(i) >= min(freq_support) && freq_env(i) <= max(freq_support)
+                        % Interpolation linéaire de l'impédance complexe
+                        Zs(i) = interp1(freq_support, Zs_imported, freq_env(i), 'linear', NaN);
+                    else
+                        % Fréquence en dehors du support, valeur NaN
+                        Zs(i) = NaN;
+                    end
                 end
+                obj.SurfaceImpedance = Zs;
+            else
+                Zs = obj.SurfaceImpedance;
             end
         end
     end
 
     methods (Static, Access = public)
 
-        function config = create_config(frequency_support, surface_impedance, input_section)
+        function config = create_config(frequency_support, surface_impedance, width, depth)
             
             config = struct();
             config.FrequencySupport = frequency_support;
             config.SurfaceImpedance = surface_impedance;
-            config.InputSection = input_section;
+            [config.Width, w] = deal(width);
+            [config.Depth, d] = deal(depth);
+            config.Section = w*d;
         end
 
         function validate(env)
@@ -70,4 +88,3 @@ classdef classsubelement_imported < classsubelement
         end
     end
 end
-

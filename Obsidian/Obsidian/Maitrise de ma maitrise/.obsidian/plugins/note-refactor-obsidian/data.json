@@ -1,0 +1,13 @@
+{
+  "includeFirstLineAsNoteHeading": false,
+  "excludeFirstLineInNote": false,
+  "openNewNote": true,
+  "headingFormat": "#",
+  "newFileLocation": 1,
+  "customFolder": "",
+  "fileNamePrefix": "",
+  "transcludeByDefault": false,
+  "noteLinkTemplate": " [[{{new_note_title}}]]",
+  "refactoredNoteTemplate": "MOC : [[PRISE EN MAIN D'OBSIDIAN]]\n Date : {{date}}\n ***\n \n {{new_note_content}}",
+  "normalizeHeaderLevels": false
+}

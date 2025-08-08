@@ -1,0 +1,11 @@
+function perso_save(folder_path, file_name, variable)
+    
+    % Vérifier si le dossier existe, sinon le créer
+    if ~exist(folder_path, 'dir')
+        mkdir(folder_path);
+    end
+    
+    % Ensuite, enregistrer votre fichier .mat dans ce dossier
+    fullfile_name = fullfile(folder_path, [file_name, '.mat']);
+    save(fullfile_name, 'variable');  % Remplacez 'votre_variable' par la variable que vous souhaitez enregistrer
+end

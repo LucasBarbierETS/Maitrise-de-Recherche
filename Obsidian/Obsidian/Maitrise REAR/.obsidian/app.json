@@ -1,0 +1,17 @@
+{
+  "alwaysUpdateLinks": true,
+  "promptDelete": false,
+  "attachmentFolderPath": "Images collées",
+  "newFileLocation": "folder",
+  "newFileFolderPath": "Notes atomiques",
+  "foldHeading": true,
+  "foldIndent": true,
+  "pdfExportSettings": {
+    "includeName": true,
+    "pageSize": "Letter",
+    "landscape": false,
+    "margin": "0",
+    "downscalePercent": 80
+  },
+  "readableLineLength": false
+}

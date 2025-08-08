@@ -1,0 +1,3 @@
+La principale différence entre milieu solide déformable et milieu fluide tient à la nature des interactions entre les particules. Entre les partiules constituant un solide, les forces sont de nature à permettre la formulation de la notion d'élasticité dans le cadre d'une approche par la mécanique des milieux continus. Dans ce contexte, **la matière est porteuse des propriétés qui caractérisent le milieu**. Il est possible d'étudier 
+Dans le cas d'un fluide (liquide ou gaz), la plus petite perturbation entre une altération irréversible de la structure fluide. Dans ce cadre **la matière n'est plus porteuse de l'information dans le milieu**. Celle-ci est alors supposée contenue dans le volume.
+

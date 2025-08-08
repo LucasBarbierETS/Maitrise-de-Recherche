@@ -20,8 +20,14 @@ function model = ImpedanceTube3DModel(list_of_solutions, env)
     % Paramètres géométriques du tube
     model.param.set('d12', '20e-3', 'distance inter-microphone');
     model.param.set('d2s', '80e-3', 'distance microphone 2 - solution');
-    model.param.set('xl1', '0', 'ligne d''acotement à gauche de la solution courante');
+    model.param.set('sol1_xl', '0', 'ligne d''acotement à gauche de la solution courante');
     model.param.set('Td', '30e-3', 'profondeur du tube d''impédance');
+   
+    % Paramètres du maillage
+    model.param.set('nu', '1.81e-05[Pa*s]');
+    model.param.set('rho', '1.2 [kg/m^3]');
+    model.param.set('omega0', '2*pi*3000');
+    model.param.set('d_visc', 'sqrt(2*nu/(omega0*rho))');
 
     % Variables
     param = env.air.parameters;
@@ -66,11 +72,11 @@ function model = ImpedanceTube3DModel(list_of_solutions, env)
     % Création de la géométrie du tube
     blkt1 = model.component('component').geom('geometry').create('blkt1', 'Block');
     blkt1.set('pos', {'0' '-Td/2' 'd2s'});
-    blkt1.set('size', {['xr' num2str(length(list_of_solutions))] 'Td' 'd12'});
+    blkt1.set('size', {['sol' num2str(length(list_of_solutions)) '_xr'] 'Td' 'd12'});
 
     blkt2 = model.component('component').geom('geometry').create('blkt2', 'Block');
     blkt2.set('pos', {'0' '-Td/2' '0'});
-    blkt2.set('size', {['xr' num2str(length(list_of_solutions))] 'Td' 'd2s'});
+    blkt2.set('size', {['sol' num2str(length(list_of_solutions)) '_xr'] 'Td' 'd2s'});
 
     model.component('component').geom('geometry').run('fin');
 

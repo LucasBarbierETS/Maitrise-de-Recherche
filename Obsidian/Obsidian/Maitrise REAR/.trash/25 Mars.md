@@ -1,0 +1,10 @@
+- [ ] Commencer le projet de SYS814 
+- [ ] Gérer passeport
+- [ ] Gérer assurance bilan neuropsychologique
+- [ ] Demander données brutes bilan 
+- [ ] Préparer présentation Thomas 
+- [ ] Faire la demande de prolongement des études
+- [ ] Vérifier les critères pour avoir 3/4,3
+- [ ] Faire CV + Lettre de motivation (Renault + SNCF) 
+- [ ] écrire à Mael Lopez
+- [ ] Prendre rdv pour tutorat vendredi

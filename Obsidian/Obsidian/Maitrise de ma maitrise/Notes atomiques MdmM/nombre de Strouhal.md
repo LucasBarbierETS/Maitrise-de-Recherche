@@ -1,0 +1,1 @@
+$$S t=\frac{f D_r \pi}{V_{\text {tip }}}=\frac{f 2 \pi}{\Omega B}=\frac{f}{B P F}$$ avec $D_r$ le diamètre du rotor, $V_{tip}$ la vitesse linéaire de l'extrémité des pâles, $B$ le nombre de pâles, $\Omega$ la vitesse angulaire du rotor, $BPF$ la fréquence de passage des pâles.

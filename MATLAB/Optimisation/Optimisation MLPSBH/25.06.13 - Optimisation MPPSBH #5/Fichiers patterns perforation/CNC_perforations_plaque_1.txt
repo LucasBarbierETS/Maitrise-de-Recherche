@@ -1,0 +1,5 @@
+Plaque 1:
+  - Position du trou inférieur gauche : (12.410, 12.410) mm
+  - Rayon des perforations : 0.385 mm
+  - Offset entre chaque trou : (1.590, 1.590) mm
+

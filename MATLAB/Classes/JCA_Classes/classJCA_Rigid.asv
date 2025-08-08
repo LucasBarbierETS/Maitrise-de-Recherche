@@ -61,14 +61,14 @@ classdef classJCA_Rigid < classsubelement
 
             config = obj.Configuration;
             phi = config.Porosity;
-            tor = config.Tortuosity;
+            tor = config.Tortuosity; 
 
             % On vérifie que la tortuosité à été évaluée lorsque elle a été définie
             if ~isnumeric(tor)
                 tor = tor(env);
             end
             
-            sig = config.AirFlowResistivity;
+            sig = config.AirFlowResistivity; % proportionnel à 1/phi
 
             % On vérifie que la resistivité à été évaluée lorsque elle a été définie 
             if ~isnumeric(sig)
@@ -81,13 +81,18 @@ classdef classJCA_Rigid < classsubelement
             %%%%%% Champoux-Allard model ([5] tableau p. 24) %%%%%%
             
             % densité effective (effets visqueux) 
-            H = phi^2 * vl^2 * sig.^2 / (4 * tor.^2 * rho * eta); % fréquence caractéristique visqueuse
+            H = phi^2 * vl^2 * sig.^2 ./ (4 * tor.^2 * rho .* eta); % fréquence caractéristique visqueuse
+            % plot(phi^2 * vl^2 * sig.^2)
+            % plot(4 * tor.^2 * rho .* eta)
+            % plot(H);
             G = sqrt(1 + 1j .* w./H); 
-            ep.rhoeff = rho * tor .* (1 + (sig .* phi .* G) ./ (1j  .*  w .* rho .* tor));
+            ep.rhoeff = rho .* tor .* (1 + (sig .* phi .* G) ./ (1j  .*  w .* rho .* tor));
+
+            plot(1j  .*  w .* rho .* tor)
 
             % module d'incompressibilité (effets thermiques)
-            Hp = 16 * eta / (Pr * tl^2 * rho); % fréquence caractéristique thermique ([5] tableau p. 24)
-            Gp = sqrt(1 + 1j.* w./Hp);            
+            Hp = 16 * eta / (Pr * tl^2 .* rho); % fréquence caractéristique thermique ([5] tableau p. 24)
+            Gp = sqrt(1 + 1j.* w ./ Hp);            
             ep.Keff = gam.* P./(gam - (gam-1)./(1 - 1j .* Hp .* Gp./(2 .* w) ));
 
             % Propriétés de la couche de fluide équivalent normalisée
@@ -120,7 +125,7 @@ classdef classJCA_Rigid < classsubelement
             end
 
             d = obj.Configuration.Thickness;
-            S = obj.Configuration.InputSection;
+            S = obj.Configuration.InputSection; % proportionnel à phi
             % phi = obj.Configuration.JCAParameters.Porosity;
             kd = ep.keq * d;
             TM.T11 = cos(kd);

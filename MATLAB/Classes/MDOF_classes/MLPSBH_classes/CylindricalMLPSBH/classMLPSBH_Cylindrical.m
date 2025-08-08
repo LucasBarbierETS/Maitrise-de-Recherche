@@ -28,7 +28,7 @@ classdef classMLPSBH_Cylindrical < classelement
 % Avec cette classe les corrections de longueur associées aux plaques remplace les common pores. Les cavités annulaires sont introduites directement 
 % sans passer par 'classannularcell'. 
 
-    properties
+properties
 
         Type = 'Cylindrical MLPSBH'
 
@@ -60,136 +60,60 @@ classdef classMLPSBH_Cylindrical < classelement
 
         function obj = classMLPSBH_Cylindrical(config)
         
-        % Appel du constructeur de la classe parente
-        obj@classelement(classelement.create_config({}, 'closed'));
-           
-        if nargin > 0    
-            % Tranfert des champs de la configuration d'appel vers la configuration de classe
-            obj.Configuration = transferFields(config, obj.Configuration);
-
-            % Paramètres géométriques et physiques
-            SBHr = config.SBHRadius;
-            cavr = config.CavitiesRadius;
-            ppar = config.PlatesPerforatedAreaRadius;
-            pp = config.PlatesPorosity;
-            hr = config.PlatesHolesRadius;
-            pt = config.PlatesThickness;
-            ct = config.CavitiesThickness;
-            ptc = config.PlatesThicknessCorrection;
-            
-            % Modèles et options
-            cm = config.CavitiesModel;
-            
-            % Mise à jour de section d'entrée et de sortie
-            obj.Configuration.InputSection = pi*SBHr^2;
-            
-            % Plaque perforée centrale (première MPP circulaire)
-            obj.Configuration.ListOfSubelements{end+1} = classMPP_Circular(classMPP_Circular.create_config(pp(1), hr(1), pt(1), pi*ppar(1)^2, ptc(1)));
-            % obj.Configuration.ListOfSubelements{end+1} = classMPP_Circular(classMPP_Circular.create_config(pp(1), hr(1), pt(1), pi*ppar(1)^2));
-            
-            % Boucle sur les cavités et plaques
-            for i = 1:length(ct) - 1
-
-                mpr = (ppar(i) + ppar(i+1)) / 2;
-
-                 % Cavité annulaire
-                annular_cavity = classannularcavity(classannularcavity.create_config(mpr, cavr, ct(i), cm));
-                obj.Configuration.ListOfSubelements{end+1} = classjunction_cylindrical(classjunction_cylindrical.create_config(annular_cavity, mpr, ct(i)));
-            
-                % % Cavité annulaire ou jonction cylindrique
-                % obj.Configuration.ListOfSubelements{end+1} = classannularcell(classannularcell.create_config(ppar(i), ppar(i+1), cavr, ct(i), cm));
-            
-                % MPP suivante
-                obj.Configuration.ListOfSubelements{end+1} = classMPP_Circular(classMPP_Circular.create_config(pp(i+1), hr(i+1), pt(i+1), pi*ppar(i+1)^2, ptc(i+1)));
-                % obj.Configuration.ListOfSubelements{end+1} = classMPP_Circular(classMPP_Circular.create_config(pp(i+1), hr(i+1), pt(i+1), pi*ppar(i+1)^2));
-            end
-            
-            % Traitement de la dernière cavité
-            obj.Configuration.ListOfSubelements{end+1} = classcavity(classcavity.create_config(ct(end), pi*cavr^2)); 
-        end 
+            % Appel du constructeur de la classe parente
+            obj@classelement(classelement.create_config({}, 'closed', []));
+               
+            if nargin > 0    
+                % Tranfert des champs de la configuration d'appel vers la configuration de classe
+                obj.Configuration = perso_transfer_fields(config, obj.Configuration);
+    
+                % Paramètres géométriques et physiques
+                % SBHr = config.SBHRadius;
+                cavr = config.CavitiesRadius;
+                ppar = config.PlatesPerforatedAreaRadius;
+                pp = config.PlatesPorosity;
+                hr = config.PlatesHolesRadius;
+                pt = config.PlatesThickness;
+                ct = config.CavitiesThickness;
+                ptc = config.PlatesThicknessCorrection;
+                
+                % Modèles et options
+                cm = config.CavitiesModel;
+                
+                % Plaque perforée centrale (première MPP circulaire)
+                obj.Configuration.ListOfSubelements{end+1} = classMPP_Circular(classMPP_Circular.create_config(pp(1), hr(1), pt(1), pi*ppar(1)^2, ptc(1)));
+                % obj.Configuration.ListOfSubelements{end+1} = classMPP_Circular(classMPP_Circular.create_config(pp(1), hr(1), pt(1), pi*ppar(1)^2));
+                
+                % Boucle sur les cavités et plaques
+                for i = 1:length(ct) - 1
+    
+                    % mpr = (ppar(i) + ppar(i+1)) / 2;
+    
+                     % Cavité annulaire
+                    % annular_cavity = classannularcavity(classannularcavity.create_config(mpr, cavr, ct(i), cm));
+                    % obj.Configuration.ListOfSubelements{end+1} = classjunction_cylindrical(classjunction_cylindrical.create_config(annular_cavity, mpr, ct(i)));
+                
+                    % Cavité annulaire ou jonction cylindrique
+                    obj.Configuration.ListOfSubelements{end+1} = classannularcell(classannularcell.create_config(ppar(i), ppar(i+1), cavr, ct(i), cm));
+                
+                    % MPP suivante
+                    obj.Configuration.ListOfSubelements{end+1} = classMPP_Circular(classMPP_Circular.create_config(pp(i+1), hr(i+1), pt(i+1), pi*ppar(i+1)^2, ptc(i+1)));
+                    % obj.Configuration.ListOfSubelements{end+1} = classMPP_Circular(classMPP_Circular.create_config(pp(i+1), hr(i+1), pt(i+1), pi*ppar(i+1)^2));
+                end
+                
+                % Traitement de la dernière cavité
+                % annular_cavity = classannularcavity(classannularcavity.create_config(mpr, cavr, ct(end), cm)); 
+                % obj.Configuration.ListOfSubelements{end+1} = classjunction_cylindrical(classjunction_cylindrical.create_config(annular_cavity, mpr, ct(end)));
+                obj.Configuration.ListOfSubelements{end+1} = classannularcell(classannularcell.create_config(ppar(end-1), ppar(end), cavr, ct(end), cm));
+            end 
         end
     end
 
     methods (Static, Access = public)
 
-        function validate()
-
-            close all
-            figure()
-            title('Valiation Cylindrical MLPSBH')
-            hold on   
-
-            % création de l'environnement
-            env = create_environnement(23, 100800, 22, 1, 6000, 1000);
-
-            % %% Cavité cylindrique multi-annulaire avec profil décroissant
-            % 
-            % % Données de référence : Modification of the transfer matrix method for 
-            % % the sonic black hole and broadening effective absorption band, fig. 7, p. 8
-            % 
-            % % data_path = ['C:\Users\Utilisateur\OneDrive - ETS\CRIAQ-REAR\Maitrise LB\' ...
-            % %              'Classes\MPP_Classes\Validation\Laly2017\fig. 3.5\'];
-            % 
-            % subplot(1, 2, 1)
-            % hold on
-            % 
-            % % Paramètres de la configuration (sect. 3.1, p. 7)
-            % n = 1;
-            % MLBr = 30e-3;
-            % cavr = 30e-3;
-            % L = 100e-3;
-            % rend = 2e-3;
-            % N = [10 20 30 40];
-            % d = L ./ N;
-            % 
-            % % Prise en compte d'un facteur dissipatif dans l'air (sect. 3.1)
-            % % env.air.parameters.c0 = env.air.parameters.c0 * (1 + 0.05* 1j);
-            % 
-            % for i = 1:length(N)
-            % 
-            %     MLBSBH = classMLBSBH_Cylindrical(classMLBSBH_Cylindrical.create_config(MLBr, cavr, {cavr, rend, n}, 1, 0, 0, d(i), 'Hankel', 'Bezançon', false, N(i)));
-            %     plot(env.w / (2*pi), MLBSBH.alpha(env),'DisplayName', [num2str(N(i)), 'cavités']);
-            %     % MLBSBH.disp_subelements_parameters_table(env)
-            % end
-            % 
-            % xlabel("Fréquence (Hz)")
-            % ylabel("Coefficient d'Absorption")
-            % ylim([0 1])
-            % xlim([0 3000])
-            % legend()
-            
-            %% Données de référence : A microstructure material design for low frequency sound absorption, fig.3
-
-            % création de l'objet de classe
-            config = classMLPSBH_Cylindrical.create_config(14.5e-3, 13e-3, 2e-3, ...
-            1, 2e-3, 1e-3, 1e-3, 'Hankel', 'Bezançon', false, 15);
-            MLPSBH = classMLPSBH_Cylindrical(config);
-            % MLPSBH.disp_subelements_parameters_table(env);
-            alpha_model = MLPSBH.alpha(env);
-            
-            % importation des données de références
-            data = csvread('Dupont2018.txt');
-            [x_data, y_data] = interpole_et_lisse(data(:, 1), data(:, 2), 1000, 0.05);
-            
-            % affichage des résultats
-
-            % configuration
-            % classMLPSBH_Cylindrical.disp_config(config);
-
-            % coefficient d'absorption
-            subplot(1, 2, 2);
-            hold on
-            plot(env.w/ (2*pi), alpha_model, 'Color', 'b', 'LineWidth', 1);
-            plot(x_data, y_data, 'Color', 'g','LineWidth', 1, 'LineStyle', '--');
-            legend('Modèle', 'Données de références')
-            xlabel("Fréquence (Hz)")
-            ylabel("Coefficient d'Absorption")
-            ylim([0 1])
-            subtitle("configuration multi-annulaire -  Dupont2018")
-
-        end
         
-        function config = create_config(SBH_radius, cavities_radius, plates_perforated_area_radius, plates_porosity, ...
+        
+        function config = create_config(surface, SBH_radius, cavities_radius, plates_perforated_area_radius, plates_porosity, ...
         plates_holes_radius, plates_thickness, cavities_thickness, cavities_model, thickness_correction_method, common_pores_used, varargin)
             % CREATE_CONFIG Crée une configuration pour le constructeur de la classe classMLPSBH_Cylindrical.
             %
@@ -252,6 +176,7 @@ classdef classMLPSBH_Cylindrical < classelement
             
             % Code
             config = {};
+            config.Surface = surface;
             config.SBHRadius = SBH_radius;
             config.CavitiesRadius = cavities_radius;
             config.ThicknessCorrectionMethod = thickness_correction_method;
@@ -353,6 +278,83 @@ classdef classMLPSBH_Cylindrical < classelement
             disp(vector_table);
         end
     
+    function validate()
+
+            close all
+            figure()
+            title('Valiation Cylindrical MLPSBH')
+            hold on   
+
+            % création de l'environnement
+            env = create_environnement(23, 100800, 22, 1, 6000, 1000);
+
+            % %% Cavité cylindrique multi-annulaire avec profil décroissant
+            % 
+            % % Données de référence : Modification of the transfer matrix method for 
+            % % the sonic black hole and broadening effective absorption band, fig. 7, p. 8
+            % 
+            % % data_path = ['C:\Users\Utilisateur\OneDrive - ETS\CRIAQ-REAR\Maitrise LB\' ...
+            % %              'Classes\MPP_Classes\Validation\Laly2017\fig. 3.5\'];
+            % 
+            % subplot(1, 2, 1)
+            % hold on
+            % 
+            % % Paramètres de la configuration (sect. 3.1, p. 7)
+            % n = 1;
+            % MLBr = 30e-3;
+            % cavr = 30e-3;
+            % L = 100e-3;
+            % rend = 2e-3;
+            % N = [10 20 30 40];
+            % d = L ./ N;
+            % 
+            % % Prise en compte d'un facteur dissipatif dans l'air (sect. 3.1)
+            % % env.air.parameters.c0 = env.air.parameters.c0 * (1 + 0.05* 1j);
+            % 
+            % for i = 1:length(N)
+            % 
+            %     MLBSBH = classMLBSBH_Cylindrical(classMLBSBH_Cylindrical.create_config(MLBr, cavr, {cavr, rend, n}, 1, 0, 0, d(i), 'Hankel', 'Bezançon', false, N(i)));
+            %     plot(env.w / (2*pi), MLBSBH.alpha(env),'DisplayName', [num2str(N(i)), 'cavités']);
+            %     % MLBSBH.disp_subelements_parameters_table(env)
+            % end
+            % 
+            % xlabel("Fréquence (Hz)")
+            % ylabel("Coefficient d'Absorption")
+            % ylim([0 1])
+            % xlim([0 3000])
+            % legend()
+            
+            %% Données de référence : A microstructure material design for low frequency sound absorption, fig.3
+
+            % création de l'objet de classe
+            config = classMLPSBH_Cylindrical.create_config(1, 14.5e-3, 13e-3, 2e-3, ...
+            1, 2e-3, 1e-3, 1e-3, 'Hankel', 'Bezançon', false, 15);
+            MLPSBH = classMLPSBH_Cylindrical(config);
+            MLPSBH_config = MLPSBH.Configuration;
+            % MLPSBH.disp_subelements_parameters_table(env);
+            alpha_model = MLPSBH.alpha(env);
+            
+            % importation des données de références
+            data = csvread('Dupont2018.txt');
+            [x_data, y_data] = perso_interpole_et_lisse(data(:, 1), data(:, 2), 1000, 0.05);
+            
+            % affichage des résultats
+
+            % configuration
+            % classMLPSBH_Cylindrical.disp_config(config);
+
+            % coefficient d'absorption
+            subplot(1, 2, 2);
+            hold on
+            plot(env.w/ (2*pi), alpha_model, 'Color', 'b', 'LineWidth', 1);
+            plot(x_data, y_data, 'Color', 'g','LineWidth', 1, 'LineStyle', '--');
+            legend('Modèle', 'Données de références')
+            xlabel("Fréquence (Hz)")
+            ylabel("Coefficient d'Absorption")
+            ylim([0 1])
+            subtitle("configuration multi-annulaire -  Dupont2018")
+
+        end
     end
 
     methods (Static, Access = private)

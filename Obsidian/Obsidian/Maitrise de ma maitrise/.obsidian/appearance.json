@@ -1,0 +1,16 @@
+{
+  "theme": "moonstone",
+  "baseFontSizeAction": true,
+  "enabledCssSnippets": [
+    "test-note",
+    "change-link-color",
+    "custom-color-graph-view",
+    "graph-colors",
+    "ribbon",
+    "graph nodes"
+  ],
+  "cssTheme": "Atom",
+  "baseFontSize": 18,
+  "nativeMenus": false,
+  "accentColor": ""
+}

@@ -1,0 +1,237 @@
+%% Description
+
+% L'optimisation finale porte sur les paramètres de la plaque couvrante
+% utilisée avec le traitement poreux
+
+%% Sélection du dossier de destination des élements sauvegardés
+
+% folderName = uigetdir();
+folderName = 'C:\Users\lucas.barbier\Documents\Maitrise dossier secondaire\MATLAB\Optimisation\Optimisation REAR';
+% folderName = 'C:\Users\lucas.barbier\Documents\Maitrise dossier secondaire\MATLAB\Optimisation\Optimisation REAR\Validation numérique';
+
+%% Ouverture de l'environnement matlab
+
+% load([folderName, '\environnement matlab.mat']);
+
+%% Niveau Sonore, Fréquences cibles
+
+% Limites des bandes de fréquences 
+f_min_obj1 = 220;
+f_max_obj1 = 260;
+f_min_obj2 = 260;
+f_max_obj2 = 600;
+f_min_obj3 = 600;
+f_max_obj3 = 1500;
+
+% Niveau sonore
+dB = 100;
+
+%% Paramètres géométriques invariants
+
+total_thickness = 115e-3;
+total_depth = 120e-3; 
+total_width = 72e-3;
+total_input_section = total_depth * total_width;
+
+% Plaque couvrante
+top_plate_thickness = 1e-3;
+
+% radius = [1.588, 1.984, 2.381, 2.778, 3.175]/2 * 1e-3;
+
+%% Structure des variables optimisées
+
+NTP = 3; % (rayon, nombre de perf par ligne (width), nombre de perfs par colonne (depth))
+
+% NP = 100; % Nombre de points de départ
+NP = 50;
+% NP = 10;
+
+JCAmat_thickness = total_thickness - top_plate_thickness;
+
+%% Valeurs minimales en fonction du type de variable
+
+% Plaque couvrante
+tp_phi_min = 0.05;
+% tp_r_min = 1;
+tp_r_min = 4e-4;
+tp_whn_min = 15;
+tp_dhn_min = 15;
+
+lb = [tp_r_min, tp_whn_min, tp_dhn_min];
+
+%% Valeurs maximales en fonction du type de variable
+
+% Plaque couvrante
+tp_phi_max = 0.4;
+% tp_r_max = 5;
+tp_r_max = 3e-3;
+tp_whn_max = 100;
+tp_dhn_max = 100;
+
+ub = [tp_r_max, tp_whn_max, tp_dhn_max];
+
+%% Valeurs initiales en fonction du types de variable
+
+% Plaque supérieure 
+% tp_r_init = randi(tp_r_max, NP, 1);
+tp_r_init = tp_r_min + (tp_r_max - tp_r_min) * rand(NP, 1);
+tp_whn_init = tp_whn_min + (tp_whn_max - tp_whn_min) * rand(NP, 1);
+tp_dhn_init = tp_dhn_min + (tp_dhn_max - tp_dhn_min) * rand(NP, 1);
+
+x0 = horzcat(tp_r_init, tp_whn_init, tp_dhn_init);
+
+%% Contrainte sur les variables entières
+
+intcon = find([0, 1, 1]);
+
+%% Gabarits
+
+% Définition des plages fréquentielles d'interet pour la fonction cout
+g_obj1 = @(env) (env.w / (2*pi) > f_min_obj1 & env.w / (2*pi) < f_max_obj1);
+g_obj2 = @(env) (env.w / (2*pi) > f_min_obj2 & env.w / (2*pi) < f_max_obj2);
+g_obj3 = @(env) (env.w / (2*pi) > f_min_obj1 & env.w / (2*pi) < f_max_obj3);
+
+%% Création de l'objet JCA
+phi = 0.99;
+tor = 1;
+sig = 12340;
+vl = 0.000105;
+tl = 0.000316;
+JCAmat = classJCA_Rigid(classJCA_Rigid.create_config(phi, tor, sig, vl, tl, JCAmat_thickness, total_width, total_depth));
+
+% % Debog : Comportement du poreux seul
+% figure()
+% JCAmat.plot_alpha(env(dB), 'Traitement poreux seul');
+% perso_configure_alpha_figure(2000);
+% legend();
+
+%% Création dynamique de la plaque couvrante
+
+% Plaque couvrante
+covering_plate = @(r, w, d, pw, pd) classMPP_Circular( ... 
+classMPP_Circular.create_explicit_rectangular_plate_config( ...
+    top_plate_thickness, r, w, d, pw, pd));
+
+% Plaque supérieure (optimisée)
+top_plate = @(x) classMPP_Circular(classMPP_Circular.create_explicit_rectangular_plate_config( ...
+top_plate_thickness, x(1), total_width, total_depth, x(2), x(3)));
+
+Cartouche_Hutchinson = @(x) classelement(classelement.create_config({top_plate(x), JCAmat}, 'closed'));
+
+%% Fonctions coût
+
+% Evaluation du coût sur la cartouche globale
+cost_function_obj1 = @(x, env) sum(((Cartouche_Hutchinson(x).alpha(env) - g_obj1(env)) .* (g_obj1(env) > 0.1)).^2, 'omitnan');
+cost_function_obj2 = @(x, env) sum(((Cartouche_Hutchinson(x).alpha(env) - g_obj2(env)) .* (g_obj2(env) > 0.1)).^2, 'omitnan');
+
+objective = @(x) [cost_function_obj1(x, env(dB)), cost_function_obj2(x, env(dB))];
+
+%% Genetic Algorithm
+
+options = optimoptions('ga', ...
+                       'Display', 'iter', ...
+                       'PopulationSize', NP, ... % nombre de points dans la population initiale
+                       'FunctionTolerance', 1e-2, ...
+                       'ConstraintTolerance', 1, ...
+                       'MaxStallGenerations', 5, ...
+                       'MaxGenerations', 100, ...
+                       'MutationFcn',  'mutationadaptfeasible',... {@mutationgaussian, 2, 0.5}, ... %'mutationuniform', ... 
+                       'CrossoverFraction', 0.5, ...
+                       'MigrationInterval', 10, ...
+                       'MigrationFraction', 0.3, ...
+                       'InitialPopulationMatrix', x0); 
+
+% Options d'affichage
+% options.PlotFcn = {@gaplotbestf, @gaplotmaxconstr, @gaplotbestindiv}; % Pour un seul objectif
+options.PlotFcn = {@gaplotpareto, @gaplotscorediversity}; % Pour deux objectifs ou plus
+
+rng; % For reproducibility"
+tic;
+[xopti, fval, eflag, output, population, scores] = gamultiobj(objective, numel(x0(1, :)), [], [], [], [], lb, ub, [], intcon, options);
+timeGa = toc;
+
+xopti_to_cell_array_of_Hutchinson_element_alpha = @(x, env) arrayfun(@(i) Cartouche_Hutchinson(x(i, :)).alpha(env), 1:size(x, 1), 'UniformOutput', false);
+% xopti_to_cell_array_of_global_assembly_alpha = @(x, env) arrayfun(@(i) Cartouches.Cartouche_ETS(x(i, :)).alpha(env), 1:size(x, 1), 'UniformOutput', false);
+
+cell_of_MPPSBH_assembly_alpha_to_mean_alpha = @(alpha_cell_array, gabarit) arrayfun(@(i) mean(alpha_cell_array{i}(gabarit)), 1:size(alpha_cell_array, 2), 'UniformOutput', false);
+
+% On récupère les vecteurs d'absorption des meilleures configurations
+[sorted_scores_opti, sorted_index_opti] = sort(fval);
+sorted_xopti = xopti(sorted_index_opti(:, 1), :);
+filtered_alpha = xopti_to_cell_array_of_Hutchinson_element_alpha(sorted_xopti, env(dB));
+
+% On récupère, pour ces vecteurs, les alphas moyens sur différentes bandes fréquentielles d'intérêt
+mean_alpha_obj1 = cell_of_MPPSBH_assembly_alpha_to_mean_alpha(filtered_alpha, g_obj1(env(dB)));
+mean_alpha_obj2 = cell_of_MPPSBH_assembly_alpha_to_mean_alpha(filtered_alpha, g_obj2(env(dB)));
+
+% Tracé interractif des meilleurs résultats de l'optimisation multi objectif
+perso_interactive_multi_plot(env(dB).w/(2*pi), filtered_alpha, mean_alpha_obj1, mean_alpha_obj2, 2000);
+
+%% Résultats et sélection de la solution 
+
+chosed_index = input('Veuillez entrer le numéro de la configuration choisie : ');
+x_opti = sorted_xopti(chosed_index, :);
+
+%% Sauvergarde
+
+env_saved = input('Sauvegarder l''environnement d''optimisation : ');
+
+if env_saved == 1
+    % save([folderName, '\' name '.mat']);
+    save([folderName, '\' 'optimisation cartouche Hutchinson' '.mat']);
+end
+
+%% Indicateurs
+
+% alpha_mean_lb_hf_in_band = assembly_lb_hf_opti.alpha_mean(env(dB), f_min_obj1, f_max_obj1);
+% alpha_mean_lb_hf_out_band = assembly_lb_hf_opti.alpha_mean(env(dB), f_min_obj2, f_max_hf);
+% alpha_mean = assembly_lb_hf_opti.alpha_mean(env(dB), f_min_obj1, f_max_hf);
+
+%% Validation numérique des objects individuels
+
+% Validation 
+% Tube_lb_hf = ImpedanceTube2D(ImpedanceTube2D.create_config(assembly_lb_hf_opti.Configuration.ListOfElements));
+% Tube_lb_hf = Tube_lb_hf.lauch_tube_measurement();
+% Tube_lb_hf.plot_alpha(env(dB), f_min_obj1, f_max_lb_hf, 'solution large bande');
+% mphsave(Tube_lb_hf.Configuration.ComsolModel, ['E:\Montréal 2023 - 2025\Maitrise LB\Présentations\Présentation groupe REAR\25.05.08 - configurations finales pour 1ère itération\' ...
+%                                                'validation numérique de la solution fournie par ETS'])
+
+%% Validation des contribution individuelles
+  
+MPPSBH_element_i_contribution_numerical_2D_validation = ...
+    @(x, i, name) MPPSBH_element_contribution_numerical_2D_validation( ...
+    Contributions.MPPSBH_element_i_contribution(x , i), env(dB), folderName, name);
+
+model = MPPSBH_element_i_contribution_numerical_2D_validation(x0(1, :), 1, 'validation_MPPSBH_element_1');
+mphsave(model, [folderName, '\validation_MPPSBH_element_1.mph']);
+perso_plot_alpha_from_COMSOL_model(model, 'MPPSBH_element_1');
+
+%% Validation numérique des cartouches
+
+% Cartouche_ETS_numerical_2D_validation = ...
+%     @(x, i, name) Cartouche_ETS_numerical_2D_validation( ...
+%     Cartouches.Cartouche_ETS(x), env(dB), folderName, name);
+% 
+% model = MPPSBH_element_i_contribution_numerical_2D_validation(x0(1, :), 1, 'validation_MPPSBH_element_1');
+% mphsave(model, [folderName, '\validation_MPPSBH_element_1.mph']);
+% perso_plot_alpha_from_COMSOL_model(model, 'MPPSBH_element_1');
+
+handle_Cartouche_Poly_numerical_2D_validation = @(x, solN, name) Cartouche_Poly_numerical_2D_validation( ...
+    Cartouches.Cartouche_Poly(x), solN, env(dB), folderName, name);
+
+solN = classNiloofar(classNiloofar.create_config(99e-3, 28e-3, 118e-3, 1e-3, 5e-4, 9e-3, 5e-3, 7.4e-3, 8e-3, 8e-3, 15));
+model = handle_Cartouche_Poly_numerical_2D_validation(x0(1, :), solN, 'validation_Cartouche_Poly');
+mphsave(model, [folderName, '\validation_Cartouche_Poly.mph']);
+perso_plot_alpha_from_COMSOL_model(model, 'MPPSBH_element_1');
+
+% Importation du modèle résolu de la Cartouche Poly
+
+
+%% Sauvegarde des rapports de configuration
+
+% report_root = 'E:\Montréal 2023 - 2025\Maitrise LB\Présentations\Présentation groupe REAR\25.05.08 - configurations finales pour 1ère itération\';
+% MPPSBH_lb_hf_1.export_report([report_root, 'rapport de configuration - solution 1.xlsx'])
+% MPPSBH_lb_hf_2.export_report([report_root, 'rapport de configuration - solution 2.xlsx'])
+% MPPSBH_lb_hf_3.export_report([report_root, 'rapport de configuration - solution 3.xlsx'])
+% MPPSBH_lb_hf_4.export_report([report_root, 'rapport de configuration - solution 4.xlsx'])
+

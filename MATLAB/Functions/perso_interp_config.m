@@ -22,11 +22,11 @@ function output = perso_interp_config(input, n)
             else
                 error('Chaque cellule doit contenir 4 éléments : [petit, grand, n, p].');
             end
-        else
-            % Si l'élément n'est pas une cellule, on l'ajoute directement au vecteur
-            output = [output, current_elem];
-            total_values = total_values + numel(current_elem); % Met à jour le total des valeurs
         end
+        
+        % Si l'élément n'est pas une cellule, on l'ajoute directement au vecteur
+        output = [output, current_elem];
+        total_values = total_values + numel(current_elem); % Met à jour le total des valeurs
     end
     
     % Ajuster le nombre total de valeurs pour qu'il corresponde à n
@@ -38,4 +38,5 @@ function output = perso_interp_config(input, n)
         % Si le nombre de valeurs est trop élevé, on coupe l'excédent
         output = output(1:n); % Ne garde que les n premières valeurs
     end
+    output = reshape(output, 1, []);
 end

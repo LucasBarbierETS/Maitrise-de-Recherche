@@ -19,13 +19,13 @@ classdef classSDOF < classelement
             % On choisit le modèle linéaire ou non
             if strcmp(config.HighLevel, 'false')
                 obj.Configuration.ListOfSubelements{end+1} = classMPP_Circular( ...
-                    classMPP_Circular.create_config(pp, phr, pt, cd*cw));
+                    classMPP_Circular.create_config(pp, phr, pt, cd * cw));
             elseif strcmp(config.HighLevel, 'true')
                 obj.Configuration.ListOfSubelements{end+1} = classMPP_Circular_HL( ...
                     classMPP_Circular_HL.create_config(pp, phr, pt, cd*cw));
             end
 
-            obj.Configuration.ListOfSubelements{end+1} = classcavity(classcavity.create_config(ct, cd*cw));
+            obj.Configuration.ListOfSubelements{end+1} = classcavity(classcavity.create_config(ct, cd * cw));
         end
     
         function output_model = set_COMSOL_2D_Model(obj, input_model, index, env)
@@ -39,7 +39,7 @@ classdef classSDOF < classelement
             cavity_thickness, cavity_depth, cavity_width, high_level)
 
             config = struct();
-            config.InputSection = cavity_depth*cavity_width;
+            config.InputSection = cavity_depth * cavity_width;
 
             % Paramètres de la plaque
             config.PlatePorosity = plate_porosity;

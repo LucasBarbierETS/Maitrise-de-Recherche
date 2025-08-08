@@ -37,10 +37,10 @@ classdef classannularcell < classelement
         function obj = classannularcell(annular_cell_configuration)
 
             % On appelle le constructeur de classe "classelement" à vide
-            obj@classelement(classelement.create_config({}, "opened"));
+            obj@classelement(classelement.create_config({}, "opened", []));
             
             % On tranfert les attributs de la configuration d'appel vers la configuration de classe
-            obj.Configuration = transferFields(annular_cell_configuration, obj.Configuration);
+            obj.Configuration = perso_transfer_fields(annular_cell_configuration, obj.Configuration);
 
             rmpi = obj.Configuration.MainPoreRadiusIn;
             rmpo = obj.Configuration.MainPoreRadiusOut;
@@ -50,7 +50,7 @@ classdef classannularcell < classelement
             cm = obj.Configuration.CavitiesModel;
             
             % Demi-pore d'entrée  
-            % obj.Configuration.ListOfSubelements{end+1} = classconicalcavity(classconicalcavity.create_config(tde/2, rmpi, rmp));
+            obj.Configuration.ListOfSubelements{end+1} = classconicalcavity(classconicalcavity.create_config(tde/2, rmpi, rmp));
             % obj.Configuration.ListOfSubelements{end+1} = classcavity(classcavity.create_config(tde/2, rmpi, rmp));
 
             % Cavité annulaire
@@ -58,7 +58,7 @@ classdef classannularcell < classelement
             obj.Configuration.ListOfSubelements{end+1} = classjunction_cylindrical(classjunction_cylindrical.create_config(annular_cavity, rmp, tde));
 
             % Demi-pore de sortie 
-            % obj.Configuration.ListOfSubelements{end+1} = classconicalcavity(classconicalcavity.create_config(tde/2, rmp, rmpo));
+            obj.Configuration.ListOfSubelements{end+1} = classconicalcavity(classconicalcavity.create_config(tde/2, rmp, rmpo));
             % obj.Configuration.ListOfSubelements{end+1} = classcavity(classcavity.create_config(tde/2, rmpi, rmp));
         end 
     end

@@ -1,4 +1,4 @@
-classdef classjunction 
+classdef classjunction < classsubelement
 
 % References: 
 
@@ -14,20 +14,21 @@ classdef classjunction
 % of connexion between the junction and the wave guide and the average cross section area of the wave guide at 
 % the place where the connexion takes place.
 % for more explanation, see [1] fig.4
-  
-    properties
-
-        HandleAppBuilder = @(app, class_jcn) AppJunction.class_to_app(app, class_jcn);
-        Configuration
-        %            .JunctionElement
-    end
     
     methods
 
         function obj = classjunction(config)  
-            obj.Configuration = config;
+                
+            obj@classsubelement(config);
+            obj.HandleAppBuilder = @(app, class_jcn) AppJunction.class_to_app(app, class_jcn);
         end
 
+        function s = input_section(obj)
+
+            config = obj.Configuration;
+            s = config.JunctionWidth * config.JunctionDepth;
+        end
+        
         function TM = transfer_matrix(obj, env)
             
             % [1] eq.11
@@ -42,7 +43,8 @@ classdef classjunction
             % considérer la surface ou s'applique la condition d'impédance
             % de surface
 
-            TM.T21 = Ca ./ config.JunctionElement.surface_impedance(env); % Convention Pression-Débit
+            TM.T21 = Ca ./ config.JunctionElement.surface_impedance(env) * obj.input_section(); % Convention Pression-Débit
+            % TM.T21 = Ca ./ config.JunctionElement.surface_impedance(env); % Convention Pression-Débit
             % TM.T21 = 1 ./ obj.Configuration.JunctionElement.surface_impedance(env); % Convention Pression-Vitesse
             TM.T22 = ones(1, length(w));
         end
@@ -63,11 +65,12 @@ classdef classjunction
 
     methods (Static, Access = public)
 
-        function config = create_config(input_section, junction_element)
+        function config = create_config(junction_element, junction_width, junction_depth)
             
             config = struct();
-            config.InputSection = input_section;
             config.JunctionElement = junction_element;
+            config.JunctionWidth = junction_width;
+            config.JunctionDepth = junction_depth;
         end
     end
 end

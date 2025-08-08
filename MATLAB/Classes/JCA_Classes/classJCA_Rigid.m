@@ -61,14 +61,14 @@ classdef classJCA_Rigid < classsubelement
 
             config = obj.Configuration;
             phi = config.Porosity;
-            tor = config.Tortuosity;
+            tor = config.Tortuosity; 
 
             % On vérifie que la tortuosité à été évaluée lorsque elle a été définie
             if ~isnumeric(tor)
                 tor = tor(env);
             end
             
-            sig = config.AirFlowResistivity;
+            sig = config.AirFlowResistivity; % proportionnel à 1/phi
 
             % On vérifie que la resistivité à été évaluée lorsque elle a été définie 
             if ~isnumeric(sig)
@@ -81,7 +81,14 @@ classdef classJCA_Rigid < classsubelement
             %%%%%% Champoux-Allard model ([5] tableau p. 24) %%%%%%
             
             % densité effective (effets visqueux) 
-            H = phi^2 * vl^2 * sig.^2 / (4 * tor.^2 * rho .* eta); % fréquence caractéristique visqueuse
+            H = phi^2 * vl^2 * sig.^2 ./ (4 * tor.^2 * rho .* eta); % fréquence caractéristique visqueuse
+            % % debog
+            % plot(phi^2 * vl^2 * sig.^2)
+            % close();
+            % plot(4 * tor.^2 * rho .* eta)
+            % close();
+            % plot(H);
+            % close();
             G = sqrt(1 + 1j .* w./H); 
             ep.rhoeff = rho .* tor .* (1 + (sig .* phi .* G) ./ (1j  .*  w .* rho .* tor));
 
@@ -120,7 +127,7 @@ classdef classJCA_Rigid < classsubelement
             end
 
             d = obj.Configuration.Thickness;
-            S = obj.Configuration.InputSection;
+            S = obj.Configuration.Section; 
             % phi = obj.Configuration.JCAParameters.Porosity;
             kd = ep.keq * d;
             TM.T11 = cos(kd);
@@ -134,13 +141,12 @@ classdef classJCA_Rigid < classsubelement
 
     methods (Static, Access = public)
 
-        function config = create_config(porosity, tortuosity, air_flow_resistivity, ...
-        viscous_caractersitic_length, thermal_caracteristic_length, thickness, input_section)
+        function config = create_config(section, thickness, porosity, tortuosity, air_flow_resistivity, ...
+        viscous_caractersitic_length, thermal_caracteristic_length)
             
-            % Cette méthode permet de créer une configuration d'appel pour le constructueur classJCA_Rigid
             config = struct();
+            config.Section = NaN;
             config.Thickness = NaN;
-            config.InputSection = NaN;
             config.Porosity = NaN;
             config.Tortuosity = NaN;
             config.AirFlowResistivity = NaN;
@@ -149,9 +155,8 @@ classdef classJCA_Rigid < classsubelement
             
             % Si la méthode n'est pas appelée à vide
             if nargin > 0
-
+                config.Section = section;
                 config.Thickness = thickness;
-                config.InputSection = input_section;
                 config.Porosity = porosity;
                 config.Tortuosity = tortuosity;
                 config.AirFlowResistivity = air_flow_resistivity;

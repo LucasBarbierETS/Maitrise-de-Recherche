@@ -9,18 +9,27 @@ classdef classNiloofar
             obj.Configuration.EndStatus = 'closed';
         end
         
-        function output_model = set_COMSOL_2D_Model(obj, input_model, index, env)
-            output_model = ModelNiloofar(obj.Configuration, input_model, index, env);
+        function s = input_section(obj) 
+            config = obj.Configuration;
+            s = config.Width * config.Depth;
+        end
+            
+        function output_model = set_COMSOL_2D_Model(obj, input_model, index, env, varargin)
+            output_model = ModelNiloofar(obj.Configuration, input_model, index, env, varargin{:});
         end
     end
+
     methods (Static)
-        function config = create_config(solution_length, cavities_width, plates_thickness, increment, ...
+
+        function config = create_config(solution_length, width, depth, plates_thickness, increment, ...
                 first_layer_thickness, left_cavities_thickness, right_cavities_thickness, first_left_plate_length, ...
-                first_right_plate_length, number_of_left_plates, input_section)
+                first_right_plate_length, number_of_left_plates)
             
             config = struct();
             config.SolutionLength = solution_length;
-            config.CavitiesWidth = cavities_width;
+            [config.Width, w] = deal(width);
+            [config.Depth, d] = deal(depth);
+            config.Section = w * d;
             config.PlatesThickness = plates_thickness;
             config.Increment = increment;
             config.FirstLayerThickness = first_layer_thickness;
@@ -29,7 +38,6 @@ classdef classNiloofar
             config.FirstLeftPlateLength = first_left_plate_length;
             config.FirstRightPlateLength = first_right_plate_length;
             config.NumberOfLeftPlates = number_of_left_plates;
-            config.InputSection = input_section;
         end
     end
 end

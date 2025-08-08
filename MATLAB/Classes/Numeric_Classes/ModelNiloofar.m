@@ -1,4 +1,4 @@
-function output_model = ModelNiloofar(config, input_model, index, env)
+function output_model = ModelNiloofar(config, input_model, index, env, varargin)
 
 % Cette fonction permet d'intégrer la géométrie, la physique et le maillage de la solution appelée sol_bf à
 % un modèle préexistant permettant de réaliser des calculs numériques sur tube d'impédance
@@ -7,7 +7,7 @@ model = input_model;
 
 %% Extraction des variables 
 
-cavw = config.CavitiesWidth;
+w = config.Width;
 L = config.SolutionLength;
 l = config.PlatesThickness; 
 d = config.Increment;
@@ -21,11 +21,24 @@ N = config.NumberOfLeftPlates;
 %% Création des variables et paramètres du modèle 
 
 % paramètres de placement
-model.param.set(['sol' num2str(index) '_w'], [num2str(cavw) '[m]'], 'largeur');
+model.param.set(['sol' num2str(index) '_w'], [num2str(w) '[m]'], 'largeur');
+
+if nargin > 4
+    model.param.set(['sol' num2str(index) '_xl'], num2str(varargin{1}), 'ligne d''accotement horizontal à gauche');
+    model.param.set(['sol' num2str(index) '_yt'], num2str(varargin{2}), 'ligne d''accotement verticale en haut');
+else
+    if index == 1
+        model.param.set(['sol' num2str(index) '_xl'], '0', 'ligne d''accotement horizontal à gauche');
+    else
+        model.param.set(['sol' num2str(index) '_xl'], num2str(varargin{1}), 'ligne d''accotement horizontal à gauche');
+    end
+    
+    model.param.set(['sol' num2str(index) '_yt'], '0', 'ligne d''accotement verticale en haut');
+end
+
 model.param.set(['sol' num2str(index) '_L'], [num2str(L) '[m]'], 'longueur');
 model.param.set(['sol' num2str(index) '_xc'], ['sol' num2str(index) '_xl+sol' num2str(index) '_w/2'], 'ligne centrale');
 model.param.set(['sol' num2str(index) '_xr'], ['sol' num2str(index) '_xl+sol' num2str(index) '_w'], 'ligne d''acotement à droite');
-model.param.set(['sol' num2str(index+1) '_xl'], ['sol' num2str(index) '_xl+sol' num2str(index) '_w+2[mm]'], 'ligne d''acotement à gauche');
 
 % Paramètres de la géométrie
 model.param.set(['sol' num2str(index) '_l'], num2str(l), 'épaisseur des plaques');
@@ -42,7 +55,7 @@ geom = model.component('component').geom('geometry');
 
 % Première cavité
 frc = geom.create(['sol' num2str(index) '_frc'], 'Rectangle');
-frc.set('pos', {['sol' num2str(index) '_xl'], ['-sol' num2str(index) '_flt']});
+frc.set('pos', {['sol' num2str(index) '_xl'], ['sol' num2str(index) '_yt-sol' num2str(index) '_flt']});
 frc.set('size', {['sol' num2str(index) '_w'], ['sol' num2str(index) '_flt']});
 
 geom.run;
@@ -51,7 +64,7 @@ for i = 1:N
     % Création d'un rectangle pour la ième plaque gauche - couche d'air à droite
     lp = geom.create(['sol' num2str(index) '_lp' num2str(i)], 'Rectangle');
     lp.set('pos', {['sol' num2str(index) '_xl+sol' num2str(index) '_a1+' num2str(i-1) '*sol' num2str(index) '_d'], ... xl + a1 + (i-1)*d
-                   ['-sol' num2str(index) '_flt-' num2str(i-1) '*sol' num2str(index) '_m-' num2str(i) '*sol' num2str(index) '_l']}); % -flt - (i-1)*m - i*l
+                   ['sol' num2str(index) '_yt-sol' num2str(index) '_flt-' num2str(i-1) '*sol' num2str(index) '_m-' num2str(i) '*sol' num2str(index) '_l']}); % -flt - (i-1)*m - i*l
 
     lp.set('size', {['sol' num2str(index) '_w-(sol' num2str(index) '_a1+' num2str(i-1) '*sol' num2str(index) '_d)'], ... w - a1 + (i-1)*d
                    ['sol' num2str(index) '_l']}); % l
@@ -61,7 +74,7 @@ for i = 1:N
     % Création pour la cavité i-1
     lc1 = geom.create(['sol' num2str(index) '_lc' num2str(i)], 'Rectangle');
     lc1.set('pos', {['sol' num2str(index) '_xl'], ... xl
-                    ['-sol' num2str(index) '_flt-' num2str(i-2) '*sol' num2str(index) '_m-' num2str(i-1) '*sol' num2str(index) '_l-sol' num2str(index) '_n']}); % -flt -(i-2)*m -(i-1)*l) - n
+                    ['sol' num2str(index) '_yt-sol' num2str(index) '_flt-' num2str(i-2) '*sol' num2str(index) '_m-' num2str(i-1) '*sol' num2str(index) '_l-sol' num2str(index) '_n']}); % -flt -(i-2)*m -(i-1)*l) - n
 
     lc1.set('size', {['sol' num2str(index) '_w'], ... w 
                      ['sol' num2str(index) '_n-sol' num2str(index) '_m-sol' num2str(index) '_l']}); % n-m-l
@@ -71,7 +84,7 @@ for i = 1:N
     % Création d'un rectangle pour la plaque droite i
     rp = geom.create(['sol' num2str(index) '_rp' num2str(i)], 'Rectangle');
     rp.set('pos', {['sol' num2str(index) '_xl'], ... xl
-                   ['-sol' num2str(index) '_flt-' ... -flt
+                   ['sol' num2str(index) '_yt-sol' num2str(index) '_flt-' ... -flt
                    num2str(i-2) '*sol' num2str(index) '_m-' ... -(i-2)*m
                    num2str(i-1) '*sol' num2str(index) '_l-' ... -(i-1)*l
                    'sol' num2str(index) '_n-sol' num2str(index) '_l']}); % -(n+l)
@@ -84,7 +97,7 @@ for i = 1:N
     % Création pour la cavité i-2
     rc2 = geom.create(['sol' num2str(index) '_rc' num2str(i)], 'Rectangle');
     rc2.set('pos', {['sol' num2str(index) '_xl'] ... xl
-                    ['-sol' num2str(index) '_flt' ... -flt
+                    ['sol' num2str(index) '_yt-sol' num2str(index) '_flt' ... -flt
                     '-' num2str(i) '*sol' num2str(index) '_m' ... -i*m
                     '-' num2str(i+1) '*sol' num2str(index) '_l' ... -(i+1)*l
                     '+sol' num2str(index) '_l']}); % + l
@@ -126,7 +139,7 @@ geom.run;
 % Pour la solution entière
 box_mat = model.component('component').selection.create(['sol' num2str(index)], 'Box');
 box_mat.set('entitydim', 2); % On sélectionne des objets 2D
-box_mat.set('ymax', '0.01[mm]');
+box_mat.set('ymax', ['sol' num2str(index) '_yt+0.01[mm]']);
 box_mat.set('xmax', ['sol' num2str(index) '_xr+0.01[mm]']);
 box_mat.set('xmin', ['sol' num2str(index) '_xl-0.01[mm]']);
 box_mat.set('condition', 'inside');
@@ -134,8 +147,8 @@ box_mat.set('condition', 'inside');
 % Pour la frontière multiphysique
 box_bnd_cont_ap = model.component('component').selection.create(['sol' num2str(index) '_bnd_ap_tv'], 'Box');
 box_bnd_cont_ap.set('entitydim', 1); % On sélectionne les arêtes
-box_bnd_cont_ap.set('ymax', '0.01[mm]');
-box_bnd_cont_ap.set('ymin', '-0.01[mm]');
+box_bnd_cont_ap.set('ymax', ['sol' num2str(index) '_yt+0.01[mm]']);
+box_bnd_cont_ap.set('ymin', ['sol' num2str(index) '_yt-0.01[mm]']);
 box_bnd_cont_ap.set('xmax', ['sol' num2str(index) '_xr+0.01[mm]']);
 box_bnd_cont_ap.set('xmin', ['sol' num2str(index) '_xl-0.01[mm]']);
 box_bnd_cont_ap.set('condition', 'inside');
@@ -143,7 +156,7 @@ box_bnd_cont_ap.set('condition', 'inside');
 % Pour les frontières du domaine visquo-thermique
 box_bnd_lyr_tv = model.component('component').selection.create(['sol' num2str(index) '_bnd_lyr_tv'], 'Box');
 box_bnd_lyr_tv.set('entitydim', 1); % On sélectionne les arêtes
-box_bnd_lyr_tv.set('ymax', '-0.01[mm]');
+box_bnd_lyr_tv.set('ymax', ['sol' num2str(index) '_yt+0.01[mm]']);
 box_bnd_lyr_tv.set('xmax', ['sol' num2str(index) '_xr+0.01[mm]']);
 box_bnd_lyr_tv.set('xmin', ['sol' num2str(index) '_xl-0.01[mm]']);
 

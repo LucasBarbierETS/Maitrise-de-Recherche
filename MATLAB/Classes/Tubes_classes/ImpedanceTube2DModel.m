@@ -62,7 +62,6 @@ function model = ImpedanceTube2DModel(list_of_solutions, env)
     %% Géométrie
 
     % Mise en place des solutions
-
     for i = 1:length(list_of_solutions)
         model = list_of_solutions{i}.set_COMSOL_2D_Model(model, i, env);
     end
@@ -70,6 +69,7 @@ function model = ImpedanceTube2DModel(list_of_solutions, env)
     % Création de la géométrie du tube
     rt1 = model.component('component').geom('geometry').create('rt1', 'Rectangle');
     rt1.set('pos', {'0' 'd2s'});
+
     if ~isempty(list_of_solutions)
         rt1.set('size', {['sol' num2str(length(list_of_solutions)) '_xr'], 'd12'});
     else
@@ -78,6 +78,7 @@ function model = ImpedanceTube2DModel(list_of_solutions, env)
 
     rt2 = model.component('component').geom('geometry').create('rt2', 'Rectangle');
     rt2.set('pos', {'0' '0'});
+
     if ~isempty(list_of_solutions)
         rt2.set('size', {['sol' num2str(length(list_of_solutions)) '_xr'], 'd2s'});
     else

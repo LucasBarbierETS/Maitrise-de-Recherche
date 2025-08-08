@@ -1,24 +1,36 @@
 function perso_commit(message)
 % perso_commit(commit_message)
 %   Commit tous les fichiers du dossier MATLAB avec un message donné
+%   en excluant les fichiers avec l'extension .mph via .gitignore.
 
     % Définir le chemin du dépôt
-    repo_path = 'E:\Montréal 2023 - 2025\Maitrise LB\MATLAB';
+    repo_path = 'C:\Users\lucas.barbier\Documents\Maitrise dossier secondaire';
 
     % Vérifier si le dossier existe
     if ~isfolder(repo_path)
         error('Le dossier MATLAB n''existe pas dans ce répertoire.');
     end
 
-    % % Vérifier si le dossier est bien un dépôt Git
-    % if ~isfolder(fullfile(repo_path, '.git'))
-    %     error('Le répertoire spécifié n''est pas un dépôt Git valide.');
-    % end
-
     % Accéder au répertoire du dépôt
     cd(repo_path);
 
-    % Ajouter tous les fichiers modifiés au dépôt
+    % Vérifier si le fichier .gitignore existe, sinon le créer
+    if ~isfile('.gitignore')
+        fid = fopen('.gitignore', 'w'); % Créer le fichier s'il n'existe pas
+        fclose(fid);
+    end
+
+    % Ajouter .mph à .gitignore si ce n'est pas déjà fait
+    fid = fopen('.gitignore', 'r');
+    file_contents = fread(fid, '*char')';
+    fclose(fid);
+    if ~contains(file_contents, '*.mph')
+        fid = fopen('.gitignore', 'a'); % Ouvrir en mode ajout
+        fprintf(fid, '\n*.mph\n'); % Ajouter les fichiers .mph à ignorer
+        fclose(fid);
+    end
+
+    % Ajouter tous les fichiers au dépôt, sauf ceux ignorés
     status = system('git add .');
     if status ~= 0
         error('Erreur lors de l''ajout des fichiers au dépôt.');

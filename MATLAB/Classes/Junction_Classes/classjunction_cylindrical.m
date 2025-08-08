@@ -30,6 +30,11 @@ classdef classjunction_cylindrical < classjunction
 
             obj@classjunction(config)
         end
+    
+        function s = input_section(obj)
+            config = obj.Configuration;
+            s = pi*config.MainPoreRadius^2;
+        end
     end
 
     methods (Static, Access = public)

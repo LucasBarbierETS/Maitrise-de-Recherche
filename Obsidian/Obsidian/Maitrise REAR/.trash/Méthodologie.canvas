@@ -1,0 +1,8 @@
+{
+	"nodes":[
+		{"id":"85d1cc0112db081a","type":"text","text":"[[méthodologies d'éduction de l'impédance.canvas]]","x":-280,"y":-280,"width":285,"height":80},
+		{"id":"1cf7b2b120f94c8f","type":"text","text":"[[Prédiction de l'impédance idéale|prédiction de l'impédance idéale]]\n","x":-142,"y":-90,"width":250,"height":60},
+		{"id":"ccb7795907f81063","x":-405,"y":-500,"width":325,"height":100,"type":"text","text":"[[définition d'un coefficient de décharge dépendant de la porosité et du rayons des perforations]] "}
+	],
+	"edges":[]
+}

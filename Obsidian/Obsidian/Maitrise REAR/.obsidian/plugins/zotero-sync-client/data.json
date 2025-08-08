@@ -1,0 +1,8 @@
+{
+  "api_key": "htO8J5X98iQHorU4GRi99Mw8",
+  "sync_on_startup": true,
+  "sync_on_interval": false,
+  "sync_interval": 0,
+  "note_generator": "let n = '';\nif (data.creators) {\n\tdata.creators.forEach(author => {\n\tn += '[[People/' + author.firstName + ' ' + author.lastName + ']] '; \n\t});\n\tn += '\\n';\n}\nn += '# ' + data.title;\nif (data.date) {\n\tlet year = new Date(data.date).getFullYear();\n\tn += ' (' + year.toString() + ')';\n}\nn += '\\n\\n';\nif (data.children) {\n\tconst notes = data.children.filter(\n\t\tc => c.itemType.toLowerCase() == 'note'\n\t)\n\tnotes.forEach(c => {\n\t\tn += c.note_markdown + '\\n\\n';\n\t});\n}\nreturn n;",
+  "filepath_generator": "let fp = '';\nif (data.creators && data.creators.length > 0) {\nfp += data.creators[0]?.lastName;\nif (data.creators.length == 2) {\n\tfp += '+';\n\tfp += data.creators[1]?.lastName;\n} else if (data.creators.length > 2) {\n\tfp += '+';\n}\nif (data.date) {\n\tlet year = new Date(data.date).getFullYear();\n\tfp += year.toString();\n}\nreturn 'References/' + fp;\n}"
+}
