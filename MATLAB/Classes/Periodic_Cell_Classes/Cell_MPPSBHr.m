@@ -34,8 +34,8 @@ classdef Cell_MPPSBHr < classelement
 
             cm = config.CavityMethod;
 
-            % Plaque perforée (Modèle de Maa)
-            obj.Configuration.ListOfSubelements{end+1} = classMPP_Circular(classMPP_Circular.create_config(p, phr, t, ciw, cid));
+            % Plaque perforée
+            obj.Configuration.ListOfSubelements{end+1} = classMPP_Circular(classMPP_Circular.create_config(p, phr, t, ciw*cid));
 
             % Cavité cylindrique
             obj.Configuration.ListOfSubelements{end+1} = classcavity(classcavity.create_config(ct/2, ciw, cid));

@@ -1,8 +1,8 @@
-classdef classcubicalcavity < classsubelement
+classdef classannularcavity_cubical < classsubelement
 
     methods
 
-        function obj = classcubicalcavity(config)
+        function obj = classannularcavity_cubical(config)
 
             obj@classsubelement(config);
         end

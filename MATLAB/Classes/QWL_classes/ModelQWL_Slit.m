@@ -1,4 +1,4 @@
-function out = ModelQWL_Slit(config, input_model, index, xtlc, ytlc, env)
+function out = ModelQWL_Slit(config, input_model, index, env, varargin)
 
 % Cette fonction permet d'intégrer la géométrie, la physique et le maillage de la solution appelée classMPPSBH_Rectangluar à
 % un modèle préexistant permettant de réaliser des calculs numériques sur tube d'impédance
@@ -14,8 +14,18 @@ w = config.Width;
 
 % paramètres
 
-model.param.set(['sol' num2str(index) '_xl'], xtlc, 'ligne d''accotement horizontal à gauche');
-model.param.set(['sol' num2str(index) '_yt'], ytlc, 'ligne d''accotement verticale en haut');
+if nargin > 4
+    model.param.set(['sol' num2str(index) '_xl'], num2str(varargin{1}), 'ligne d''accotement horizontal à gauche');
+    model.param.set(['sol' num2str(index) '_yt'], num2str(varargin{2}), 'ligne d''accotement verticale en haut');
+else
+    if index == 1
+        model.param.set(['sol' num2str(index) '_xl'], '0', 'ligne d''accotement horizontal à gauche');
+    else
+        model.param.set(['sol' num2str(index) '_xl'], num2str(varargin{1}), 'ligne d''accotement horizontal à gauche');
+    end
+    
+    model.param.set(['sol' num2str(index) '_yt'], '0', 'ligne d''accotement verticale en haut');
+end
 
 model.param.set(['sol' num2str(index) '_xc'], ['sol' num2str(index) '_xl+sol' num2str(index) '_w/2'], 'ligne centrale');
 model.param.set(['sol' num2str(index) '_xr'], ['sol' num2str(index) '_xl+' num2str(w)], 'ligne d''acotement horizontal à droite');

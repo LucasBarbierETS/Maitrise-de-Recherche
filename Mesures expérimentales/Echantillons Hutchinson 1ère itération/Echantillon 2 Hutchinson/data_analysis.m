@@ -15,7 +15,7 @@ alpha2_145 = alpha2.AbsorptionCoefficientOnCavity_5;
 alpha2_150 = alpha2.AbsorptionCoefficientOnCavity_6;
 
 % Configuration analytique
-config2 = classMPPSBH_Rectangular.create_explicit_slit_pattern_config(6, 28e-3, 28e-3, ...
+config2 = classMPPSBH_Rectangular.create_explicit_slit_pattern_config(30e-3^2, 6, 28e-3, 28e-3, ...
     {[0.475 0.475 0.475 0.475 0.45 0.475] *  1e-3}, ...
     {[1.425 1.425 1.425 2.464 1.406 1.35] *  1e-3}, ...
     {[2.33 2.15 2.55 2.6 2.83 4] *  1e-3}, ...
@@ -45,6 +45,11 @@ plot(env(100).w/(2*pi), alpha_model, 'DisplayName', 'Modèle analytique linéair
 % alpha_model_HL_first_plate = classMPPSBH_Rectangular_HL_first_plate(config2).alpha(env(100));
 % plot(env(100).w/(2*pi), alpha_model_HL_first_plate, 'DisplayName', 'Modèle analytique non-linéaire première plaque');
 legend()
+
+
+Tube_MPPSBH = ImpedanceTube2D(ImpedanceTube2D.create_config({classMPPSBH_Rectangular(config2)}));
+Tube_MPPSBH = Tube_MPPSBH.lauch_tube_measurement(env(100));
+Tube_MPPSBH.plot_alpha(env(dB), 'Echantillon 2 - 100 dB');
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%% 145 dB %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 

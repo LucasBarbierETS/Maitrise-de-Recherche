@@ -47,31 +47,27 @@ classdef classannularcell < classelement
             rmp = (rmpi + rmpo)/2; 
             rde = obj.Configuration.DeadEndRadius;
             tde = obj.Configuration.DeadEndThickness;
-            cm = obj.Configuration.CavitiesModel;
             
             % Demi-pore d'entrée  
-            obj.Configuration.ListOfSubelements{end+1} = classconicalcavity(classconicalcavity.create_config(tde/2, rmpi, rmp));
-            % obj.Configuration.ListOfSubelements{end+1} = classcavity(classcavity.create_config(tde/2, rmpi, rmp));
+            obj.Configuration.ListOfSubelements{end+1} = classcavity_cylindrical(classcavity_cylindrical.create_config(tde/2, rmpi));
 
             % Cavité annulaire
-            annular_cavity = classannularcavity(classannularcavity.create_config(rmp, rde, tde, cm));
+            annular_cavity = classannularcavity_cylindrical(classannularcavity_cylindrical.create_config(rmp, rde, tde, 'Hankel'));
             obj.Configuration.ListOfSubelements{end+1} = classjunction_cylindrical(classjunction_cylindrical.create_config(annular_cavity, rmp, tde));
 
             % Demi-pore de sortie 
-            obj.Configuration.ListOfSubelements{end+1} = classconicalcavity(classconicalcavity.create_config(tde/2, rmp, rmpo));
-            % obj.Configuration.ListOfSubelements{end+1} = classcavity(classcavity.create_config(tde/2, rmpi, rmp));
+            obj.Configuration.ListOfSubelements{end+1} = classcavity_cylindrical(classcavity_cylindrical.create_config(tde/2, rmpi));
         end 
     end
 
     methods (Static, Access = public)
 
-        function config = create_config(main_pore_radius_in, main_pore_radius_out, dead_end_radius, dead_end_thickness, cavities_model)
+        function config = create_config(main_pore_radius_in, main_pore_radius_out, dead_end_radius, dead_end_thickness)
             
             config.MainPoreRadiusIn = main_pore_radius_in;
             config.MainPoreRadiusOut = main_pore_radius_out;
             config.DeadEndRadius = dead_end_radius;
             config.DeadEndThickness =  dead_end_thickness;
-            config.CavitiesModel = cavities_model;
         end
     end
 end

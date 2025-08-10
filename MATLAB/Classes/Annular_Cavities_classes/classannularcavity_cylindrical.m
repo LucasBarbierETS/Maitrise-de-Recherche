@@ -1,4 +1,4 @@
-classdef classannularcavity < classsubelement
+classdef classannularcavity_cylindrical < classsubelement
 
 % References 
 %
@@ -36,7 +36,7 @@ classdef classannularcavity < classsubelement
 
     methods
 
-        function obj = classannularcavity(config)
+        function obj = classannularcavity_cylindrical(config)
 
             obj@classsubelement(config);
         end
@@ -55,12 +55,12 @@ classdef classannularcavity < classsubelement
             hde = config.DeadEndThickness;
             Ca = config.CurtainArea;
 
-            switch obj.Configuration.CavityModel 
+            switch config.CavityModel 
 
                 case 'Hankel'
 
                     % récupération des paramètres JCA de la cavité annulaire
-                    JCA_Rigid_config = classJCA_Rigid.create_config(1, rde, 1, 1, 12 * eta / hde^2, hde, hde); % surface d'entrée arbitraire
+                    JCA_Rigid_config = classJCA_Rigid.create_config(Ca, rde - rmp, 1, 1, 12 * eta / hde^2, hde, hde); % surface d'entrée arbitraire
                     slitJCA = classJCA_Rigid(JCA_Rigid_config);
                     kde = slitJCA.equivalent_parameters(env).keq;
                     Zde = slitJCA.equivalent_parameters(env).Zeq; 

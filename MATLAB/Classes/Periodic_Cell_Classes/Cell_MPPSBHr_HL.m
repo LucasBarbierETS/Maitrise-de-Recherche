@@ -8,7 +8,7 @@ classdef Cell_MPPSBHr_HL < classelement
         function obj = Cell_MPPSBHr_HL(config)
             
             % Appel du constructeur de la classe parente
-            obj@classelement(classelement.create_config({}, 'opened'));
+            obj@classelement(classelement.create_config({}, 'opened', []));
 
             % On transfert les champs de la structure d'appel vers ceux de
             % a structure de classe
@@ -32,7 +32,7 @@ classdef Cell_MPPSBHr_HL < classelement
             pmd = (cid + cod)/2; % pore mean depth
 
             % Plaque perforée (Modèle de Maa)
-            obj.Configuration.ListOfSubelements{end+1} = classMPP_Circular_HL(classMPP_Circular.create_config(pp, phr, pt, ciw, cid));
+            obj.Configuration.ListOfSubelements{end+1} = classMPP_Circular_HL(classMPP_Circular.create_config(pp, phr, pt, ciw*cid));
 
             % Cavité cylindrique
             obj.Configuration.ListOfSubelements{end+1} = classcavity(classcavity.create_config(ct/2, ciw, cid));

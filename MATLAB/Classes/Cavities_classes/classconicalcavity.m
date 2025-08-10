@@ -1,4 +1,4 @@
-classdef classconicalcavity < classsubelement
+classdef classconicalcavity < classcavity
 
 % Références
 %
@@ -6,25 +6,12 @@ classdef classconicalcavity < classsubelement
 % Titre : Modification of the transfer matrix method for the sonic black hole and broadening effective absorption band
 % DOI : 10.1016/j.ymssp.2024.111660
 % URL : https://linkinghub.elsevier.com/retrieve/pii/S0888327024005582
-
-    properties
-
-        Type = 'Conical Cavity'
-
-        % Configuration (Héritée)
-        %              .Thickness % l'épaisseur de la cavité
-        %              .RadiusIn  % le rayon d'entrée de la cavité toroïdale
-        %              .RadiusOut % le rayon de sortie de la cavité toroïdale
-        %              .InputSection
-        %              .OutputSection
-
-    end
     
     methods 
 
         function obj = classconicalcavity(config) 
             
-            obj@classsubelement(config);
+            obj@classcavity(config);
         end
 
         function T = transfer_matrix(obj, env)
@@ -51,13 +38,6 @@ classdef classconicalcavity < classsubelement
             T.T12 = 1j * Z0 * R / Si .* sin(kd);
             T.T21 = 1j * Si / Z0 * ((R + 1 ./ (klz).^2) .* sin(kd) - d ./ (k0 * Lz^2) .* cos(kd));
             T.T22 = 1 / R * (cos(kd) - 1 ./ klz .* sin(kd));
-        end
-
-        function Zs = surface_impedance(obj, env)
-
-            S = obj.Configuration.InputSection;
-            T = obj.transfer_matrix(env);
-            Zs = S * T.T11 ./ T.T21;
         end
     end
 

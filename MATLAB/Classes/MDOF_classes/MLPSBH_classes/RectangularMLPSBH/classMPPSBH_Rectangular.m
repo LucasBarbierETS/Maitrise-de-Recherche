@@ -14,25 +14,34 @@ classdef classMPPSBH_Rectangular < classelement
                 cavd = config.CavitiesDepth;
                 mpw = config.MainPoresWidth;
                 mpd = config.MainPoresDepth;
-                pppp = config.PlatesPerforatedPartPorosity;
-                % prp = config.PlatesRealPorosity;
+                pp = config.PlatesPorosity;
                 phr = config.PlatesHolesRadius;
                 pt = config.PlatesThickness;
                 ct = config.CavitiesThickness;
-                cm = config.CavitiesMethod;
 
                 % On ajoute péridiquement la cellule plaque + cavité
-                for i = 1:length(pppp)
+                for i = 1:length(pp)
 
-                    obj.Configuration.ListOfSubelements{end+1} = Cell_MPPSBHr(Cell_MPPSBHr.create_config(pppp(i), phr(i), pt(i), ...
-                    ct(i), cavd, cavw, mpw(i), mpw(i+1), mpd(i), mpd(i+1), cm{i}));
-
-                    % obj.Configuration.ListOfSubelements{end+1} = Cell_MPPSBHr(Cell_MPPSBHr.create_config(prp(i), phr(i), pt(i), ...
-                    % ct(i), cavd, cavw, mpw(i), mpw(i+1), mpd(i), mpd(i+1), cm(i));
+                    % Plaque perforée
+                    obj.Configuration.ListOfSubelements{end+1} = classMPP_Circular(classMPP_Circular.create_config(mpw(i)*mpd(i), pt(i), phr(i), pp(i)));
+        
+                    % Cavité cylindrique
+                    obj.Configuration.ListOfSubelements{end+1} = classcavity(classcavity.create_config(ct(i)/2, mpw(i), mpd(i)));
+    
+                    % Cavité cubique en parallèle
+                    w = (mpw(i) + mpw(i+1))/2;
+                    d = (mpd(i) + mpd(i+1))/2;
+                    cc = classannularcavity_cubical(classannularcavity_cubical.create_config(w, d, cavw, cavd, ct(i)));
+                    obj.Configuration.ListOfSubelements{end+1} = classjunction(classjunction.create_config(cc, w, d));
+        
+                    % Cavité cylindrique
+                    obj.Configuration.ListOfSubelements{end+1} = classcavity(classcavity.create_config(ct/2, w, d));
                 end 
             end
         end
     
+    end
+    methods % COMSOL
         function output_model = set_COMSOL_2D_Model(obj, input_model, index, env, varargin)
             output_model = ModelMPPSBH(obj.Configuration, input_model, index, env, varargin{:});
         end
@@ -40,7 +49,9 @@ classdef classMPPSBH_Rectangular < classelement
         function output_model = set_COMSOL_3D_Model(obj, input_model, index, env)
             output_model = ModelMPPSBH_3D(obj.Configuration, input_model, index, env);
         end
-    
+    end
+
+    methods % Gestion des configurations
         function export_plate_hole_coordinates(obj, folder_name, sfx)
             % Crée un dossier de configuration et y exporte les coordonnées des trous pour chaque plaque
         
@@ -445,15 +456,16 @@ classdef classMPPSBH_Rectangular < classelement
     
     end
 
-    methods (Static, Access = public)
+    methods (Static, Access = public) % Création des configurations
 
         % Définition de la configuration à partir des paramètres JCA
-        function config = create_config(number_of_plates, cavities_depth, cavities_width, ...
+        function config = create_config(surface, number_of_plates, cavities_depth, cavities_width, ...
                 main_pores_width, main_pores_depth, ...
                 plates_holes_radius, plates_perforated_part_porosity, ...
                 plates_thickness, cavities_thickness)
             
             config = {};
+            config.Surface = surface;
             config.ModelOptions = struct();
             config.NumberOfPlates = number_of_plates;
             config.EndStatus = 'closed';
@@ -461,7 +473,6 @@ classdef classMPPSBH_Rectangular < classelement
             % Paramètres globaux
             config.CavitiesDepth = cavities_depth;
             config.CavitiesWidth = cavities_width;
-            config.InputSection = cavities_width * cavities_depth;
 
             % Paramètres variables en fonction des cellules
             config.PlatesThickness = perso_interp_config(plates_thickness, number_of_plates);
@@ -472,13 +483,14 @@ classdef classMPPSBH_Rectangular < classelement
             config.PlatesPerforatedPartPorosity = perso_interp_config(plates_perforated_part_porosity, number_of_plates);         
         end
         
-        function config = create_explicit_slit_pattern_config(number_of_plates, cavities_depth, cavities_width, ...
+        function config = create_explicit_slit_pattern_config(surface, number_of_plates, cavities_depth, cavities_width, ...
             plates_holes_radius, ...
             plates_width_holes_distance, plates_depth_holes_distance, ...
             plates_depth_holes_number, plates_width_holes_number, ...
             plates_thickness, cavities_thickness, varargin) 
 
             config = {};
+            config.Surface = surface;
             [config.NumberOfPlates, N] = deal(number_of_plates);
             config.EndStatus = 'closed';
 
@@ -506,20 +518,21 @@ classdef classMPPSBH_Rectangular < classelement
             config.PlatesRealPorosity = plates_perforated_surface / (cw * cd);
 
             % Méthode de prise en compte des cavités latérales
-            if nargin > 10
+            if nargin > 11
                 config.CavitiesMethod = repmat(varargin(1), 1, N);
             else
                 config.CavitiesMethod = repmat({'volume'}, 1, N);
             end
         end
 
-        function config = create_explicit_slit_pattern_config_without_first_plate(number_of_plates, cavities_depth, cavities_width, ...
+        function config = create_explicit_slit_pattern_config_without_first_plate(surface, number_of_plates, cavities_depth, cavities_width, ...
             plates_holes_radius, ...
             plates_width_holes_distance, plates_depth_holes_distance, ...
             plates_depth_holes_number, plates_width_holes_number, ...
             plates_thickness, cavities_thickness, varargin) 
 
             config = {};
+            config.Surface = surface;
             [config.NumberOfPlates, N] = deal(number_of_plates);
             config.EndStatus = 'closed';
 
@@ -554,12 +567,13 @@ classdef classMPPSBH_Rectangular < classelement
             end
         end
 
-        function config = create_explicit_square_pattern_config(number_of_plates, cavities_depth, cavities_width, ...
+        function config = create_explicit_square_pattern_config(surface, number_of_plates, cavities_depth, cavities_width, ...
             plates_holes_radius, plates_holes_distance, ...
             plates_holes_number_for_each_row, ...
             plates_thickness, cavities_thickness, varargin) 
 
             config = {};
+            config.Surface = surface;
             [config.NumberOfPlates, N] = deal(number_of_plates);
             config.EndStatus = 'closed';
 
@@ -599,6 +613,10 @@ classdef classMPPSBH_Rectangular < classelement
             end
         end
 
+    end
+
+    methods (Static, Access = public)
+        
         function validate()
 
             % close all 
@@ -609,8 +627,8 @@ classdef classMPPSBH_Rectangular < classelement
             % Paramètres de la configuration
             R = 30e-3;
             L = 100e-3;
-            N = 10;
-            rend = 1e-3;
+            N = 20;
+            rend = 3e-3;
             d = 0.5e-3;
             t = 0.2e-3;
             phi = 0.03;

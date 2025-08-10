@@ -84,7 +84,7 @@ N = 5; % Nombre de plaques optimisées indépendantes pour chaque solution
 
 % NP = 500; % Nombre de points de départ
 % NP = 100;
-% NP = 50;
+NP = 50;
 NP = 10;
 
 ETS_cavities_thickness = (total_thickness - top_plate_thickness - air_gap_thickness - N * plates_thickness) / (N+1);
@@ -241,7 +241,7 @@ Objets = struct();
 % Construction du ième MPPSBH à partir d'une découpe du vecteur d'optimisation
 Objets.MPPSBH_i = @(x_ETS, i) classMPPSBH_Rectangular( ...
     classMPPSBH_Rectangular.create_explicit_slit_pattern_config_without_first_plate( ...
-        ETS_input_surface, N, ETS_cavities_depth, ETS_cavities_width, ...
+        N, ETS_cavities_depth, ETS_cavities_width, ...
         {4.5e-4}, ... {eval_r(x0(:, 1, i))}, ... % rayon des perforations
         {x_ETS(i, :, 1)}, ... % distance entre perforations (width)
         {ETS_cavities_depth/8}, ... % distance entre perforations (depth)
@@ -504,7 +504,7 @@ temp_plot_cartouches(x_opti);
 
 % Validation des MPPSBHs
 
-i = 1;
+i = 3;
 
 Tube_MPPSBH = ImpedanceTube2D(ImpedanceTube2D.create_config({Objets.MPPSBH_i(x_ETS(x_opti), i)}));
 Tube_MPPSBH = Tube_MPPSBH.lauch_tube_measurement(env(dB));
@@ -580,22 +580,22 @@ perso_plot_alpha_from_COMSOL_model(model, ['contribution MPPSBH element ', num2s
 % alpha_COMSOL_Poly_element_contribution = perso_plot_alpha_from_COMSOL_model(model, 'contribution_Poly_element_numérique');
 
 % OK %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% Contributions des HRs %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
-% ETS
-contribution_ETS_yellow_cavity_numerical_2D_validation = ...
-    @(x, name) yellow_cavity_contribution_numerical_2D_validation( ...
-    Contributions.contribution_ETS_yellow_cavity(x), env(dB), folderName, name);
-
-model = contribution_ETS_yellow_cavity_numerical_2D_validation(x_opti, 'validation_contribution_ETS_yellow_cavity');
-% mphsave(model, [folderName, '\optimisation_', currentTime, '\validation_2D_contribution_ETS_yellow_cavity.mph']);
-
-% Comparaison des résultats numériques et analytiques
-
-figure();
-% mphload([folderName, '\optimisation_', currentTime, '\validation_2D_contribution_MPPSBH_element_1.mph']);
-Contributions.contribution_ETS_yellow_cavity(x_opti).plot_alpha(env(dB), 'contribution ETS yellow cavity analytique');
-alpha_COMSOL_ETS_yellow_cavity_contribution = perso_plot_alpha_from_COMSOL_model(model, 'contribution ETS yellow cavity numérique');
-
+% 
+% % ETS
+% contribution_ETS_yellow_cavity_numerical_2D_validation = ...
+%     @(x, name) yellow_cavity_contribution_numerical_2D_validation( ...
+%     Contributions.contribution_ETS_yellow_cavity(x), env(dB), folderName, name);
+% 
+% model = contribution_ETS_yellow_cavity_numerical_2D_validation(x_opti, 'validation_contribution_ETS_yellow_cavity');
+% % mphsave(model, [folderName, '\optimisation_', currentTime, '\validation_2D_contribution_ETS_yellow_cavity.mph']);
+% 
+% % Comparaison des résultats numériques et analytiques
+% 
+% figure();
+% % mphload([folderName, '\optimisation_', currentTime, '\validation_2D_contribution_MPPSBH_element_1.mph']);
+% Contributions.contribution_ETS_yellow_cavity(x_opti).plot_alpha(env(dB), 'contribution ETS yellow cavity analytique');
+% alpha_COMSOL_ETS_yellow_cavity_contribution = perso_plot_alpha_from_COMSOL_model(model, 'contribution ETS yellow cavity numérique');
+% 
 % % Poly
 % contribution_Poly_yellow_cavity_numerical_2D_validation = ...
 %     @(x, name) yellow_cavity_contribution_numerical_2D_validation( ...

@@ -1,7 +1,7 @@
-classdef classMPPSBH_Rectangular < classelement
+classdef classMPPSBH_Chen < classelement
 
     methods
-        function obj = classMPPSBH_Rectangular(config)
+        function obj = classMPPSBH_Chen(config)
         
             % Appel du constructeur de la classe parente
             obj@classelement(classelement.create_config({}, 'closed', []));
@@ -12,39 +12,37 @@ classdef classMPPSBH_Rectangular < classelement
     
                 cavw = config.CavitiesWidth;
                 cavd = config.CavitiesDepth;
+                cavr = config.CavitiesRadius;
                 mpw = config.MainPoresWidth;
                 mpd = config.MainPoresDepth;
-                pp = config.PlatesPorosity;
+                pppp = config.Porosity;
                 phr = config.PlatesHolesRadius;
                 pt = config.PlatesThickness;
                 ct = config.CavitiesThickness;
                 cm = config.CavitiesMethod;
 
-                % On ajoute péridiquement la cellule plaque + cavité
-                for i = 1:length(pp)
+                for i = 1:length(pppp)
 
-                    % Plaque perforée
-                    obj.Configuration.ListOfSubelements{end+1} = classMPP_Circular(classMPP_Circular.create_config(mpw(i)*mpd(i), pt(i), phr(i), pp(i)));
+                    % Plaque perforée (Modèle de Maa)
+                    obj.Configuration.ListOfSubelements{end+1} = classMPP_Maa(classMPP_Maa.create_config(pi*mpr(i)^2, pt(i), phr(i), pp(i)));
         
                     % Cavité cylindrique
-                    obj.Configuration.ListOfSubelements{end+1} = classcavity(classcavity.create_config(ct(i)/2, mpw(i), mpd(i)));
+                    hc = (mpr(i) + mpr(i+1))/2;
+                    obj.Configuration.ListOfSubelements{end+1} = classcavity_cylindrical(classcavity_cylindrical.create_config(ct(i), hc));
         
-                    if strcmp(cm, 'Volume')
-                        % Cavité cubique en parallèle
-                        w = (mpw(i) + mpw(i+1))/2;
-                        d = (mpd(i) + mpd(i+1))/2;
-                        cc = classannularcavity_cubical(classannularcavity_cubical.create_config(w, d, cavw, cavd, ct(i)));
-                        obj.Configuration.ListOfSubelements{end+1} = classjunction(classjunction.create_config(cc, w, d));
+                        annular_cavity = classcavity_annular(classcavity_annular.create_config(hc, cavr(i), ct(i), 'volume'));
+                        obj.Configuration.ListOfSubelements{end+1} = classjunction(classjunction.create_config(annular_cavity, pmw, pmd));
                     end
         
                     % Cavité cylindrique
-                    obj.Configuration.ListOfSubelements{end+1} = classcavity(classcavity.create_config(ct/2, w, d));
-                end 
+                    obj.Configuration.ListOfSubelements{end+1} = classcavity(classcavity.create_config(ct/2, pmw, pmd));
+                end
+
+                    obj.Configuration.ListOfSubelements{end+1} = Cell_MPPSBHr(Cell_MPPSBHr.create_config(pppp(i), phr(i), pt(i), ...
+                    ct(i), cavd, cavw, mpw(i), mpw(i+1), mpd(i), mpd(i+1), cm{i}));
             end
         end
     
-    end
-    methods % COMSOL
         function output_model = set_COMSOL_2D_Model(obj, input_model, index, env, varargin)
             output_model = ModelMPPSBH(obj.Configuration, input_model, index, env, varargin{:});
         end
@@ -52,9 +50,7 @@ classdef classMPPSBH_Rectangular < classelement
         function output_model = set_COMSOL_3D_Model(obj, input_model, index, env)
             output_model = ModelMPPSBH_3D(obj.Configuration, input_model, index, env);
         end
-    end
-
-    methods % Gestion des configurations
+    
         function export_plate_hole_coordinates(obj, folder_name, sfx)
             % Crée un dossier de configuration et y exporte les coordonnées des trous pour chaque plaque
         
@@ -459,7 +455,7 @@ classdef classMPPSBH_Rectangular < classelement
     
     end
 
-    methods (Static, Access = public) % Création des configurations
+    methods (Static, Access = public)
 
         % Définition de la configuration à partir des paramètres JCA
         function config = create_config(surface, number_of_plates, cavities_depth, cavities_width, ...
@@ -616,10 +612,6 @@ classdef classMPPSBH_Rectangular < classelement
             end
         end
 
-    end
-
-    methods (Static, Access = public)
-        
         function validate()
 
             % close all 

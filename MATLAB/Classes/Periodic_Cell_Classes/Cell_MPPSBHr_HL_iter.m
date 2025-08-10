@@ -8,7 +8,7 @@ classdef Cell_MPPSBHr_HL_iter < classelement
         function obj = Cell_MPPSBHr_HL_iter(config)
             
             % Appel du constructeur de la classe parente
-            obj@classelement(classelement.create_config({}, 'opened'));
+            obj@classelement(classelement.create_config({}, 'opened', []));
 
             % On transfert les champs de la structure d'appel vers ceux de
             % a structure de classe

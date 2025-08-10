@@ -34,9 +34,9 @@ classdef classMPP_Maa
             nu = eta/rho; % viscoisité cinématique
 
             % Paramètres de la plaque
-            phi = obj.Configuration.PlatePorosity;
+            phi = obj.Configuration.Porosity;
             d = obj.Configuration.PerforationsRadius*2;
-            t = obj.Configuration.PlateThickness;
+            t = obj.Configuration.Thickness;
             K = d/2*sqrt(env.w/nu);
             
             %% Résistance de la plaque
@@ -59,7 +59,7 @@ classdef classMPP_Maa
             % La matrice est formulée en convention Pression - Débit 
             % Référence : perso_ouvrir_lien_Zotero('zotero://open-pdf/library/items/AH7QFLYS?page=4&annotation=URKF239P')
 
-            S = obj.Configuration.PlateSection;
+            S = obj.Configuration.Section;
 
             TM.T11 = ones(1, length(env.w));
             TM.T12 = obj.surface_impedance(env)/S;
@@ -71,13 +71,13 @@ classdef classMPP_Maa
     
     methods (Static, Access = public)
 
-        function config = create_config(plate_porosity, perforations_radius, plate_thickness, plate_section)
+        function config = create_config(section, thickness, perforations_radius, porosity)
             
             config = struct();
-            config.PlatePorosity = plate_porosity;
+            config.Section = section;
+            config.Thickness = thickness;
             config.PerforationsRadius = perforations_radius;
-            config.PlateThickness = plate_thickness;
-            config.PlateSection = plate_section;
+            config.Porosity = porosity;
         end   
     end
 end

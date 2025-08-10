@@ -18,11 +18,9 @@ function output = perso_interp_config(input, n)
                 p = current_elem{4};
                 generated_values = perso_powerspace(petit, grand, n_val, p);
 
-                % % Debog
-                % x = linspace(0, 100e-3, 11);
-                % rf = @(x) petit + (grand - petit) * (x/100e-3).^p;
-                % r = rf(x);
-
+                % Debog :
+                x = linspace(0, 100e-3, 11);
+                r = @(x) = rend + (grand - petit) * ()
                 output = [output, generated_values]; % Ajout des valeurs générées au vecteur de sortie
                 total_values = total_values + n_val; % Met à jour le total des valeurs générées
             else

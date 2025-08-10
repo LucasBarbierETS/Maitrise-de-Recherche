@@ -42,7 +42,7 @@ top_plate_thickness = 1e-3;
 
 NTP = 3; % (rayon, nombre de perf par ligne (width), nombre de perfs par colonne (depth))
 
-NP = 100; % Nombre de points de départ
+NP = 200; % Nombre de points de départ
 % NP = 50;
 % NP = 10;
 
@@ -53,9 +53,9 @@ JCAmat_thickness = total_thickness - top_plate_thickness;
 % Plaque couvrante
 tp_phi_min = 0.05;
 % tp_r_min = 1;
-tp_r_min = 7e-4;
-tp_whn_min = 10;
-tp_dhn_min = 10;
+tp_r_min = 5e-4;
+tp_whn_min = 5;
+tp_dhn_min = 5;
 
 lb = [tp_r_min, tp_whn_min, tp_dhn_min];
 
@@ -64,9 +64,9 @@ lb = [tp_r_min, tp_whn_min, tp_dhn_min];
 % Plaque couvrante
 tp_phi_max = 0.5;
 % tp_r_max = 5;
-tp_r_max = 3e-3;
-tp_whn_max = 50;
-tp_dhn_max = 50;
+tp_r_max = 2e-3;
+tp_whn_max = 25;
+tp_dhn_max = 25;
 
 ub = [tp_r_max, tp_whn_max, tp_dhn_max];
 
@@ -75,8 +75,8 @@ ub = [tp_r_max, tp_whn_max, tp_dhn_max];
 % Plaque supérieure 
 % tp_r_init = randi(tp_r_max, NP, 1);
 tp_r_init = tp_r_min + (tp_r_max - tp_r_min) * rand(NP, 1);
-tp_whn_init = tp_whn_min + (tp_whn_max - tp_whn_min) * rand(NP, 1);
-tp_dhn_init = tp_dhn_min + (tp_dhn_max - tp_dhn_min) * rand(NP, 1);
+tp_whn_init = tp_whn_min + (tp_whn_max - tp_whn_min - 10) * rand(NP, 1);
+tp_dhn_init = tp_dhn_min + (tp_dhn_max - tp_dhn_min - 10) * rand(NP, 1);
 
 x0 = horzcat(tp_r_init, tp_whn_init, tp_dhn_init);
 
@@ -101,13 +101,13 @@ tor = 1;
 sig = 12340;
 vl = 0.000105;
 tl = 0.000316;
-JCAmat = classJCA_Rigid(classJCA_Rigid.create_config(phi, tor, sig, vl, tl, JCAmat_thickness, total_width*total_depth));
+JCAmat = classJCA_Rigid(classJCA_Rigid.create_config(total_width*total_depth, JCAmat_thickness, phi, tor, sig, vl, tl));
 
-% % Debog : Comportement du poreux seul
-% figure()
-% JCAmat.plot_alpha(env(dB), 'Traitement poreux seul');
-% perso_configure_alpha_figure(2000);
-% legend();
+% Debog : Comportement du poreux seul
+figure()
+JCAmat.plot_alpha(env(dB), 'Traitement poreux seul');
+perso_configure_alpha_figure(2000);
+legend();
 
 %% Création dynamique de la plaque couvrante
 
@@ -120,7 +120,7 @@ classMPP_Circular.create_explicit_rectangular_plate_config( ...
 top_plate = @(x) classMPP_Circular(classMPP_Circular.create_explicit_rectangular_plate_config( ...
 top_plate_thickness, x(1), total_width, total_depth, x(2), x(3)));
 
-Cartouche_Hutchinson = @(x) classelement(classelement.create_config({top_plate(x), JCAmat}, 'closed'));
+Cartouche_Hutchinson = @(x) classelement(classelement.create_config({top_plate(x), JCAmat}, 'closed', total_input_section));
 
 %% Fonctions coût
 
@@ -136,7 +136,7 @@ options = optimoptions('ga', ...
                        'Display', 'iter', ...
                        'PopulationSize', NP, ... % nombre de points dans la population initiale
                        'FunctionTolerance', 1e-2, ...
-                       'ConstraintTolerance', 1e-6, ...
+                       'ConstraintTolerance', 1e-2, ...
                        'MaxStallGenerations', 5, ...
                        'MaxGenerations', 100, ...
                        'MutationFcn',  'mutationadaptfeasible',... {@mutationgaussian, 2, 0.5}, ... %'mutationuniform', ... 

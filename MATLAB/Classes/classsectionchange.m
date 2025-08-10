@@ -1,17 +1,4 @@
 classdef classsectionchange < classsubelement
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%% PROPERTIES %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%                
-% InputSurface  (m2)  
-% OutputSurface (m2) 
-% 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% METHODS %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-% obj.transfer_matrix(Air,w) : compute a structure of arrays implemented :
-%                                   obj.transfer_matrix(Air,w).Tij 
-%                              where (i,j)∈{1,2}². The structures represents 
-%                              the transfer matrix of the MPP : (T11  T12)
-%                                                               (T21  T22)
-% 
-% obj.surfaceImpedance(Air,w):               Surface impedance of the MPP
     
     properties
         
