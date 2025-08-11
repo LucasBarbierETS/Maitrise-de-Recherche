@@ -95,7 +95,7 @@ tic;
 [xoptiMs, fvalMs,eflagMs,ouputMs,solutionsMs]=run(MultiStart,problem,nombre_points_depart);
 % sum([solutionsMs.X(:4*(1:end/4)) solutionsMs.X(:,2*(1:end/4))])
 % solutionsMs.X(:,1)
-tempsMs = toc
+tempsMs = toc;
 % tableResults('MultiStart',:) = num2cell([xoptiMs,fvalMs,0,timeMs,0]);
  
 
@@ -107,7 +107,7 @@ rng % For reproducibility
 tic;
 [xoptiGa,fvalGa,exitflagGa,outputGa,populationGa,scoresGa] = ga(objectif,...
     length(x0),Aineq,bineq,[],[],lb,ub,nlcontraintes,[],optionsGa);
-timeGa = toc
+timeGa = toc;
 
 
 %% ===== absorption
@@ -130,7 +130,7 @@ alphaGa =1-abs(optitest(xoptiGa,air,w,PUC_area)).^2;
 [~, fpicsGa ] = findpeaks(alphaGa,f);
 
 if length(fpicsGa) < N
-    fpicsGa(end+1) = NaN
+    fpicsGa(end+1) = NaN;
     
 end
 %===== Table des resultats

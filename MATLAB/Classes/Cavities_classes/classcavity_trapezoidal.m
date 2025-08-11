@@ -26,8 +26,8 @@ classdef classcavity_trapezoidal< classcavity
             % Paramètres géométriques
             config = obj.Configuration;
             d = config.Thickness;
-            wi = config.WidthIn;
-            di = config.DepthIn;
+            wi = config.Width;
+            di = config.Depth;
             wo = config.WidthOut;
             do = config.DepthOut;
             
@@ -52,14 +52,14 @@ classdef classcavity_trapezoidal< classcavity
 
     methods (Static, Access = public)
 
-        function config = create_config(cavity_thickness, width_in, depth_in, width_out, depth_out) 
+        function config = create_config(cavity_thickness, width, depth, width_out, depth_out) 
             
             config.Thickness = cavity_thickness; 
-            config.WidthIn = width_in;
-            config.DepthIn = depth_in;
+            config.Width = width;
+            config.Depth = depth;
             config.WidthOut = width_out; 
             config.DepthOut = depth_out;
-            config.Section = (width_in+width_out)/2 * (depth_in+depth_out)/2;
+            config.Section = (width+width_out)/2 * (depth+depth_out)/2;
         end
     end
 end

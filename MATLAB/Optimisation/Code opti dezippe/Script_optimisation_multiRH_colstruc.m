@@ -98,7 +98,7 @@ tic;
 [xoptiMs, fvalMs,eflagMs,ouputMs,solutionsMs]=run(MultiStart,problem,nombre_points_depart);
 % sum([solutionsMs.X(:4*(1:end/4)) solutionsMs.X(:,2*(1:end/4))])
 % solutionsMs.X(:,1)
-tempsMs = toc
+tempsMs = toc;
 % tableResults('MultiStart',:) = num2cell([xoptiMs,fvalMs,0,timeMs,0]);
  
 
@@ -110,8 +110,7 @@ rng default % For reproducibility
 tic;
 [xoptiGa,fvalGa,exitflagGa,outputGa,populationGa,scoresGa] = ga(objectif,...
     length(x0),Aineq,bineq,[],[],lb,ub,nlcontraintes,[],optionsGa);
-timeGa = toc
-
+timeGa = toc;
 
 %% =====================  => Résultats
 %===== absorption
@@ -125,7 +124,7 @@ alphaGa = multiHRcolstructure(freq,xoptiGa(1:end/4),xoptiGa(2*(1:end/4)),xoptiGa
 [~, fpicsGa ] = findpeaks(alphaGa,freq);
 
 if length(fpicsGa) < N
-    fpicsGa(end+1) = NaN
+    fpicsGa(end+1) = NaN;
     
 end
 %===== Table des resultats
@@ -141,7 +140,7 @@ temps = [ 0;tempsMs;timeGa];
 
 tableResultats = table(Rcols_mm,Lcols_mm,Rcavs_mm,Lcavs_mm,Ltotale_mm,fonction_cout,frequences_pics,temps);
 tableResultats.Properties.RowNames = ["init" "Ms" "GA"];
-tableResultats
+tableResultats;
 
 save("optiresults_"+replace(string(datetime ),':','_')+".mat", 'tableResultats');
 %% =====================  => Affichage

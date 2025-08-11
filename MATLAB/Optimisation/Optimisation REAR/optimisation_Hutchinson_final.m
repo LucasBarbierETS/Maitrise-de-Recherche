@@ -16,9 +16,9 @@ folderName = 'C:\Users\lucas.barbier\Documents\Maitrise dossier secondaire\MATLA
 %% Niveau Sonore, Fréquences cibles
 
 % Limites des bandes de fréquences 
-f_min_obj1 = 220;
-f_max_obj1 = 260;
-f_min_obj2 = 260;
+f_min_obj1 = 200;
+f_max_obj1 = 400;
+f_min_obj2 = 400;
 f_max_obj2 = 600;
 f_min_obj3 = 600;
 f_max_obj3 = 1500;
@@ -53,20 +53,20 @@ JCAmat_thickness = total_thickness - top_plate_thickness;
 % Plaque couvrante
 tp_phi_min = 0.05;
 % tp_r_min = 1;
-tp_r_min = 5e-4;
+tp_r_min = 4.5e-4;
 tp_whn_min = 5;
-tp_dhn_min = 5;
+tp_dhn_min = 10;
 
 lb = [tp_r_min, tp_whn_min, tp_dhn_min];
 
 %% Valeurs maximales en fonction du type de variable
 
 % Plaque couvrante
-tp_phi_max = 0.5;
+tp_phi_max = 1;
 % tp_r_max = 5;
-tp_r_max = 2e-3;
-tp_whn_max = 25;
-tp_dhn_max = 25;
+tp_r_max = 3e-3;
+tp_whn_max = 30;
+tp_dhn_max = 30;
 
 ub = [tp_r_max, tp_whn_max, tp_dhn_max];
 
@@ -137,11 +137,11 @@ cost_function_obj2 = @(x, env) sum(((Cartouche_Hutchinson(x).alpha(env) - g_obj2
 
 objective = @(x) [cost_function_obj1(x, env(dB)), cost_function_obj2(x, env(dB))];
 
-%% Validation de l'approche numérique sur la configuration initiale
-Tube_Cartouche = ImpedanceTube2D(ImpedanceTube2D.create_config({Cartouche_Hutchinson(x0(1, :))}));
-Tube_Cartouche = Tube_Cartouche.lauch_tube_measurement(env(100));
-Tube_Cartouche.plot_alpha(env(100), 'Cartouche Hutchinson');
-perso_configure_alpha_figure(2000);
+% %% Validation de l'approche numérique sur la configuration initiale (OK)
+% Tube_Cartouche = ImpedanceTube2D(ImpedanceTube2D.create_config({Cartouche_Hutchinson(x0(1, :))}));
+% Tube_Cartouche = Tube_Cartouche.lauch_tube_measurement(env(100));
+% Tube_Cartouche.plot_alpha(env(100), 'Cartouche Hutchinson');
+% perso_configure_alpha_figure(2000);
 
 %% Genetic Algorithm
 
@@ -167,6 +167,8 @@ tic;
 [xopti, fval, eflag, output, population, scores] = gamultiobj(objective, numel(x0(1, :)), [], [], [], [], lb, ub, handle_Hutchinson_nonlconf, intcon, options);
 timeGa = toc;
 
+%% Conditionnement  des solutions optimisées
+
 xopti_to_cell_array_of_Hutchinson_element_alpha = @(x, env) arrayfun(@(i) Cartouche_Hutchinson(x(i, :)).alpha(env), 1:size(x, 1), 'UniformOutput', false);
 % xopti_to_cell_array_of_global_assembly_alpha = @(x, env) arrayfun(@(i) Cartouches.Cartouche_ETS(x(i, :)).alpha(env), 1:size(x, 1), 'UniformOutput', false);
 
@@ -188,6 +190,14 @@ perso_interactive_multi_plot(env(dB).w/(2*pi), filtered_alpha, mean_alpha_obj1, 
 
 chosed_index = input('Veuillez entrer le numéro de la configuration choisie : ');
 x_opti = sorted_xopti(chosed_index, :);
+
+%% Validation numérique 2D de la configuration choisie
+Tube_Cartouche = ImpedanceTube2D(ImpedanceTube2D.create_config({Cartouche_Hutchinson(x0(1, :))}));
+Tube_Cartouche = Tube_Cartouche.lauch_tube_measurement(env(100));
+
+figure();
+JCAmat.plot_alpha(env(dB), 'Traitement poreux seul');
+Tube_Cartouche.plot_alpha(env(100), 'Cartouche Hutchinson optimisée');
 
 %% Sauvergarde
 

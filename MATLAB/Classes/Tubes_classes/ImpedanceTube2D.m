@@ -10,39 +10,42 @@ classdef ImpedanceTube2D
             obj.Configuration = config;
         end
 
-        function obj = lauch_tube_measurement(obj, env)
+        function obj = launch_tube_measurement(obj, env)
             obj.Configuration.ComsolModel = ImpedanceTube2DModel(obj.Configuration.ListOfSolutions, env);
             obj.Configuration.Data2D = mphtable(obj.Configuration.ComsolModel, 'tbl1').data;
         end
 
-        function obj = plot_alpha(obj, env, name) % f_min, f_max,
+        function obj = plot_alpha(obj, env, name)
 
-            figure()
             hold on
-
-            % Limites fréquentielles
-            % xline(f_min, '--k');
-            % xline(f_max, '--k');
 
             % Résultats analytiques
             assembly = classelementassembly(classelementassembly.create_config(obj.Configuration.ListOfSolutions)); 
-            alpha_model = assembly.alpha(env);
-            f = env.w / (2 * pi);
-            p1 = plot(f, alpha_model, 'color', 'b', 'DisplayName', name);
-            % yline(assembly.alpha_mean(env, f_min, f_max), '--b', ...
-            %       sprintf('%.2f', assembly.alpha_mean(env, f_min, f_max)), 'LabelHorizontalAlignment', 'right', 'LabelVerticalAlignment', 'top');
-           
+            try 
+                alpha_model = assembly.alpha(env);
+                f = env.w / (2 * pi);
+                plot(f, alpha_model, 'color', 'b', 'DisplayName', 'Modèle analytique');
+            catch 
+            end
+            
             % Résultats numériques
             if isfield(obj.Configuration, 'Data2D')
                 data = obj.Configuration.Data2D;
-                p2 = plot(data(:, 1), data(:, 2), '--r', 'DisplayName', name);
-                % m = (data(:, 1) > f_min & data(:, 1) < f_max);
-                % yline(mean(data(m, 2)), '--r', ...
-                %       sprintf('%.2f', mean(data(m, 2))), 'LabelHorizontalAlignment', 'right', 'LabelVerticalAlignment', 'bottom');
+                plot(data(:, 1), data(:, 2), '--r', 'DisplayName', 'Solution numérique');
             end
+            
+            perso_configure_alpha_figure(2000);
+            title(name);
+        end
+    
+        function plot_alpha_mean_line(obj, f_min, f_max)
 
-            perso_configure_alpha_figure(3000);
-            legend([p1, p2], 'Location', 'best');
+            hold on
+
+            % Résultats analytiques
+            assembly = classelementassembly(classelementassembly.create_config(obj.Configuration.ListOfSolutions));
+            yline(assembly.alpha_mean(env, f_min, f_max), '--b', ...
+            sprintf('Moyenne %s - %s : %.2f', f_min, f_max, assembly.alpha_mean(env, f_min, f_max)), 'LabelHorizontalAlignment', 'right', 'LabelVerticalAlignment', 'top');
         end
     end
 

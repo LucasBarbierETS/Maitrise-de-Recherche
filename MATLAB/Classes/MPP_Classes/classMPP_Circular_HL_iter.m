@@ -155,7 +155,7 @@ classdef classMPP_Circular_HL_iter < classMPP_Circular
         E = classelement(classelement.create_config({MPP, cavity}, 'closed', s));
 
         
-        env = create_environnement(t, sp, hum, fmin, fmax, points, dB1)
+        env = create_environnement(t, sp, hum, fmin, fmax, points, dB1);
         % E.plot_alpha(env, ) 
         end
     end

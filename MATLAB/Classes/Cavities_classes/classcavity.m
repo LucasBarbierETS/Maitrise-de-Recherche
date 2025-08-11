@@ -66,6 +66,5 @@ classdef classcavity < classsubelement
             [config.Depth, d] = deal(depth);
             [config.Section, config.Surface] = deal(w*d);
         end
-
     end
 end

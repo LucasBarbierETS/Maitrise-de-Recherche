@@ -128,7 +128,8 @@ classdef classsubelement
             hold on
             alpha = obj.alpha(env);
             f = env.w / (2 * pi);
-            plot(f, alpha, 'DisplayName', name)
+            plot(f, alpha, 'Color', "g", 'DisplayName', name);
+            perso_configure_alpha_figure(f(end));
         end
     end
 end

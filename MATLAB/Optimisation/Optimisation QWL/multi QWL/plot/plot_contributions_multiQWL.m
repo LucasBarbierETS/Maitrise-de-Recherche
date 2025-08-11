@@ -1,7 +1,7 @@
 function plot_contributions_multi_QWL(multiQWL, shape, air, w)
     
     QWL = @classQWL;
-    config = multiQWL.Configuration
+    config = multiQWL.Configuration;
     n = length(config)/3;
     R = config(1:n);
     r = config(n+1:2*n);

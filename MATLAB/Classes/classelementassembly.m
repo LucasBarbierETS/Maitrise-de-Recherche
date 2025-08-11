@@ -166,6 +166,9 @@
             param = env.air.parameters;
             Z0 = param.rho * param.c0;
             alpha = 1 - abs((Zs - Z0) ./ (Zs + Z0)).^2;
+
+            % Debog : alpha négatif
+            find(alpha < 0)
         end
 
         function [f_max, alpha_max] = alpha_peak(obj, env, f_min, f_max) 

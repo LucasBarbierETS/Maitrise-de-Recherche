@@ -39,8 +39,3 @@ variables.r3 = [init_value.plates_perforations_dimensions, bound.plates_perforat
 variables.r4 = [init_value.plates_perforations_dimensions, bound.plates_perforations_dimensions(1), bound.plates_perforations_dimensions(2)];
 
 [x0, lb, ub] = variables_to_x0_lb_ub(variables);
-
-x0
-lb
-ub
-

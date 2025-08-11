@@ -19,12 +19,13 @@ folderName = 'C:\Users\lucas.barbier\Documents\Maitrise dossier secondaire\MATLA
 
 % load(uigetfile(folderName));
 
+
 %% Niveau Sonore, Fréquences cibles
 
 % Limites des bandes de fréquences 
-f_min_obj1 = 220;
-f_max_obj1 = 260;
-f_min_obj2 = 260;
+f_min_obj1 = 200;
+f_max_obj1 = 400;
+f_min_obj2 = 400;
 f_max_obj2 = 600;
 f_min_obj3 = 600;
 f_max_obj3 = 1500;
@@ -41,7 +42,7 @@ dB = 100;
 
 %% Paramètres géométriques invariants
 
-total_thickness = 102e-3;
+total_thickness = 115e-3;
 total_depth = 120e-3; 
 total_width = 72e-3;
 total_input_surface = total_depth * total_width;
@@ -71,7 +72,7 @@ Poly_input_surface = 30e-3^2;
 % Solutions HR
 yellow_cavities_thickness = total_thickness - top_plate_thickness - air_gap_thickness - rigid_backing_thickness;
 yellow_cavities_width = 10e-3; % bords externes : 12 mm
-yellow_cavities_depth = 30e-3; % bords externes : 30 mm
+yellow_cavities_depth = 28e-3; % bords externes : 30 mm
 yellow_cavities_input_section = yellow_cavities_width * yellow_cavities_depth;
 yc_input_surface = 12e-3*30e-3;
 
@@ -83,9 +84,9 @@ NV = 2; % Nombre de variables pour chaque solution (nombre de perfs en largeur, 
 N = 5; % Nombre de plaques optimisées indépendantes pour chaque solution
 
 % NP = 500; % Nombre de points de départ
-% NP = 100;
+NP = 100;
 % NP = 50;
-NP = 10;
+% NP = 10;
 
 ETS_cavities_thickness = (total_thickness - top_plate_thickness - air_gap_thickness - N * plates_thickness) / (N+1);
 
@@ -160,16 +161,17 @@ tp_hole_number_init = @(phi, r) round(total_width * total_depth * phi / (pi*r^2)
 
 % Distance inter-perforation en largeur
 dw_init = dw_min + (dw_max - dw_min) * rand(NP, N * NS);
-dw_init_sorted = sort(dw_init, 2, "descend");
+% dw_init_sorted = sort(dw_init, 2, "descend");
 
 % Nombre de perforation en largeur
 pw_init = randi([pw_min, pw_max], NP, N * NS);
-pw_init_sorted = sort(pw_init, 2, "descend");
+% pw_init_sorted = sort(pw_init, 2, "descend");
 
 % Paramètres de répartition de l'épaisseur
 x0_TP1 = horzcat(tp_r_init(:, 1), tp_width_holes_number_init(:, 1), tp_depth_holes_number_init(:, 1));
 x0_TP2 = horzcat(tp_r_init(:, 2), tp_width_holes_number_init(:, 2), tp_depth_holes_number_init(:, 2));
-x0 = horzcat(x0_TP1, x0_TP2, dw_init_sorted, pw_init_sorted);
+x0 = horzcat(x0_TP1, x0_TP2, dw_init, pw_init);
+% x0 = horzcat(x0_TP1, x0_TP2, dw_init_sorted, pw_init_sorted);
 
 %% Contrainte sur les variables entières
 
@@ -212,27 +214,24 @@ surface_impedance = data(:, 2) + 1i * data(:, 3);
 imported_Poly_element = classelement(classelement.create_config({imported_Poly_subelement}, 'closed', Poly_input_surface));
 imported_element_assembly = classelementassembly(classelementassembly.create_config(repmat({imported_Poly_element}, 1, 4)));
 
-numerical_Poly_subelement = classNiloofar(classNiloofar.create_config(99e-3, 28e-3, 118e-3, 1e-3, 5e-4, 9e-3, 5e-3, 7.4e-3, 8e-3, 8e-3, 15));
+numerical_Poly_subelement = classNiloofar(classNiloofar.create_config(99e-3, 28e-3, 118e-3, 1e-3, 5e-4, 9e-3, 5e-3, 8e-3, 9e-3, 9e-3, 15));
 numerical_Poly_element = classelement(classelement.create_config({numerical_Poly_subelement}, 'closed', Poly_input_surface));
 numerical_Poly_element_assembly = classelementassembly(classelementassembly.create_config(repmat({numerical_Poly_element}, 1, 4)));
 
-% Debog
-% % Tracé de l'impédance de surface
+% % Debog : Tracé de l'impédance de surface
 % figure()
 % subplot(2, 1, 1)
 % plot(frequency_support, real(surface_impedance));
 % subplot(2, 1, 2)
 % plot(frequency_support, imag(surface_impedance));
-%
-% % Tracé de l'absorption 
-%
+
+% Debog : Comparaison de l'élement importé et l'élement simulé
+% 
 % figure()
-% subplot(3, 1, 1)
-% imported_Poly_subelement.plot_alpha(env(dB), 'Assemblage de MPPSBH');
-% subplot(3, 1, 2)
-% imported_Poly_element.plot_alpha(env(dB), 0, 2000, 'Cavité jaune')
-% subplot(3, 1, 3)
-% imported_element_assembly.plot_alpha(env(dB), 'Element importé')
+% imported_Poly_element.plot_alpha(env(dB), 'Element importé');
+% Tube_Poly = ImpedanceTube2D(ImpedanceTube2D.create_config({numerical_Poly_element}));
+% Tube_Poly = Tube_Poly.lauch_tube_measurement(env(dB));
+% Tube_Poly.plot_alpha(env(100), 'Element simulé');
 
 %% Création dynamique des objets de classe et des assemblages
 
@@ -240,7 +239,7 @@ Objets = struct();
 
 % Construction du ième MPPSBH à partir d'une découpe du vecteur d'optimisation
 Objets.MPPSBH_i = @(x_ETS, i) classMPPSBH_Rectangular( ...
-    classMPPSBH_Rectangular.create_explicit_slit_pattern_config_without_first_plate( ...
+    classMPPSBH_Rectangular.create_explicit_slit_pattern_config( ...
         ETS_input_surface, N, ETS_cavities_depth, ETS_cavities_width, ...
         {4.5e-4}, ... {eval_r(x0(:, 1, i))}, ... % rayon des perforations
         {x_ETS(i, :, 1)}, ... % distance entre perforations (width)
@@ -248,7 +247,7 @@ Objets.MPPSBH_i = @(x_ETS, i) classMPPSBH_Rectangular( ...
         {8}, ... {transpose(x0(:, 3, i))}, ... % nombre de perforations en profondeur
         {x_ETS(i, :, 2)}, ... % nombre de perforations en largeur
         {plates_thickness}, ... % épaisseur des plaques (supérieure + internes)
-        {ETS_cavities_thickness}, 'volume'));  % épaisseur de cavité
+        {ETS_cavities_thickness}));  % épaisseur de cavité
 
 % Construction d'une solution en rajoutant une cavité au dessus de la solution MPPSBH
 
@@ -292,7 +291,8 @@ Contributions = struct();
 Contributions.contribution_MPPSBH_element_i = @(x, i) classelement(classelement.create_config( ...
     {perso_modify_subelement_dimensions(top_plate(x_TP1(x)), ETS_cavities_width, ETS_cavities_depth), ...
      perso_modify_subelement_dimensions(air_gap, ETS_cavities_width, ETS_cavities_depth), ...
-     Objets.MPPSBH_element_i(x_ETS(x), i)}, 'closed', ETS_input_surface));
+     classcavity(classcavity.create_config(ETS_cavities_thickness, ETS_cavities_width, ETS_cavities_depth)), ...
+     Objets.MPPSBH_i(x_ETS(x), i)}, 'closed', ETS_input_surface));
 
 Contributions.contribution_cell_of_MPPSBH_element = @(x) arrayfun(@(i) ...
     Contributions.contribution_MPPSBH_element_i(x, i), 1:NS ,'UniformOutput', false);
@@ -325,6 +325,16 @@ Contributions.contribution_Poly_yellow_cavity = @(x) classelement(classelement.c
 
 Contributions.cell_of_Poly_yellow_cavity_contributions = @(x) arrayfun(@(i) ...
     Contributions.contribution_Poly_yellow_cavity(x), 1:4 ,'UniformOutput', false);
+
+%% Validation numérique 2D des contributions (honnête)
+
+% Tube_MPPSBH_element_contrib = ImpedanceTube2D(ImpedanceTube2D.create_config({Contributions.contribution_MPPSBH_element_i(x0(1, :), 1)}));
+% Tube_MPPSBH_element_contrib = Tube_MPPSBH_element_contrib.launch_tube_measurement(env(dB));
+% Tube_MPPSBH_element_contrib.plot_alpha(env(dB), 'Contribution MPPSBH');
+
+% Tube_ETS_yc_contrib = ImpedanceTube2D(ImpedanceTube2D.create_config({Contributions.contribution_ETS_yellow_cavity(x0(1, :))}));
+% Tube_ETS_yc_contrib = Tube_ETS_yc_contrib.launch_tube_measurement(env(dB));
+% Tube_ETS_yc_contrib.plot_alpha(env(dB), 'Contribution ETS yellow cavity');
 
 %% Création dynamique des modules
 
@@ -446,7 +456,7 @@ options.PlotFcn = {@gaplotpareto, ... % Pour deux objectifs ou plus
 
 rng; % For reproducibility"
 tic;
-[xopti, fval, eflag, output, population, scores] = gamultiobj(objective, numel(x0(1, :)), [], [], [], [], lb, ub, handle_perso_nonlcon, intcon, options);
+[xopti, fval, eflag, ~, population, scores] = gamultiobj(objective, numel(x0(1, :)), [], [], [], [], lb, ub, handle_perso_nonlcon, intcon, options);
 timeGa = toc;
 
 %% Conditionnement du vecteur d'optimisation
@@ -491,7 +501,7 @@ end
 
 % temp_plot_MPPSBH_results(x_opti, 1);
 temp_plot_module_ETS(x_opti);
-temp_plot_cartouche_ETS(x_opti);
+% temp_plot_cartouche_ETS(x_opti);
 temp_plot_cartouches(x_opti);
 
 %% Indicateurs
@@ -506,8 +516,8 @@ temp_plot_cartouches(x_opti);
 
 i = 1;
 
-Tube_MPPSBH = ImpedanceTube2D(ImpedanceTube2D.create_config({Objets.MPPSBH_i(x_ETS(x_opti), i)}));
-Tube_MPPSBH = Tube_MPPSBH.lauch_tube_measurement(env(dB));
+Tube_MPPSBH = ImpedanceTube2D(ImpedanceTube2D.create_config({Objets.MPPSBH_element_i(x_ETS(x_opti), i)}));
+Tube_MPPSBH = Tube_MPPSBH.launch_tube_measurement(env(dB));
 Tube_MPPSBH.plot_alpha(env(dB), ['MPPSBH ' num2str(i)]);
 figure();
 mphgeom(Tube_MPPSBH.Configuration.ComsolModel);
@@ -541,76 +551,33 @@ mphgeom(Tube_MPPSBH.Configuration.ComsolModel)
 % mphsave(Tube_Poly.Configuration.ComsolModel, [folderName, '\optimisation_', currentTime, '\validation_2D_solution_Poly.mph']);
 
 %% Validation des contributions individuelles
-  
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% Contributions des MPPSBHs %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-i = 1;
+figure()
+for i = 1:NS
+    Tube_MPPSBH_element_contrib = ImpedanceTube2D(ImpedanceTube2D.create_config({Contributions.contribution_MPPSBH_element_i(x_opti, i)}));
+    Tube_MPPSBH_element_contrib = Tube_MPPSBH_element_contrib.launch_tube_measurement(env(dB));
+    subplot(4, 4, 2*(i-1) + 1)
+    Tube_MPPSBH_element_contrib.plot_alpha(env(dB), ['Contribution MPPSBH' num2str(i)]);
+    subplot(4, 4, 2*(i-1) + 2)
+    mphgeom(Tube_MPPSBH_element_contrib.Configuration.ComsolModel);
+end
 
-contribution_MPPSBH_element_i_numerical_2D_validation = ...
-    @(x, i, name) MPPSBH_element_contribution_numerical_2D_validation( ...
-    Contributions.contribution_MPPSBH_element_i(x , i), env(dB), folderName, name);
-
-model = contribution_MPPSBH_element_i_numerical_2D_validation(x_opti, i, ['validation_contribution_MPPSBH_element_' num2str(i)]);
-% mphsave(model, [folderName, '\optimisation_', currentTime, '\validation_2D_contribution_MPPSBH_element_1.mph']);
-
-% Comparaison des résultats numériques et analytiques
-
+Tube_ETS_yc_contrib = ImpedanceTube2D(ImpedanceTube2D.create_config({Contributions.contribution_ETS_yellow_cavity(x_opti)}));
+Tube_ETS_yc_contrib = Tube_ETS_yc_contrib.launch_tube_measurement(env(dB));
 figure();
-% mphload([folderName, '\optimisation_', currentTime, '\validation_2D_contribution_MPPSBH_element_1.mph']);
-% Contributions.contribution_MPPSBH_element_i(x0(1, :) , 1)
-% temp_plot_MPPSBH_results(x0(1, :) , 1)
-Contributions.contribution_MPPSBH_element_i(x_opti , i).plot_alpha(env(dB), ['contribution MPPSBH element ' num2str(i) ' analytique'])
-perso_plot_alpha_from_COMSOL_model(model, ['contribution MPPSBH element ', num2str(i), ' numérique']);
+Tube_ETS_yc_contrib.plot_alpha(env(dB), 'Contribution ETS yellow cavity');
 
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% Contributions des solutions Poly %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%
-% contribution_Poly_element_numerical_2D_validation = ...
-%     @(x, name) perso_element_contribution_numerical_2D_validation( ...
-%     Contributions.contribution_Poly_numerical_element(x), env(dB), folderName, name);
-% 
-% model = contribution_Poly_element_numerical_2D_validation(x_opti, 'validation_contribution_Poly_element');
-% % mphsave(model, [folderName, '\optimisation_', currentTime, '\validation_2D_contribution_Poly_element.mph']);
-% 
-% % Comparaison des résultats numériques et analytiques
-% 
-% figure();
-% % mphload([folderName, '\optimisation_', currentTime, '\validation_2D_contribution_Poly_element.mph']);
-% Contributions.contribution_Poly_element(x_opti).plot_alpha(env(dB), 'contribution_Poly_element_analytique');
-% alpha_COMSOL_Poly_element_contribution = perso_plot_alpha_from_COMSOL_model(model, 'contribution_Poly_element_numérique');
-
-% OK %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% Contributions des HRs %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
-% ETS
-contribution_ETS_yellow_cavity_numerical_2D_validation = ...
-    @(x, name) yellow_cavity_contribution_numerical_2D_validation( ...
-    Contributions.contribution_ETS_yellow_cavity(x), env(dB), folderName, name);
-
-model = contribution_ETS_yellow_cavity_numerical_2D_validation(x_opti, 'validation_contribution_ETS_yellow_cavity');
-% mphsave(model, [folderName, '\optimisation_', currentTime, '\validation_2D_contribution_ETS_yellow_cavity.mph']);
-
-% Comparaison des résultats numériques et analytiques
-
+Tube_Poly_element_contrib = ImpedanceTube2D(ImpedanceTube2D.create_config({Contributions.contribution_Poly_numerical_element(x_opti)}));
+Tube_Poly_element_contrib = Tube_Poly_element_contrib.launch_tube_measurement(env(dB));
 figure();
-% mphload([folderName, '\optimisation_', currentTime, '\validation_2D_contribution_MPPSBH_element_1.mph']);
-Contributions.contribution_ETS_yellow_cavity(x_opti).plot_alpha(env(dB), 'contribution ETS yellow cavity analytique');
-alpha_COMSOL_ETS_yellow_cavity_contribution = perso_plot_alpha_from_COMSOL_model(model, 'contribution ETS yellow cavity numérique');
+Tube_Poly_element_contrib.plot_alpha(env(dB), 'Contribution Poly numerical element');
+Contributions.contribution_Poly_element(x_opti).plot_alpha(env(dB), 'Contribution élement importé');
+perso_configure_alpha_figure(2000);
 
-% % Poly
-% contribution_Poly_yellow_cavity_numerical_2D_validation = ...
-%     @(x, name) yellow_cavity_contribution_numerical_2D_validation( ...
-%     Contributions.contribution_Poly_yellow_cavity(x), env(dB), folderName, name);
-% 
-% model = contribution_Poly_yellow_cavity_numerical_2D_validation(x_opti, 'validation_contribution_ETS_yellow_cavity');
-% % mphsave(model, [folderName, '\optimisation_', currentTime, '\validation_2D_contribution_Poly_yellow_cavity.mph']);
-% 
-% % Comparaison des résultats numériques et analytiques
-% 
-% % figure();
-% % mphload([folderName, '\optimisation_', currentTime, '\validation_2D_contribution_MPPSBH_element_1.mph']);
-% Contributions.contribution_Poly_yellow_cavity(x_opti).plot_alpha(env(dB), 'contribution Poly yellow cavity analytique');
-% alpha_COMSOL_Poly_yellow_cavity_contribution = perso_plot_alpha_from_COMSOL_model(model, 'contribution Poly yellow cavity numérique');
-
+Tube_Poly_yc_contrib = ImpedanceTube2D(ImpedanceTube2D.create_config({Contributions.contribution_Poly_yellow_cavity(x_opti)}));
+Tube_Poly_yc_contrib = Tube_Poly_yc_contrib.launch_tube_measurement(env(dB));
+figure();
+Tube_Poly_yc_contrib.plot_alpha(env(dB), 'Contribution Poly yellow cavity');
 
 %% Validation numérique des cartouches
 

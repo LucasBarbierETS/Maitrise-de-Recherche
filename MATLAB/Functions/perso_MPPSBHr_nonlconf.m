@@ -52,14 +52,14 @@ function [c, ceq] = perso_MPPSBHr_nonlconf(x, NV, NS, N, cavities_width, cavitie
     % c = [c2(:), c5(:), c6(:), c7(:)];
     c = [c2(:), c6(:), c7(:)];
 
-    % Debog : Affichage des contraintes de la populations
-    if ~isempty(find(c>0)')
-        f = figure();
-        r = sum(c>0, 1)/size(c, 1);
-        bar(["largeur de fente", "monotonie des profils", "porosité >", "porosité<"], r);
-        ylim([0 1])
-        close(f);
-    end
+    % % Debog : Affichage des contraintes de la populations
+    % if ~isempty(find(c>0)')
+    %     f = figure();
+    %     r = sum(c>0, 1)/size(c, 1);
+    %     bar(["largeur de fente", "monotonie des profils", "porosité >", "porosité<"], r);
+    %     ylim([0 1])
+    %     close(f);
+    % end
 
     % Pas de contrainte d'égalité
     ceq = [];

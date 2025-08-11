@@ -12,18 +12,18 @@ w = config.Width;
 
 %% Création des variables et paramètres du modèle 
 
-% paramètres
-
 if elem_index == 1
     model.param.set(['sol' num2str(elem_index) '_xl'], '0', 'ligne d''accotement horizontal à gauche');
+    model.param.set(['sol' num2str(elem_index) '_w'], num2str(w), 'ligne d''accotement horizontal à gauche');
 else
     model.param.set(['sol' num2str(elem_index) '_xl'], ['sol' num2str(elem_index - 1) '_xr+1e-3'], 'ligne d''accotement horizontal à gauche');
 end
 
 if sblm_index == 1
     model.param.set(['sol' num2str(elem_index) '_sblm' num2str(sblm_index) '_yt'], '0', 'ligne d''accotement verticale en haut');
-    model.param.set(['sol' num2str(elem_index) '_xc'], ['sol' num2str(elem_index) '_xl+' num2str(w/2)], 'ligne centrale');
-    model.param.set(['sol' num2str(elem_index) '_xr'], ['sol' num2str(elem_index) '_xl+' num2str(w)], 'ligne d''acotement horizontal à droite');
+    model.param.set(['sol' num2str(elem_index) '_w'], num2str(w), 'ligne d''accotement horizontal à gauche');
+    model.param.set(['sol' num2str(elem_index) '_xc'], ['sol' num2str(elem_index) '_xl+sol' num2str(elem_index) '_w/2'], 'ligne centrale');
+    model.param.set(['sol' num2str(elem_index) '_xr'], ['sol' num2str(elem_index) '_xl+sol' num2str(elem_index) '_w'], 'ligne d''acotement horizontal à droite');
 else
     model.param.set(['sol' num2str(elem_index) '_sblm' num2str(sblm_index) '_yt'], ['sol' num2str(elem_index) '_sblm' num2str(sblm_index-1) '_yb'], 'ligne d''accotement horizontal à gauche');
 end

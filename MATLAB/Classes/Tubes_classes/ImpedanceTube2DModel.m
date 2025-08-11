@@ -63,7 +63,10 @@ function model = ImpedanceTube2DModel(list_of_solutions, env)
 
     % Mise en place des solutions
     for i = 1:length(list_of_solutions)
-        model = list_of_solutions{i}.set_COMSOL_2D_Model(model, i, env);
+        list_of_subelements = list_of_solutions{i}.Configuration.ListOfSubelements;
+        for j = 1:length(list_of_subelements)
+            model = list_of_subelements{j}.set_COMSOL_2D_Model(model, i, j, env);
+        end
     end
 
     % Création de la géométrie du tube
@@ -89,9 +92,7 @@ function model = ImpedanceTube2DModel(list_of_solutions, env)
 
     %% Sélection des boites
 
-    % % Pour l'intégralité des sélection
-    % box_all = model.component('component').selection.create('all', 'Box');
-    % box_all.set('entitydim', 2); % On sélectionne les domaines
+   
 
     % Pour le tube d'impédance
     box_tube = model.component('component').selection.create('tube', 'Box');
@@ -114,40 +115,27 @@ function model = ImpedanceTube2DModel(list_of_solutions, env)
     box_mic.set('ymin', 'd2s-0.01[mm]');
     box_mic.set('condition', 'inside');
 
-    % % Pour l'air
-    % all_MPPs_selection = {};
+    % Pour l'intégralité des arètes de la solution
+    box_all_bnds = model.component('component').selection.create('all_bnds', 'Box');
+    box_all_bnds.set('entitydim', 1); 
+    box_all_bnds.set('ymax', '0.01[mm]');
+    box_all_bnds.set('condition', 'inside');
+    
+    % % Pour les frontières non définies entre les domaines visco-thermique et acoustique
+    % all_bnds_ap_tv_selection = {};
     % selection_list = cell(model.selection.tags);
     % for i = 1:length(selection_list)
     %     selection_name = selection_list{i};
-    %     if contains(selection_name, 'MPP')
-    %         all_MPPs_selection{end+1} = selection_name;
+    %     if contains(selection_name, 'bnd_ap_tv')
+    %         all_bnds_ap_tv_selection{end+1} = selection_name;
     %     end
     % end
     % 
-    % box_all_MPPs = model.component('component').selection.create('all_MPPs', 'Union');
-    % box_all_MPPs.set('input', all_MPPs_selection);
-    % 
-    % box_air = model.component('component').selection.create('air', 'Difference');
-    % box_air.set('entitydim', 2);
-    % box_air.set('add', 'all');
-    % box_air.set('subtract', 'all_MPPs');
-
-    % % Pour les frontières non définies entre les domaines
-    % visco-thermique et acoustique
-    all_bnds_ap_tv_selection = {};
-    selection_list = cell(model.selection.tags);
-    for i = 1:length(selection_list)
-        selection_name = selection_list{i};
-        if contains(selection_name, 'bnd_ap_tv')
-            all_bnds_ap_tv_selection{end+1} = selection_name;
-        end
-    end
-
-    box_all_bnds_cont_ap = model.component('component').selection.create('all_bnds_ap_tv', 'Union');
-    box_all_bnds_cont_ap.set('entitydim', 1);
-    if ~isempty(all_bnds_ap_tv_selection)
-        box_all_bnds_cont_ap.set('input', all_bnds_ap_tv_selection);
-    end
+    % box_all_bnds_cont_ap = model.component('component').selection.create('all_bnds_ap_tv', 'Union');
+    % box_all_bnds_cont_ap.set('entitydim', 1);
+    % if ~isempty(all_bnds_ap_tv_selection)
+    %     box_all_bnds_cont_ap.set('input', all_bnds_ap_tv_selection);
+    % end
 
     %% Physique
 
@@ -160,7 +148,8 @@ function model = ImpedanceTube2DModel(list_of_solutions, env)
     pr1.set('p0', 1);  % Définition de la pression initiale à 1 Pa
 
     % On ajoute les frontières visco-thermiques à la multiphysique
-    model = perso_add_selection_to_multiphysics(model, 'multiphy_bnd', 'all_bnds_ap_tv');
+    % model = perso_add_selection_to_multiphysics(model, 'multiphy_bnd', 'all_bnds_ap_tv');
+    model = perso_add_selection_to_multiphysics(model, 'multiphy_bnd', 'all_bnds');
 
     %% Maillage
 
@@ -170,7 +159,6 @@ function model = ImpedanceTube2DModel(list_of_solutions, env)
     ftri_tube.selection.named('tube');  
     % Création d'une taille pour le maillage triangulaire
     ftri_tube.create('size1', 'Size');  
-    
 
     mesh.run;
     

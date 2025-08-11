@@ -27,7 +27,7 @@ hum = 50; % Humidité relative
 % Support fréquentiel
 fmin = 1;
 fmax = 2000;
-points = 20;
+points = 200;
 
 % Niveau sonore
 env = @(varargin) create_environnement(t, sp, hum, fmin, fmax, points, varargin{1});
