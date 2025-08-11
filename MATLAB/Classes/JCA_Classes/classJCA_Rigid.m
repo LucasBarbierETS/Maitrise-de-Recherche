@@ -142,12 +142,16 @@ classdef classJCA_Rigid < classsubelement
             TM.T21 = 1j * S ./ ep.Zeq .* sin(kd);
             TM.T22 = cos(kd);
         end   
+    
+        function output_model = set_COMSOL_2D_Model(obj, input_model, elem_index, sblm_index, env)
+            output_model = ModelJCA(obj.Configuration, input_model, elem_index, sblm_index, env);
+        end
     end
 
     methods (Static, Access = public)
 
         function config = create_config(section, thickness, porosity, tortuosity, air_flow_resistivity, ...
-        viscous_caractersitic_length, thermal_caracteristic_length)
+        viscous_caractersitic_length, thermal_caracteristic_length, varargin)
             
             config = struct();
             config.Section = NaN;
@@ -158,8 +162,7 @@ classdef classJCA_Rigid < classsubelement
             config.AirFlowResistivity = NaN;
             config.ViscousCaracteristicLength = NaN;
             config.ThermalCaracteristicLength = NaN;
-            
-            % Si la méthode n'est pas appelée à vide
+
             if nargin > 0
                 config.Section = section;
                 config.Surface = section;
@@ -169,6 +172,11 @@ classdef classJCA_Rigid < classsubelement
                 config.AirFlowResistivity = air_flow_resistivity;
                 config.ViscousCaracteristicLength = viscous_caractersitic_length;
                 config.ThermalCaracteristicLength = thermal_caracteristic_length;
+            end
+
+            if nargin > 7
+                config.Width = varargin{1};
+                config.Depth = varargin{2};
             end
         end
    
@@ -184,23 +192,30 @@ classdef classJCA_Rigid < classsubelement
             % Données : [1] Table 1, p.4
 
             s = 1; % section (arbitraire)
+            w = 1;
+            d = 1;
             phi = 0.958;
             tor = 1.94;
             sig = 11188;
             vl = 70e-6;
             tl = 209e-6;
-            d = 50e-3;
+            t = 50e-3;
 
             % création de l'environnement
             env = create_environnement(23, 100800, 22, 1, 2000, 200, 145);
 
             % création de l'objet de classe
-            E = classJCA_Rigid(classJCA_Rigid.create_config(s, d, phi, tor, sig, vl, tl));
+            E = classJCA_Rigid(classJCA_Rigid.create_config(s, t, phi, tor, sig, vl, tl, w, d));
             alpha_model = E.alpha(env);
 
             % importation des données de références
             data = csvread('Verdière2013_fig4_E.txt');
             [x_data, y_data] = perso_interpole_et_lisse(data(:, 1), data(:, 2), 1000, 0.05);
+
+            JCAelement = classelement(classelement.create_config({E}, 'closed', s));
+            Tube_JCA = ImpedanceTube2D(ImpedanceTube2D.create_config({JCAelement}));
+            Tube_JCA = Tube_JCA.lauch_tube_measurement(env);
+            Tube_JCA.plot_alpha(env, 'Modèle numérique');
 
             % affichage des résultats
             subplot(1, 1, 1)
@@ -213,7 +228,6 @@ classdef classJCA_Rigid < classsubelement
             ylim([0 1])
             % xlim([0 2000])
             subtitle("Validation JCA -  Verdière2013 - figure 4 - tracé E")
-            
         end
     end
 end

@@ -1,4 +1,4 @@
-classdef classconicalcavity < classcavity
+classdef classcavity_conical < classcavity
 
 % Références
 %
@@ -9,7 +9,7 @@ classdef classconicalcavity < classcavity
     
     methods 
 
-        function obj = classconicalcavity(config) 
+        function obj = classcavity_conical(config) 
             
             obj@classcavity(config);
         end

@@ -1,4 +1,4 @@
-classdef classtrapezoidalcavity
+classdef classcavity_trapezoidal< classcavity
 
 %% Références
 
@@ -6,26 +6,12 @@ classdef classtrapezoidalcavity
 % Titre : Modification of the transfer matrix method for the sonic black hole and broadening effective absorption band
 % DOI : 10.1016/j.ymssp.2024.111660
 % URL : https://linkinghub.elsevier.com/retrieve/pii/S0888327024005582
-
-    properties
-
-        Type = 'Trapezoidal Cavity'
-
-        Thickness % (d) l'épaisseur (suivant z) de la cavité
-        WidthIn % (wi) l'épaisseur (selon x) de la cavité à l'entrée
-        WidthOut % (wo) l'épaisseur (selon x) de la cavité à la sortie
-        Length % (l) l'épaisseur (selon x) de la cavité à l'entrée
-
-    end
     
     methods 
 
-        function obj = classtoroidalcavity(cavity_thickness, width_in, width_out, length) 
+        function obj = classcavity_trapezoidal(config) 
             
-            obj.Thickness = cavity_thickness; 
-            obj.WidthIn = width_in;
-            obj.WidthOut = width_out; 
-            obj.Length = length; 
+            obj@classcavity(config);
         end
 
         function T = transfermatrix(obj, air, w)
@@ -38,16 +24,18 @@ classdef classtrapezoidalcavity
             Z0 = c0 * param.rho;
 
             % Paramètres géométriques
-
-            d = obj.Thickness;
-            wi = obj.WidthIn;
-            wo = obj.WidthOut;
-            l = obj.Length;
+            config = obj.Configuration;
+            d = config.Thickness;
+            wi = config.WidthIn;
+            di = config.DepthIn;
+            wo = config.WidthOut;
+            do = config.DepthOut;
+            
             Lz = d * wi / (wi - wo); % Distance orthogonale entre la surface et le sommet du cône de la cavité
             kd = k0 .* d;
             kl = k0 .* Lz;
-            R = wo / wi; % le ratio des rayons de sortie et d'entrée
-            Si = wi * ;  % la section d'entrée de la cavité
+            R = sqrt(wo*do / (wi*di)); % le ratio des rayons de sortie et d'entrée
+            Si = wi*di; % la section d'entrée de la cavité
 
             T.T11 = R .* cos(kd) + 1 ./ (kl) .* sin(kd);
             T.T12 = 1j * Z0 * R .* sin(kd);
@@ -59,6 +47,19 @@ classdef classtrapezoidalcavity
 
             T = obj.transfermatrix(Air, w);
             Zs = T.T11 ./ T.T21;
+        end
+    end
+
+    methods (Static, Access = public)
+
+        function config = create_config(cavity_thickness, width_in, depth_in, width_out, depth_out) 
+            
+            config.Thickness = cavity_thickness; 
+            config.WidthIn = width_in;
+            config.DepthIn = depth_in;
+            config.WidthOut = width_out; 
+            config.DepthOut = depth_out;
+            config.Section = (width_in+width_out)/2 * (depth_in+depth_out)/2;
         end
     end
 end

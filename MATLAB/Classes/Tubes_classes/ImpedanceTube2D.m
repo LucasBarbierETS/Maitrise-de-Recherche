@@ -41,7 +41,7 @@ classdef ImpedanceTube2D
                 %       sprintf('%.2f', mean(data(m, 2))), 'LabelHorizontalAlignment', 'right', 'LabelVerticalAlignment', 'bottom');
             end
 
-            perso_configure_alpha_figure(2000);
+            perso_configure_alpha_figure(3000);
             legend([p1, p2], 'Location', 'best');
         end
     end

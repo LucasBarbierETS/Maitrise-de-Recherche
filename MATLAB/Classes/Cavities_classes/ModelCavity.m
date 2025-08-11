@@ -1,4 +1,4 @@
-function out = ModelCavity(config, input_model, index, env, varargin)
+function out = ModelCavity(config, input_model, elem_index, sblm_index, env)
 
 % Cette fonction permet d'intégrer la géométrie, la physique et le maillage de la solution appelée classMPPSBH_Rectangluar à
 % un modèle préexistant permettant de réaliser des calculs numériques sur tube d'impédance

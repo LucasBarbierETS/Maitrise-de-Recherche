@@ -167,125 +167,66 @@ function model = ImpedanceTube3DModel(list_of_solutions, env)
 
     %% Etude
 
-    % Création d'une étude nommée 'std1'
-    model.study.create('std1');  
-    % Création d'un type d'étude de fréquence
-    model.study('std1').create('freq', 'Frequency');  
-    % Définition de la liste des fréquences à partir des valeurs de w
-    model.study('std1').feature('freq').set('plist', num2str(env.w/2/pi));  
+    std1 = model.study.create('std1');  
+    std1.create('freq', 'Frequency');  
+    std1.feature('freq').set('plist', num2str(env.w/2/pi));  
     
-    % Création d'une solution nommée 'sol1'
-    model.sol.create('sol1');  
-    % Attachement de l'étude 'std1' à la solution 'sol1'
-    model.sol('sol1').study('std1');  
-    model.sol('sol1').attach('std1');  
-    % Création d'une étape d'étude
-    model.sol('sol1').create('st1', 'StudyStep');  
-    % Création d'une variable
-    model.sol('sol1').create('v1', 'Variables');  
-    % Création d'un solveur stationnaire
-    model.sol('sol1').create('s1', 'Stationary');  
-    % Création d'un pas paramétrique dans le solveur stationnaire
-    model.sol('sol1').feature('s1').create('p1', 'Parametric');  
-    % Création d'un solveur entièrement couplé
-    model.sol('sol1').feature('s1').create('fc1', 'FullyCoupled');  
-    % Création d'un solveur direct
-    model.sol('sol1').feature('s1').create('d1', 'Direct');  
-    % Suppression de la définition du couplage
-    model.sol('sol1').feature('s1').feature.remove('fcDef');  
+    sol1 = model.sol.create('sol1');  
+    sol1.study('std1');  
+    sol1.attach('std1');  
+    sts1 = sol1.create('st1', 'StudyStep');
+    sts1.label('Compile Equations: Frequency Domain');  
+
+    v1 = sol1.create('v1', 'Variables');  
+    v1.label('Dependent Variables 1.1');  
+    v1.set('clistctrl', {'p1'});  
+    v1.set('cname', {'freq'});   
+    v1.set('clist',  cellstr(join(string(env.w/2/pi)+"[Hz]")));  
     
-    % Réattachement de l'étude 'std1' à la solution 'sol1'
-    model.sol('sol1').attach('std1');  
-    % Étiquetage de l'étape d'étude
-    model.sol('sol1').feature('st1').label('Compile Equations: Frequency Domain');  
-    % Étiquetage des variables dépendantes
-    model.sol('sol1').feature('v1').label('Dependent Variables 1.1');  
-    % Définition du contrôle de la liste des variables
-    model.sol('sol1').feature('v1').set('clistctrl', {'p1'});  
-    % Nom de la variable
-    model.sol('sol1').feature('v1').set('cname', {'freq'});   
-    % Définition de la liste des fréquences avec unités
-    model.sol('sol1').feature('v1').set('clist',  cellstr(join(string(env.w/2/pi)+"[Hz]")));  
+    s1 = sol1.create('s1', 'Stationary');  
+    s1.label('Stationary Solver 1.1'); 
+    s1.feature('dDef').label('Direct 2');  
+    s1.feature('aDef').label('Advanced 1');  
+    s1.feature('aDef').set('complexfun', true);  
+
+    s1.create('p1', 'Parametric');  
+    s1.feature('p1').label('Parametric 1.1');  
+    s1.feature('p1').set('pname', {'freq'});  
+    s1.feature('p1').set('plistarr', cellstr(num2str(env.w/2/pi)));  
+    s1.feature('p1').set('punit', {'Hz'});  
+    s1.feature('p1').set('pcontinuationmode', 'no');  
+    s1.feature('p1').set('preusesol', 'auto');
+
+    s1.create('fc1', 'FullyCoupled');  
+    s1.feature('fc1').label('Fully Coupled 1.1'); 
+      
+    s1.create('d1', 'Direct'); 
+    s1.feature('d1').label('Direct 1.1');  
+    s1.feature('d1').set('linsolver', 'pardiso');  
+    s1.feature('d1').set('pivotperturb', 1.0E-13); 
+
+
+    %% Sauvergarde
+
+    % if nargin > 2
+    %     mphsave(model, [varargin{1}, '\', varargin{2}, '\' varargin{2} '_modèle_numérique_2D.mph']);
+    mphsave(model, 'C:\Users\lucas.barbier\Documents\Maitrise dossier secondaire\Mesures expérimentales\Echantillons Hutchinson 1ère itération\Echantillon 2 Hutchinson\validation_3D.mph');
+    % model = perso_create_results_table(model);
+    % end
+
+    %% Calcul de la solution
+    sol1.runAll;   
+
+    %% Importation du modèle résolu (si besoin)
+    % model = mphload([varargin{1}, '\', varargin{2}, '.mph']);
+    % model = mphload('C:\Users\lucas.barbier\Documents\Maitrise dossier secondaire\MATLAB\Optimisation\Optimisation REAR\validation_MPPSBH_element_1.mph');
+    model = perso_create_results_table(model);
+    % mphsave(model, 'C:\Users\lucas.barbier\Documents\Maitrise dossier secondaire\MATLAB\Optimisation\Optimisation REAR\validation_MPPSBH_element_1.mph');
+    %% Résultats et affichage
     
-    % Étiquetage du solveur stationnaire
-    model.sol('sol1').feature('s1').label('Stationary Solver 1.1');  
-    % Étiquetage de la définition du solveur direct
-    model.sol('sol1').feature('s1').feature('dDef').label('Direct 2');  
-    % Étiquetage de la définition avancée
-    model.sol('sol1').feature('s1').feature('aDef').label('Advanced 1');  
-    % Activation du traitement complexe
-    model.sol('sol1').feature('s1').feature('aDef').set('complexfun', true);  
-    % Étiquetage du pas paramétrique
-    model.sol('sol1').feature('s1').feature('p1').label('Parametric 1.1');  
-    % Définition du nom du paramètre
-    model.sol('sol1').feature('s1').feature('p1').set('pname', {'freq'});  
-    % Définition de la liste des paramètres
-    model.sol('sol1').feature('s1').feature('p1').set('plistarr', cellstr(num2str(env.w/2/pi)));  
-    
-    % Définition des unités du paramètre
-    model.sol('sol1').feature('s1').feature('p1').set('punit', {'Hz'});  
-    % Définition du mode de continuation du paramètre
-    model.sol('sol1').feature('s1').feature('p1').set('pcontinuationmode', 'no');  
-    % Définition de l'utilisation automatique des solutions précédentes
-    model.sol('sol1').feature('s1').feature('p1').set('preusesol', 'auto');  
-    % Étiquetage du couplage entièrement couplé
-    model.sol('sol1').feature('s1').feature('fc1').label('Fully Coupled 1.1');  
-    % Étiquetage du solveur direct
-    model.sol('sol1').feature('s1').feature('d1').label('Direct 1.1');  
-    % Définition du solveur de système linéaire
-    model.sol('sol1').feature('s1').feature('d1').set('linsolver', 'pardiso');  
-    % Définition du paramètre de perturbation du pivot
-    model.sol('sol1').feature('s1').feature('d1').set('pivotperturb', 1.0E-13);  
-    % Exécution de toutes les étapes de la solution
-    model.sol('sol1').runAll;   
+    % perso_plot_alpha_from_COMSOL_model(model, 'MPPSBH_element_1');
     
     %% Résultat
     
-    % Création d'un objet de ligne d'évaluation nommé 'av1'
-    model.result.numerical.create('av1', 'AvSurface');  
     
-    % Sélection du microphone 2
-    model.result.numerical('av1').selection.named('mic2');  
-    model.result.numerical('av1').set('probetag', 'mic2');  
-    
-    % création d'une table de résultats
-    model.result.table.create('tbl1', 'Table');
-    model.result.numerical('av1').set('table', 'tbl1');
-    model.result.table('tbl1').comments('acoustic indicators');
-    model.result.numerical('av1').label('acoustic indicators');
-    
-    model.result.numerical('av1').set('expr', ['1-abs((exp(-j*ta.omega/acpr.c*d12)-acpr.p_t)' ...
-        '/(acpr.p_t-exp(j*ta.omega/acpr.c*d12))*exp(2*j*ta.omega/acpr.c*(d2s+d12)))^2']);
-    model.result.numerical('av1').set('unit', {'1'});
-    model.result.numerical('av1').set('descr', {'Sound absorption'});
-    
-    model.result.numerical('av1').setIndex('expr', ['real((exp(-j*ta.omega/acpr.c*d12)-acpr.p_t)' ...
-        '/(acpr.p_t-exp(j*ta.omega/acpr.c*d12))*exp(2*j*ta.omega/acpr.c*(d2s+d12)))'], 1);
-    model.result.numerical('av1').setIndex('descr', 'Re(R)', 1);
-    model.result.numerical('av1').setIndex('unit', '1', 1);
-    
-    model.result.numerical('av1').setIndex('expr', ['imag((exp(-j*ta.omega/acpr.c*d12)-acpr.p_t)' ...
-        '/(acpr.p_t-exp(j*ta.omega/acpr.c*d12))*exp(2*j*ta.omega/acpr.c*(d2s+d12)))'], 2);
-    model.result.numerical('av1').setIndex('descr', 'Im(R)', 2);
-    model.result.numerical('av1').setIndex('unit', '1', 2);
-    
-    model.result.numerical('av1').setIndex('expr', ['real((1+(exp(-j*ta.omega/acpr.c*d12)-acpr.p_t)' ...
-        '/(acpr.p_t-exp(j*ta.omega/acpr.c*d12))*exp(2*j*ta.omega/acpr.c*(d2s+d12)))' ...
-        '/(1-(exp(-j*ta.omega/acpr.c*d12)-acpr.p_t)/(acpr.p_t-exp(j*ta.omega/acpr.c*d12))' ...
-        '*exp(2*j*ta.omega/acpr.c*(d2s+d12))))'], 3);
-    model.result.numerical('av1').setIndex('descr', 'Re(Zns)', 3);
-    
-    model.result.numerical('av1').setIndex('expr', ['imag((1+(exp(-j*ta.omega/acpr.c*d12)-acpr.p_t)' ...
-        '/(acpr.p_t-exp(j*ta.omega/acpr.c*d12))*exp(2*j*ta.omega/acpr.c*(d2s+d12)))' ...
-        '/(1-(exp(-j*ta.omega/acpr.c*d12)-acpr.p_t)/(acpr.p_t-exp(j*ta.omega/acpr.c*d12))' ...
-        '*exp(2*j*ta.omega/acpr.c*(d2s + d12))))'], 4);
-    model.result.numerical('av1').setIndex('descr', 'Im(Zns)', 4);
-    
-    model.result.numerical('av1').setResult;
-
-    % %% Groupes de graphiques
-    % 
-    % pg1 = model.result.create('pg1', 'PlotGroup');
-    % model.result('pg1').create('surf1', 'Surface');
-    % model.result('pg1').feature('surf1').set('selection', 
 end

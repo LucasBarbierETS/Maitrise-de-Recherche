@@ -326,11 +326,11 @@ classdef classelement
             peak_alpha = a(max_indices);
         end
 
-        function output_model = set_COMSOL_2D_Model(obj, input_model, elem_index, env)
+        function output_model = set_COMSOL_2D_Model(obj, input_model, elem_index, env, varargin)
             
             config = obj.Configuration;
             for i = 1:length(config.ListOfSubelements)
-                input_model = config.ListOfSubelements{i}.set_COMSOL_2D_Model(input_model, elem_index, i, env);
+                input_model = config.ListOfSubelements{i}.set_COMSOL_2D_Model(obj, input_model, elem_index, sblm_index, env, varargin)
             end
 
             output_model = input_model;

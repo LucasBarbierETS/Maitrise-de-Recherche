@@ -129,37 +129,11 @@ box_bnd_ap_tv.set('condition', 'inside');
 
 %% Matériaux
 
-% JCA : Plates
-
 for i = 1:N
-    JCAmat = model.component('component').material.create(['sol' num2str(index) '_mat' num2str(i)], 'Common');
-    JCAmat.propertyGroup.create('PoroacousticsModel', 'Poroacoustics_model');
-    JCAmat.propertyGroup('def').set('density', 'rho0');
-    JCAmat.propertyGroup('def').set('soundspeed', 'co');
-    JCAmat.propertyGroup('def').set('dynamicviscosity', 'neta');
-    JCAmat.propertyGroup('def').set('thermalconductivity', {'kappa' '0' '0' '0' 'kappa' '0' '0' '0' 'kappa'});
-    JCAmat.propertyGroup('def').set('heatcapacity', 'cp');
-    % JCAmat.propertyGroup('def').set('ratioofspecificheat', 'gamma');
-    JCAmat.propertyGroup('def').set('ratioofspecificheat', '1.4');
-    % JCAmat.propertyGroup('def').set('gamma', 'gamma');
+    JCAconfig = los{4*(i-1)+1}.Configuration;
+    name = ['sol' num2str(index) '_mat' num2str(i)];
+    JCAmat = perso_create_JCA_material(model, name, JCAconfig, env);
 
-    config = los{i}.Configuration.ListOfSubelements{1}.Configuration;
-
-    % Porosité
-    JCAmat.propertyGroup('def').set('porosity', num2str(config.Porosity));
-    % Longueur caractéristique visqueuse      
-    JCAmat.propertyGroup('PoroacousticsModel').set('Lv', num2str(config.ViscousCaracteristicLength));
-    % Longueur caractéristiques thermique
-    JCAmat.propertyGroup('PoroacousticsModel').set('Lth', num2str(config.ThermalCaracteristicLength));
-    % Tortuosité
-    if isscalar(config.Tortuosity)
-        JCAmat.propertyGroup('PoroacousticsModel').set('tau', num2str(config.Tortuosity));
-    else
-        JCAmat.propertyGroup('PoroacousticsModel').set('tau', num2str(config.Tortuosity(env)));
-    end
-    
-    % Résistivité
-    JCAmat.propertyGroup('PoroacousticsModel').set('Rf', num2str(config.AirFlowResistivity(env)));
     % Application du matériau i+1 à la i-ème plaque
     JCAmat.selection.named(['sol' num2str(index) '_MPP' num2str(i)]);
 end
@@ -186,7 +160,7 @@ mesh = model.component('component').mesh('mesh');
 ftri = mesh.create(['sol' num2str(index) '_ftri'], 'FreeTet');
 ftri.selection.named(['sol' num2str(index)]);
 ftri_size = ftri.create('size1', 'Size');
-ftri_size.set('hauto', 5); % Maillage très fin;
+ftri_size.set('hauto', 2); % Maillage très fin;
 
 % Création d'une couche de bord dans le maillage
 bl = mesh.create(['sol' num2str(index) 'bl'], 'BndLayer'); 
@@ -196,7 +170,7 @@ bl.set('smoothtransition', false);
 blp = bl.create('blp', 'BndLayerProp');  
 
 blp.selection.named(['sol' num2str(index) '_bnd_lyr_tv']); 
-blp.set('blnlayers', 2);
+blp.set('blnlayers', 4);
 blp.set('blstretch', 1.1);
 blp.set('inittype', 'blhtot');
 blp.set('blhmin', 'd_visc');

@@ -25,5 +25,10 @@ function JCAmat = perso_create_JCA_material(model, name, JCAconfig, env)
         JCAmat.propertyGroup('PoroacousticsModel').set('tau', num2str(JCAconfig.Tortuosity(env)));
     end
     % Résistivité
-    JCAmat.propertyGroup('PoroacousticsModel').set('Rf', num2str(JCAconfig.AirFlowResistivity(env)));
+    if isa(JCAconfig.AirFlowResistivity, 'function_handle')
+        JCAmat.propertyGroup('PoroacousticsModel').set('Rf', num2str(JCAconfig.AirFlowResistivity(env)));
+    else
+        JCAmat.propertyGroup('PoroacousticsModel').set('Rf', num2str(JCAconfig.AirFlowResistivity));
+    end
+    
 end

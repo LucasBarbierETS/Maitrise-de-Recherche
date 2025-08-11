@@ -63,9 +63,12 @@ classdef classMPP_Circular < classJCA_Rigid
 
             % On appelle le superconstructeur 
             obj@classJCA_Rigid(config);
-
         end
 
+
+        function output_model = set_COMSOL_2D_Model(obj, input_model, elem_index, sblm_index, env)
+            output_model = ModelMPP(obj.Configuration, input_model, elem_index, sblm_index, env);
+        end
     end
 
     methods (Static, Access = public)

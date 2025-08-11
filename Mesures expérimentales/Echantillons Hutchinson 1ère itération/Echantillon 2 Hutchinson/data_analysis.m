@@ -46,10 +46,16 @@ plot(env(100).w/(2*pi), alpha_model, 'DisplayName', 'Modèle analytique linéair
 % plot(env(100).w/(2*pi), alpha_model_HL_first_plate, 'DisplayName', 'Modèle analytique non-linéaire première plaque');
 legend()
 
-
+% Validation 2D
 Tube_MPPSBH = ImpedanceTube2D(ImpedanceTube2D.create_config({classMPPSBH_Rectangular(config2)}));
 Tube_MPPSBH = Tube_MPPSBH.lauch_tube_measurement(env(100));
-Tube_MPPSBH.plot_alpha(env(dB), 'Echantillon 2 - 100 dB');
+Tube_MPPSBH.plot_alpha(env(100), 'Echantillon 2 - 100 dB');
+
+% Validation 3D
+Tube_MPPSBH_3D = ImpedanceTube3D(ImpedanceTube3D.create_config({classMPPSBH_Rectangular(config2)}));
+Tube_MPPSBH_3D = Tube_MPPSBH_3D.launch_tube_measurement(env(100));
+Tube_MPPSBH_3D.plot_alpha(env(100), 'Echantillon 2 - 100 dB');
+
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%% 145 dB %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 

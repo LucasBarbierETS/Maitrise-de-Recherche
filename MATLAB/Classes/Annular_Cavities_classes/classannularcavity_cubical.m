@@ -23,7 +23,8 @@ classdef classannularcavity_cubical < classsubelement
             Ca = config.CurtainArea;
                     
             % Calcul du volume de la cavité :
-            Vcav = ct * (cd - mpd) * (cw - mpw); % Différence des volumes de deux cubes
+            % Vcav = ct * (cd - mpd) * (cw - mpw); % Différence des volumes de deux cubes
+            Vcav = ct * cd *cw - ct * mpd * mpw; % Différence des volumes de deux cubes
             % Si on considère que la surface ou s'applique l'admittance
             % voit a chaque fois la moitié du volume seulement, il faut
             % alors divise ce volume par 2.

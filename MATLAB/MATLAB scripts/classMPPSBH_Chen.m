@@ -28,7 +28,8 @@ classdef classMPPSBH_Chen < classelement
         
                     % Cavité cylindrique
                     hc = (mpr(i) + mpr(i+1))/2;
-                    obj.Configuration.ListOfSubelements{end+1} = classcavity_cylindrical(classcavity_cylindrical.create_config(ct(i), hc));
+                    % obj.Configuration.ListOfSubelements{end+1} = classcavity_cylindrical(classcavity_cylindrical.create_config(ct(i), hc));
+                    obj.Configuration.ListOfSubelements{end+1} = classcavity_conical(classcavity_conical.create_config(ct(i), mpr(i), mpr(i+1)));
         
                     % Cavité annnulaire cylindrique
                     annular_cavity = classannularcavity_cylindrical(classannularcavity_cylindrical.create_config(hc, cavr, ct(i), 'Volume'));
@@ -61,7 +62,6 @@ classdef classMPPSBH_Chen < classelement
     methods (Static, Access = public) % Validation
         
         function validate()
-
             
             % close all 
             figure()
@@ -75,7 +75,7 @@ classdef classMPPSBH_Chen < classelement
             L = 100e-3;
             N = 10;
             rend = 1e-3;
-            d = 0.2e-3;
+            d = 0.25e-3;
             t = 0.2e-3;
             phi = 0.04;
             

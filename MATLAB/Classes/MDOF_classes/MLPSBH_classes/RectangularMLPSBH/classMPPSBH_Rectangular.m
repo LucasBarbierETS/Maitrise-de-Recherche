@@ -26,24 +26,27 @@ classdef classMPPSBH_Rectangular < classelement
                     obj.Configuration.ListOfSubelements{end+1} = classMPP_Circular(classMPP_Circular.create_config(mpw(i)*mpd(i), pt(i), phr(i), pp(i)));
         
                     % Cavité cylindrique
-                    obj.Configuration.ListOfSubelements{end+1} = classcavity(classcavity.create_config(ct(i)/2, mpw(i), mpd(i)));
+                    wc = (mpw(i) + mpw(i+1))/2;
+                    dc = (mpd(i) + mpd(i+1))/2;
+                    % obj.Configuration.ListOfSubelements{end+1} = classcavity(classcavity.create_config(ct(i)/2, mpw(i), mpd(i)));
+                    obj.Configuration.ListOfSubelements{end+1} = classcavity_trapezoidal(classcavity_trapezoidal.create_config(ct(i)/2, mpw(i), mpd(i), wc, dc));
     
                     % Cavité cubique en parallèle
-                    w = (mpw(i) + mpw(i+1))/2;
-                    d = (mpd(i) + mpd(i+1))/2;
-                    cc = classannularcavity_cubical(classannularcavity_cubical.create_config(w, d, cavw, cavd, ct(i)));
-                    obj.Configuration.ListOfSubelements{end+1} = classjunction(classjunction.create_config(cc, w, d));
+                    annular_cavity = classannularcavity_cubical(classannularcavity_cubical.create_config(wc, dc, cavw, cavd, ct(i)));
+                    obj.Configuration.ListOfSubelements{end+1} = classjunction(classjunction.create_config(annular_cavity, wc, dc));
         
                     % Cavité cylindrique
-                    obj.Configuration.ListOfSubelements{end+1} = classcavity(classcavity.create_config(ct/2, w, d));
+                    % obj.Configuration.ListOfSubelements{end+1} = classcavity(classcavity.create_config(ct(i)/2, wc, dc));
+                    obj.Configuration.ListOfSubelements{end+1} = classcavity_trapezoidal(classcavity_trapezoidal.create_config(ct(i)/2, wc, dc, mpw(i+1), mpd(i+1)));
                 end 
             end
         end
     
     end
     methods % COMSOL
-        function output_model = set_COMSOL_2D_Model(obj, input_model, index, env, varargin)
-            output_model = ModelMPPSBH(obj.Configuration, input_model, index, env, varargin{:});
+        
+        function output_model = set_COMSOL_2D_Model(obj, input_model, elem_index, sblm_index, env)
+            output_model = ModelMPPSBH(obj.Configuration, input_model, elem_index, sblm_index, env);
         end
 
         function output_model = set_COMSOL_3D_Model(obj, input_model, index, env)
@@ -487,16 +490,15 @@ classdef classMPPSBH_Rectangular < classelement
             plates_holes_radius, ...
             plates_width_holes_distance, plates_depth_holes_distance, ...
             plates_depth_holes_number, plates_width_holes_number, ...
-            plates_thickness, cavities_thickness, varargin) 
+            plates_thickness, cavities_thickness) 
 
             config = {};
             config.Surface = surface;
             [config.NumberOfPlates, N] = deal(number_of_plates);
-            config.EndStatus = 'closed';
 
             % Paramètres globaux
-            [config.CavitiesDepth, cd] = deal(cavities_depth);
-            [config.CavitiesWidth, cw] = deal(cavities_width);
+            config.CavitiesDepth = cavities_depth;
+            config.CavitiesWidth = cavities_width;
 
             % Paramètres variables en fonction des cellules
             config.PlatesThickness = perso_interp_config(plates_thickness, N);
@@ -513,16 +515,7 @@ classdef classMPPSBH_Rectangular < classelement
             
             % Définition de la porosité à partir de la répartition des perforations
             Nh = pd .* pw; % nombre total de perforations
-            [plates_perforated_surface, Sperf] = deal(pi * hr.^2 .* Nh);
-            config.PlatesPerforatedPartPorosity = Sperf ./ (mpw(1:end-1) .* mpd(1:end-1));
-            config.PlatesRealPorosity = plates_perforated_surface / (cw * cd);
-
-            % Méthode de prise en compte des cavités latérales
-            if nargin > 11
-                config.CavitiesMethod = repmat(varargin(1), 1, N);
-            else
-                config.CavitiesMethod = repmat({'volume'}, 1, N);
-            end
+            config.PlatesPorosity = pi * hr.^2 .* Nh ./ (mpw(1:end-1) .* mpd(1:end-1));
         end
 
         function config = create_explicit_slit_pattern_config_without_first_plate(surface, number_of_plates, cavities_depth, cavities_width, ...

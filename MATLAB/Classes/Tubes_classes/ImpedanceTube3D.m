@@ -10,8 +10,7 @@ classdef ImpedanceTube3D
             obj.Configuration = config;
         end
 
-        function obj = launch_tube_measurement(obj)
-            env = create_environnement(28, 108000, 50, 1, 5000, 200, 130);
+        function obj = launch_tube_measurement(obj, env)
             obj.Configuration.ComsolModel = ImpedanceTube3DModel(obj.Configuration.ListOfSolutions, env);
         end
 

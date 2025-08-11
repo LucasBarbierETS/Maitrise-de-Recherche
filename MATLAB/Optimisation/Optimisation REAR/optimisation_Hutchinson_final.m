@@ -31,7 +31,7 @@ dB = 100;
 total_thickness = 115e-3;
 total_depth = 120e-3; 
 total_width = 72e-3;
-total_input_section = total_depth * total_width;
+total_input_surface = total_depth * total_width;
 
 % Plaque couvrante
 top_plate_thickness = 1e-3;
@@ -101,13 +101,20 @@ tor = 1;
 sig = 12340;
 vl = 0.000105;
 tl = 0.000316;
-JCAmat = classJCA_Rigid(classJCA_Rigid.create_config(total_width*total_depth, JCAmat_thickness, phi, tor, sig, vl, tl));
+JCAmat = classJCA_Rigid(classJCA_Rigid.create_config(total_width*total_depth, JCAmat_thickness, phi, tor, sig, vl, tl, total_width, total_depth));
 
-% Debog : Comportement du poreux seul
-figure()
-JCAmat.plot_alpha(env(dB), 'Traitement poreux seul');
+% % Debog : Comportement du poreux seul
+% figure()
+% JCAmat.plot_alpha(env(dB), 'Traitement poreux seul');
+% 
+% % Validation numérique du poreux seul
+% JCAelement = classelement(classelement.create_config({JCAmat}, 'closed', total_input_surface));
+% Tube_JCA = ImpedanceTube2D(ImpedanceTube2D.create_config({JCAelement}));
+% Tube_JCA = Tube_JCA.lauch_tube_measurement(env(100));
+% Tube_JCA.plot_alpha(env(100), 'Matériau poreux');
+
 perso_configure_alpha_figure(2000);
-legend();
+
 
 %% Création dynamique de la plaque couvrante
 
@@ -120,7 +127,7 @@ classMPP_Circular.create_explicit_rectangular_plate_config( ...
 top_plate = @(x) classMPP_Circular(classMPP_Circular.create_explicit_rectangular_plate_config( ...
 top_plate_thickness, x(1), total_width, total_depth, x(2), x(3)));
 
-Cartouche_Hutchinson = @(x) classelement(classelement.create_config({top_plate(x), JCAmat}, 'closed', total_input_section));
+Cartouche_Hutchinson = @(x) classelement(classelement.create_config({top_plate(x), JCAmat}, 'closed', total_input_surface));
 
 %% Fonctions coût
 
@@ -129,6 +136,12 @@ cost_function_obj1 = @(x, env) sum(((Cartouche_Hutchinson(x).alpha(env) - g_obj1
 cost_function_obj2 = @(x, env) sum(((Cartouche_Hutchinson(x).alpha(env) - g_obj2(env)) .* (g_obj2(env) > 0.1)).^2, 'omitnan');
 
 objective = @(x) [cost_function_obj1(x, env(dB)), cost_function_obj2(x, env(dB))];
+
+%% Validation de l'approche numérique sur la configuration initiale
+Tube_Cartouche = ImpedanceTube2D(ImpedanceTube2D.create_config({Cartouche_Hutchinson(x0(1, :))}));
+Tube_Cartouche = Tube_Cartouche.lauch_tube_measurement(env(100));
+Tube_Cartouche.plot_alpha(env(100), 'Cartouche Hutchinson');
+perso_configure_alpha_figure(2000);
 
 %% Genetic Algorithm
 

@@ -148,7 +148,7 @@ box_bnd_ap_tv.set('condition', 'inside');
 %% Matériaux
 
 for i = 1:N
-    JCAconfig = los{i}.Configuration.ListOfSubelements{1}.Configuration;
+    JCAconfig = los{4*(i-1)+1}.Configuration;
     name = ['sol' num2str(index) '_mat' num2str(i)];
     JCAmat = perso_create_JCA_material(model, name, JCAconfig, env);
 
@@ -178,7 +178,7 @@ mesh = model.component('component').mesh('mesh');
 ftri = mesh.create(['sol' num2str(index) '_ftri'], 'FreeTri');
 ftri.selection.named(['sol' num2str(index)]);
 ftri_size = ftri.create('size1', 'Size');
-ftri_size.set('hauto', 2); % Maillage très fin;
+ftri_size.set('hauto', 2); 
 
 % Création d'une couche de bord dans le maillage
 bl = mesh.create(['sol' num2str(index) '_bl'], 'BndLayer'); 

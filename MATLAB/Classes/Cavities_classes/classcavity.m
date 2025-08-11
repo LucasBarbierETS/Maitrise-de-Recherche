@@ -51,8 +51,8 @@ classdef classcavity < classsubelement
             Zs = S * T.T11 ./ T.T21;
         end
     
-        function output_model = set_COMSOL_2D_Model(obj, input_model, index, xtlc, ytlc, env)
-            output_model = ModelCavity(obj.Configuration, input_model, index, xtlc, ytlc, env);
+        function output_model = set_COMSOL_2D_Model(obj, input_model, elem_index, sblm_index, env)
+            output_model = ModelCavity(obj.Configuration, input_model, elem_index, sblm_index, env);
         end
     end
 

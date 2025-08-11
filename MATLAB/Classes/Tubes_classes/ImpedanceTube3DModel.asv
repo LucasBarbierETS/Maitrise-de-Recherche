@@ -1,4 +1,4 @@
-function model = ImpedanceTube2DModel(list_of_solutions, env)
+function model = ImpedanceTube3DModel(list_of_solutions, env)
 
     % Cette fonction prend en entrée une liste de solutions acoustiques.
     % Elle a pour but de modéliser à l'aide de Comsol un test d'impédance
@@ -13,15 +13,16 @@ function model = ImpedanceTube2DModel(list_of_solutions, env)
     import com.comsol.model.util.*
     
     model = ModelUtil.create('Model');
-    ModelUtil.showProgress(true)
+    ModelUtil.showProgress(true);
 
     %% Création/ Mise à jour des variables et paramètres du modèle 
   
     % Paramètres géométriques du tube
     model.param.set('d12', '20e-3', 'distance inter-microphone');
     model.param.set('d2s', '80e-3', 'distance microphone 2 - solution');
-    model.param.set('xl1', '0', 'ligne d''acotement à gauche de la solution courante');
-
+    model.param.set('sol1_xl', '0', 'ligne d''acotement à gauche de la solution courante');
+    model.param.set('Td', '30e-3', 'profondeur du tube d''impédance');
+   
     % Paramètres du maillage
     model.param.set('nu', '1.81e-05[Pa*s]');
     model.param.set('rho', '1.2 [kg/m^3]');
@@ -42,7 +43,7 @@ function model = ImpedanceTube2DModel(list_of_solutions, env)
 
     % On crée un composant et une géométrie
     model.component.create('component', true);
-    model.component('component').geom.create('geometry', 2);
+    model.component('component').geom.create('geometry', 3);
 
     % On crée un matériau "air_perso" qui sera appliqué automatiquement à
     % toutes les géométries implémentées
@@ -53,28 +54,29 @@ function model = ImpedanceTube2DModel(list_of_solutions, env)
     ap.selection.set([]);
     tv = model.component('component').physics.create('phy_tv', 'ThermoacousticsSinglePhysics', 'geometry');
     tv.selection.set([]);
-    multiphy_bnd = model.component('component').multiphysics.create('multiphy_bnd', 'AcousticThermoacousticBoundary', 1);
+    multiphy_bnd = model.component('component').multiphysics.create('multiphy_bnd', 'AcousticThermoacousticBoundary', 2);
     multiphy_bnd.selection.set([]);
 
     % On crée un maillage
     mesh = model.component('component').mesh.create('mesh');
+
 
     %% Géométrie
 
     % Mise en place des solutions
 
     for i = 1:length(list_of_solutions)
-        model = list_of_solutions{i}.set_COMSOL_2D_Model(model, i, env);
+        model = list_of_solutions{i}.set_COMSOL_3D_Model(model, i, env);
     end
 
     % Création de la géométrie du tube
-    rt1 = model.component('component').geom('geometry').create('rt1', 'Rectangle');
-    rt1.set('pos', {'0' 'd2s'});
-    rt1.set('size', {['xr' num2str(length(list_of_solutions))] 'd12'});
+    blkt1 = model.component('component').geom('geometry').create('blkt1', 'Block');
+    blkt1.set('pos', {'0' '-Td/2' 'd2s'});
+    blkt1.set('size', {['sol' num2str(length(list_of_solutions)) '_xr'] 'Td' 'd12'});
 
-    rt2 = model.component('component').geom('geometry').create('rt2', 'Rectangle');
-    rt2.set('pos', {'0' '0'});
-    rt2.set('size', {['xr' num2str(length(list_of_solutions))] 'd2s'});
+    blkt2 = model.component('component').geom('geometry').create('blkt2', 'Block');
+    blkt2.set('pos', {'0' '-Td/2' '0'});
+    blkt2.set('size', {['sol' num2str(length(list_of_solutions)) '_xr'] 'Td' 'd2s'});
 
     model.component('component').geom('geometry').run('fin');
 
@@ -86,23 +88,23 @@ function model = ImpedanceTube2DModel(list_of_solutions, env)
 
     % Pour le tube d'impédance
     box_tube = model.component('component').selection.create('tube', 'Box');
-    box_tube.set('entitydim', 2); % On sélectionne les domaines
-    box_tube.set('ymax', 'd12+d2s+0.01[mm]');
-    box_tube.set('ymin', '-0.01[mm]');
+    box_tube.set('entitydim', 3); % On sélectionne les domaines
+    box_tube.set('zmax', 'd12+d2s+0.01[mm]');
+    box_tube.set('zmin', '-0.01[mm]');
     box_tube.set('condition', 'inside');
 
     % Pour le plan de la source acoustique
     box_src = model.component('component').selection.create('src', 'Box');
-    box_src.set('entitydim', 1); % On sélectionne les arêtes
-    box_src.set('ymax', 'd12+d2s+0.01[mm]');
-    box_src.set('ymin', 'd12+d2s-0.01[mm]');
+    box_src.set('entitydim', 2); % On sélectionne les arêtes
+    box_src.set('zmax', 'd12+d2s+0.01[mm]');
+    box_src.set('zmin', 'd12+d2s-0.01[mm]');
     box_src.set('condition', 'inside');
 
     % Pour le 2nd microphone
     box_mic = model.component('component').selection.create('mic2', 'Box');
-    box_mic.set('entitydim', 1); % On sélectionne les arêtes
-    box_mic.set('ymax', 'd2s+0.01[mm]');
-    box_mic.set('ymin', 'd2s-0.01[mm]');
+    box_mic.set('entitydim', 2); % On sélectionne les arêtes
+    box_mic.set('zmax', 'd2s+0.01[mm]');
+    box_mic.set('zmin', 'd2s-0.01[mm]');
     box_mic.set('condition', 'inside');
 
     % % Pour l'air
@@ -135,7 +137,7 @@ function model = ImpedanceTube2DModel(list_of_solutions, env)
     end
 
     box_all_bnds_cont_ap = model.component('component').selection.create('all_bnds_ap_tv', 'Union');
-    box_all_bnds_cont_ap.set('entitydim', 1);
+    box_all_bnds_cont_ap.set('entitydim', 2);
     box_all_bnds_cont_ap.set('input', all_bnds_ap_tv_selection);
 
     %% Physique
@@ -144,7 +146,7 @@ function model = ImpedanceTube2DModel(list_of_solutions, env)
     model = perso_add_selection_to_physics(model, 'phy_ap', 'tube');
 
     % Création d'une fonctionnalité de pression dans la physique acoustique
-    pr1 = ap.create('pr1', 'Pressure', 1); 
+    pr1 = ap.create('pr1', 'Pressure', 2); 
     pr1.selection.named('src');  % Sélection du plan de la source
     pr1.set('p0', 1);  % Définition de la pression initiale à 1 Pa
 
@@ -154,12 +156,11 @@ function model = ImpedanceTube2DModel(list_of_solutions, env)
     %% Maillage
 
     % Création d'un maillage triangulaire libre
-    ftri_tube = mesh.create('ftri_tube', 'FreeTri');  
+    ftri_tube = mesh.create('ftri_tet', 'FreeTet');  
     % Sélection de la boîte pour le maillage triangulaire libre
     ftri_tube.selection.named('tube');  
     % Création d'une taille pour le maillage triangulaire
     ftri_tube.create('size1', 'Size');  
-    
 
     mesh.run;
     
@@ -184,7 +185,6 @@ function model = ImpedanceTube2DModel(list_of_solutions, env)
     
     s1 = sol1.create('s1', 'Stationary');  
     s1.label('Stationary Solver 1.1'); 
-    s1.feature.remove('fcDef'); 
     s1.feature('dDef').label('Direct 2');  
     s1.feature('aDef').label('Advanced 1');  
     s1.feature('aDef').set('complexfun', true);  
@@ -205,43 +205,28 @@ function model = ImpedanceTube2DModel(list_of_solutions, env)
     s1.feature('d1').set('linsolver', 'pardiso');  
     s1.feature('d1').set('pivotperturb', 1.0E-13); 
 
+
+    %% Sauvergarde
+
+    % if nargin > 2
+    %     mphsave(model, [varargin{1}, '\', varargin{2}, '\' varargin{2} '_modèle_numérique_2D.mph']);
+    mphsave(model, 'C:\Users\lucas.barbier\Documents\Maitrise dossier secondaire\Mesures expérimentales\Echantillons Hutchinson 1ère itération\Echantillon 2 Hutchinson\validation_3D.mph');
+    % model = perso_create_results_table(model);
+    % end
+
+    %% Calcul de la solution
     sol1.runAll;   
+
+    %% Importation du modèle résolu (si besoin)
+    % model = mphload([varargin{1}, '\', varargin{2}, '.mph']);
+    % model = mphload('C:\Users\lucas.barbier\Documents\Maitrise dossier secondaire\MATLAB\Optimisation\Optimisation REAR\validation_MPPSBH_element_1.mph');
+    model = perso_create_results_table(model);
+    % mphsave(model, 'C:\Users\lucas.barbier\Documents\Maitrise dossier secondaire\MATLAB\Optimisation\Optimisation REAR\validation_MPPSBH_element_1.mph');
+    %% Résultats et affichage
+    
+    % perso_plot_alpha_from_COMSOL_model(model, 'MPPSBH_element_1');
     
     %% Résultat
     
-    % Création d'un objet de ligne d'évaluation au niveau du microphone 2
-    av_mic2 = model.result.numerical.create('av_mic2', 'AvLine');   
-    av_mic2.selection.named('mic2');  
-    av_mic2.set('probetag', 'mic2');  
     
-    % création d'une table de résultats
-    model.result.table.create('tbl1', 'Table');
-    av_mic2.set('table', 'tbl1');
-    model.result.table('tbl1').comments('acoustic indicators');
-    av_mic2.label('acoustic indicators');
-    
-    av_mic2.setIndex('expr', ['real((exp(-j*ta.omega/acpr.c*d12)-acpr.p_t)' ...
-        '/(acpr.p_t-exp(j*ta.omega/acpr.c*d12))*exp(2*j*ta.omega/acpr.c*(d2s+d12)))'], 1);
-    av_mic2.setIndex('descr', 'Re(R)', 1);
-    av_mic2.setIndex('unit', '1', 1);
-    
-    av_mic2.setIndex('expr', ['imag((exp(-j*ta.omega/acpr.c*d12)-acpr.p_t)' ...
-        '/(acpr.p_t-exp(j*ta.omega/acpr.c*d12))*exp(2*j*ta.omega/acpr.c*(d2s+d12)))'], 2);
-    av_mic2.setIndex('descr', 'Im(R)', 2);
-    av_mic2.setIndex('unit', '1', 2);
-    
-    av_mic2.setIndex('expr', ['real((1+(exp(-j*ta.omega/acpr.c*d12)-acpr.p_t)' ...
-        '/(acpr.p_t-exp(j*ta.omega/acpr.c*d12))*exp(2*j*ta.omega/acpr.c*(d2s+d12)))' ...
-        '/(1-(exp(-j*ta.omega/acpr.c*d12)-acpr.p_t)/(acpr.p_t-exp(j*ta.omega/acpr.c*d12))' ...
-        '*exp(2*j*ta.omega/acpr.c*(d2s+d12))))'], 3);
-    av_mic2.setIndex('descr', 'Re(Zns)', 3);
-    
-    av_mic2.setIndex('expr', ['imag((1+(exp(-j*ta.omega/acpr.c*d12)-acpr.p_t)' ...
-        '/(acpr.p_t-exp(j*ta.omega/acpr.c*d12))*exp(2*j*ta.omega/acpr.c*(d2s+d12)))' ...
-        '/(1-(exp(-j*ta.omega/acpr.c*d12)-acpr.p_t)/(acpr.p_t-exp(j*ta.omega/acpr.c*d12))' ...
-        '*exp(2*j*ta.omega/acpr.c*(d2s + d12))))'], 4);
-    av_mic2.setIndex('descr', 'Im(Zns)', 4);
-    
-    av_mic2.setResult;
-
 end
