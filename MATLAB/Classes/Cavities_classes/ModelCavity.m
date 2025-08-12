@@ -77,6 +77,20 @@ ftri_size = ftri.create('size1', 'Size');
 ftri_size.set('hauto', 2); % Maillage très fin;
 mesh.run;
 
+% Création d'une couche de bord dans le maillage
+bl = mesh.create(['sol' num2str(elem_index) '_sblm' num2str(sblm_index) '_bl'], 'BndLayer'); 
+bl.selection.named(['sol' num2str(elem_index) '_sblm' num2str(sblm_index)]);
+bl.set('splitdivangle', 25);
+bl.set('smoothtransition', false);
+blp = bl.create('blp', 'BndLayerProp');  
+
+% blp.selection.named(['sol' num2str(elem_index) '_sblm' num2str(sblm_index) '_bnd_lyr_tv']);
+blp.selection.named(['sol' num2str(elem_index) '_sblm' num2str(sblm_index) '_bnds']);
+blp.set('blnlayers', 3);
+blp.set('blstretch', 1.2);
+blp.set('inittype', 'blhtot');
+blp.set('blhmin', 'd_visc');
+
 out = model;
 
 end

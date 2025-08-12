@@ -1,13 +1,11 @@
 %% Description
 
-% L'optimisation finale porte sur les paramètres de la plaque couvrante
-% utilisée avec le traitement poreux
+% Cette optimisation porte sur les paramètres de la plaque couvrante
+% utilisée avec les solutions développées par Poly
 
 %% Sélection du dossier de destination des élements sauvegardés
 
-% folderName = uigetdir();
 folderName = 'C:\Users\lucas.barbier\Documents\Maitrise dossier secondaire\MATLAB\Optimisation\Optimisation REAR';
-% folderName = 'C:\Users\lucas.barbier\Documents\Maitrise dossier secondaire\MATLAB\Optimisation\Optimisation REAR\Validation numérique';
 
 %% Ouverture de l'environnement matlab
 
@@ -86,7 +84,7 @@ handle_Hutchinson_nonlconf = @(x) perso_Hutchinson_nonlconf(x, top_plate, tp_phi
 
 %% Contrainte sur les variables entières
 
-intcon = find([0, 1, 1]);
+intcon = [2, 3];
 
 %% Gabarits
 
@@ -172,7 +170,7 @@ timeGa = toc;
 xopti_to_cell_array_of_Hutchinson_element_alpha = @(x, env) arrayfun(@(i) Cartouche_Hutchinson(x(i, :)).alpha(env), 1:size(x, 1), 'UniformOutput', false);
 % xopti_to_cell_array_of_global_assembly_alpha = @(x, env) arrayfun(@(i) Cartouches.Cartouche_ETS(x(i, :)).alpha(env), 1:size(x, 1), 'UniformOutput', false);
 
-cell_of_MPPSBH_assembly_alpha_to_mean_alpha = @(alpha_cell_array, gabarit) arrayfun(@(i) mean(alpha_cell_array{i}(gabarit)), 1:size(alpha_cell_array, 2), 'UniformOutput', false);
+cell_of_Hutchinson_element_alpha_to_mean_alpha = @(alpha_cell_array, gabarit) arrayfun(@(i) mean(alpha_cell_array{i}(gabarit)), 1:size(alpha_cell_array, 2), 'UniformOutput', false);
 
 % On récupère les vecteurs d'absorption des meilleures configurations
 [sorted_scores_opti, sorted_index_opti] = sort(fval);
@@ -180,8 +178,8 @@ sorted_xopti = xopti(sorted_index_opti(:, 1), :);
 filtered_alpha = xopti_to_cell_array_of_Hutchinson_element_alpha(sorted_xopti, env(dB));
 
 % On récupère, pour ces vecteurs, les alphas moyens sur différentes bandes fréquentielles d'intérêt
-mean_alpha_obj1 = cell_of_MPPSBH_assembly_alpha_to_mean_alpha(filtered_alpha, g_obj1(env(dB)));
-mean_alpha_obj2 = cell_of_MPPSBH_assembly_alpha_to_mean_alpha(filtered_alpha, g_obj2(env(dB)));
+mean_alpha_obj1 = cell_of_Hutchinson_element_alpha_to_mean_alpha(filtered_alpha, g_obj1(env(dB)));
+mean_alpha_obj2 = cell_of_Hutchinson_element_alpha_to_mean_alpha(filtered_alpha, g_obj2(env(dB)));
 
 % Tracé interractif des meilleurs résultats de l'optimisation multi objectif
 perso_interactive_multi_plot(env(dB).w/(2*pi), filtered_alpha, mean_alpha_obj1, mean_alpha_obj2, 2000);
@@ -192,8 +190,8 @@ chosed_index = input('Veuillez entrer le numéro de la configuration choisie : '
 x_opti = sorted_xopti(chosed_index, :);
 
 %% Validation numérique 2D de la configuration choisie
-Tube_Cartouche = ImpedanceTube2D(ImpedanceTube2D.create_config({Cartouche_Hutchinson(x0(1, :))}));
-Tube_Cartouche = Tube_Cartouche.lauch_tube_measurement(env(100));
+Tube_Cartouche = ImpedanceTube2D(ImpedanceTube2D.create_config({Cartouche_Hutchinson(x_opti)}));
+Tube_Cartouche = Tube_Cartouche.launch_tube_measurement(env(100));
 
 figure();
 JCAmat.plot_alpha(env(dB), 'Traitement poreux seul');

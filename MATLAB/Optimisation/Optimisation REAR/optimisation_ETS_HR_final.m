@@ -88,7 +88,7 @@ NP = 100;
 % NP = 50;
 % NP = 10;
 
-ETS_cavities_thickness = (total_thickness - top_plate_thickness - air_gap_thickness - N * plates_thickness) / (N+1);
+ETS_cavities_thickness = round((total_thickness - top_plate_thickness - air_gap_thickness - N * plates_thickness) / (N+1), 4);
 
 % Récupération des parties du vecteur d'optimisation
 x_TP1 = @(x) x(1 : NTP);
@@ -276,8 +276,8 @@ top_plate = @(x_TP) covering_plate(x_TP(1), total_width, total_depth, x_TP(2), x
 air_gap = classcavity(classcavity.create_config(air_gap_thickness, total_width, total_depth));
 
 % Cavité Jaune
-% yellow_cavity = classcavity(classcavity.create_config(yellow_cavities_thickness, yellow_cavities_width, yellow_cavities_depth));
-yellow_cavity = classQWL_Slit(classQWL_Slit.create_config(yellow_cavities_thickness, yellow_cavities_width, yellow_cavities_depth));
+yellow_cavity = classcavity(classcavity.create_config(yellow_cavities_thickness, yellow_cavities_width, yellow_cavities_depth));
+% yellow_cavity = classQWL_Slit(classQWL_Slit.create_config(yellow_cavities_thickness, yellow_cavities_width, yellow_cavities_depth));
 yellow_cavity_element = classelement(classelement.create_config({yellow_cavity}, 'closed', yc_input_surface));
 
 % % Debog :  Affichage des performance de la cavité jaune
@@ -331,6 +331,8 @@ Contributions.cell_of_Poly_yellow_cavity_contributions = @(x) arrayfun(@(i) ...
 % Tube_MPPSBH_element_contrib = ImpedanceTube2D(ImpedanceTube2D.create_config({Contributions.contribution_MPPSBH_element_i(x0(1, :), 1)}));
 % Tube_MPPSBH_element_contrib = Tube_MPPSBH_element_contrib.launch_tube_measurement(env(dB));
 % Tube_MPPSBH_element_contrib.plot_alpha(env(dB), 'Contribution MPPSBH');
+% figure()
+% mphgeom(Tube_MPPSBH_element_contrib.Configuration.ComsolModel)
 
 % Tube_ETS_yc_contrib = ImpedanceTube2D(ImpedanceTube2D.create_config({Contributions.contribution_ETS_yellow_cavity(x0(1, :))}));
 % Tube_ETS_yc_contrib = Tube_ETS_yc_contrib.launch_tube_measurement(env(dB));
@@ -490,9 +492,7 @@ env_saved = input('Sauvegarder l''environnement d''optimisation : ');
 if env_saved == 1
     % save([folderName, '\' name '.mat']);
     currentTime = char(datetime('now', 'Format', 'yyyy_MM_dd_HH_mm_ss'));
-    perso_save([folderName, '\optimisation_', currentTime], '\environnement matlab.mat');
-    save()
-    save([folderName, '\environnemnt matlab.mat']);
+    perso_save([folderName, '\optimisation_ETS_Poly_', currentTime], '\environnement matlab');
 else
     return
 end

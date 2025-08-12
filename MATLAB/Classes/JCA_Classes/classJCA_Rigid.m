@@ -155,7 +155,6 @@ classdef classJCA_Rigid < classsubelement
             
             config = struct();
             config.Section = NaN;
-            config.Surface = NaN;
             config.Thickness = NaN;
             config.Porosity = NaN;
             config.Tortuosity = NaN;
@@ -165,7 +164,6 @@ classdef classJCA_Rigid < classsubelement
 
             if nargin > 0
                 config.Section = section;
-                config.Surface = section;
                 config.Thickness = thickness;
                 config.Porosity = porosity;
                 config.Tortuosity = tortuosity;

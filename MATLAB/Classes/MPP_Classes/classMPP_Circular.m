@@ -101,9 +101,10 @@ classdef classMPP_Circular < classJCA_Rigid
             [config.PerforationsRadius, pr] = deal(perforations_radius);
             [config.Width, w] = deal(width);
             [config.Depth, d] = deal(depth);
-            [config.Surface, s] = deal(w * d);
-            phn = width_holes_number * depth_holes_number;
-            config.Section = phn*pi*pr^2;
+            [config.Surface, s] = deal(w*d);
+            % [config.WidthHoleNumber, whn] = deal(width_holes_number);
+            % [config.WidthHoleNumber, dhn] = deal(depth_holes_number);
+            config.Section = width_holes_number*depth_holes_number*pi*pr^2;
             config.Porosity = config.Section / s;
         end 
        
@@ -121,7 +122,7 @@ classdef classMPP_Circular < classJCA_Rigid
             r = 0.5e-3; % diamètre des perforations
             s = 1; % Section arbitraire
             c = sqrt(s);
-            MPP = classMPP_Circular(classMPP_Circular.create_config(phi, r, d, c, c));
+            MPP = classMPP_Circular(classMPP_Circular.create_config(s, d, r, phi, c, c));
             
             % Paramètres de la configuration
 
@@ -146,7 +147,7 @@ classdef classMPP_Circular < classJCA_Rigid
             Porous1 = classJCA_Rigid(classJCA_Rigid.create_config(s, D2, phip1, torp1, sigp1, vlp1, tlp1));
 
             % création de l'environnement
-            env = create_environnement(23, 100800, 22, 1, 5000, 5000);
+            env = create_environnement(23, 100800, 22, 1, 2000, 30);
             
             % Création des éléments
             E1 = classelement(classelement.create_config({MPP, cavity}, 'closed', s)); % fig.3
@@ -158,6 +159,9 @@ classdef classMPP_Circular < classJCA_Rigid
             [x_data1, y_data1] = perso_interpole_et_lisse(data1(:, 1), data1(:, 2), 1000, 0.05);
             [x_data2, y_data2] = perso_interpole_et_lisse(data2(:, 1), data2(:, 2), 1000, 0.05);
             
+            Tube = ImpedanceTube2D(ImpedanceTube2D.create_config({E1}));
+            Tube = Tube.launch_tube_measurement(env);
+            
             % affichage des résultats
             figure()
             subplot(1, 2, 1)
@@ -167,7 +171,8 @@ classdef classMPP_Circular < classJCA_Rigid
             ylim([0 1])
             subtitle("Atalla2007 - fig. 3 - p. 9")
 
-            plot(env.w / (2*pi), E1.alpha(env), 'Color', 'b', 'LineWidth', 1, 'DisplayName', 'modèle');
+            plot(env.w / (2*pi), E1.alpha(env), 'Color', 'b', 'LineWidth', 1, 'DisplayName', 'Modèle analytique');
+            Tube.plot_alpha(env, 'Modèle numérique');
             plot(x_data1, y_data1, 'Color', 'g','LineWidth', 1, 'LineStyle', '--', 'DisplayName', 'Données de références');
             legend()
 

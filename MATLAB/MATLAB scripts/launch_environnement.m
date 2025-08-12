@@ -1,5 +1,4 @@
 %% Lancement du serveur COMSOL (si disponible)
-% system('comsolmphserver');
 % addpath('C:\Program Files\COMSOL\COMSOL63\Multiphysics\mli');
 % mphstart;
 % import com.comsol.model.*
@@ -27,7 +26,7 @@ hum = 50; % Humidité relative
 % Support fréquentiel
 fmin = 1;
 fmax = 2000;
-points = 200;
+points = 100;
 
 % Niveau sonore
 env = @(varargin) create_environnement(t, sp, hum, fmin, fmax, points, varargin{1});

@@ -1,4 +1,4 @@
-function output_model = ModelNiloofar(config, input_model, elem_index, sblm_index, env)
+function output_model = ModelNiloofar(config, input_model, elem_index, sblm_index, ~)
 
 % Cette fonction permet d'intégrer la géométrie, la physique et le maillage de la solution appelée sol_bf à
 % un modèle préexistant permettant de réaliser des calculs numériques sur tube d'impédance
@@ -21,7 +21,6 @@ N = config.NumberOfLeftPlates;
 %% Création des variables et paramètres du modèle 
 
 % paramètres de placement
-model.param.set(['sol' num2str(elem_index) '_w'], [num2str(w) '[m]'], 'largeur');
 model.param.set(['sol' num2str(elem_index) '_L'], [num2str(L) '[m]'], 'longueur');
 
 if elem_index == 1
@@ -32,6 +31,7 @@ end
 
 if sblm_index == 1
     model.param.set(['sol' num2str(elem_index) '_sblm' num2str(sblm_index) '_yt'], '0', 'ligne d''accotement verticale en haut');
+    model.param.set(['sol' num2str(elem_index) '_w'], num2str(w), 'ligne d''accotement horizontal à gauche');
     model.param.set(['sol' num2str(elem_index) '_xc'], ['sol' num2str(elem_index) '_xl+' num2str(w/2)], 'ligne centrale');
     model.param.set(['sol' num2str(elem_index) '_xr'], ['sol' num2str(elem_index) '_xl+' num2str(w)], 'ligne d''acotement horizontal à droite');
 else
@@ -194,8 +194,8 @@ blp = bl.create('blp', 'BndLayerProp');
 % On sélectionne toutes les frontières et le serveur se charge d'appliquer
 % la condition partout à elle est applicable
 blp.selection.named(['sol' num2str(elem_index) '_sblm' num2str(sblm_index) '_bnd_lyr_tv']); 
-blp.set('blnlayers', 4);
-blp.set('blstretch', 1.1);
+blp.set('blnlayers', 3);
+blp.set('blstretch', 1.2);
 blp.set('inittype', 'blhtot');
 blp.set('blhmin', 'd_visc');
 mesh.run;

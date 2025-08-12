@@ -20,15 +20,6 @@
 
             obj.Configuration = config;
         end
-
-        function s = input_section(obj)
-
-            s = 0;
-            loe = obj.Configuration.ListOfElements;
-            for i = 1:length(loe)
-                s = s + obj.Configuration.ListOfElements{i}.Configuration.S;
-            end
-        end
         
         function r = input_ratios(obj)
 
@@ -72,8 +63,10 @@
                 % figure();
                 % perso_plot_transfer_matrix(TM, env);
 
-                TM.T12 = TM.T12 * obj.Configuration.ListOfElements{i}.Configuration.InputSection;
-                TM.T21 = TM.T21 / obj.Configuration.ListOfElements{i}.Configuration.InputSection;
+                TM.T12 = TM.T12 * obj.Configuration.ListOfElements{i}.Configuration.Surface;
+                TM.T21 = TM.T21 / obj.Configuration.ListOfElements{i}.Configuration.Surface;
+                % TM.T12 = TM.T12 * obj.Configuration.ListOfElements{i}.Configuration.Section;
+                % TM.T21 = TM.T21 / obj.Configuration.ListOfElements{i}.Configuration.Section;
                 TM_list{i} = TM;
                 Y_list{i} = perso_TM_to_YM(TM_list{i}); % admittance ([2] eq. 5)
 

@@ -61,7 +61,6 @@ JCAmat = perso_create_JCA_material(model, name, config, env);
 % Application du matériau i+1 à la i-ème plaque
 JCAmat.selection.named(['sol' num2str(elem_index) '_sblm' num2str(sblm_index)]);
 
-
 %% Physique 
 
 % On ajoute la solution à la physique thermo-visqueuse
