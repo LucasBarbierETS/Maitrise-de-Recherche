@@ -72,7 +72,7 @@ classdef classJCA_Rigid < classsubelement
 
             % On vérifie que la resistivité à été évaluée lorsque elle a été définie 
             if ~isnumeric(sig)
-                sig = sig(env);
+                sig = sig(env)';
             end
 
             vl = config.ViscousCaracteristicLength;
@@ -150,11 +150,12 @@ classdef classJCA_Rigid < classsubelement
 
     methods (Static, Access = public)
 
-        function config = create_config(section, thickness, porosity, tortuosity, air_flow_resistivity, ...
+        function config = create_config(surface, thickness, porosity, tortuosity, air_flow_resistivity, ...
         viscous_caractersitic_length, thermal_caracteristic_length, varargin)
             
             config = struct();
             config.Section = NaN;
+            config.Surface = NaN;
             config.Thickness = NaN;
             config.Porosity = NaN;
             config.Tortuosity = NaN;
@@ -163,9 +164,11 @@ classdef classJCA_Rigid < classsubelement
             config.ThermalCaracteristicLength = NaN;
 
             if nargin > 0
-                config.Section = section;
+                config.Section = surface;
                 config.Thickness = thickness;
                 config.Porosity = porosity;
+                % config.Section = surface * porosity;
+                config.Surface = surface;
                 config.Tortuosity = tortuosity;
                 config.AirFlowResistivity = air_flow_resistivity;
                 config.ViscousCaracteristicLength = viscous_caractersitic_length;

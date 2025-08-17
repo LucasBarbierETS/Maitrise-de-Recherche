@@ -55,12 +55,12 @@
             "state": {
               "type": "markdown",
               "state": {
-                "file": "Notes atomiques/Rêverie de la vibration.md",
+                "file": "Notes atomiques/Présentation du cahier des charges acoustique.md",
                 "mode": "source",
                 "source": false
               },
               "icon": "lucide-file",
-              "title": "Rêverie de la vibration"
+              "title": "Présentation du cahier des charges acoustique"
             }
           }
         ],
@@ -96,7 +96,7 @@
             "state": {
               "type": "search",
               "state": {
-                "query": "",
+                "query": "table des ma",
                 "matchingCase": false,
                 "explainSearch": false,
                 "collapseAll": true,
@@ -237,6 +237,8 @@
   },
   "active": "103b55b8daed2678",
   "lastOpenFiles": [
+    "Notes atomiques/Table des matières.md",
+    "Notes atomiques/Description qualitative du champ acoustique dans le rotor.md",
     "Notes atomiques/Rêverie de la vibration.md",
     "Notes atomiques/Reconcevoir la réduction de bruit en aéronautique.md",
     "Notes atomiques/Présentation du cahier des charges acoustique.md",
@@ -253,7 +255,6 @@
     "Zotero/coulon2016/Images/coulon2016-68-x47-y430.png",
     "Zotero/coulon2016/Images",
     "Zotero/coulon2016",
-    "Notes atomiques/Table des matières.md",
     "Zotero/simon2022",
     "Notes atomiques/Enjeux liés à la complexité d'une problématique d'aéroacoustique.md",
     "Notes atomiques/Propagation of Sound in Porous Media.md",
@@ -271,7 +272,6 @@
     "Notes atomiques/Matrice de transfert des éléments simples.md",
     "Notes atomiques/Solutions générales de l'équation des ondes.md",
     "Images collées/Pasted image 20250722105836.png",
-    "Notes atomiques MdmM/Nombre d'onde.md",
     "Images collées/Pasted image 20250718100314.png",
     "Images collées/Pasted image 20250718092847.png",
     "Images collées/Pasted image 20250718092720.png",

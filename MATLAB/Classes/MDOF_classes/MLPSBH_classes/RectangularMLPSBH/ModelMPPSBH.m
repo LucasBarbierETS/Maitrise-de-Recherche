@@ -155,9 +155,9 @@ ftri_size = ftri_MPPs.create('size1', 'Size');
 ftri_size.set('hauto', 2); 
 
 % Création d'un maillage triangulaire libre pour les cavités
-ftri_MPPs = mesh.create(['sol' num2str(elem_index) '_sblm' num2str(sblm_index) '_ftri_cavities'], 'FreeTri');
-ftri_MPPs.selection.named(['sol' num2str(elem_index) '_sblm' num2str(sblm_index) '_all_cavities']);
-ftri_size = ftri_MPPs.create('size1', 'Size');
+ftri_cavs = mesh.create(['sol' num2str(elem_index) '_sblm' num2str(sblm_index) '_ftri_cavities'], 'FreeTri');
+ftri_cavs.selection.named(['sol' num2str(elem_index) '_sblm' num2str(sblm_index) '_all_cavities']);
+ftri_size = ftri_cavs.create('size1', 'Size');
 ftri_size.set('hauto', 2); 
 
 % Création d'une couche de bord dans le maillage

@@ -47,10 +47,10 @@ classdef classMPP_Circular_HL_iter < classMPP_Circular
             parse(p, varargin{:});
             u_rms = p.Results.u_rms;
             
-            phi = config.PlatePorosity;
+            phi = config.Porosity;
             pr = config.PerforationsRadius;
-            t = config.PlateThickness;  
-            S = obj.Configuration.InputSection;
+            t = config.Thickness;  
+            S = obj.Configuration.Section;
 
             % On encapsule les méthodes non linéaires dans la définiton des paramètres JCA
             obj.Configuration.AirFlowResistivity = @(env) classMPP_Circular_HL_iter.air_flow_resistivity(env, u_rms, phi, pr, t, S);
@@ -137,26 +137,29 @@ classdef classMPP_Circular_HL_iter < classMPP_Circular
             % % % close();
         end
 
-        function validate()
+        function validate(env)
 
         % Courbe de référence
-        perso_ouvrir_lien_Zotero('zotero://open-pdf/library/items/C3F2ZIGB?page=145&annotation=I8FZCE7A');
+        % perso_ouvrir_lien_Zotero('zotero://open-pdf/library/items/C3F2ZIGB?page=145&annotation=I8FZCE7A');
 
         s = 1; % section arbitraire
-        t = 0.86;
+        t = 0.86e-3;
         d = 1.517e-3;
         phi = 0.0523;
         cd = 25e-3;
         dB1 = 125;
         dB2 = 150;
 
-        MPP = classMPP_Circular_HL_iter(classMPP_Circular.create_config(phi, d/2, t, s));
-        cavity = classcavity(classcavity.create_config(cd, s));
-        E = classelement(classelement.create_config({MPP, cavity}, 'closed', s));
 
-        
-        env = create_environnement(t, sp, hum, fmin, fmax, points, dB1);
-        % E.plot_alpha(env, ) 
+        MPP = classMPP_Circular(classMPP_Circular.create_config(s, t, d/2, phi));
+        MPP_HL_iter = @(u_rms) classMPP_Circular_HL_iter(classMPP_Circular.create_config(s, t, d/2, phi));
+        cavity = classcavity(classcavity.create_config(cd, sqrt(s), sqrt(s)));
+        E = classelement(classelement.create_config({MPP, cavity}, 'closed', s));
+        E_HL_iter = classelement(classelement.create_config({MPP_HL_iter, cavity}, 'closed', s));
+        E.plot_alpha(env(dB1), 'MPP linéaire');
+        E_HL_iter.plot_alpha(env(dB1), 'MPP non linéaire - méthode itérative - 125 dB',  "iter") 
+        E_HL_iter.plot_alpha(env(dB2), 'MPP non linéaire - méthode itérative - 150 dB',  "iter") 
+        perso_configure_alpha_figure(5000);
         end
     end
 end

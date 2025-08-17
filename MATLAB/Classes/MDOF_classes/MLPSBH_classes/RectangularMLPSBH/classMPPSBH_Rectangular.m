@@ -6,7 +6,7 @@ classdef classMPPSBH_Rectangular < classelement
             % Appel du constructeur de la classe parente
             obj@classelement(classelement.create_config({}, 'closed', []));
                
-            if nargin > 0    
+            if nargin > 0  && ~isempty(config) && length(fields(config)) > 3
                 % Transfert des champs de la configuration d'appel vers la configuration de classe
                 obj.Configuration = perso_transfer_fields(config, obj.Configuration);
     
@@ -41,7 +41,6 @@ classdef classMPPSBH_Rectangular < classelement
                 end 
             end
         end
-    
     end
     methods % COMSOL
         

@@ -29,3 +29,4 @@ A 2500 RPM, la première composante tonale (environ 160 Hz) domine largement dan
 
 > [!quote|yellow]+ Image ([page. 5](zotero://open-pdf/library/items/IPGTFFYP?page=5&annotation=JLPXYYYY))
 > ![[Zotero/rendonAeroacousticInvestigationDucted/Images/rendonAeroacousticInvestigationDucted-6-x44-y41.png]]
+é

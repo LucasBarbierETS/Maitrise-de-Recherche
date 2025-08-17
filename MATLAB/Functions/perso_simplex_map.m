@@ -7,5 +7,5 @@ function x = perso_simplex_map(theta, C)
     
     % Transformation : softmax
     exp_theta = exp(theta);  % stabilité numérique
-    x = C * exp_theta / sum(exp_theta);
+    x = round(C * exp_theta / sum(exp_theta), 4);
 end

@@ -26,10 +26,11 @@ hum = 50; % Humidité relative
 % Support fréquentiel
 fmin = 1;
 fmax = 2000;
-points = 100;
+points = 500;
 
 % Niveau sonore
-env = @(varargin) create_environnement(t, sp, hum, fmin, fmax, points, varargin{1});
+env = create_environnement(t, sp, hum, fmin, fmax, points);
+handle_env = @(varargin) create_environnement(t, sp, hum, fmin, fmax, points, varargin{1});
 
 %% Fermeture du serveur COMSOL (si besoin)
 % ModelUtil.disconnect

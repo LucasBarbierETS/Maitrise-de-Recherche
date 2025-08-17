@@ -1,3 +1,6 @@
+clear 
+launch_environnement()
+
 %% Sélection du dossier de destination des élements sauvegardés
 
 % folderName = uigetdir();
@@ -93,18 +96,14 @@ tp_dhn_init = randi([tp_dhn_min, tp_dhn_max], NP, 1);
 
 x0 = horzcat(tp_r_init, tp_whn_init, tp_dhn_init);
 
-% % Debog : Affichage des porosités simulées
-% figure()
-% p = [];
-% for i = 1:size(x0, 1)
-%     p(end+1) = top_plate(handle_config(x0(i, :))).Configuration.Porosity;
-% end
-% histogram(p, 20);
-% title('Porosités simulées')
-
-%% Contraintes dynamiques nonlinéaires 
-
-handle_Poly_nonlconf = @(x) perso_top_plate_nonlconf(top_plate(handle_config(x)), tp_phi_min, tp_phi_max);
+% Debog : Affichage des porosités simulées
+figure()
+p = [];
+for i = 1:size(x0, 1)
+    p(end+1) = top_plate(handle_config(x0(i, :))).Configuration.Porosity;
+end
+histogram(p, 20);
+title('Porosités simulées')
 
 %% Contrainte sur les variables entières
 
@@ -232,6 +231,10 @@ Cartouches.cartouche_Poly_contributions = @(config) classelementassembly(classel
 Cartouches.cartouche_Poly_sans_HR_contributions = @(config) classelementassembly(classelementassembly.create_config( ...
     Contributions.cell_of_Poly_element_contribution(config)));
 
+%% Contraintes dynamiques nonlinéaires 
+
+handle_Poly_nonlconf = @(x) perso_top_plate_nonlconf(top_plate(handle_config(x)), tp_phi_min, tp_phi_max);
+
 %% Fonctions coût
 
 % Evaluation du coût sur la cartouche Poly
@@ -240,17 +243,16 @@ cost_function_Poly_obj1 = @(x, env) sum(((Cartouches.cartouche_Poly(handle_confi
 cost_function_Poly_obj2 = @(x, env) sum(((Cartouches.cartouche_Poly(handle_config(x)).alpha(env) - g_obj2(env)) .* (g_obj2(env) > 0.1)).^2, 'omitnan');
 cost_function_Poly_obj3 = @(x, env) sum(((Cartouches.cartouche_Poly(handle_config(x)).alpha(env) - g_obj3(env)) .* (g_obj3(env) > 0.1)).^2, 'omitnan');
 
-
 % objective = @(x) [cost_function_Poly_obj0(x, env(dB)), cost_function_Poly_obj1(x, env(dB))];
-objective = @(x) [cost_function_Poly_obj1(x, env(dB)), cost_function_Poly_obj2(x, env(dB))];
-% objective = @(x) [cost_function_Poly_obj1(x, env(dB)), cost_function_Poly_obj2(x, env(dB)), cost_function_Poly_obj3(x, env(dB))];
+% objective = @(x) [cost_function_Poly_obj1(x, env(dB)), cost_function_Poly_obj2(x, env(dB))];
+objective = @(x) [cost_function_Poly_obj0(x, env(dB)), cost_function_Poly_obj1(x, env(dB)), cost_function_Poly_obj2(x, env(dB)), cost_function_Poly_obj3(x, env(dB))];
 
 %% GENETIC ALGORITHM
 
 options = optimoptions('ga', ...
                        'Display', 'iter', ...
                        'PopulationSize', NP, ... % nombre de points dans la population initiale
-                       'FunctionTolerance', 1e-2, ...
+                       'FunctionTolerance', 1e-1, ...
                        'ConstraintTolerance', 1e-6, ...
                        'MaxStallGenerations', 5, ...
                        'MaxGenerations', 100, ...
@@ -262,9 +264,9 @@ options = optimoptions('ga', ...
 
 % Options d'affichage
 % options.PlotFcn = {@gaplotbestf, @gaplotmaxconstr, @gaplotbestindiv}; % Pour un seul objectif
-options.PlotFcn = {@gaplotpareto, ... % Pour deux objectifs ou plus
-                   @gaplotscorediversity}; % , ...
-                   % @(x, optimValues, state) perso_plot_constraints_violation(x, optimValues, state, NS, N)}; 
+% options.PlotFcn = {@gaplotpareto, ... % Pour deux objectifs ou plus
+%                    @gaplotscorediversity}; % , ...
+%                    % @(x, optimValues, state) perso_plot_constraints_violation(x, optimValues, state, NS, N)}; 
 
 
 rng; % For reproducibility"
@@ -272,14 +274,14 @@ tic;
 [xopti, fval, eflag, ~, population, scores] = gamultiobj(objective, numel(x0(1, :)), [], [], [], [], lb_TP, ub_TP, handle_Poly_nonlconf, intcon, options);
 timeGa = toc;
 
-% % Debog : Affichage des porosités optimisées
-% figure()
-% p = [];
-% for i = 1:size(xopti, 1)
-%     p(end+1) = top_plate(handle_config(xopti(i, :))).Configuration.Porosity;
-% end
-% histogram(p, 20);
-% title('Porosités optimisées')
+% Debog : Affichage des porosités optimisées
+figure()
+p = [];
+for i = 1:size(xopti, 1)
+    p(end+1) = top_plate(handle_config(xopti(i, :))).Configuration.Porosity;
+end
+histogram(p, 20);
+title('Porosités optimisées')
 
 %% Conditionnement du vecteur d'optimisation
 
@@ -303,6 +305,8 @@ perso_interactive_multi_plot(env(dB).w/(2*pi), filtered_alpha, mean_alpha_obj1, 
 
 chosed_index = input('Veuillez entrer le numéro de la configuration choisie : ');
 x_opti = sorted_xopti(chosed_index, :);
+x_TP(x_opti);
+top_plate_opti_config = top_plate(handle_config(x_opti)).Configuration;
 
 %% Sauvergarde
 
@@ -310,12 +314,14 @@ env_saved = input('Sauvegarder l''environnement d''optimisation : ');
 
 if env_saved == 1
     currentTime = char(datetime('now', 'Format', 'yyyy_MM_dd_HH_mm_ss'));
-    perso_save([folderName, '\optimisation_Poly_', currentTime], '\environnement matlab');
+    mkdir([folderName, '\optimisation_Poly_', currentTime]);
+    mkdir([folderName, '\optimisation_Poly_', currentTime, '\Figures']);
+    save([folderName, '\optimisation_Poly_', currentTime '\environnement matlab.mat']);
 else
     return
 end
 
-%% Afhage des performances et des paramètres optimisés
+%% Affichage des performances et des paramètres optimisés
 
 figure()
 Cartouches.cartouche_Poly(handle_config(x_opti)).plot_alpha(env(dB), 'Cartouche Poly');
@@ -327,6 +333,7 @@ Contributions.contribution_Poly_element(handle_config(x_opti)).plot_alpha(env(dB
 % Contribution de la cavité jaune
 Contributions.contribution_Poly_yellow_cavity(handle_config(x_opti)).plot_alpha(env(dB), 'Contribution cavité jaune');
 perso_configure_alpha_figure(2000);
+saveas(gcf, [folderName, '\optimisation_Poly_', currentTime, '\Figures\Validation de la configuration optimale.fig']);
 
 %% Validation des contributions individuelles
 
@@ -340,10 +347,10 @@ Contributions.contribution_Poly_element(handle_config(x_opti)).plot_alpha(env(dB
 % Validation numérique de la contribution de la solution Poly
 Tube_Poly_element_contrib = ImpedanceTube2D(ImpedanceTube2D.create_config({Contributions.contribution_Poly_numerical_element(handle_config(x_opti))}));
 Tube_Poly_element_contrib = Tube_Poly_element_contrib.launch_tube_measurement(env(dB));
-figure();
 Tube_Poly_element_contrib.plot_alpha(env(dB), 'Contribution solution Poly');
-mphsave(Tube_Poly_element_contrib.Configuration.ComsolModel, [folderName, '\optimisation_Poly_', currentTime '\validation contribution element Poly.mph']);
 perso_configure_alpha_figure(2000);
+saveas(gcf, [folderName, '\optimisation_Poly_', currentTime, '\Figures\Validation de la contribution de la solution Poly.fig']);
+mphsave(Tube_Poly_element_contrib.Configuration.ComsolModel, [folderName, '\optimisation_Poly_', currentTime '\validation contribution element Poly.mph']);
 
 % Validation numérique de la contribution de la cavité jaune
 
@@ -352,4 +359,6 @@ Tube_Poly_yc_contrib = ImpedanceTube2D(ImpedanceTube2D.create_config({Contributi
 Tube_Poly_yc_contrib = Tube_Poly_yc_contrib.launch_tube_measurement(env(dB));
 figure();
 Tube_Poly_yc_contrib.plot_alpha(env(dB), 'Contribution cavité jaune');
-mphsave(Tube_Poly_element_contrib.Configuration.ComsolModel, [folderName, '\optimisation_Poly_', currentTime '\validation contribution cavité jaune.mph']);
+mphsave(Tube_Poly_yc_contrib.Configuration.ComsolModel, [folderName, '\optimisation_Poly_', currentTime '\validation contribution cavité jaune.mph']);
+perso_configure_alpha_figure(2000);
+saveas(gcf, [folderName, '\optimisation_Poly_', currentTime, '\Figures\Validation de la contribution de la cavité jaune.fig']);

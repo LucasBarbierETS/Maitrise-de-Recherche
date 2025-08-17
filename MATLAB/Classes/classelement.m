@@ -215,7 +215,7 @@ classdef classelement
             if nargin > 2
                 tol = varargin{1};
             else
-                tol = 1e-4; 
+                tol = 1e-6; 
             end
 
             max_iter = 500;  % Nombre maximum d'itérations
@@ -394,13 +394,19 @@ classdef classelement
             end
         end
 
-        function obj = plot_alpha(obj, env, name) % f_min, f_max 
+        function obj = plot_alpha(obj, env, name, varargin) % f_min, f_max 
 
             % figure()
             hold on
             
             % Résultats analytiques
-            alpha = obj.alpha(env);
+            
+            if nargin > 3
+                alpha = obj.alpha(env, varargin{1});
+            else
+                alpha = obj.alpha(env);
+            end
+
             f = env.w / (2 * pi);
             color = perso_random_color_rgb_triplet();
             plot(f, alpha, 'color', color, 'DisplayName', name);
@@ -430,7 +436,6 @@ classdef classelement
                 obj.Configuration.Alpha3D = data;
                 plot(data(:, 1), data(:, 2), 'LineStyle', '--', 'DisplayName', [name ' - Résultat FEM 3D'])
             end
-            perso_configure_alpha_figure(3000);
         end
 
         function obj = plot_surface_impedance(obj, env)

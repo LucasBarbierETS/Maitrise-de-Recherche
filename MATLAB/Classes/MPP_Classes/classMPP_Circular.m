@@ -147,7 +147,7 @@ classdef classMPP_Circular < classJCA_Rigid
             Porous1 = classJCA_Rigid(classJCA_Rigid.create_config(s, D2, phip1, torp1, sigp1, vlp1, tlp1));
 
             % création de l'environnement
-            env = create_environnement(23, 100800, 22, 1, 2000, 30);
+            env = create_environnement(23, 100800, 22, 1, 5000, 100);
             
             % Création des éléments
             E1 = classelement(classelement.create_config({MPP, cavity}, 'closed', s)); % fig.3
@@ -159,35 +159,27 @@ classdef classMPP_Circular < classJCA_Rigid
             [x_data1, y_data1] = perso_interpole_et_lisse(data1(:, 1), data1(:, 2), 1000, 0.05);
             [x_data2, y_data2] = perso_interpole_et_lisse(data2(:, 1), data2(:, 2), 1000, 0.05);
             
-            Tube = ImpedanceTube2D(ImpedanceTube2D.create_config({E1}));
-            Tube = Tube.launch_tube_measurement(env);
+            % Tube = ImpedanceTube2D(ImpedanceTube2D.create_config({E1}));
+            % Tube = Tube.launch_tube_measurement(env);
             
             % affichage des résultats
             figure()
             subplot(1, 2, 1)
             hold on
-            xlabel("Fréquence (Hz)")
-            ylabel("Coefficient d'Absorption")
-            ylim([0 1])
             subtitle("Atalla2007 - fig. 3 - p. 9")
-
             plot(env.w / (2*pi), E1.alpha(env), 'Color', 'b', 'LineWidth', 1, 'DisplayName', 'Modèle analytique');
-            Tube.plot_alpha(env, 'Modèle numérique');
+            % Tube.plot_alpha(env, 'Modèle numérique');
             plot(x_data1, y_data1, 'Color', 'g','LineWidth', 1, 'LineStyle', '--', 'DisplayName', 'Données de références');
-            legend()
+            perso_configure_alpha_figure(5000);
 
             subplot(1, 2, 2)
             hold on
-            xlabel("Fréquence (Hz)")
-            ylabel("Coefficient d'Absorption")
-            ylim([0 1])
             subtitle("Atalla2007 - fig. 4 - p. 10")
-
             plot(env.w / (2*pi), E2.alpha(env), 'Color', 'b', 'LineWidth', 1, 'DisplayName', 'modèle foam 1');
             % plot(env.w / (2*pi), E2_2.alpha(env), 'Color', 'r',
             % 'LineWidth', 1, 'DisplayName', 'modèle foam 2'); % la référence s'est trompée de mousse
             plot(x_data2, y_data2, 'Color', 'g','LineWidth', 1, 'LineStyle', '--','DisplayName', 'Données de références');
-            legend()
+            perso_configure_alpha_figure(5000);
         end
     end
 end

@@ -1,17 +1,22 @@
 function plot_cartouche_ETS(x, Contributions, Cartouches, env)
 
-    % Debog : Contributions des solutions à la cartouche ETS
     figure();
-    Contributions.contribution_MPPSBH_element_i(x, 1).plot_alpha(env, 'contribution MPPSBH 1')
-    Contributions.contribution_MPPSBH_element_i(x, 2).plot_alpha(env, 'contribution MPPSBH 2')
-    Contributions.contribution_MPPSBH_element_i(x, 3).plot_alpha(env, 'contribution MPPSBH 3')
-    Contributions.contribution_MPPSBH_element_i(x, 4).plot_alpha(env, 'contribution MPPSBH 4')
-    Contributions.contribution_MPPSBH_element_i(x, 5).plot_alpha(env, 'contribution MPPSBH 5')
-    Contributions.contribution_MPPSBH_element_i(x, 6).plot_alpha(env, 'contribution MPPSBH 6')
-    Contributions.contribution_MPPSBH_element_i(x, 7).plot_alpha(env, 'contribution MPPSBH 7')
-    Contributions.contribution_MPPSBH_element_i(x, 8).plot_alpha(env, 'contribution MPPSBH 8')
-    Contributions.contribution_ETS_yellow_cavities(x).plot_alpha(env, 'contribution HR')
-    Cartouches.cartouche_ETS(x).plot_alpha(env, 'Cartouche ETS');
+    subplot(1, 3, 1)
+    Contributions.contribution_MPPSBH_element_i(x, 1).plot_alpha(env, 'contribution element MPPSBH 1 - modèle linéaire')
+    Contributions.contribution_MPPSBH_element_HL_fp_i(x, 1).plot_alpha(env, 'contribution element MPPSBH 1 - modèle HL fp - dB rms')
+    Contributions.contribution_MPPSBH_element_HL_i(x, 1).plot_alpha(env, 'contribution element MPPSBH 1 - modèle HL - dB rms')
+    perso_configure_alpha_figure(2000);
+
+    subplot(1, 3, 2)
+    Contributions.contribution_ETS_yellow_cavity(x).plot_alpha(env, 'contribution HR - modèle linéaire')
+    Contributions.contribution_ETS_HL_yellow_cavity(x).plot_alpha(env, 'contribution HR - modèle HL - dB rms')
+    perso_configure_alpha_figure(2000);
+
+    subplot(1, 3, 3)
+    Cartouches.cartouche_ETS(x).plot_alpha(env, 'Cartouche ETS - modèle linéaire');
+    Cartouches.cartouche_ETS_HL_fp(x).plot_alpha(env, 'Cartouche ETS - modèle HL  - dB rms');
+    Cartouches.cartouche_ETS_HL(x).plot_alpha(env, 'Cartouche ETS - modèle HL - dB rms');
+    perso_configure_alpha_figure(2000);
 
     sgt = sgtitle('Comparaison des solutions MPPSBH avec et sans cavité au dessus');
     sgt.FontSize = 10;

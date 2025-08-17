@@ -135,8 +135,8 @@ uni = geom.create(['sol' num2str(elem_index) '_sblm' num2str(sblm_index), '_unio
 uni.selection('input').set(list_obj_names);
 uni.set('intbnd', false);
 
-geom.run;
-mphgeom(model)
+% geom.run;
+% mphgeom(model)
 
 %% Sélection des boites
 
