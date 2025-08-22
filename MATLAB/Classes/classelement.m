@@ -30,8 +30,15 @@ classdef classelement
             TM = perso_empty_TM(env.w);
 
             for i = 1:length(config.ListOfSubelements)
-                sblm = config.ListOfSubelements{i};
-                if isa(sblm, 'classsubelement_imported') || isa(sblm, 'classelementassembly')
+                
+                try
+                    sblm = config.ListOfSubelements{i};
+                catch ME
+                    warning(ME.identifier, "Erreur capturée: %s", ME.message);
+                    pause; % stoppe l’exécution jusqu’à une touche
+                end
+
+                if isa(sblm, 'classsubelement_imported') || isa(sblm, 'classelementassembly') || isa(sblm, 'classvolume')
                     
                     % exlications
                     % perso_ouvrir_lien_Obsidian('obsidian://open?vault=Maitrise%20REAR&file=Notes%20atomiques%2FNote%20Matlab%20-%20Imp%C3%A9dance%20de%20surface%20compos%C3%A9e')

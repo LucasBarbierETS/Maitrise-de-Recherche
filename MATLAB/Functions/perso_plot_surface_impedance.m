@@ -20,19 +20,20 @@ function perso_plot_surface_impedance(f, Zs, env)
     % end
 
     plot(f, ReZs, 'DisplayName', 'Partie réelle');
-    % legend();
+    yline(1, '--', 'HandleVisibility', 'off');
+    legend('Location', 'best');
 
     % Partie imaginaire
     subplot(2, 1, 2)
     hold on
     xlabel('Fréquence (Hz)')
     ylabel('Im(Zs/Z0)')
-    % ylim([-10 10])
+    ylim([-10 10])
     
     % for i = 1:length(f0)
     %     xline(f0(i), '--', 'HandleVisibility', 'off')
     % end
     plot(f, ImZs, 'DisplayName', 'Partie imaginaire');
-    
-    % legend();
+    yline(0, '--', 'HandleVisibility', 'off');
+    legend('Location', 'best');
 end

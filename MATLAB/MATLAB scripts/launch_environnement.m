@@ -25,7 +25,7 @@ hum = 50; % Humidité relative
 
 % Support fréquentiel
 fmin = 1;
-fmax = 2000;
+fmax = 5000;
 points = 500;
 
 % Niveau sonore

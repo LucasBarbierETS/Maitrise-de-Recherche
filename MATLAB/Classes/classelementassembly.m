@@ -340,6 +340,13 @@
             have_opened = 0;
             for i = 1:length(config.ListOfElements)
                 % Si l'élement est ouvert et que c'est le premier
+                try  
+                    end_status = config.ListOfElements{i}.Configuration.EndStatus;
+                catch ME
+                    warning(ME.identifier, "Erreur capturée: %s", ME.message);
+                    pause; % stoppe l’exécution jusqu’à une touche
+                end
+
                 if (strcmp(config.ListOfElements{i}.Configuration.EndStatus, 'opened'))
                     if (have_opened == 0)
                        have_opened = 1;

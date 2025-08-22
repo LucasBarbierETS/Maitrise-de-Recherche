@@ -23,9 +23,9 @@ folderName = 'C:\Users\lucas.barbier\Documents\Maitrise dossier secondaire\MATLA
 
 % % Objectif larges bande
 
-f_min_obj_lb = 200;
-f_max_obj_lb = 1500;
-g_obj_lb = @(env) (env.w / (2*pi) > f_min_obj_lb & env.w / (2*pi) < f_max_obj_lb);
+f_min_lb = 200;
+f_max_lb = 1500;
+g_obj_lb = @(env) (env.w / (2*pi) > f_min_lb & env.w / (2*pi) < f_max_lb);
 
 % Objectifs tonaux
 % On définit une largeur de bande associée à la variation du régime moteur de 3000 à 3500 RPM
@@ -113,13 +113,13 @@ g_obj_harm =  @(env) g_obj_h1(env) + g_obj_h2(env) + g_obj_h3(env) + g_obj_h4(en
 % % On rajoute des barres pour représenter les bandes d'optimisation
 % patch([f_min_h1, f_min_h1, f_max_h1, f_max_h1], [0, 140, 140, 0], 'red', ...
 %       'FaceAlpha', 0.2, 'EdgeColor','none', 'DisplayName', 'Bande d''optimisation 1');
-patch([f_min_h2, f_min_h2, f_max_h2, f_max_h2], [0, 140, 140, 0], 'red', ...
-      'FaceAlpha', 0.2, 'EdgeColor','none', 'DisplayName', 'Bande d''optimisation 2');
+% patch([f_min_h2, f_min_h2, f_max_h2, f_max_h2], [0, 140, 140, 0], 'red', ...
+%       'FaceAlpha', 0.2, 'EdgeColor','none', 'DisplayName', 'Bande d''optimisation 2');
 % patch([f_min_h3, f_min_h3, f_max_h3, f_max_h3], [0, 140, 140, 0], 'red', ...
 %       'FaceAlpha', 0.2, 'EdgeColor','none', 'DisplayName', 'Bande d''optimisation 3');
 % patch([f_min_h4, f_min_h4, f_max_h4, f_max_h4], [0, 140, 140, 0], 'red', ...
 %       'FaceAlpha', 0.2, 'EdgeColor','none', 'DisplayName', 'Bande d''optimisation 4');
-% patch([f_min_obj3, f_min_obj3, f_max_obj3, f_max_obj3], [0, 140, 140, 0], 'green', ...
+% patch([f_min_lb, f_min_lb, f_max_obj3, f_max_obj3], [0, 140, 140, 0], 'green', ...
 %       'FaceAlpha', 0.2, 'EdgeColor','none', 'DisplayName', 'Bande d''optimisation élargie');
 
 dB = 121;
@@ -178,22 +178,24 @@ NS = 8; % Nombre de MPPSBH optimisés
 NV = 3; % Nombre de variables pour chaque solution (rayon des perforations, nombre de perfs en largeur, espacement des perfs en largeur)
 N = 5; % Nombre de plaques optimisées indépendantes pour chaque solution
 
-NP = 500; % Nombre de points de départ
+% NP = 500; % Nombre de points de départ
 % NP = 100;
 % NP = 50;
-% NP = 10;
+NP = 10;
 
 ETS_cavities_total_thickness = total_thickness_ETS - top_plate_thickness - air_gap_thickness - N * plates_thickness;
 ETS_cavities_thickness = round((total_thickness_ETS - top_plate_thickness - air_gap_thickness - N * plates_thickness) / (N+1), 4);
 
 % Récupération des parties du vecteur d'optimisation
-x_TP1 = @(x) x(:, 1 : NTP); % Plaque couvrante ETS
-x_TP2 = @(x) x(:, NTP+1 : 2*NTP); % Plaque couvrante Poly
-x_ETS = @(x) permute(reshape(x(:, 2*NTP+1 : 2*NTP + N*NV*NS), [], NS, N, NV), [2, 3, 4, 1]); % Solutions ETS
-x_SPLX = @(x) x(:, 2*NTP + N*NV*NS + 1 : end); % Epaisseur des cavités ETS
+x_TP_ETS = @(x) x(:, 1 : NTP); % Plaque couvrante ETS
+x_TP_Poly = @(x) x(:, NTP+1 : 2*NTP); % Plaque couvrante Poly
+x_TP_ETS_yc = @(x) x(:, 2*NTP+1 : 3*NTP); % Plaque couvrante ETS cavités jaunes
+x_TP_Poly_yc = @(x) x(:, 3*NTP+1 : 4*NTP); % Plaque couvrante Poly cavités jaunes
+x_ETS = @(x) permute(reshape(x(:, 4*NTP+1 : 4*NTP + N*NV*NS), [], NS, N, NV), [2, 3, 4, 1]); % Solutions ETS
+x_SPLX = @(x) x(:, 4*NTP + N*NV*NS + 1 : end); % Epaisseur des cavités ETS
 
-% x_TP1 = @(x) x(1 : NTP);
-% x_TP2 = @(x) x(NTP+1 : 2*NTP);
+% x_TP_ETS = @(x) x(1 : NTP);
+% x_TP_Poly = @(x) x(NTP+1 : 2*NTP);
 % x_ETS = @(x) reshape(x(2*NTP+1 : 2*NTP + N*NV*NS), NS, N, NV);
 % x_SPLX = @(x) x(2*NTP + N*NV*NS + 1 : end);
 
@@ -202,8 +204,11 @@ x_SPLX = @(x) x(:, 2*NTP + N*NV*NS + 1 : end); % Epaisseur des cavités ETS
 % Plaque couvrante
 tp_phi_min = 0.01;
 tp_r_min = 1;
-tp_whn_min = 5;
-tp_dhn_min = 10;
+tp_whn_min = 2;
+tp_dhn_min = 4;
+tp_whn_yc_min = 1;
+tp_dhn_yc_min = 4;
+
 
 % Solution ETS
 dw_min = 3 * radius_mm(1)*1e-3;
@@ -212,8 +217,9 @@ r_min = 1;
 
 theta_min = 1;
 
-lb_TP = repmat([tp_r_min, tp_whn_min, tp_dhn_min], 1, 2);
-lb = horzcat(lb_TP, repmat(r_min, 1, N * NS), repmat(dw_min, 1, N * NS), ones(1, N * NS), repmat(theta_min, 1, N));
+lb_TP = repmat([tp_r_min, tp_whn_min, tp_dhn_min], 1, 2); % Optimisation de 4 plaques
+lb_TP_yc = repmat([tp_r_min, tp_whn_yc_min, tp_dhn_yc_min], 1, 2); % Optimisation de 4 plaques
+lb = horzcat(lb_TP, lb_TP_yc, repmat(r_min, 1, N * NS), repmat(dw_min, 1, N * NS), ones(1, N * NS), repmat(theta_min, 1, N));
 
 %% Valeurs maximales en fonction du type de variable
 
@@ -222,6 +228,8 @@ tp_phi_max = 0.3;
 tp_r_max = 12;
 tp_whn_max = 20;
 tp_dhn_max = 40;
+tp_whn_yc_max = 10;
+tp_dhn_yc_max = 40;
 
 % Solution ETS
 dw_max = 9 * radius_mm(1)*1e-3;
@@ -230,8 +238,9 @@ r_max = 5;
 
 theta_max = 5;
 
-ub_TP = repmat([tp_r_max, tp_whn_max, tp_dhn_max], 1, 2);
-ub = horzcat(ub_TP, repmat(r_max, 1, N * NS), repmat(dw_max, 1, N * NS), repmat(pw_max, 1, N * NS), repmat(theta_max, 1, N));
+ub_TP = repmat([tp_r_max, tp_whn_max, tp_dhn_max], 1, 2); 
+ub_TP_yc = repmat([tp_r_max, tp_whn_yc_max, tp_dhn_yc_max], 1, 2); 
+ub = horzcat(ub_TP, ub_TP_yc, repmat(r_max, 1, N * NS), repmat(dw_max, 1, N * NS), repmat(pw_max, 1, N * NS), repmat(theta_max, 1, N));
 
 %% Valeurs initiales en fonction du types de variable
 
@@ -239,6 +248,8 @@ ub = horzcat(ub_TP, repmat(r_max, 1, N * NS), repmat(dw_max, 1, N * NS), repmat(
 tp_r_init = randi([tp_r_min, tp_r_max], NP, 2);
 tp_whn_init = randi([tp_whn_min, tp_whn_max], NP, 2);
 tp_dhn_init = randi([tp_dhn_min, tp_dhn_max], NP, 2);
+tp_whn_yc_init = randi([tp_whn_yc_min, tp_whn_yc_max], NP, 2);
+tp_dhn_yc_init = randi([tp_dhn_yc_min, tp_dhn_yc_max], NP, 2);
 
 % Rayon des perforations
 r_init = randi([r_min, r_max], NP, N * NS);
@@ -254,10 +265,12 @@ pw_init = randi([pw_min, pw_max], NP, N * NS);
 % Paramètres de répartition de l'épaisseur
 theta_init = theta_min + (theta_max - theta_min) * rand(NP, N);
 
-x0_TP1 = horzcat(tp_r_init(:, 1), tp_whn_init(:, 1), tp_dhn_init(:, 1));
-x0_TP2 = horzcat(tp_r_init(:, 2), tp_whn_init(:, 2), tp_dhn_init(:, 2));
-x0 = horzcat(x0_TP1, x0_TP2, r_init, dw_init, pw_init, theta_init);
-% x0 = horzcat(x0_TP1, x0_TP2, dw_init_sorted, pw_init_sorted);
+x0_TP_ETS = horzcat(tp_r_init(:, 1), tp_whn_init(:, 1), tp_dhn_init(:, 1));
+x0_TP_Poly = horzcat(tp_r_init(:, 2), tp_whn_init(:, 2), tp_dhn_init(:, 2));
+x0_TP_yc_ETS = horzcat(tp_r_init(:, 1), tp_whn_yc_init(:, 1), tp_dhn_yc_init(:, 1));
+x0_TP_yc_Poly = horzcat(tp_r_init(:, 2), tp_whn_yc_init(:, 2), tp_dhn_yc_init(:, 2));
+x0 = horzcat(x0_TP_ETS, x0_TP_Poly, x0_TP_yc_ETS, x0_TP_yc_Poly, r_init, dw_init, pw_init, theta_init);
+% x0 = horzcat(x0_TP_ETS, x0_TP_Poly, dw_init_sorted, pw_init_sorted);
 
 % % Debog : Largeur des fentes crées
 % sw = 2 * radius_mm(r_init)*1e-3 + dw_init .* (pw_init - 1);
@@ -269,7 +282,7 @@ x0 = horzcat(x0_TP1, x0_TP2, r_init, dw_init, pw_init, theta_init);
 
 %% Contrainte sur les variables entières
 
-intcon = find(horzcat(ones(1, 2*NTP), ones(1, N*NS), zeros(1, N*NS), ones(1, N*NS), zeros(1, N)));
+intcon = find(horzcat(ones(1, 4*NTP), ones(1, N*NS), zeros(1, N*NS), ones(1, N*NS), zeros(1, N)));
 
 %% Importation de l'élement expérimental
 
@@ -401,29 +414,41 @@ Objets.cell_of_MPPSBH_HL_fp_elements = @(x) arrayfun(@(i) ...
     Objets.MPPSBH_HL_fp_element_i(x, i), 1:NS ,'UniformOutput', false);
 
 % Plaque supérieure (optimisée)
-top_plate = @(x_TP) classMPP_Circular(classMPP_Circular.create_explicit_rectangular_plate_config( ...
-top_plate_thickness, radius_mm(x_TP(1))*1e-3, total_width, total_depth, x_TP(2), x_TP(3)));
+top_plate_ETS = @(x_TP_ETS) classMPP_Circular(classMPP_Circular.create_explicit_rectangular_plate_config( ...
+top_plate_thickness, radius_mm(x_TP_ETS(1))*1e-3, ETS_width, ETS_depth * 4, x_TP_ETS(2), x_TP_ETS(3)));
 
-top_plate_HL = @(x_TP) classMPP_Circular_HL(classMPP_Circular.create_explicit_rectangular_plate_config( ...
-top_plate_thickness, radius_mm(x_TP(1))*1e-3, total_width, total_depth, x_TP(2), x_TP(3)));
+top_plate_ETS_contrib = @(x_TP_ETS) classMPP_Circular(classMPP_Circular.create_config( ...
+    ETS_input_surface, top_plate_thickness, radius_mm(x_TP_ETS(1))*1e-3, top_plate_ETS(x_TP_ETS).Configuration.Porosity, ETS_cavities_width, ETS_cavities_depth));
 
-top_plate_ETS = @(x_TP) classMPP_Circular(classMPP_Circular.create_config( ...
-    ETS_input_surface, top_plate_thickness, radius_mm(x_TP(1))*1e-3, top_plate(x_TP).Configuration.Porosity, ETS_cavities_width, ETS_cavities_depth));
+top_plate_ETS_HL = @(x_TP_ETS) classMPP_Circular_HL(classMPP_Circular.create_explicit_rectangular_plate_config( ...
+top_plate_thickness, radius_mm(x_TP_ETS(1))*1e-3, ETS_width, ETS_depth * 4, x_TP_ETS(2), x_TP_ETS(3)));
 
-top_plate_ETS_HL = @(x_TP) classMPP_Circular_HL(classMPP_Circular.create_config( ...
-    ETS_input_surface, top_plate_thickness, radius_mm(x_TP(1))*1e-3, top_plate_HL(x_TP).Configuration.Porosity, ETS_cavities_width, ETS_cavities_depth));
+top_plate_ETS_HL_contrib = @(x_TP_ETS) classMPP_Circular_HL(classMPP_Circular.create_config( ...
+    ETS_input_surface, top_plate_thickness, radius_mm(x_TP_ETS(1))*1e-3, top_plate_ETS_HL(x_TP_ETS).Configuration.Porosity, ETS_cavities_width, ETS_cavities_depth));
 
-top_plate_Poly = @(x_TP) classMPP_Circular(classMPP_Circular.create_config( ...
-    Poly_input_surface, top_plate_thickness, radius_mm(x_TP(1))*1e-3, top_plate(x_TP).Configuration.Porosity, Poly_cavities_width, Poly_cavities_depth));
+top_plate_Poly = @(x_TP_Poly) classMPP_Circular(classMPP_Circular.create_explicit_rectangular_plate_config( ...
+top_plate_thickness, radius_mm(x_TP_Poly(1))*1e-3, Poly_width, Poly_depth * 4, x_TP_Poly(2), x_TP_Poly(3)));
 
-top_plate_Poly_HL = @(x_TP) classMPP_Circular_HL(classMPP_Circular.create_config( ...
-    Poly_input_surface, top_plate_thickness, radius_mm(x_TP(1))*1e-3, top_plate_HL(x_TP).Configuration.Porosity, Poly_cavities_width, Poly_cavities_depth));
+top_plate_Poly_contrib = @(x_TP_Poly) classMPP_Circular(classMPP_Circular.create_config( ...
+    Poly_input_surface, top_plate_thickness, radius_mm(x_TP_Poly(1))*1e-3, top_plate_Poly(x_TP_Poly).Configuration.Porosity, Poly_cavities_width, Poly_cavities_depth));
 
-top_plate_yc = @(x_TP) classMPP_Circular(classMPP_Circular.create_config( ...
-    yc_input_surface, top_plate_thickness, radius_mm(x_TP(1))*1e-3, top_plate(x_TP).Configuration.Porosity, yellow_cavities_width, yellow_cavities_depth));
+top_plate_Poly_HL = @(x_TP_Poly) classMPP_Circular_HL(classMPP_Circular.create_explicit_rectangular_plate_config( ...
+top_plate_thickness, radius_mm(x_TP_Poly(1))*1e-3, Poly_width, Poly_depth * 4, x_TP_Poly(2), x_TP_Poly(3)));
 
-top_plate_yc_HL = @(x_TP) classMPP_Circular_HL(classMPP_Circular.create_config( ...
-    yc_input_surface, top_plate_thickness, radius_mm(x_TP(1))*1e-3, top_plate_HL(x_TP).Configuration.Porosity, yellow_cavities_width, yellow_cavities_depth));
+top_plate_Poly_HL_contrib = @(x_TP_Poly) classMPP_Circular_HL(classMPP_Circular.create_config( ...
+    Poly_input_surface, top_plate_thickness, radius_mm(x_TP_Poly(1))*1e-3, top_plate_Poly_HL(x_TP_Poly).Configuration.Porosity, Poly_cavities_width, Poly_cavities_depth));
+
+top_plate_yc = @(x_TP_yc) classMPP_Circular(classMPP_Circular.create_explicit_rectangular_plate_config( ...
+top_plate_thickness, radius_mm(x_TP_yc(1))*1e-3, yellow_cavities_width, yellow_cavities_depth * 4, x_TP_yc(2), x_TP_yc(3)));
+
+top_plate_yc_contrib = @(x_TP_yc) classMPP_Circular(classMPP_Circular.create_config( ...
+    yc_input_surface, top_plate_thickness, radius_mm(x_TP_yc(1))*1e-3, top_plate_yc(x_TP_yc).Configuration.Porosity, yellow_cavities_width, yellow_cavities_depth));
+
+top_plate_yc_HL = @(x_TP_yc) classMPP_Circular_HL(classMPP_Circular.create_explicit_rectangular_plate_config( ...
+top_plate_thickness, radius_mm(x_TP_yc(1))*1e-3, yellow_cavities_width, yellow_cavities_depth * 4, x_TP_yc(2), x_TP_yc(3)));
+
+top_plate_yc_HL_contrib = @(x_TP_yc) classMPP_Circular_HL(classMPP_Circular.create_config( ...
+    yc_input_surface, top_plate_thickness, radius_mm(x_TP_yc(1))*1e-3, top_plate_yc_HL(x_TP_yc).Configuration.Porosity, yellow_cavities_width, yellow_cavities_depth));
 
 % Distance Plaque - Solutions
 air_gap = classcavity(classcavity.create_config(air_gap_thickness, total_width, total_depth));
@@ -449,7 +474,7 @@ yellow_cavity_element_Poly = classelement(classelement.create_config({yellow_cav
 Contributions = struct();
 
 Contributions.contribution_MPPSBH_element_i = @(x, i) classelement(classelement.create_config( ...
-    {top_plate_ETS(x_TP1(x)), ...
+    {top_plate_ETS(x_TP_ETS(x)), ...
      air_gap_ETS, ...
      classcavity(classcavity.create_config(ETS_cavities_thickness, ETS_cavities_width, ETS_cavities_depth)), ...
      Objets.MPPSBH_i(x_ETS(x), x_SPLX(x), i)}, 'closed', ETS_input_surface));
@@ -460,13 +485,13 @@ Contributions.contribution_MPPSBH_element_i = @(x, i) classelement(classelement.
 % close();
 
 Contributions.contribution_MPPSBH_element_HL_i = @(x, i) classelement(classelement.create_config( ...
-    {top_plate_ETS_HL(x_TP1(x)), ...
+    {top_plate_ETS_HL(x_TP_ETS(x)), ...
      air_gap_ETS, ...
      classcavity(classcavity.create_config(ETS_cavities_thickness, ETS_cavities_width, ETS_cavities_depth)), ...
      Objets.MPPSBH_HL_i(x_ETS(x), x_SPLX(x), i)}, 'closed', ETS_input_surface));
 
 Contributions.contribution_MPPSBH_element_HL_fp_i = @(x, i) classelement(classelement.create_config( ...
-    {top_plate_ETS_HL(x_TP1(x)), ...
+    {top_plate_ETS_HL(x_TP_ETS(x)), ...
      air_gap_ETS, ...
      classcavity(classcavity.create_config(ETS_cavities_thickness, ETS_cavities_width, ETS_cavities_depth)), ...
      Objets.MPPSBH_HL_fp_i(x_ETS(x), x_SPLX(x), i)}, 'closed', ETS_input_surface));
@@ -481,22 +506,22 @@ Contributions.contribution_cell_of_MPPSBH_HL_fp_element = @(x) arrayfun(@(i) ...
     Contributions.contribution_MPPSBH_element_HL_fp_i(x, i), 1:NS ,'UniformOutput', false);
 
 Contributions.contribution_Poly_element = @(x) classelement(classelement.create_config( ...
-    {top_plate_Poly(x_TP2(x)), ...
+    {top_plate_Poly(x_TP_Poly(x)), ...
      air_gap_Poly, ...
      imported_Poly_subelement}, 'closed', Poly_input_surface));
 
 Contributions.contribution_Poly_HL_element = @(x) classelement(classelement.create_config( ...
-    {top_plate_Poly_HL(x_TP2(x)), ...
+    {top_plate_Poly_HL(x_TP_Poly(x)), ...
      air_gap_Poly, ...
      imported_Poly_subelement}, 'closed', Poly_input_surface));
 
 Contributions.contribution_Poly_numerical_element = @(x) classelement(classelement.create_config( ...
-    {top_plate_Poly(x_TP2(x)), ...
+    {top_plate_Poly(x_TP_Poly(x)), ...
      air_gap_Poly, ...
      numerical_Poly_subelement}, 'closed', Poly_input_surface));
 
 Contributions.contribution_Poly_HL_numerical_element = @(x) classelement(classelement.create_config( ...
-    {top_plate_Poly_HL(x_TP2(x)), ...
+    {top_plate_Poly_HL(x_TP_Poly(x)), ...
      air_gap_Poly, ...
      numerical_Poly_subelement}, 'closed', Poly_input_surface));
 
@@ -507,12 +532,12 @@ Contributions.cell_of_Poly_HL_element_contribution = @(x) arrayfun(@(i) ...
     Contributions.contribution_Poly_HL_element(x), 1:NS ,'UniformOutput', false);
 
 Contributions.contribution_ETS_yellow_cavity = @(x) classelement(classelement.create_config( ...
-    {top_plate_yc(x_TP1(x)), ...
+    {top_plate_yc(x_TP_ETS(x)), ...
      air_gap_yc, ...
      yellow_cavity_ETS}, 'closed', yc_input_surface));
 
 Contributions.contribution_ETS_HL_yellow_cavity = @(x) classelement(classelement.create_config( ...
-    {top_plate_yc_HL(x_TP1(x)), ...
+    {top_plate_yc_HL(x_TP_ETS(x)), ...
      air_gap_yc, ...
      yellow_cavity_ETS}, 'closed', yc_input_surface));
 
@@ -523,12 +548,12 @@ Contributions.cell_of_ETS_HL_yellow_cavity_contributions = @(x) arrayfun(@(i) ..
     Contributions.contribution_ETS_yellow_cavity(x), 1:4 ,'UniformOutput', false);
 
 Contributions.contribution_Poly_yellow_cavity = @(x) classelement(classelement.create_config( ...
-    {top_plate_yc(x_TP2(x)), ...
+    {top_plate_yc(x_TP_Poly(x)), ...
      air_gap_yc, ...
      yellow_cavity_Poly}, 'closed', yc_input_surface));
 
 Contributions.contribution_Poly_HL_yellow_cavity = @(x) classelement(classelement.create_config( ...
-    {top_plate_yc_HL(x_TP2(x)), ...
+    {top_plate_yc_HL(x_TP_Poly(x)), ...
      air_gap_yc, ...
      yellow_cavity_Poly}, 'closed', yc_input_surface));
 
@@ -578,16 +603,16 @@ Modules.module_Poly = @(x) classelementassembly(classelementassembly.create_conf
 Cartouches = struct();
 
 Cartouches.cartouche_ETS = @(x) classelement(classelement.create_config( ...
-    {top_plate(x_TP1(x)), air_gap, Modules.module_ETS(x)}, 'closed', total_input_surface));
+    {top_plate(x_TP_ETS(x)), air_gap, Modules.module_ETS(x)}, 'closed', total_input_surface));
 
 Cartouches.cartouche_ETS_HL = @(x) classelement(classelement.create_config( ...
-    {top_plate_HL(x_TP1(x)), air_gap, Modules.module_ETS_HL(x)}, 'closed', total_input_surface));
+    {top_plate_HL(x_TP_ETS(x)), air_gap, Modules.module_ETS_HL(x)}, 'closed', total_input_surface));
 
 Cartouches.cartouche_ETS_HL_fp = @(x) classelement(classelement.create_config( ...
-    {top_plate_HL(x_TP1(x)), air_gap, Modules.module_ETS_HL_fp(x)}, 'closed', total_input_surface));
+    {top_plate_HL(x_TP_ETS(x)), air_gap, Modules.module_ETS_HL_fp(x)}, 'closed', total_input_surface));
 
 % Cartouches.cartouche_ETS_sans_HR = @(x) classelement(classelement.create_config( ...
-    % {top_plate(x_TP1(x)), air_gap, Modules.module_ETS_sans_HR(x)}, 'closed', total_input_surface));
+    % {top_plate(x_TP_ETS(x)), air_gap, Modules.module_ETS_sans_HR(x)}, 'closed', total_input_surface));
 
 Cartouches.cartouche_ETS_contributions = @(x) classelementassembly(classelementassembly.create_config( ...
     [Contributions.contribution_cell_of_MPPSBH_element(x), Contributions.cell_of_ETS_yellow_cavity_contributions(x)]));
@@ -595,26 +620,28 @@ Cartouches.cartouche_ETS_contributions = @(x) classelementassembly(classelementa
 Cartouches.cartouche_ETS_HL_contributions = @(x) classelementassembly(classelementassembly.create_config( ...
     [Contributions.contribution_cell_of_MPPSBH_HL_element(x), Contributions.cell_of_ETS_HL_yellow_cavity_contributions(x)]));
 
-Cartouches.cartouche_ETS_HL_fp_contributions = @(x) classelementassembly(classelementassembly.create_config( ...
-    [Contributions.contribution_cell_of_MPPSBH_HL_fp_element(x), Contributions.cell_of_ETS_HL_yellow_cavity_contributions(x)]));
+Cartouches.cartouche_ETS_HL_fp_contributions = @(x) classelement(classelement.create_config( ...
+    {classelementassembly(classelementassembly.create_config( ...
+    [Contributions.contribution_cell_of_MPPSBH_HL_fp_element(x), Contributions.cell_of_ETS_HL_yellow_cavity_contributions(x)]))}, 'closed', total_input_surface));
 
 % Cartouches.cartouche_ETS_sans_HR_contributions = @(x) classelementassembly(classelementassembly.create_config( ...
 %     Contributions.contribution_cell_of_MPPSBH_element(x)));
 
 Cartouches.cartouche_Poly = @(x) classelement(classelement.create_config( ...
-    {top_plate(x_TP2(x)), air_gap, Modules.module_Poly(x)}, 'closed', total_input_surface));
+    {top_plate(x_TP_Poly(x)), air_gap, Modules.module_Poly(x)}, 'closed', total_input_surface));
 
 Cartouches.cartouche_Poly_HL = @(x) classelement(classelement.create_config( ...
-    {top_plate_HL(x_TP2(x)), air_gap, Modules.module_Poly(x)}, 'closed', total_input_surface));
+    {top_plate_HL(x_TP_Poly(x)), air_gap, Modules.module_Poly(x)}, 'closed', total_input_surface));
 
 % Cartouches.cartouche_Poly_sans_HR = @(x) classelement(classelement.create_config( ...
-%     {top_plate(x_TP2(x)), air_gap, Modules.module_Poly_sans_HR(x)}, 'closed', total_input_surface));
+%     {top_plate(x_TP_Poly(x)), air_gap, Modules.module_Poly_sans_HR(x)}, 'closed', total_input_surface));
 
 Cartouches.cartouche_Poly_contributions = @(x) classelementassembly(classelementassembly.create_config( ...
     [Contributions.cell_of_Poly_element_contribution(x), Contributions.cell_of_Poly_yellow_cavity_contributions(x)]));
 
-Cartouches.cartouche_Poly_HL_contributions = @(x) classelementassembly(classelementassembly.create_config( ...
-    [Contributions.cell_of_Poly_HL_element_contribution(x), Contributions.cell_of_Poly_HL_yellow_cavity_contributions(x)]));
+Cartouches.cartouche_Poly_HL_contributions = @(x) classelement(classelement.create_config( ...
+    {classelementassembly(classelementassembly.create_config( ...
+    [Contributions.cell_of_Poly_HL_element_contribution(x), Contributions.cell_of_Poly_HL_yellow_cavity_contributions(x)]))}, 'closed', total_input_surface));
 
 % Cartouches.cartouche_Poly_sans_HR_contributions = @(x) classelementassembly(classelementassembly.create_config( ...
 %     Contributions.cell_of_Poly_element_contribution(x)));
@@ -625,10 +652,17 @@ Cartouches.cartouche_globale_HL = @(x) classelementassembly(classelementassembly
 
 Cartouches.cartouche_globale_HL_fp = @(x) classelementassembly(classelementassembly.create_config({Cartouches.cartouche_ETS_HL_fp(x), Cartouches.cartouche_Poly_HL(x)}));
 
+Cartouches.cartouche_globale_contributions = @(x) classelementassembly(classelementassembly.create_config({Cartouches.cartouche_ETS_contributions(x), Cartouches.cartouche_Poly_contributions(x)}));
+
+Cartouches.cartouche_globale_HL_contributions = @(x) classelementassembly(classelementassembly.create_config({Cartouches.cartouche_ETS_HL_contributions(x), Cartouches.cartouche_Poly_HL_contributions(x)}));
+
+Cartouches.cartouche_globale_HL_fp_contributions = @(x) classelementassembly(classelementassembly.create_config({Cartouches.cartouche_ETS_HL_fp_contributions(x), Cartouches.cartouche_Poly_HL_contributions(x)}));
+
+
 %% Fonction de définitions de la matrice de contraintes non linéaires  
 
 % Définition du handle avec paramètres capturés
-handle_nonlconf = @(x) perso_nonlconf(x_ETS(x), N, NS, top_plate(x_TP1(x)), top_plate(x_TP2(x)), ...
+handle_nonlconf = @(x) perso_nonlconf(x_ETS(x), N, NS, top_plate_ETS(x_TP_ETS(x)), top_plate_Poly(x_TP_Poly(x)), top_plate_yc(x_TP_ETS_yc(x)), top_plate_yc(x_TP_Poly_yc(x)), ...
     ETS_cavities_width, ETS_cavities_depth, tp_phi_min, tp_phi_max, radius_mm);
 
 % % Debog : Test des contraintes non-linéaires sur les configurations initiales
@@ -650,10 +684,11 @@ handle_nonlconf = @(x) perso_nonlconf(x_ETS(x), N, NS, top_plate(x_TP1(x)), top_
 
 % Définition de la cartouche sur laquelle l'optimisation à lieu
 % handle_alpha = @(x, env, g_obj) subsref(Cartouches.cartouche_Poly(x).alpha(env), substruct('()', {g_obj(env)}));
-handle_alpha = @(x, env, g_obj) subsref(Cartouches.cartouche_Poly_HL(x).alpha(env), substruct('()', {g_obj(env)}));
+% handle_alpha = @(x, env, g_obj) subsref(Cartouches.cartouche_Poly_HL(x).alpha(env), substruct('()', {g_obj(env)}));
 % handle_alpha = @(x, env, g_obj) subsref(Cartouches.cartouche_globale(x).alpha(env), substruct('()', {g_obj(env)}));
 % handle_alpha = @(x, env, g_obj) subsref(Cartouches.cartouche_globale_HL(x).alpha(env), substruct('()', {g_obj(env)}));
 % handle_alpha = @(x, env, g_obj) subsref(Cartouches.cartouche_globale_HL_fp(x).alpha(env), substruct('()', {g_obj(env)}));
+handle_alpha = @(x, env, g_obj) subsref(Cartouches.cartouche_globale_HL_fp_contributions(x).alpha(env), substruct('()', {g_obj(env)}));
 
 handle_cost_function = @(x, env, g_obj) sum(1 - handle_alpha(x, env, g_obj)).^2;
 handle_objective = @(x, env, g_obj_cell) arrayfun(@(i) handle_cost_function(x, env, g_obj_cell{i}), 1:length(g_obj_cell) ,'UniformOutput', false);
@@ -662,10 +697,10 @@ handle_objective = @(x, env, g_obj_cell) arrayfun(@(i) handle_cost_function(x, e
 
 % objective = @(x) cell2mat(handle_objective(x, handle_env(dB), {g_obj_h1})); % Objectif Cartouche Poly
 % objective = @(x) cell2mat(handle_objective(x, handle_env(dB), {g_obj_h2})); % Objectif Cartouche Poly
-objective = @(x) cell2mat(handle_objective(x, handle_env(dB), {g_obj_h3, g_obj_h4})); % Objectif Cartouche Poly
+% objective = @(x) cell2mat(handle_objective(x, handle_env(dB), {g_obj_h3, g_obj_h4})); % Objectif Cartouche Poly
 % objective = @(x) cell2mat(handle_objective(x, handle_env(dB), {g_obj_h2, g_obj_lb})); % Objectif Cartouche Poly
 
-% objective = @(x) cell2mat(handle_objective(x, handle_env(dB), {g_obj_lb})); % Objectif Cartouche globale
+objective = @(x) cell2mat(handle_objective(x, handle_env(dB), {g_obj_h1, g_obj_h2, g_obj_h3, g_obj_h4, g_obj_lb})); % Objectif Cartouche globale
 
 % objective(x0(1, :))
 
@@ -722,10 +757,11 @@ timeGa = toc;
 %% Conditionnement du vecteur d'optimisation
 
 % xopti_to_cell_array_of_alpha = @(x, env) arrayfun(@(i) Cartouches.cartouche_Poly(x(i, :)).alpha(env), 1:size(x, 1), 'UniformOutput', false);
-xopti_to_cell_array_of_alpha = @(x, env) arrayfun(@(i) Cartouches.cartouche_Poly_HL(x(i, :)).alpha(env), 1:size(x, 1), 'UniformOutput', false);
+% xopti_to_cell_array_of_alpha = @(x, env) arrayfun(@(i) Cartouches.cartouche_Poly_HL(x(i, :)).alpha(env), 1:size(x, 1), 'UniformOutput', false);
 % xopti_to_cell_array_of_alpha = @(x, env) arrayfun(@(i) Cartouches.cartouche_globale(x(i, :)).alpha(env), 1:size(x, 1), 'UniformOutput', false);
 % xopti_to_cell_array_of_alpha = @(x, env) arrayfun(@(i) Cartouches.cartouche_globale_HL(x(i, :)).alpha(env), 1:size(x, 1), 'UniformOutput', false);
 % xopti_to_cell_array_of_alpha = @(x, env) arrayfun(@(i) Cartouches.cartouche_globale_HL_fp(x(i, :)).alpha(env), 1:size(x, 1), 'UniformOutput', false);
+% xopti_to_cell_array_of_alpha = @(x, env) arrayfun(@(i) Cartouches.cartouche_globale_HL_fp_contributions(x(i, :)).alpha(env), 1:size(x, 1), 'UniformOutput', false);
 
 cell_of_MPPSBH_assembly_alpha_to_mean_alpha = @(alpha_cell_array, gabarit) arrayfun(@(i) mean(alpha_cell_array{i}(gabarit)), 1:size(alpha_cell_array, 2), 'UniformOutput', false);
 
@@ -738,16 +774,16 @@ filtered_alpha = xopti_to_cell_array_of_alpha(sorted_xopti, handle_env(dB));
 perso_interactive_multi_plot(handle_env(dB).w/(2*pi), filtered_alpha, 2000);
 
 % % On rajoute des barres pour représenter les bandes d'optimisation
-% patch([f_min_h1, f_min_h1, f_max_h1, f_max_h1], [0, 1, 1, 0], 'red', ...
-%       'FaceAlpha', 0.2, 'EdgeColor','none', 'DisplayName', 'Bande d''optimisation 1');
-% patch([f_min_h2, f_min_h2, f_max_h2, f_max_h2], [0, 1, 1, 0], 'red', ...
-%       'FaceAlpha', 0.2, 'EdgeColor','none', 'DisplayName', 'Bande d''optimisation 2');
+patch([f_min_h1, f_min_h1, f_max_h1, f_max_h1], [0, 1, 1, 0], 'red', ...
+      'FaceAlpha', 0.2, 'EdgeColor','none', 'DisplayName', 'Bande d''optimisation 1');
+patch([f_min_h2, f_min_h2, f_max_h2, f_max_h2], [0, 1, 1, 0], 'red', ...
+      'FaceAlpha', 0.2, 'EdgeColor','none', 'DisplayName', 'Bande d''optimisation 2');
 patch([f_min_h3, f_min_h3, f_max_h3, f_max_h3], [0, 1, 1, 0], 'red', ...
       'FaceAlpha', 0.2, 'EdgeColor','none', 'DisplayName', 'Bande d''optimisation 3');
 patch([f_min_h4, f_min_h4, f_max_h4, f_max_h4], [0, 1, 1, 0], 'red', ...
       'FaceAlpha', 0.2, 'EdgeColor','none', 'DisplayName', 'Bande d''optimisation 4');
-% patch([f_min_obj3, f_min_obj3, f_max_obj3, f_max_obj3], [0, 1, 1, 0], 'green', ...
-%       'FaceAlpha', 0.2, 'EdgeColor','none', 'DisplayName', 'Bande d''optimisation élargie');
+patch([f_min_lb, f_min_lb, f_max_lb, f_max_lb], [0, 1, 1, 0], 'green', ...
+      'FaceAlpha', 0.2, 'EdgeColor','none', 'DisplayName', 'Bande d''optimisation élargie');
 
 %% Résultats et sélection de la solution 
 
@@ -774,10 +810,10 @@ end
 temp_plot_cartouche_ETS(x_opti);
 temp_plot_cartouches(x_opti);
 
-x_TP1(x_opti);
-x_TP2(x_opti);
-top_plate(x_TP1(x_opti)).Configuration % Plaque ETS
-top_plate(x_TP2(x_opti)).Configuration % Plaque Poly
+x_TP_ETS(x_opti);
+x_TP_Poly(x_opti);
+top_plate(x_TP_ETS(x_opti)).Configuration % Plaque ETS
+top_plate(x_TP_Poly(x_opti)).Configuration % Plaque Poly
 
 figure()
 hold on
@@ -835,12 +871,7 @@ saveas(gcf, [folderName, '\optimisation_ETS_Poly_', currentTime, '\Figures\Préd
 
 %% Validation des contributions individuelles
 
-% Environnement de validation
-fmin = 1;
-fmax = 2000;
-points = 500;
-
-validation_env = create_environnement(t, sp, hum, fmin, fmax, points, dB);
+validation_env = handle_env(dB);
 
 % Contributions des élements MPPSBHs
 for i = 1:NS

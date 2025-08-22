@@ -7,15 +7,13 @@ Ts = 1/fs;
 
 %% Données  (domaine temporel)
 
-data_time = load('C:\Users\lucas.barbier\Documents\Maitrise dossier secondaire\Mesures expérimentales\Mesures Manuel\Exp_Mic4_2024_3500_Time.txt');
-t = data_time(:, 1);
-p_t = data_time(:, 2);
-p_t_rms = sqrt(mean(p_t.^2));
+data_p_t = load('C:\Users\lucas.barbier\Documents\Maitrise dossier secondaire\Mesures expérimentales\Mesures Manuel\Exp_Mic4_2024_3500_Time.txt');
+t = data_p_t(:, 1);
+p_t = data_p_t(:, 2);
 
 figure()
 hold on 
 plot(t, p_t, 'DisplayName', 'Signal temporel');
-yline(p_t_rms, 'r--', 'DisplayName', 'pression acoustique RMS', 'Label', num2str(p_t_rms));
 xlabel('Temps (s)')
 ylabel('Pression acoustique (Pa)')
 xlim([0 30])
@@ -25,31 +23,37 @@ SPL_rms = 20*log10(abs(p_t_rms)/20e-6);
 
 %% Données mesurées (domaine fréquentiel)
 
-data_fft = load('C:\Users\lucas.barbier\Documents\Maitrise dossier secondaire\Mesures expérimentales\Mesures Manuel\Spectrum_3500_Mic4_Hz.txt');
-f = data_fft(:, 1);
-p_f_mes = data_fft(:, 2);
-% plot(f, p_f_mes, 'DisplayName', 'Spectre RMS');
-% legend();
-
-SPL_mes = 20*log10(abs(p_f_mes)/20e-6);
-max_SPL_mes = max(SPL_mes);
+data_p_Hz = load('C:\Users\lucas.barbier\Documents\Maitrise dossier secondaire\Mesures expérimentales\Mesures Manuel\Spectrum_3500_Mic4_Hz.txt');
+f = data_p_Hz(:, 1);
+p_Hz = data_p_Hz(:, 2);
 
 figure()
 hold on
-plot(f, SPL_mes, 'DisplayName', 'signal mesuré (RMS?) converti en échelle dB');
-yline(SPL_rms, 'r--', 'DisplayName', 'Niveau RMS du signal temporel', 'label', num2str(SPL_rms));
-yline(max_SPL_mes, 'b--', 'DisplayName', 'Niveau max', 'label', num2str(max_SPL_mes));
+plot(f, p_Hz, 'DisplayName', 'Pression RMS par bande (Pa/Hz)');
+xlim([0 2000]);
+legend();
+
+p_Hz_dB = 20*log10(p_Hz/p_ref);
+p_Hz_rms = sqrt(sum(p_Hz.^2, 'omitmissing'));
+p_Hz_rms_dB = 20*log10(p_Hz_rms/p_ref);
+
+figure()
+hold on
+plot(f, p_Hz_dB, 'DisplayName', 'Niveau de pression RMS par bande (dB/Hz)');
+yline(p_Hz_rms_dB, '--', 'DisplayName', 'Niveau de pression OASPL')
 xlabel('Fréquence (Hz)')
-ylabel('Niveau sonore (RMS?)')
+ylabel('Niveau de pression (dB)')
 xlim([0 2000]);
 legend()
 
-% Créer le filtre de pondération A avec la fréquence d'échantillonnage fs
-A_weighting = weightingFilter('A-weighting', fs);
+%% Filtrage
 
-% Appliquer le filtre dBA sur le signal temporel (avec le filtre de pondération A)
-p_t_A = A_weighting(p_t);  % Filtrage du signal
-p_t_A_rms = sqrt(mean(p_t_A.^2));
+% Créer le filtre de pondération C avec la fréquence d'échantillonnage fs
+C_weighting = weightingFilter('C-weighting', fs);
+
+% Appliquer le filtre dBC sur le signal temporel (avec le filtre de pondération A)
+p_t_C = C_weighting(p_t);  % Filtrage du signal
+p_t_C_rms = sqrt(mean(p_t_C.^2));
 
 % Appliquer la FFT sur le signal temporel pour obtenir le spectre fréquentiel
 N = length(p_t);  % Taille du signal
@@ -59,7 +63,11 @@ f_axis = (0:N-1)*(fs/N);  % Axe des fréquences
 % window = hanning(N);
 % p_t_windowed = p_t .* window';
 P_f_norm = fft(p_t)/N;
+Spp = 2/(fs*N)*abs(P_f_norm);
+figure()
 plot(f_axis, abs(P_f_norm));
+plot(f_axis, Spp);
+xlim([0 2000]);
 
 P_rms_f = sqrt(mean(abs(P_f).^2));
 L_rms = 20*log10(P_rms_f/pref);

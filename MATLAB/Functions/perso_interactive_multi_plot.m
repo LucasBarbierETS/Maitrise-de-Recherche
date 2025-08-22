@@ -1,4 +1,4 @@
-function perso_interactive_multi_plot(x, y, f_max)
+function perso_interactive_multi_plot(x, y, f_max, Frequences)
     % data : Cell array contenant les coordonnées de chaque tracé {x, y}
     
     % Paramètres initiaux
@@ -9,18 +9,38 @@ function perso_interactive_multi_plot(x, y, f_max)
     fig = figure('Name', 'Multi-tracé interactif', ...
                  'NumberTitle', 'on', ...
                  'Position', [100, 100, 800, 600]);
-
     
     % Créer l'axe pour le tracé
     ax = axes('Parent', fig, 'Position', [0.1, 0.2, 0.8, 0.7]);
-    hPlot = plot(ax, x, y{currentIndex}, 'LineWidth', 1);
+    hold on
+    y_data = y{currentIndex};
+    % hPlot = plot(ax, x, y{currentIndex}, 'DisplayName', 'Cartouche Hutchinson');
+    hPlot = plot(ax, x, y_data(1, :), 'DisplayName', 'Cartouche globale');
+    % hPlot_HL = plot(ax, x, y_data(2, :), 'DisplayName', 'Cartouche globale HL');
+    hPlot_HL_fp = plot(ax, x, y_data(3, :), 'DisplayName', 'Cartouche globale HL fp');
+    % hPlot_ETS_HL_fp = plot(ax, x, y_data(4, :), '--', 'DisplayName', 'Cartouche ETS HL fp');
+    % hPlot_Poly_HL = plot(ax, x, y_data(5, :), '--', 'DisplayName', 'Cartouche Poly HL');
+    % hPlot_MPPSBH_1_HL_fp = plot(ax, x, y_data(6, :), '--', 'DisplayName', 'MPPSBH 1');
+
     % mean_bf_line = yline(ax, mean_bf{currentIndex}, '--b', sprintf('%.2f', mean_bf{currentIndex}), 'LabelHorizontalAlignment', 'left', 'LabelVerticalAlignment', 'top');
     % mean_lb_hf_line = yline(ax, mean_lb_hf{currentIndex}, '--r', sprintf('%.2f', mean_lb_hf{currentIndex}), 'LabelHorizontalAlignment', 'right', 'LabelVerticalAlignment', 'bottom');
+
+    % % On rajoute des barres pour représenter les bandes d'optimisation
+    patch([Frequences.f_min_lb, Frequences.f_min_lb, Frequences.f_max_lb, Frequences.f_max_lb], [0, 1, 1, 0], 'green', ...
+          'FaceAlpha', 0.2, 'EdgeColor','none', 'DisplayName', 'Bande d''optimisation élargie', 'HandleVisibility','off');
+    patch([Frequences.f_min_h1, Frequences.f_min_h1, Frequences.f_max_h1, Frequences.f_max_h1], [0, 1, 1, 0], 'red', ...
+          'FaceAlpha', 0.2, 'EdgeColor','none', 'DisplayName', 'bande 1 (BPF)', 'HandleVisibility','off');
+    patch([Frequences.f_min_h2, Frequences.f_min_h2, Frequences.f_max_h2, Frequences.f_max_h2], [0, 1, 1, 0], 'red', ...
+          'FaceAlpha', 0.2, 'EdgeColor','none', 'DisplayName', 'bande 2 (H1)', 'HandleVisibility','off');
+    patch([Frequences.f_min_h3, Frequences.f_min_h3, Frequences.f_max_h3, Frequences.f_max_h3], [0, 1, 1, 0], 'red', ...
+          'FaceAlpha', 0.2, 'EdgeColor','none', 'DisplayName', 'bande 3 (H2)', 'HandleVisibility','off');
+    patch([Frequences.f_min_h4, Frequences.f_min_h4, Frequences.f_max_h4, Frequences.f_max_h4], [0, 1, 1, 0], 'red', ...
+          'FaceAlpha', 0.2, 'EdgeColor','none', 'DisplayName', 'bande 4 (H3)', 'HandleVisibility','off');
+
+
     title(ax, sprintf('Tracé %d / %d', currentIndex, numPlots));
     perso_configure_alpha_figure(f_max);
-    % grid on;
-    hold on
-    legend("off");
+    % legend('Position', 'best');
     
     % Bouton Précédent
     btnPrev = uicontrol('Style', 'pushbutton', 'String', '<', ...
@@ -42,13 +62,27 @@ function perso_interactive_multi_plot(x, y, f_max)
         elseif currentIndex > numPlots
             currentIndex = 1;
         end
+        
         % Mettre à jour le tracé
+        y_data = y{currentIndex};
         set(hPlot, 'XData', x, ...
-                   'YData', y{currentIndex});
+                   'YData', y_data(1, :));
+        % set(hPlot_HL, 'XData', x, ...
+        %            'YData', y_data(2, :));
+        set(hPlot_HL_fp, 'XData', x, ...
+                   'YData', y_data(3, :));
+        % set(hPlot_ETS_HL_fp, 'XData', x, ...
+        %            'YData', y_data(4, :));
+        % set(hPlot_Poly_HL, 'XData', x, ...
+        %            'YData', y_data(5, :));
+        % set(hPlot_MPPSBH_1_HL_fp, 'XData', x, ...
+        %           'YData', y_data(6, :));
+
         % set(mean_bf_line, 'Value', mean_bf{currentIndex}, ...
         %                   'Label', ['Moyenne 150-400 Hz: ', num2str(mean_bf{currentIndex}, 2)]);
         % set(mean_lb_hf_line, 'Value', mean_lb_hf{currentIndex}, ...
         %                      'Label', ['Moyenne 150-1500 Hz: ', num2str(mean_lb_hf{currentIndex}, 2)]);
+        
         title(ax, sprintf('Tracé %d / %d', currentIndex, numPlots));
     end
 end

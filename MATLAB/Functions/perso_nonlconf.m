@@ -1,4 +1,4 @@
-function [c, ceq] = perso_nonlconf(x_ETS, N, NS, top_plate1, top_plate2, cavities_width, cavities_depth, phi_min, phi_max, radius_mm) %, eval_r)
+function [c, ceq] = perso_nonlconf(x_ETS, N, NS, top_plate1, top_plate2, cavities_width, cavities_depth, phi_min, phi_max, radius) %, eval_r) % top_plate3, top_plate4,
     
     % Reshape pour obtenir les dimensions (N plaques, NV variables, NS solutions)
     % x_mat = reshape(x, N, NV, NS);
@@ -7,18 +7,23 @@ function [c, ceq] = perso_nonlconf(x_ETS, N, NS, top_plate1, top_plate2, cavitie
     ctp1_2 = top_plate1.Configuration.Porosity - phi_max;
     ctp2_1 = phi_min - top_plate2.Configuration.Porosity;
     ctp2_2 = top_plate2.Configuration.Porosity - phi_max;
+    % ctp3_1 = phi_min - top_plate3.Configuration.Porosity;
+    % ctp3_2 = top_plate3.Configuration.Porosity - phi_max;
+    % ctp4_1 = phi_min - top_plate4.Configuration.Porosity;
+    % ctp4_2 = top_plate4.Configuration.Porosity - phi_max;
     
-    r = radius_mm(x_ETS(:, :, 1, :))*1e-3;
+    % r = radius_mm(x_ETS(:, :, 1, :))*1e-3;
+    r = radius;
     % histogram(r, 20);
     % Extraction des variables
     % r = fix(x_mat(:, 1, :));          % index du rayon dans la liste
     % dw  = x_mat(:, 2, :);             % espace entre les centres des perforations
     % dw  = x_mat(:, 1, :);
-    dw  = x_ETS(:, :, 2, :);
+    dw  = x_ETS(:, :, 1, :);
     % histogram(dw, 20);
     % pd  = fix(x_mat(:, 3, :));        % nb de perforations en profondeur
     % pd  = fix(x_mat(:, 2, :));
-    pw  = x_ETS(:, :, 3, :);
+    pw  = x_ETS(:, :, 2, :);
     % histogram(pw, 20);
     % pw  = fix(x_mat(:, 4, :));        % nb de perforation en largeur
 
@@ -37,7 +42,7 @@ function [c, ceq] = perso_nonlconf(x_ETS, N, NS, top_plate1, top_plate2, cavitie
     % % dw = repmat(3 * eval_r(1), N, 1, NS);
     
     % Contraintes non linéaires existantes :
-    sw = (pw - 1).* dw + 2 * r;
+    sw = (pw - 1).* dw + 2 .* r;
     % histogram(sw);
     % c1 = 3*r - dw;                        % dw > 3r (espacement inter-perforations)
     
@@ -64,6 +69,7 @@ function [c, ceq] = perso_nonlconf(x_ETS, N, NS, top_plate1, top_plate2, cavitie
     % c = [c1(:); c2(:); c5(:); c6(:); c8(:)];
     % c = [c2(:), c5(:), c6(:), c7(:)];
     c = [ctp1_1, ctp1_2, ctp2_1, ctp2_2, c2(:)', c6(:)', c6(:)'];
+    % c = [ctp1_1, ctp1_2, ctp2_1, ctp2_2, ctp3_1, ctp3_2, ctp4_1, ctp4_2, c2(:)', c6(:)', c6(:)'];
     % c = [reshape(c2, N*NS, [])', reshape(c6, N*NS, [])', reshape(c7, N*NS, [])'];
     % histogram(find(c>0), 20);
 
