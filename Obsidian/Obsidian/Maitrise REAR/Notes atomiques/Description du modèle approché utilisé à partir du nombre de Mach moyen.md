@@ -37,3 +37,19 @@ e^{+j L_z k_z^{-}}-e^{-j L_z k_z^{+}} & Y^{+} e^{-j L_z k_z^{+}}+Y^{-} e^{+j L_z
 avec $Y^{+}=Z_0\left(k_0-M k_z^{+}\right) / k_z^{+}$ et $Y^{-}=Z_0\left(k_0+M k_z^{-}\right) / k_z^{-}$.
 
 Laly montre qu'un développement d'ordre 6 permet de prédire le transmission Loss avec bien plus de précision que le développement d'ordre 4 précédemment utilisé.
+
+#### Modèle correctif de Laly
+
+Ce modèle s'intègre au modèle fort niveau développé par [[Modèle de plaque avec forts niveaux|Laly]] :
+
+![[Modèle de plaque avec forts niveaux#^10b67e]]  
+
+
+Le modèle ajoute un terme correctif à la tortuosité non-linéaire dépendant du nombre de Mach moyen de l'écoulement ([page. 146](zotero://open-pdf/library/items/CMZQ7B9B?page=146&annotation=A9Y5MZWZ))$$\varepsilon_{e n l}=\frac{\Psi}{\left(1+305 M^3\right)} \frac{0.48 \sqrt{\pi r^2}}{\left(1+V_a /\left(\phi c_0\right)\right)}\left[\sum_{n=0}^8 a_n(\sqrt{\phi})^n\right],$$ La résistivité au passage de l'air est aussi corrigée ([page. 147](zotero://open-pdf/library/items/CMZQ7B9B?page=147&annotation=LS4SYCK6))
+
+$$\sigma_{t}=\frac{8 \eta}{\phi r^2}+\beta \frac{\rho_0\left(1-\phi^2\right)}{\pi h \phi C_D^2} V_a+\frac{\rho_0 c_0\left(1-\phi^2\right)}{t \phi c_o} u_f$$
+
+
+Dans lequel $\frac{u_f}{c_o}=q M$  ([page. 143](zotero://open-pdf/library/items/CMZQ7B9B?page=143&annotation=EKT6W72M)) avec $q = 0.3$. On peut alors réécrire :
+$$\sigma_{t}=\frac{8 \eta}{\phi r^2}+\beta \frac{\rho_0\left(1-\phi^2\right)}{\pi h \phi C_D^2} V_a+\frac{\rho_0 c_0\left(1-\phi^2\right)}{t \phi} qM$$
+

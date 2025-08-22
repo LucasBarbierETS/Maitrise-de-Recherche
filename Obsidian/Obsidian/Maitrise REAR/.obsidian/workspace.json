@@ -4,11 +4,11 @@
     "type": "split",
     "children": [
       {
-        "id": "e16c7d5ce3d7761e",
+        "id": "692a61a97bac4bd2",
         "type": "tabs",
         "children": [
           {
-            "id": "9caa4ef74507aac0",
+            "id": "a3e463ded68e1404",
             "type": "leaf",
             "state": {
               "type": "markdown",
@@ -22,49 +22,48 @@
             }
           },
           {
-            "id": "ade8a83dcffe06c1",
+            "id": "d09dd520579bbe42",
             "type": "leaf",
             "state": {
               "type": "markdown",
               "state": {
-                "file": "Zotero/lafontFeasibilityAcousticLiner/Feasibility of an acoustic liner applied to a Fenestron.md",
+                "file": "Zotero/TheseLaly/Thèse Laly.md",
                 "mode": "source",
                 "source": false
               },
               "icon": "lucide-file",
-              "title": "Feasibility of an acoustic liner applied to a Fenestron"
+              "title": "Thèse Laly"
             }
           },
           {
-            "id": "103b55b8daed2678",
+            "id": "55205bc336e699d8",
             "type": "leaf",
             "state": {
               "type": "markdown",
               "state": {
-                "file": "Notes atomiques/Présentation du cahier des charges acoustique.md",
+                "file": "Notes atomiques/Modèle de plaque avec forts niveaux.md",
                 "mode": "source",
                 "source": false
               },
               "icon": "lucide-file",
-              "title": "Présentation du cahier des charges acoustique"
+              "title": "Modèle de plaque avec forts niveaux"
             }
           },
           {
-            "id": "f1341047ad47cf11",
+            "id": "95c9b4909f25a864",
             "type": "leaf",
             "state": {
               "type": "markdown",
               "state": {
-                "file": "Notes atomiques/Densité spectrale de Puissance.md",
+                "file": "Notes atomiques/Table des matières.md",
                 "mode": "source",
                 "source": false
               },
               "icon": "lucide-file",
-              "title": "Densité spectrale de Puissance"
+              "title": "Table des matières"
             }
           }
-        ],
-        "currentTab": 3
+        ]
       }
     ],
     "direction": "vertical"
@@ -96,7 +95,7 @@
             "state": {
               "type": "search",
               "state": {
-                "query": "",
+                "query": "thèse La",
                 "matchingCase": false,
                 "explainSearch": false,
                 "collapseAll": true,
@@ -117,12 +116,11 @@
               "title": "Bookmarks"
             }
           }
-        ],
-        "currentTab": 1
+        ]
       }
     ],
     "direction": "horizontal",
-    "width": 200
+    "width": 205.5
   },
   "right": {
     "id": "2afa7ea527d3110b",
@@ -219,10 +217,11 @@
       }
     ],
     "direction": "horizontal",
-    "width": 217.5
+    "width": 222.5
   },
   "left-ribbon": {
     "hiddenItems": {
+      "bases:Create new base": false,
       "switcher:Open quick switcher": false,
       "graph:Open graph view": false,
       "canvas:Create new canvas": false,
@@ -235,13 +234,27 @@
       "smart-gantt:Smart Gantt": false
     }
   },
-  "active": "f1341047ad47cf11",
+  "active": "a3e463ded68e1404",
   "lastOpenFiles": [
-    "Images collées/Pasted image 20250822101149.png",
-    "Images collées/Pasted image 20250822092254.png",
-    "Notes atomiques/Densité spectrale de Puissance.md",
+    "Zotero/TheseLaly/Thèse Laly.md",
     "Notes atomiques/Description du modèle approché utilisé à partir du nombre de Mach moyen.md",
+    "Notes atomiques/Modèle de plaque avec forts niveaux.md",
+    "Zotero/TheseLaly/Images/TheseLaly-97-x78-y494.png",
+    "Zotero/TheseLaly/Images/TheseLaly-87-x74-y129.png",
+    "Zotero/TheseLaly/Images/TheseLaly-96-x78-y268.png",
+    "Zotero/TheseLaly/Images/TheseLaly-85-x72-y392.png",
+    "Zotero/TheseLaly/Images/TheseLaly-84-x242-y293.png",
+    "Zotero/TheseLaly/Images/TheseLaly-78-x89-y476.png",
+    "Zotero/TheseLaly/Images/TheseLaly-81-x61-y505.png",
+    "Zotero/TheseLaly/Images/TheseLaly-78-x191-y667.png",
+    "Zotero/TheseLaly/Images/TheseLaly-78-x179-y566.png",
+    "Zotero/TheseLaly/Images/TheseLaly-77-x239-y310.png",
+    "Zotero/TheseLaly/Images",
+    "Zotero/TheseLaly",
     "Notes atomiques/Table des matières.md",
+    "Difficulté de formuler/utiliser une impédance de surface pour la prédiction de la réduction de bruit.md",
+    "Notes atomiques/Intégration du modèle fort niveau de Laly avec une approche multi-plaques.md",
+    "Notes atomiques/Densité spectrale de Puissance.md",
     "Notes atomiques/Equation d'Helmholtz convectée pour une reformulation de l'impédance de surface.md",
     "Notes atomiques/Reconcevoir la réduction de bruit en aéronautique.md",
     "Notes atomiques/Présentation du cahier des charges acoustique.md",
@@ -251,13 +264,11 @@
     "Notes atomiques/Revue des méthodologies.md",
     "Zotero/rendonAeroacousticInvestigationDucted/Aeroacoustic Investigation of a Ducted Tail Rotor Using the Lattice-Boltzmann Method.md",
     "Zotero/pongratzACOUSTICLINERDESIGN/ACOUSTIC LINER DESIGN FOR FENESTRON® NOISE REDUCTION.md",
-    "Zotero/rendonAeroacousticInvestigationDucted/Images/rendonAeroacousticInvestigationDucted-6-x44-y41.png",
     "Zotero/rendonAeroacousticInvestigationDucted/Images",
     "Zotero/rendonAeroacousticInvestigationDucted",
     "Zotero/lafontFeasibilityAcousticLiner/Feasibility of an acoustic liner applied to a Fenestron.md",
     "Zotero/lafontFeasibilityAcousticLiner",
     "Zotero/coulon2016/METHODOLOGIE DE CONCEPTION ACOUSTIQUE DES SILENCIEUX D’UN MOTEUR DEUX TEMPS ÉQUIPANT UNE MOTONEIGE.md",
-    "Zotero/coulon2016/Images/coulon2016-68-x47-y430.png",
     "Zotero/coulon2016/Images",
     "Zotero/coulon2016",
     "Zotero/simon2022",
@@ -269,20 +280,8 @@
     "Notes atomiques/Coefficient de réflexion.md",
     "Notes atomiques/Acoustics of Ducts and Mufflers.md",
     "Notes atomiques/Revue empirique des phénomènes liés à l'écoulement (doppler, sifflements au niveau des perforations, etc.).md",
-    "Notes atomiques/Relations entre impédance de surface, grandeurs acoustiques et grandeurs RMS.md",
-    "Notes atomiques/Distinction entre un comportement dépendant de l'angle d'incidence (MPP cavités non séparés) et réduction de l'énergie incident normalement à cause de l'angle.md",
-    "Notes atomiques/Prise en compte de l'impédance de surface d'un traitement en incidence rasante.md",
-    "Images collées/Pasted image 20250722105836.png",
-    "Images collées/Pasted image 20250718100314.png",
-    "Images collées/Pasted image 20250718092847.png",
-    "Images collées/Pasted image 20250718092720.png",
-    "Zotero/redmannAeroacousticLinerApplications2013/Images/redmannAeroacousticLinerApplications2013-2-x70-y537.png",
-    "Zotero/redmannAeroacousticLinerApplications2013/Images/redmannAeroacousticLinerApplications2013-11-x59-y481.png",
     "Zotero/redmannAeroacousticLinerApplications2013/Images",
     "Zotero/redmannAeroacousticLinerApplications2013",
-    "Zotero/pongratzACOUSTICLINERDESIGN/Images/pongratzACOUSTICLINERDESIGN-9-x65-y601.png",
-    "Zotero/pongratzACOUSTICLINERDESIGN/Images",
-    "Zotero/pongratzACOUSTICLINERDESIGN",
     "Diagramme du projet QTD3.canvas",
     "Cartographie des approches industrielles pour la réduction de bruit en aéronautique.canvas",
     "Notes atomiques MdmM/Sujet de discussion.canvas",

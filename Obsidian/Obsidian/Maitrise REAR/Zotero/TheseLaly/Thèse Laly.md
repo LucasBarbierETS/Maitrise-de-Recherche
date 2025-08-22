@@ -9,7 +9,7 @@ aliases:
 publisher: ""
 citation key: "TheseLaly"
 DOI: ""
-"created date:": "2025-07-15T11:43:03-04:00"  
+"created date:": "2025-08-22T16:37:45-04:00"  
 "modified date:": 
 ---
 # (Z) Thèse Laly
@@ -43,7 +43,7 @@ DOI: ""
 ## Reading notes
 
 
-*Imported: 2025-07-15 11:43*
+*Imported: 2025-08-22 16:37*
 
 ### ✅ Supporting Argument or Example
 
@@ -91,6 +91,9 @@ DOI: ""
 
 > [!quote|green]+ Highlight ([page. 146](zotero://open-pdf/library/items/CMZQ7B9B?page=146&annotation=N2XQNDI7))
 > LPi , the incident pressure Pi is calculated by /20 
+
+> [!quote|green]+ Highlight ([page. 146](zotero://open-pdf/library/items/CMZQ7B9B?page=146&annotation=9VVGVT9V))
+> γc is a constant value set to 4/3 
 
 > [!quote|green]+ Highlight ([page. 260](zotero://open-pdf/library/items/CMZQ7B9B?page=260&annotation=9K2AFQP9))
 > segmentation approach 
@@ -177,10 +180,31 @@ DOI: ""
 > [!quote|yellow]+ Image ([page. 97](zotero://open-pdf/library/items/CMZQ7B9B?page=97&annotation=2UD6RTYG))
 > ![[Zotero/TheseLaly/Images/TheseLaly-97-x78-y494.png]]
 
+> [!quote|yellow]+ Image ([page. 143](zotero://open-pdf/library/items/CMZQ7B9B?page=143&annotation=EKT6W72M))
+> ![[Zotero/TheseLaly/Images/TheseLaly-143-x266-y532.png]]
+
+> [!quote|yellow]+ Image ([page. 145](zotero://open-pdf/library/items/CMZQ7B9B?page=145&annotation=68VDQMI7))
+> ![[Zotero/TheseLaly/Images/TheseLaly-145-x145-y210.png]]
+
+> [!quote|yellow]+ Image ([page. 146](zotero://open-pdf/library/items/CMZQ7B9B?page=146&annotation=A9Y5MZWZ))
+> ![[Zotero/TheseLaly/Images/TheseLaly-146-x172-y171.png]]
+
+> [!quote|yellow]+ Image ([page. 147](zotero://open-pdf/library/items/CMZQ7B9B?page=147&annotation=M4IKEKWX))
+> ![[Zotero/TheseLaly/Images/TheseLaly-147-x86-y497.png]]
+
+> [!quote|yellow]+ Image ([page. 147](zotero://open-pdf/library/items/CMZQ7B9B?page=147&annotation=LS4SYCK6))
+> ![[Zotero/TheseLaly/Images/TheseLaly-147-x129-y103.png]]
+
+> [!quote|yellow]+ Image ([page. 148](zotero://open-pdf/library/items/CMZQ7B9B?page=148&annotation=ZSJZF3CI))
+> ![[Zotero/TheseLaly/Images/TheseLaly-148-x89-y581.png]]
+
 > [!quote|yellow]+ Note ([page. 148](zotero://open-pdf/library/items/CMZQ7B9B?page=148&annotation=6DHE24G2))
 >
 >COMMENT:
 > - que signifie comparé numériquement? Ce ne sont pas simplement plusieurs modèles analytiques?
+
+> [!quote|yellow]+ Image ([page. 164](zotero://open-pdf/library/items/CMZQ7B9B?page=164&annotation=2ANX5W9J))
+> ![[Zotero/TheseLaly/Images/TheseLaly-164-x175-y619.png]]
 
 > [!quote|yellow]+ Image ([page. 179](zotero://open-pdf/library/items/CMZQ7B9B?page=179&annotation=DYDM3PP2))
 > ![[Zotero/TheseLaly/Images/TheseLaly-179-x116-y263.png]]

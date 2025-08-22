@@ -17399,6 +17399,72 @@
       "relations": {},
       "dateAdded": "2020-02-28T23:26:46Z",
       "dateModified": "2020-02-28T23:26:46Z"
+    },
+    {
+      "key": "J853U7JG",
+      "version": 733,
+      "parentItem": "Z6RYXLRQ",
+      "itemType": "annotation",
+      "annotationType": "image",
+      "annotationComment": "",
+      "annotationColor": "#ffd400",
+      "annotationPageLabel": "322",
+      "annotationSortIndex": "00001|001672|00437",
+      "annotationPosition": "{\"pageIndex\":1,\"rects\":[[99.22419563212993,265.814,419.6374266963677,325.093390050579]]}",
+      "tags": [],
+      "relations": {},
+      "dateAdded": "2025-08-22T18:12:57Z",
+      "dateModified": "2025-08-22T18:14:00Z"
+    },
+    {
+      "key": "6GHEDBTA",
+      "version": 730,
+      "parentItem": "Z6RYXLRQ",
+      "itemType": "annotation",
+      "annotationType": "highlight",
+      "annotationText": "The effects of grazing turbulent pipe-flow on the impedance of an orifice.",
+      "annotationComment": "",
+      "annotationColor": "#a28ae5",
+      "annotationPageLabel": "328",
+      "annotationSortIndex": "00007|002428|00596",
+      "annotationPosition": "{\"pageIndex\":7,\"rects\":[[260.64,156.744,452.454,166.177],[83.277,147.089,174.052,155.857]]}",
+      "tags": [],
+      "relations": {},
+      "dateAdded": "2025-08-22T18:12:46Z",
+      "dateModified": "2025-08-22T18:12:46Z"
+    },
+    {
+      "key": "Z8YU89YI",
+      "version": 729,
+      "parentItem": "Z6RYXLRQ",
+      "itemType": "annotation",
+      "annotationType": "image",
+      "annotationComment": "",
+      "annotationColor": "#ffd400",
+      "annotationPageLabel": "322",
+      "annotationSortIndex": "00001|001582|00397",
+      "annotationPosition": "{\"pageIndex\":1,\"rects\":[[147.772,340.084,375.689,365.635]]}",
+      "tags": [],
+      "relations": {},
+      "dateAdded": "2025-08-22T18:08:13Z",
+      "dateModified": "2025-08-22T18:08:13Z"
+    },
+    {
+      "key": "7KVJXMYP",
+      "version": 728,
+      "parentItem": "Z6RYXLRQ",
+      "itemType": "annotation",
+      "annotationType": "highlight",
+      "annotationText": "Rice [l] tackled this problem by writing a differential equation governing the motion of the fluid in an orifice, involving a variable resistance coefficient which was dependent on both grazing flow velocity and particle velocity in the orifice.",
+      "annotationComment": "",
+      "annotationColor": "#5fb236",
+      "annotationPageLabel": "321",
+      "annotationSortIndex": "00000|001905|00534",
+      "annotationPosition": "{\"pageIndex\":0,\"rects\":[[81.842,218.006,450.084,228.634],[71.762,206.006,448.133,216.634],[71.762,193.766,341.647,204.394]]}",
+      "tags": [],
+      "relations": {},
+      "dateAdded": "2025-08-22T18:05:33Z",
+      "dateModified": "2025-08-22T18:05:33Z"
     }
   ],
   "collections": [
@@ -17761,5 +17827,5 @@
     }
   ],
   "name": "Engage Silencieux",
-  "version": 727
+  "version": 733
 }
