@@ -125,7 +125,7 @@ JCAmat = classJCA_Rigid(classJCA_Rigid.create_config(total_width*total_depth, JC
 
 %% Création dynamique de la plaque couvrante
 
-porosity = @(x) (floor(total_width / x(2)) - 1) * (floor(total_depth / x(2)) - 1) * pi * (radius_mm(x(1))*1e-3)^2 / total_input_surface;
+porosity = @(x) pi * (radius(x(1)))^2 / x(2);
 
 % Plaque supérieure (optimisée)
 % top_plate = @(x) classMPP_Circular(classMPP_Circular.create_explicit_rectangular_plate_config( ...

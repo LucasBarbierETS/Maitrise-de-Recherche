@@ -42,7 +42,7 @@ function [c, ceq] = perso_nonlconf(x_ETS, N, NS, top_plate1, top_plate2, cavitie
     % % dw = repmat(3 * eval_r(1), N, 1, NS);
     
     % Contraintes non linéaires existantes :
-    sw = (pw - 1).* dw + 2 .* r;
+    sw = (pw - 1) .* dw + 2 .* r;
     % histogram(sw);
     % c1 = 3*r - dw;                        % dw > 3r (espacement inter-perforations)
     

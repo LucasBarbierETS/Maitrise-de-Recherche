@@ -16,11 +16,7 @@ function perso_interactive_multi_plot(x, y, f_max, Frequences)
     y_data = y{currentIndex};
     % hPlot = plot(ax, x, y{currentIndex}, 'DisplayName', 'Cartouche Hutchinson');
     hPlot = plot(ax, x, y_data(1, :), 'DisplayName', 'Cartouche globale');
-    % hPlot_HL = plot(ax, x, y_data(2, :), 'DisplayName', 'Cartouche globale HL');
-    hPlot_HL_fp = plot(ax, x, y_data(3, :), 'DisplayName', 'Cartouche globale HL fp');
-    % hPlot_ETS_HL_fp = plot(ax, x, y_data(4, :), '--', 'DisplayName', 'Cartouche ETS HL fp');
-    % hPlot_Poly_HL = plot(ax, x, y_data(5, :), '--', 'DisplayName', 'Cartouche Poly HL');
-    % hPlot_MPPSBH_1_HL_fp = plot(ax, x, y_data(6, :), '--', 'DisplayName', 'MPPSBH 1');
+    hPlot_HL_fp = plot(ax, x, y_data(2, :), 'DisplayName', 'Cartouche globale HL fp');
 
     % mean_bf_line = yline(ax, mean_bf{currentIndex}, '--b', sprintf('%.2f', mean_bf{currentIndex}), 'LabelHorizontalAlignment', 'left', 'LabelVerticalAlignment', 'top');
     % mean_lb_hf_line = yline(ax, mean_lb_hf{currentIndex}, '--r', sprintf('%.2f', mean_lb_hf{currentIndex}), 'LabelHorizontalAlignment', 'right', 'LabelVerticalAlignment', 'bottom');
@@ -67,16 +63,8 @@ function perso_interactive_multi_plot(x, y, f_max, Frequences)
         y_data = y{currentIndex};
         set(hPlot, 'XData', x, ...
                    'YData', y_data(1, :));
-        % set(hPlot_HL, 'XData', x, ...
-        %            'YData', y_data(2, :));
         set(hPlot_HL_fp, 'XData', x, ...
-                   'YData', y_data(3, :));
-        % set(hPlot_ETS_HL_fp, 'XData', x, ...
-        %            'YData', y_data(4, :));
-        % set(hPlot_Poly_HL, 'XData', x, ...
-        %            'YData', y_data(5, :));
-        % set(hPlot_MPPSBH_1_HL_fp, 'XData', x, ...
-        %           'YData', y_data(6, :));
+                   'YData', y_data(2, :));
 
         % set(mean_bf_line, 'Value', mean_bf{currentIndex}, ...
         %                   'Label', ['Moyenne 150-400 Hz: ', num2str(mean_bf{currentIndex}, 2)]);

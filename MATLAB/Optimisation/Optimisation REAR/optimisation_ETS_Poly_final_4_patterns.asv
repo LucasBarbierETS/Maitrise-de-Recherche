@@ -101,8 +101,7 @@ yc_input_surface = yc_width * yc_depth;
 NTP = 2; %  Rayons des perfs, distance inter-perf (pattern carré)
 % NTP = 3; % (rayon, nombre de perf par ligne (width), nombre de perfs par colonne (depth))
 NS = 8; % Nombre de MPPSBH optimisés
-NV = 2;
-% NV = 3; % Nombre de variables pour chaque solution (rayon des perforations, nombre de perfs en largeur, espacement des perfs en largeur)
+NV = 3; % Nombre de variables pour chaque solution (rayon des perforations, nombre de perfs en largeur, espacement des perfs en largeur)
 N = 5; % Nombre de plaques optimisées indépendantes pour chaque solution
 
 % NP = 500; % Nombre de points de départ
@@ -115,7 +114,7 @@ x_TP_ETS = @(x) x(:, 1 : NTP); % Plaque couvrante ETS
 x_TP_Poly = @(x) x(:, NTP+1 : 2*NTP); % Plaque couvrante Poly
 x_ETS = @(x) permute(reshape(x(:, 2*NTP+1 : 2*NTP + N*NV*NS), [], NS, N, NV), [2, 3, 4, 1]); % Solutions ETS
 x_SPLX = @(x) x(:, 2*NTP + N*NV*NS + 1 : 2*NTP + N*NV*NS + N); % Epaisseur des cavités ETS
-x_radius = @(x) x(:, 2*NTP + N*NV*NS + N + 1 : end); % Rayons des solutions ETS
+x_radius = @(x) x(:, 2*NTP + N*NV*NS + N, end); % Rayons des solutions ETS
 
 %% Valeurs minimales en fonction du type de variable
 
@@ -191,24 +190,18 @@ x0 = horzcat(x0_TP_ETS, x0_TP_Poly, dw_init, pw_init, theta_init, r_init);
 % x0 = horzcat(x0_TP_ETS, x0_TP_Poly, dw_init_sorted, pw_init_sorted);
 
 % % Debog : Largeur des fentes crées
-% figure();
-% sw_init = repmat(2 * radius(r_init), 1, NS) + dw_init .* (pw_init - 1);
-% histogram(sw_init, 20);
-% title('Largeur des fentes dans les MPPSBHs')
+figure();
+sw = repmat(2 * radius(r_init), 1, NS) + dw_init .* (pw_init - 1);
+histogram(sw, 20);
 
-% % Debog : Porosité des plaques crées
-% figure();
-% hold on
-% phi_init_app = (pi * (repmat(radius(r_init), 1, NS)).^2 * depth_holes_number .* pw_init) / (ETS_cavities_width * ETS_cavities_depth);
-% phi_init = (pi * (repmat(radius(r_init), 1, NS)).^2 * depth_holes_number .* pw_init) ./ (sw_init * ETS_cavities_depth);
-% histogram(phi_init_app, 20, 'DisplayName', 'Porosité apparente de la plaque');
-% histogram(phi_init, 20, 'DisplayName', 'Porosité effective de la zone perforée');
-% title('Porosités des plaques dans les MPPSBHs');
-% legend()
+% % Debog : Porosité (apparente) des plaques crées
+figure(x0)
+phi = (pi * (repmat(radius(r_init), 1, NS)).^2 * depth_holes_number .* pw_init) / (ETS_cavities_width * ETS_cavities_depth);
+histogram(phi, 10);
 
 %% Contrainte sur les variables entières
 
-intcon = find(horzcat([1, 0, 1, 0], zeros(1, N*NS), ones(1, N*NS), zeros(1, N), ones(1, N)));
+intcon = find(horzcat(ones(1, 4*NTP), ones(1, N*NS), zeros(1, N*NS), ones(1, N*NS), zeros(1, N)));
 
 %% Importation de l'élement expérimental
 
@@ -555,7 +548,7 @@ Cartouches.cartouche_globale_HL_fp_contributions = @(x) classelementassembly(cla
 
 % Définition du handle avec paramètres capturés
 handle_nonlconf = @(x) perso_nonlconf(x_ETS(x), N, NS, top_plate_ETS(x_TP_ETS(x)), top_plate_Poly(x_TP_Poly(x)), ...
-    ETS_cavities_width, ETS_cavities_depth, tp_phi_min, tp_phi_max, radius(x_radius(x)));
+    ETS_cavities_width, ETS_cavities_depth, tp_phi_min, tp_phi_max, radius);
 
 % % Debog : Test des contraintes non-linéaires sur les configurations initiales
 % [c, ceq] = handle_nonlconf(x0);
@@ -564,19 +557,19 @@ handle_nonlconf = @(x) perso_nonlconf(x_ETS(x), N, NS, top_plate_ETS(x_TP_ETS(x)
 
 %% Affichage des porosités simulées
 
-% figure()
-% hold on
-% p_ETS = zeros(1, NP);
-% p_Poly = zeros(1, NP);
-% for i = 1:NP
-%     p_ETS(i) = top_plate(x_TP_ETS(x0(i, :))).Configuration.Porosity;
-%     p_Poly(i) = top_plate(x_TP_Poly(x0(i, :))).Configuration.Porosity;
-% end
-% 
-% histogram(p_ETS, 20, 'DisplayName', 'Cartouche ETS');
-% histogram(p_Poly, 20, 'DisplayName', 'Cartouche Poly');
-% title('Porosités des plaques couvrantes simulées');
-% legend()
+figure()
+hold on
+p_ETS = zeros(1, NP);
+p_Poly = zeros(1, NP);
+for i = 1:NP
+    p_ETS(i) = top_plate(x_TP_ETS(x0(i, :))).Configuration.Porosity;
+    p_Poly(i) = top_plate(x_TP_Poly(x0(i, :))).Configuration.Porosity;
+end
+
+histogram(p_ETS, 20, 'DisplayName', 'Cartouche ETS');
+histogram(p_Poly, 20, 'DisplayName', 'Cartouche Poly');
+title('Porosités des plaques couvrantes simulées');
+legend()
 
 %% Fonctions coût
 
