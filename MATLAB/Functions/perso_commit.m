@@ -14,22 +14,6 @@ function perso_commit(message)
     % Accéder au répertoire du dépôt
     cd(repo_path);
 
-    % Vérifier si le fichier .gitignore existe, sinon le créer
-    if ~isfile('.gitignore')
-        fid = fopen('.gitignore', 'w'); % Créer le fichier s'il n'existe pas
-        fclose(fid);
-    end
-
-    % Ajouter .mph à .gitignore si ce n'est pas déjà fait
-    fid = fopen('.gitignore', 'r');
-    file_contents = fread(fid, '*char')';
-    fclose(fid);
-    if ~contains(file_contents, '*.mph')
-        fid = fopen('.gitignore', 'a'); % Ouvrir en mode ajout
-        fprintf(fid, '\n*.mph\n'); % Ajouter les fichiers .mph à ignorer
-        fclose(fid);
-    end
-
     % Ajouter tous les fichiers au dépôt, sauf ceux ignorés
     status = system('git add .');
     if status ~= 0
