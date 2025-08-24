@@ -189,7 +189,7 @@ x0_TP_ETS = horzcat(tp_r_init(:, 1), tp_dw_init(:, 1));
 x0_TP_Poly = horzcat(tp_r_init(:, 2), tp_dw_init(:, 2));
 x0 = horzcat(x0_TP_ETS, x0_TP_Poly, dw_init, pw_init, theta_init, r_init);
 % x0 = horzcat(x0_TP_ETS, x0_TP_Poly, dw_init_sorted, pw_init_sorted);
-
+% changement
 % % Debog : Largeur des fentes crées
 % figure();
 % sw_init = repmat(2 * radius(r_init), 1, NS) + dw_init .* (pw_init - 1);
