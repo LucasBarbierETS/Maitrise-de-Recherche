@@ -1,76 +1,136 @@
-function perso_interactive_multi_plot(x, y, f_max, Frequences)
-    % data : Cell array contenant les coordonnées de chaque tracé {x, y}
-    
-    % Paramètres initiaux
+function perso_interactive_multi_plot(x, alpha, Zs, f_max, Frequences)
+% perso_interactive_multi_plot
+% - x           : vecteur des fréquences (mêmes longueurs que les Y)
+% - alpha       : cell(1,N), chaque cell -> [2 x numel(x)] (ligne1: globale, ligne2: HL fp)
+% - Zs          : cell(1,N), chaque cell -> [2 x numel(x)] (complexe autorisé)
+% - f_max       : max pour config de l’axe X
+% - Frequences  : struct avec f_min_* et f_max_* (lb, h1..h4)
+%
+% Deux fenêtres :
+%   figAlpha : α (une axe unique)
+%   figZs    : Re(Zs) et Im(Zs) (deux subplots)
+%
+% Navigation : boutons <, > et clavier (←/→)
+
+    % --- État ---
     currentIndex = 1;
-    numPlots = size(y, 2);
-    
-    % Créer la figure
-    fig = figure('Name', 'Multi-tracé interactif', ...
-                 'NumberTitle', 'on', ...
-                 'Position', [100, 100, 800, 600]);
-    
-    % Créer l'axe pour le tracé
-    ax = axes('Parent', fig, 'Position', [0.1, 0.2, 0.8, 0.7]);
-    hold on
-    y_data = y{currentIndex};
-    % hPlot = plot(ax, x, y{currentIndex}, 'DisplayName', 'Cartouche Hutchinson');
-    hPlot = plot(ax, x, y_data(1, :), 'DisplayName', 'Cartouche globale');
-    hPlot_HL_fp = plot(ax, x, y_data(2, :), 'DisplayName', 'Cartouche globale HL fp');
+    numPlots     = size(alpha, 2);
 
-    % mean_bf_line = yline(ax, mean_bf{currentIndex}, '--b', sprintf('%.2f', mean_bf{currentIndex}), 'LabelHorizontalAlignment', 'left', 'LabelVerticalAlignment', 'top');
-    % mean_lb_hf_line = yline(ax, mean_lb_hf{currentIndex}, '--r', sprintf('%.2f', mean_lb_hf{currentIndex}), 'LabelHorizontalAlignment', 'right', 'LabelVerticalAlignment', 'bottom');
+    % --- Fenêtre 1 : α ---
+    figAlpha = figure('Name','Multi-tracé interactif (α)', ...
+        'NumberTitle','on','Position',[100 100 900 600], ...
+        'KeyPressFcn',@onKey); % clavier global
 
-    % % On rajoute des barres pour représenter les bandes d'optimisation
-    patch([Frequences.f_min_lb, Frequences.f_min_lb, Frequences.f_max_lb, Frequences.f_max_lb], [0, 1, 1, 0], 'green', ...
-          'FaceAlpha', 0.2, 'EdgeColor','none', 'DisplayName', 'Bande d''optimisation élargie', 'HandleVisibility','off');
-    patch([Frequences.f_min_h1, Frequences.f_min_h1, Frequences.f_max_h1, Frequences.f_max_h1], [0, 1, 1, 0], 'red', ...
-          'FaceAlpha', 0.2, 'EdgeColor','none', 'DisplayName', 'bande 1 (BPF)', 'HandleVisibility','off');
-    patch([Frequences.f_min_h2, Frequences.f_min_h2, Frequences.f_max_h2, Frequences.f_max_h2], [0, 1, 1, 0], 'red', ...
-          'FaceAlpha', 0.2, 'EdgeColor','none', 'DisplayName', 'bande 2 (H1)', 'HandleVisibility','off');
-    patch([Frequences.f_min_h3, Frequences.f_min_h3, Frequences.f_max_h3, Frequences.f_max_h3], [0, 1, 1, 0], 'red', ...
-          'FaceAlpha', 0.2, 'EdgeColor','none', 'DisplayName', 'bande 3 (H2)', 'HandleVisibility','off');
-    patch([Frequences.f_min_h4, Frequences.f_min_h4, Frequences.f_max_h4, Frequences.f_max_h4], [0, 1, 1, 0], 'red', ...
-          'FaceAlpha', 0.2, 'EdgeColor','none', 'DisplayName', 'bande 4 (H3)', 'HandleVisibility','off');
+    s_alpha = subplot(1,1,1,'Parent',figAlpha);
+    hold(s_alpha,'on'); box(s_alpha,'on');
 
+    yA = alpha{currentIndex}; % [2 x numel(x)]
+    hAlpha1 = plot(s_alpha, x, yA(1,:), 'DisplayName','Cartouche globale');
+    hAlpha2 = plot(s_alpha, x, yA(2,:), 'DisplayName','Cartouche globale HL fp');
 
-    title(ax, sprintf('Tracé %d / %d', currentIndex, numPlots));
+    addBands(s_alpha, Frequences);
+    title(s_alpha, sprintf('α — Tracé %d / %d', currentIndex, numPlots));
     perso_configure_alpha_figure(f_max);
-    % legend('Position', 'best');
-    
-    % Bouton Précédent
-    btnPrev = uicontrol('Style', 'pushbutton', 'String', '<', ...
-                        'Position', [50, 50, 50, 30], ...
-                        'Callback', @(~,~) navigate(-1));
-    
-    % Bouton Suivant
-    btnNext = uicontrol('Style', 'pushbutton', 'String', '>', ...
-                        'Position', [700, 50, 50, 30], ...
-                        'Callback', @(~,~) navigate(1));
-                    
-    % Fonction de navigation
+    legend(s_alpha,'Location','best');
+
+    % Boutons
+    uicontrol(figAlpha,'Style','pushbutton','String','<', ...
+        'Position',[40 20 40 28],'Callback',@(~,~)navigate(-1));
+    uicontrol(figAlpha,'Style','pushbutton','String','>', ...
+        'Position',[820 20 40 28],'Callback',@(~,~)navigate(1));
+
+    % --- Fenêtre 2 : Zs ---
+    figZs = figure('Name','Multi-tracé interactif (Z_s)', ...
+        'NumberTitle','on','Position',[1050 120 900 600], ...
+        'KeyPressFcn',@onKey); % même navigation clavier
+
+    s_zs_real = subplot(2,1,1,'Parent',figZs);
+    hold(s_zs_real,'on'); box(s_zs_real,'on');
+    s_zs_imag = subplot(2,1,2,'Parent',figZs);
+    hold(s_zs_imag,'on'); box(s_zs_imag,'on');
+
+    yZ = Zs{currentIndex}; % [2 x numel(x)] (complexe)
+    % Réel
+    hZR1 = plot(s_zs_real, x, real(yZ(1,:)), 'DisplayName','Re(Z_s) globale');
+    hZR2 = plot(s_zs_real, x, real(yZ(2,:)), 'DisplayName','Re(Z_s) HL fp');
+    addBands(s_zs_real, Frequences);
+    ylabel(s_zs_real,'Re(Z_s)');
+    title(s_zs_real, 'Partie réelle');
+
+    % Imaginaire
+    hZI1 = plot(s_zs_imag, x, imag(yZ(1,:)), 'DisplayName','Im(Z_s) globale');
+    hZI2 = plot(s_zs_imag, x, imag(yZ(2,:)), 'DisplayName','Im(Z_s) HL fp');
+    addBands(s_zs_imag, Frequences);
+    xlabel(s_zs_imag,'f (Hz)'); ylabel(s_zs_imag,'Im(Z_s)');
+    title(s_zs_imag, sprintf('Z_s — Tracé %d / %d', currentIndex, numPlots));
+
+    legend(s_zs_real,'Location','best');
+    legend(s_zs_imag,'Location','best');
+
+    % Lier les axes X de toutes les figures
+    linkaxes([s_alpha, s_zs_real, s_zs_imag],'x');
+
+    % --- Navigation au clavier ---
+    function onKey(~,evt)
+        switch evt.Key
+            case {'rightarrow','numpad6'}
+                navigate(1);
+            case {'leftarrow','numpad4'}
+                navigate(-1);
+        end
+    end
+
+    % --- Navigation principale ---
     function navigate(direction)
-        % Mettre à jour l'index en fonction de la direction (-1 ou 1)
         currentIndex = currentIndex + direction;
-        % Boucle pour les extrémités
         if currentIndex < 1
             currentIndex = numPlots;
         elseif currentIndex > numPlots
             currentIndex = 1;
         end
-        
-        % Mettre à jour le tracé
-        y_data = y{currentIndex};
-        set(hPlot, 'XData', x, ...
-                   'YData', y_data(1, :));
-        set(hPlot_HL_fp, 'XData', x, ...
-                   'YData', y_data(2, :));
 
-        % set(mean_bf_line, 'Value', mean_bf{currentIndex}, ...
-        %                   'Label', ['Moyenne 150-400 Hz: ', num2str(mean_bf{currentIndex}, 2)]);
-        % set(mean_lb_hf_line, 'Value', mean_lb_hf{currentIndex}, ...
-        %                      'Label', ['Moyenne 150-1500 Hz: ', num2str(mean_lb_hf{currentIndex}, 2)]);
-        
-        title(ax, sprintf('Tracé %d / %d', currentIndex, numPlots));
+        % α
+        yA = alpha{currentIndex};
+        set(hAlpha1,'XData',x,'YData',yA(1,:));
+        set(hAlpha2,'XData',x,'YData',yA(2,:));
+        title(s_alpha, sprintf('α — Tracé %d / %d', currentIndex, numPlots));
+
+        % Z_s
+        yZ = Zs{currentIndex};
+        set(hZR1,'XData',x,'YData',real(yZ(1,:)));
+        set(hZR2,'XData',x,'YData',real(yZ(2,:)));
+        set(hZI1,'XData',x,'YData',imag(yZ(1,:)));
+        set(hZI2,'XData',x,'YData',imag(yZ(2,:)));
+        title(s_zs_imag, sprintf('Z_s — Tracé %d / %d', currentIndex, numPlots));
+        % (titres des axes conservés)
+        drawnow;
     end
+end
+
+% --- Utilitaire : bandes colorées sur un axes donné ---
+function addBands(ax, F)
+    % Bande large (lb)
+    patch('Parent',ax, ...
+          'XData',[F.f_min_lb F.f_min_lb F.f_max_lb F.f_max_lb], ...
+          'YData',[ax.YLim(1) ax.YLim(2) ax.YLim(2) ax.YLim(1)], ...
+          'FaceColor',[0 1 0],'FaceAlpha',0.12,'EdgeColor','none', ...
+          'DisplayName','Bande optimisation (élargie)', ...
+          'HandleVisibility','off');
+    % H1..H4 en rouge
+    drawBand(ax, F.f_min_h1, F.f_max_h1, 'bande 1 (BPF)');
+    drawBand(ax, F.f_min_h2, F.f_max_h2, 'bande 2 (H1)');
+    drawBand(ax, F.f_min_h3, F.f_max_h3, 'bande 3 (H2)');
+    drawBand(ax, F.f_min_h4, F.f_max_h4, 'bande 4 (H3)');
+
+    % Ajuster pour que les patchs couvrent bien l’axe
+    uistack(findobj(ax,'Type','patch'),'bottom');
+end
+
+function drawBand(ax, fmin, fmax, name)
+    yl = ax.YLim;
+    patch('Parent',ax, ...
+          'XData',[fmin fmin fmax fmax], ...
+          'YData',[yl(1) yl(2) yl(2) yl(1)], ...
+          'FaceColor',[1 0 0],'FaceAlpha',0.12,'EdgeColor','none', ...
+          'DisplayName',name,'HandleVisibility','off');
 end

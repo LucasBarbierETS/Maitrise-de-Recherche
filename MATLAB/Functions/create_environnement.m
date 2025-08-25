@@ -12,11 +12,18 @@ function env = create_environnement(temperature, static_pressure, relative_humid
     % Pression de référence pour l'échelle des niveau de pression
     env.p_ref = 20e-6; 
 
-    % Si l'utilisateur à indiqué un niveau de pression sonore (totale)
+    % Si l'utilisateur à indiqué un niveau de pression totale
     if nargin > 6
         p_rms = env.p_ref * 10.^(varargin{1}/20);
         env.p_rms = p_rms;
     end
+
+    % Si l'utilisateur à indiqué un nombre de Mach moyen
+    if nargin > 7
+        env.M = varargin{2};
+    end
+
+
 end
 
 

@@ -67,9 +67,15 @@ classdef classelement
 
             config = obj.Configuration;
 
-            % % debog : Tracé de la pression acoustique RMS au niveau de chaque sous-élement
-            % perso_figure('p_rms');
-            % plot(abs(p_in));
+            % % Debog : Pression RMS au niveau de chaque sous-élement
+            % perso_figure('p_rms au niveau de chaque sous-élement');
+            % plot(env.w/(2*pi), abs(p_in), 'DisplayName', 'p rms à la surface');
+            % xlim([0 2000])
+
+            % % Debog : Débit RMS au niveau de chaque sous-élement
+            % perso_figure('u_rms au niveau de chaque sous-élement');
+            % plot(env.w/(2*pi), abs(u_in), 'DisplayName', 'u rms à la surface');
+            % xlim([0 2000])
 
             for i = 1:length(config.ListOfSubelements)
                 sblm = config.ListOfSubelements{i};
@@ -79,9 +85,14 @@ classdef classelement
                 
                 [sblm_TM, p_in, u_in] = sblm.transfer_matrix_iter(env, p_in, u_in);
                 
-                % % debog (suite)
-                % perso_figure('p_rms');
-                % plot(abs(p_in));
+                % % Debog : Pression RMS au niveau de chaque sous-élement
+                % perso_figure('p_rms au niveau de chaque sous-élement');
+                % plot(env.w/(2*pi), abs(p_in), 'DisplayName', ['p rms après le sous-élement ', num2str(i)]);
+    
+                % % Debog : Débit RMS au niveau de chaque sous-élement
+                % perso_figure('u_rms au niveau de chaque sous-élement');
+                % plot(env.w/(2*pi), abs(u_in), 'DisplayName', ['u rms après le sous-élement', num2str(i)]);
+
                 
                 if exist('TM', 'var')
                     TM = matprod(TM, sblm_TM);
@@ -222,7 +233,7 @@ classdef classelement
             if nargin > 2
                 tol = varargin{1};
             else
-                tol = 1e-6; 
+                tol = 1e-3; 
             end
 
             max_iter = 500;  % Nombre maximum d'itérations
@@ -241,21 +252,32 @@ classdef classelement
 
                 TM = obj.transfer_matrix_iter(env, p_rms, u_rms);
 
+                % debog : Matrice de transfert de l'élement
+                % perso_figure('TM')
+                % perso_plot_transfer_matrix(TM, env);
+
                 % Vérification du critère de convergence
                 Zs = obj.surface_impedance(env, TM);
 
-                % % debog : Tracé de l'impédance de surface
+                % % Debog : Tracé de l'impédance de surface
                 % perso_figure('Zs');
-                % perso_plot_surface_impedance(Zs, env)
+                % perso_plot_surface_impedance(Zs, env, ['itération ', num2str(iter)]);
 
+                % Formulation en Pression - Débit
                 new_u_rms = abs(p_rms) ./ abs(Zs) * obj.Configuration.Surface;
                 % new_u_rms = abs(p_rms) ./ abs(Zs);
 
-                % % debog (suite)
+                % % Debog (suite)
                 % perso_figure('u_rms');
-                % plot(new_u_rms)
-                
+                % plot(env.w/(2*pi), new_u_rms)
+
                 convergence_criterium = max(abs(new_u_rms - u_rms));
+
+                % % Debog : Critère de convergence
+                % perso_figure('Convergence');
+                % scatter(iter, convergence_criterium, 'Color', 'b', 'HandleVisibility', 'off');
+                % % ylim([-1e-2 1e-2]);
+
                 if convergence_criterium < tol
                     converged = true;
                     Zs_iter = Zs;
@@ -342,8 +364,7 @@ classdef classelement
 
             output_model = input_model;
         end
-        
-        
+                
         function disp_subelements_parameters_table(obj, env)
 
             obj.disp_parameters_table(env);
@@ -402,9 +423,6 @@ classdef classelement
         end
 
         function obj = plot_alpha(obj, env, name, varargin) % f_min, f_max 
-
-            % figure()
-            hold on
             
             % Résultats analytiques
             
@@ -416,6 +434,10 @@ classdef classelement
 
             f = env.w / (2 * pi);
             color = perso_random_color_rgb_triplet();
+
+            perso_figure('Alpha Element');
+            hold on
+
             plot(f, alpha, 'color', color, 'DisplayName', name);
             % y_line_anal = yline(obj.alpha_mean(env, f_min, f_max), '--b', ...
                   % ['alpha moyen an. ', num2str(f_min), ' - ', num2str(f_max), ' Hz : ', num2str(obj.alpha_mean(env, f_min, f_max), 2)], ...
@@ -447,7 +469,6 @@ classdef classelement
 
         function obj = plot_surface_impedance(obj, env)
 
-            figure()
             hold on
             
             title('Impédance acoustique')
@@ -502,7 +523,6 @@ classdef classelement
 
         function scatter_config(obj, propname, label)
 
-            figure();
             scatter(linspace(1, length(obj.Configuration.(propname)), length(obj.Configuration.(propname))), obj.Configuration.(propname), 'red', 'filled', 'o');
             xlabel('Numéro de plaque');
             ylabel(label);

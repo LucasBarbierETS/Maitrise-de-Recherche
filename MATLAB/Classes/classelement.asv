@@ -30,8 +30,15 @@ classdef classelement
             TM = perso_empty_TM(env.w);
 
             for i = 1:length(config.ListOfSubelements)
-                sblm = config.ListOfSubelements{i};
-                if isa(sblm, 'classsubelement_imported') || isa(sblm, 'classelementassembly')
+                
+                try
+                    sblm = config.ListOfSubelements{i};
+                catch ME
+                    warning(ME.identifier, "Erreur capturée: %s", ME.message);
+                    pause; % stoppe l’exécution jusqu’à une touche
+                end
+
+                if isa(sblm, 'classsubelement_imported') || isa(sblm, 'classelementassembly') || isa(sblm, 'classvolume')
                     
                     % exlications
                     % perso_ouvrir_lien_Obsidian('obsidian://open?vault=Maitrise%20REAR&file=Notes%20atomiques%2FNote%20Matlab%20-%20Imp%C3%A9dance%20de%20surface%20compos%C3%A9e')
@@ -215,38 +222,42 @@ classdef classelement
             if nargin > 2
                 tol = varargin{1};
             else
-                tol = 1e-4; 
+                tol = 1e-6; 
             end
 
             max_iter = 500;  % Nombre maximum d'itérations
             iter = 0;
             converged = false;
 
-            % % debog : Tracé des débits acoustiques RMS successives au cours de la procédure itérative
-            % perso_figure('u_rms');
-            % clf
-            % title('Débit acoustique RMS à l''entrée de l''élement')
-            % legend();
-            % plot(env.w/(2*pi), u_rms, 'DisplayName', 'Itération 0')
+            % debog : Tracé des débits acoustiques RMS successives au cours de la procédure itérative
+            perso_figure('u_rms');
+            clf
+            title('Débit acoustique RMS à l''entrée de l''élement')
+            legend();
+            plot(env.w/(2*pi), u_rms, 'DisplayName', 'Itération 0')
 
             while ~converged && iter < max_iter
                 iter = iter + 1;
 
                 TM = obj.transfer_matrix_iter(env, p_rms, u_rms);
 
+                % debog : Matrice de transfert de l'élement
+                perso_figure('TM')
+                perso_plot_transfer_matrix(TM, env);
+
                 % Vérification du critère de convergence
                 Zs = obj.surface_impedance(env, TM);
 
-                % % debog : Tracé de l'impédance de surface
-                % perso_figure('Zs');
-                % perso_plot_surface_impedance(Zs, env)
+                % debog : Tracé de l'impédance de surface
+                perso_figure('Zs');
+                perso_plot_surface_impedance(env.w/(2*pi), Zs, env)
 
                 new_u_rms = abs(p_rms) ./ abs(Zs) * obj.Configuration.Surface;
                 % new_u_rms = abs(p_rms) ./ abs(Zs);
 
                 % % debog (suite)
-                % perso_figure('u_rms');
-                % plot(new_u_rms)
+                perso_figure('u_rms');
+                plot(new_u_rms)
                 
                 convergence_criterium = max(abs(new_u_rms - u_rms));
                 if convergence_criterium < tol
@@ -326,11 +337,11 @@ classdef classelement
             peak_alpha = a(max_indices);
         end
 
-        function output_model = set_COMSOL_2D_Model(obj, input_model, elem_index, env, varargin)
+        function output_model = set_COMSOL_2D_Model(obj, input_model, elem_index, env)
             
             config = obj.Configuration;
             for i = 1:length(config.ListOfSubelements)
-                input_model = config.ListOfSubelements{i}.set_COMSOL_2D_Model(obj, input_model, elem_index, sblm_index, env, varargin)
+                input_model = config.ListOfSubelements{i}.set_COMSOL_2D_Model(input_model, elem_index, i, env);
             end
 
             output_model = input_model;
@@ -394,16 +405,22 @@ classdef classelement
             end
         end
 
-        function obj = plot_alpha(obj, env, name) % f_min, f_max 
+        function obj = plot_alpha(obj, env, name, varargin) % f_min, f_max 
 
             % figure()
             hold on
             
             % Résultats analytiques
-            alpha = obj.alpha(env);
+            
+            if nargin > 3
+                alpha = obj.alpha(env, varargin{1});
+            else
+                alpha = obj.alpha(env);
+            end
+
             f = env.w / (2 * pi);
             color = perso_random_color_rgb_triplet();
-            plot_anal = plot(f, alpha, 'color', color, 'DisplayName', name);
+            plot(f, alpha, 'color', color, 'DisplayName', name);
             % y_line_anal = yline(obj.alpha_mean(env, f_min, f_max), '--b', ...
                   % ['alpha moyen an. ', num2str(f_min), ' - ', num2str(f_max), ' Hz : ', num2str(obj.alpha_mean(env, f_min, f_max), 2)], ...
                   % 'LabelHorizontalAlignment', 'left', ...
@@ -430,7 +447,6 @@ classdef classelement
                 obj.Configuration.Alpha3D = data;
                 plot(data(:, 1), data(:, 2), 'LineStyle', '--', 'DisplayName', [name ' - Résultat FEM 3D'])
             end
-            perso_configure_alpha_figure(3000);
         end
 
         function obj = plot_surface_impedance(obj, env)

@@ -33697,6 +33697,22 @@
       },
       "dateAdded": "2025-01-26T04:29:26Z",
       "dateModified": "2025-01-26T04:29:26Z"
+    },
+    {
+      "key": "A9Y5MZWZ",
+      "version": 22495,
+      "parentItem": "CMZQ7B9B",
+      "itemType": "annotation",
+      "annotationType": "image",
+      "annotationComment": "",
+      "annotationColor": "#ffd400",
+      "annotationPageLabel": "146",
+      "annotationSortIndex": "00145|001030|00578",
+      "annotationPosition": "{\"pageIndex\":145,\"rects\":[[172,170.8,430.6,213.4]]}",
+      "tags": [],
+      "relations": {},
+      "dateAdded": "2025-08-22T20:26:19Z",
+      "dateModified": "2025-08-22T20:26:19Z"
     }
   ],
   "collections": [
@@ -34007,5 +34023,5 @@
       }
     }
   ],
-  "version": 22478
+  "version": 22526
 }

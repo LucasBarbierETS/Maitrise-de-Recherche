@@ -29,8 +29,7 @@ fmax = 5000;
 points = 500;
 
 % Niveau sonore
-env = create_environnement(t, sp, hum, fmin, fmax, points);
-handle_env = @(varargin) create_environnement(t, sp, hum, fmin, fmax, points, varargin{1});
+handle_env = @(dB, M) create_environnement(t, sp, hum, fmin, fmax, points, dB, M);
 
 %% Fermeture du serveur COMSOL (si besoin)
 % ModelUtil.disconnect

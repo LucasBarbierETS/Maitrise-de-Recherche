@@ -120,7 +120,7 @@
       }
     ],
     "direction": "horizontal",
-    "width": 205.5
+    "width": 200
   },
   "right": {
     "id": "2afa7ea527d3110b",
@@ -217,7 +217,7 @@
       }
     ],
     "direction": "horizontal",
-    "width": 222.5
+    "width": 272.5
   },
   "left-ribbon": {
     "hiddenItems": {
@@ -236,9 +236,9 @@
   },
   "active": "a3e463ded68e1404",
   "lastOpenFiles": [
-    "Zotero/TheseLaly/Thèse Laly.md",
-    "Notes atomiques/Description du modèle approché utilisé à partir du nombre de Mach moyen.md",
     "Notes atomiques/Modèle de plaque avec forts niveaux.md",
+    "Notes atomiques/Description du modèle approché utilisé à partir du nombre de Mach moyen.md",
+    "Zotero/TheseLaly/Thèse Laly.md",
     "Zotero/TheseLaly/Images/TheseLaly-97-x78-y494.png",
     "Zotero/TheseLaly/Images/TheseLaly-87-x74-y129.png",
     "Zotero/TheseLaly/Images/TheseLaly-96-x78-y268.png",

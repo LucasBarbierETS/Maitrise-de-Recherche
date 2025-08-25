@@ -132,8 +132,8 @@
             % perso_figure('p_rms');
             % plot(abs(p_in));
 
-            for i = 1:length(config.ListOfSubelements)
-                sblm = config.ListOfSubelements{i};
+            for i = 1:length(config.ListOfElements)
+                sblm = config.ListOfElements{i};
                 if isa(sblm, 'function_handle')
                     sblm = sblm(abs(u_in));
                 end
@@ -176,20 +176,28 @@
         end
         
         function Zs = surface_impedance(obj, env, varargin)
-
-            % if nargin > 2 && strcmp(varargin{1}, 'admittance_sum')
                 
-                Ysum = zeros(1, length(env.w));
-                r = obj.input_ratios();
-                elem_list = obj.Configuration.ListOfElements;
+            Ysum = zeros(1, length(env.w));
+            r = obj.input_ratios();
+            elem_list = obj.Configuration.ListOfElements;
 
-                for i = 1:length(elem_list)
-                    elem = elem_list{i};
-                    TM = elem.transfer_matrix(env);
-                    Ysum = Ysum + r(i) * TM.T21 ./ TM.T11 / elem.Configuration.Surface;
-                end
+            for i = 1:length(elem_list)
+                elem = elem_list{i};
+                TM = elem.transfer_matrix(env);
 
-                Zs = 1 ./ Ysum;
+                % % Debog : Matrices de transfert des élements
+                % perso_figure('Matrices de transfert des élements dans classelementassembly\surface_impedance');
+                % perso_plot_transfer_matrix(TM, env, ['Element', num2str(i)]);
+
+                Ysum = Ysum + r(i) * TM.T21 ./ TM.T11 / elem.Configuration.Surface;
+
+                % % Debog : Contribution des admittances de surface
+                % perso_figure('Admittance de surface des élements dans classelementassembly\surface_impedance');
+                % perso_plot_surface_admittance(r(i) * TM.T21 ./ TM.T11 / elem.Configuration.Surface, env, ['Contribution de l''élement', num2str(i)]);
+                % % legend()
+            end
+
+            Zs = 1 ./ Ysum;
 
             % else
                 % TM = obj.transfer_matrix(env);
@@ -221,6 +229,8 @@
             % Initialisation
             u_rms = zeros(1, length(env.w));
             p_rms = env.p_rms;
+            Zs_iter = 0;
+            distance = 0;
 
             % % debog : Tracé de la pression acoustique RMS à l'entrée
             % perso_figure('p_rms');
@@ -232,7 +242,7 @@
             if nargin > 2
                 tol = varargin{1};
             else
-                tol = 1e-4; 
+                tol = 1e-3; 
             end
 
             max_iter = 500;  % Nombre maximum d'itérations
@@ -246,26 +256,58 @@
             % legend();
             % plot(env.w/(2*pi), u_rms, 'DisplayName', 'Itération 0')
 
+            r = obj.input_ratios();
+            elem_list = obj.Configuration.ListOfElements;
+
             while ~converged && iter < max_iter
                 iter = iter + 1;
 
-                TM = obj.transfer_matrix_iter(env, p_rms, u_rms);
+                Ysum = zeros(1, length(env.w));
 
-                % Vérification du critère de convergence
-                Zs = obj.surface_impedance(env, TM);
+                for i = 1:length(elem_list)
+                    elem = elem_list{i};
+                    TM = elem.transfer_matrix_iter(env, p_rms, u_rms);
 
-                % % debog : Tracé de l'impédance de surface
-                % perso_figure('Zs');
-                % perso_plot_surface_impedance(Zs, env)
+                    % % Debog : TM des élements
+                    % perso_figure('TM des élements dans classelementassembly\surface_impedance_iter');
+                    % perso_plot_transfer_matrix(TM, env, ['TM élement ', num2str(i)]);
+                    
+                    Ysum = Ysum + r(i) * TM.T21 ./ TM.T11 / elem.Configuration.Surface;
+
+                    % % Debog : Contribution des admittances de surface
+                    % perso_figure('Admittance de surface des élements dans classelementassembly\surface_impedance_iter');
+                    % perso_plot_surface_admittance(r(i) * TM.T21 ./ TM.T11 / elem.Configuration.Surface, env, ['Contribution de l''élement', num2str(i)]);
+                    % % legend()
+                end
+
+                % % Debog : Contribution des admittances de surface
+                % perso_figure('Admittance de surface de l''assemblage dans classelementassembly\surface_impedance_iter');
+                % perso_plot_surface_admittance(Ysum, env, ['Itération ', num2str(iter)]);
+                % % legend()
+
+                Zs = 1 ./ Ysum;
+
+                % % Debog : Tracé de l'impédance de surface
+                % perso_figure('Impédance de surface de l''assemblage dans classelementassembly\surface_impedance_iter');
+                % perso_plot_surface_impedance(Zs, env, ['Itération ', num2str(iter)]);
+
+                % % Debog : Partie réelle négatve
+                % find(real(Zs) < 0);
 
                 new_u_rms = abs(p_rms) ./ abs(Zs) * obj.Configuration.Surface;
                 % new_u_rms = abs(p_rms) ./ abs(Zs);
 
-                % % debog (suite)
+                % % Debog (suite)
                 % perso_figure('u_rms');
-                % plot(new_u_rms)
+                % plot(new_u_rms);
                 
                 convergence_criterium = max(abs(new_u_rms - u_rms));
+
+                % % Debog : Critère de convergence
+                % perso_figure('Convergence');
+                % scatter(iter, convergence_criterium, 'Color', 'b', 'HandleVisibility', 'off');
+                % % ylim([-1e-2 1e-2]);
+
                 if convergence_criterium < tol
                     converged = true;
                     Zs_iter = Zs;
@@ -276,7 +318,17 @@
         end
         
         function alpha = alpha(obj, env, varargin) % retourne le vecteur coefficient d'absorption
-            Zs = obj.surface_impedance(env, varargin);
+
+            if nargin > 2 && strcmp(varargin{1}, "iter")
+                if nargin > 3
+                    Zs = obj.surface_impedance_iter(env, varargin{2}); % tol
+                else   
+                    Zs = obj.surface_impedance_iter(env);
+                end
+            else
+                Zs = obj.surface_impedance(env);
+            end
+
             param = env.air.parameters;
             Z0 = param.rho * param.c0;
             alpha = 1 - abs((Zs - Z0) ./ (Zs + Z0)).^2;
@@ -312,10 +364,10 @@
 
         function obj = plot_alpha(obj, env, name, varargin)
 
-            % Résultats analytiques
-            alpha = obj.alpha(env, varargin);
+            alpha = obj.alpha(env, varargin{:});
             f = env.w / (2 * pi);
-            plot(f, alpha, 'DisplayName', name)
+            perso_figure('Alpha assembly');
+            plot(f, alpha, 'DisplayName', name);
             perso_configure_alpha_figure(3000);
         end
     
