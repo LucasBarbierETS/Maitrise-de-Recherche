@@ -63,9 +63,9 @@ $$\sigma = \frac{p2 - p1}{\bar{v}e \space n\pi r^{2}}$$ ^b7d3fb
 $$\sigma  = \frac{8 \eta}{\phi r^{2}}= [\frac{[kg \space m^{-1} \space s^{-1}]}{[m^2]}]$$ ^0ae31d
 #### 4.135
 
-^f5f6e8
 
-$$Z_{c} = \sqrt{K\rho}$$
+$$Z_{c} = \sqrt{K\rho}$$ ^035d50
+
 $$k = \omega \space \sqrt{\frac{\rho}{K}}$$ ^8fee5f
 #### 5.37
 

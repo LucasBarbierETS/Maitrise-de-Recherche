@@ -69,13 +69,18 @@ classdef classMPP_Circular_HL < classMPP_Circular
 
             beta = 1.6; % [5] p.8
             Cd = 0.76; % [5] p.8
-            q = 0.3; % voir modèle Laly écoulement
+            % q = 0.3; % voir modèle Laly écoulement
 
             % Résistivité au passage de l'air ([5], p. 7, eq. 27)
             sig = 8 * env.air.parameters.eta / (phi * pr^2) ...
                 + beta * env.air.parameters.Z0 / (pi * t * Cd^2) ...
-                * (-1/2 + classMPP_Circular_HL.f(env, phi)) ... % forts niveaux
-                + env.air.parameters.rho * env.air.parameters.c0 * (1 - phi^2) / (phi * t) * q * env.M; % écoulement
+                * (-1/2 + classMPP_Circular_HL.f(env, phi)); ... % forts niveaux
+                % + env.air.parameters.rho * env.air.parameters.c0 * (1 - phi^2) / (phi * t) * q * env.M; % écoulement
+
+            % % debog : Tracé de la résistivité au passage de l'air en fonction de la fréquence
+            % perso_figure('Résistivité aupassage de l''air dans classMPP_Circular_HL')
+            % plot(abs(sig))
+            % close();
          end
 
          function tor = tortuosity(env, phi, pr, t)
@@ -85,7 +90,8 @@ classdef classMPP_Circular_HL < classMPP_Circular
             sum_a = dot(a, sqrt(phi).^(0:length(a)-1));
 
             % Tortuosité non linéaire ([5], p. 7, eq. 28)
-            tor = 1 + 2 * psi / (1 + 305 * env.M^3) * 0.48 * sqrt(pi * pr^2) / t * sum_a ...
+            % tor = 1 + 2 * psi / (1 + 305 * env.M^3) * 0.48 * sqrt(pi * pr^2) / t * sum_a ...
+            tor = 1 + 2 * psi * 0.48 * sqrt(pi * pr^2) / t * sum_a ...    
                 * (1 + 1 / (1 - phi^2) ...
                 * (-1/2 + classMPP_Circular_HL.f(env, phi)))^(-1);
         end

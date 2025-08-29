@@ -57,10 +57,14 @@ Par exemple, **la conservation de l'énergie dans les fluide est un corolaire re
 Il n'y a pas en acoustique de grandeurs privilégiées par rapport à d'autres. Pour ainsi dire, les concepts définis théoriquement (pression, vitesse, intensité acoustique, etc.) et formulés sous forme mathématique n'ont pas d'existence au delà de l'abstraction et qui plus est, toujours en relation les unes par rapport aux autres. Elles ne revêtent un caractère privilégié pour l'imaginaire que si elle sont directement reliés avec un phénomène mesurable, sensoriel ou à certaines loi de comportement du système qui nécessitent un support conceptuel pour etre formulée. Ainsi on utilise la pression que parce qu'elle est directement reliée à la perception auditive, on utilise l'énergie que parce elle est nécessaire à la formulation du principe de sa conservation, on utilise l'intensité que parce qu'elle est directement reliée à l'intuition de propagation de cette énergie.
 #### Introduction au formalisme
 
-Les grandeurs d'intérêts de l'acoustique sont **la pression $p$ et la vitesse $v$**. L'étude de ces relations impliquent d'autres grandeurs qui caractérise l'état de la matière dans l'espace et le temps: la **densité** $\rho$ et la **température acoustique** $\tau$. Chacune de ces grandeurs ($\Theta$) se présente sous la forme de la somme d'**une composante statique constante** ($\Theta_0$) et d'**une composante dynamique variable** ($\Theta'$) de moyenne temporelle nulle.  
+Les grandeurs d'intérêts de l'acoustique sont **la pression $p$ et la vitesse $v$**. L'étude de ces relations impliquent d'autres grandeurs qui caractérisent l'état de la matière dans l'espace et le temps: la **densité** $\rho$ et la **température acoustique** $\tau$. Chacune de ces grandeurs ($\Theta$) se présente sous la forme de la somme d'**une composante statique constante** ($\Theta_0$) et d'**une composante dynamique variable** 
+($\Theta'$) de moyenne temporelle nulle.  
 
 On définit plusieurs propriétés du milieu qui décrivent les relations entre ces grandeurs : 
-l'**impédance caractéristique $Z_{c}$**, la **célérité $c$**, le **nombre d'onde $k$**, la **densité $\rho$** et la **compressibilité $K$**. Ces variables sont redondantes, on privilégie les unes ou les autres en fonction de ce que l'on cherche à formuler. En particulier : ![[Propagation of Sound in Porous Media#^8fee5f]]$$c = \sqrt{\frac{K}{\rho}}$$ 
+l'**impédance caractéristique $Z_{c}$**, la **célérité $c$**, le **nombre d'onde $k$**, la **densité $\rho$** et la **compressibilité $K$**. 
+On a en effet : $$Z_{c} = \frac{p}{v}$$ 
+Ces variables sont redondantes, on privilégie les unes ou les autres en fonction de ce que l'on cherche à formuler. En particulier : ![[Propagation of Sound in Porous Media#^8fee5f]]
+$$c = \sqrt{\frac{K}{\rho}}$$
 En **acoustique linéaire**, plusieurs principes physiques sont à la base de la formulation des relations entre la vitesse et la pression acoustique. Ces principes, valables en tout point de l'espace sont : 
 
 - le principe de **conservation de la masse** : pour un volume donné, la perte de la masse qu'il renferme à un instant $t$ est égal au flux massique qui traverse sa surface. Une formulation locale de ce principe s'écrit : 
@@ -104,9 +108,7 @@ Dans un milieu dissipatif il est alors nécessaire de considérer la **viscosit�
 Au contact d'une paroi les couches de fluide subissent une force de frottement tangentielle qui s'oppose à leur déplacement, dans le sens opposé à celui du champ de vitesse. A proximité de la paroi, les couches sont cisaillées les unes par les autres du fait de la **viscosité dynamique** du milieu. Les couches éloignées entrainent les couches proches freinées par la paroi. Dans cette situation il y a une **diffusion du moment cinétique** dans le milieu en direction de la paroi. Cette diffusion se manifeste par un flux d'énergie dans la même direction. **L'énergie mécanique est ainsi détournée sous la forme d'un travail du milieu exercé sur la paroi**, travail qui se manifeste par l'échauffement de celle-ci, ou dans le cas d'une paroi isotherme par un transfert thermique depuis le fluide vers la paroi.
 
 La diffusion du moment cinétique concerne une zone de l'espace limitée dans laquelle le champ de vitesse est déformée par les frottements visqueux. On définit une **couche limite visqueuse** à la surface de la paroi, dont l'épaisseur est appelée **longueur caractéristique visqueuse**
-
 $$\Lambda = \sqrt{\frac{2\nu}{\omega}}$$
-
 *Remarque : Cette longueur augmente avec la viscosité du fluide soit avec l'aptitude du fluide à s'opposer aux gradients de vitesse. 
 ##### Pertes thermiques
 
@@ -116,7 +118,7 @@ L'introduction d'un gradient thermique dans le milieu (contact à un paroi isoth
 On définie une région de l'espace dans laquelle on considère que l'introduction d'un gradient thermique entraine un diffusion significative de cette énergie, appelée **couche limite thermique**. Son épaisseur est appelée **longueur caractéristique thermique** : ![[Propagation of Sound in Porous Media#^848f9b]]
 *Remarque : Cette longueur augmente avec l'aptitude du milieu à conduire l'énergie et diminue avec son aptitude à la stocker.
 
-*Remarque : Les longueurs caractéristiques thermique et visqueuse diminue toute les deux avec la fréquence. On peut comprendre cela en remarquant que dans les deux cas diffusion est d'autant plus importante que les gradients (de vitesse et de température) se maintiennent dans le temps ce qui est le cas lorsque la période de l'oscillation est plus grande. A haute fréquence, les gradients ne persistent pas assez et la diffusion est limitée.
+*Remarque : Les longueurs caractéristiques thermique et visqueuse diminue toute les deux avec la fréquence. On peut comprendre cela en remarquant que dans les deux cas diffusion est d'autant plus importante que les gradients (de vitesse et de température) se maintiennent dans le temps ce qui est le cas lorsque la période de l'oscillation est plus grande. A haute fréquence, les gradients ne persistent pas assez et la diffusion est limitée. 
 
 #### Matériau acoustique, réflexion, transmission, absorption
 
@@ -135,7 +137,7 @@ On voit ici que dans ce contexte on peut interpréter le coefficient d'absorptio
 
 #### Milieu stratifié, 2D, onde plane, incidence oblique 
 
-Si on s'intéresse au développement d'une onde plane oblique dans un plan bistratifié (*[[Propagation of Sound in Porous Media|PSPM]], figure 3.3*) comme l'impédance est définie par rapport à la vitesse normale on a maintenant ![[Propagation of Sound in Porous Media#^5eb7f9]] 
+Si on s'intéresse au développement d'une onde plane oblique dans un plan bistratifié (*[[Propagation of Sound in Porous Media|PSPM]], figure 3.3*) comme l'impédance est définie par rapport à la vitesse normale on a maintenant ![[Propagation of Sound in Porous Media#^5eb7f9]]
 On voit ici que l'angle d'incidence modifie la longueur du trajet réel des ondes dans le matériau 
 ($kd \space cos(\theta))$ et donc la quantité d'énergie absorbée mais l'expression corrige en même temps la formulation de l'impédance pour tenir compte du fait que **l'énergie n'est plus comptabilisée de la même manière**
 - Transmission : rapport des puissances transmises

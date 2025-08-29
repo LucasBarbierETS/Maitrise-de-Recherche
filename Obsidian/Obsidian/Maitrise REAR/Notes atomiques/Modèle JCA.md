@@ -8,9 +8,6 @@ Matrice de transfert d'une couche de fluide équivalente (c.p.d.)
 
 On sait par ailleurs que ![[Propagation of Sound in Porous Media#^8fee5f]]
 
-
-
-
 **Impédance d'une couche poreuse sur fond rigide**  
 
 ![[Propagation of Sound in Porous Media#^c50868]]
@@ -32,7 +29,7 @@ $$k_{e q}=\frac{\omega}{c_o}\left[1+0.0978 (\frac{\rho_0f}{\sigma})^{-0.700}-j 0
 La difficulté qu'on rencontre lorsqu'on cherche à modéliser un matériau poreux vient du fait que dans le cas général on ne sait pas comment formuler et donc quantifier les phénomènes dissipatifs. Par ailleurs il n'est pas possible de décrire exactement le champ de pression en tenant compte de la géométrie réelle de la matrice poreuse. On étudie alors une situation de difficulté intermédiaire dans laquelle les pores sont droits, cylindriques à base circulaire. Dans cette situation il est possible de reformuler les équations de propagation des ondes.
 Le but est ici de **faire apparaitre des formes générales permettant de décrire les effets de dissipation visco-thermiques** pour une forme spécifique de poreux, et de les adapter par la suite à tous les autres.
 
-Il est possible de modéliser les phénomènes dissipatifs dans un pore cylindrique en tenant compte séparément des pertes visqueuses et thermiques (Zwikker et Kosten, 1949). 
+Il est possible de modéliser les phénomènes dissipatifs dans un pore cylindrique en tenant compte séparément des pertes visqueuses et thermiques (Zwikker & Kosten, 1949). 
 
 - Pertes visqueuses
 	En particulier on peut reformuler l'équation de conservation de la masse :

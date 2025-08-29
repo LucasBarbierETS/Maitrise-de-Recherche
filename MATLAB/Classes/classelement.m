@@ -66,44 +66,80 @@ classdef classelement
         function [TM, p_in, u_in] =  transfer_matrix_iter(obj, env, p_in, u_in)
 
             config = obj.Configuration;
+            TM = perso_empty_TM(env.w);
 
             % % Debog : Pression RMS au niveau de chaque sous-élement
             % perso_figure('p_rms au niveau de chaque sous-élement');
+            % clf();
             % plot(env.w/(2*pi), abs(p_in), 'DisplayName', 'p rms à la surface');
             % xlim([0 2000])
 
             % % Debog : Débit RMS au niveau de chaque sous-élement
             % perso_figure('u_rms au niveau de chaque sous-élement');
+            % clf();
             % plot(env.w/(2*pi), abs(u_in), 'DisplayName', 'u rms à la surface');
             % xlim([0 2000])
 
             for i = 1:length(config.ListOfSubelements)
+                
                 sblm = config.ListOfSubelements{i};
+
                 if isa(sblm, 'function_handle')
                     sblm = sblm(abs(u_in));
                 end
-                
-                [sblm_TM, p_in, u_in] = sblm.transfer_matrix_iter(env, p_in, u_in);
-                
-                % % Debog : Pression RMS au niveau de chaque sous-élement
-                % perso_figure('p_rms au niveau de chaque sous-élement');
-                % plot(env.w/(2*pi), abs(p_in), 'DisplayName', ['p rms après le sous-élement ', num2str(i)]);
-    
-                % % Debog : Débit RMS au niveau de chaque sous-élement
-                % perso_figure('u_rms au niveau de chaque sous-élement');
-                % plot(env.w/(2*pi), abs(u_in), 'DisplayName', ['u rms après le sous-élement', num2str(i)]);
 
-                
-                if exist('TM', 'var')
-                    TM = matprod(TM, sblm_TM);
+                if isa(sblm, 'classsubelement_imported') || isa(sblm, 'classvolume')
+                    
+                    % exlications
+                    % perso_ouvrir_lien_Obsidian('obsidian://open?vault=Maitrise%20REAR&file=Notes%20atomiques%2FNote%20Matlab%20-%20Imp%C3%A9dance%20de%20surface%20compos%C3%A9e')
+                    S = sblm.Configuration.Surface;
+
+                    try
+                        TM.T11 = TM.T11 .* sblm.surface_impedance(env)/S + TM.T12;
+                        TM.T21 = TM.T21 .* sblm.surface_impedance(env)/S + TM.T22;
+                    catch
+                        error('Impossible de calculer l''impédance de surface du sous-élement itérativement');
+                    end
+                    
+                    return
+
+                elseif isa(sblm, 'classelementassembly')
+
+                    S = sblm.Configuration.Surface;
+
+                    try
+                        TM.T11 = TM.T11 .* sblm.surface_impedance_iter(env)/S + TM.T12;
+                        TM.T21 = TM.T21 .* sblm.surface_impedance_iter(env)/S + TM.T22;
+                    catch
+                        error('Impossible de calculer l''impédance de surface du sous-élement itérativement');
+                    end
+                    
+                    return
+
                 else
-                    TM = sblm_TM;
+                    try
+                        [sblm_TM, p_in, u_in] = sblm.transfer_matrix_iter(env, p_in, u_in);
+                        
+                        % % Debog : Pression RMS au niveau de chaque sous-élement
+                        % perso_figure('p_rms au niveau de chaque sous-élement');
+                        % plot(env.w/(2*pi), abs(p_in), 'DisplayName', ['p rms après le sous-élement ', num2str(i)]);
+            
+                        % % Debog : Débit RMS au niveau de chaque sous-élement
+                        % perso_figure('u_rms au niveau de chaque sous-élement');
+                        % plot(env.w/(2*pi), abs(u_in), 'DisplayName', ['u rms après le sous-élement', num2str(i)]);
+
+                        TM = matprod(TM, sblm_TM);
+
+                   catch
+                        error('Impossible de calculer la matrice de transfert du sous-élement');
+                    end
                 end
 
                 % % debog : Tracé des termes complexes de la matrice de transfert du sous-élement
                 % perso_figure('TM')
                 % perso_plot_transfer_matrix(sblm_TM, env);  
-                % clf
+                % close()
+
             end 
 
             % % debog : Tracé des termes complexes de la matrice de transfert de l'élement

@@ -133,12 +133,12 @@
             % plot(abs(p_in));
 
             for i = 1:length(config.ListOfElements)
-                sblm = config.ListOfElements{i};
-                if isa(sblm, 'function_handle')
-                    sblm = sblm(abs(u_in));
+                elem = config.ListOfElements{i};
+                if isa(elem, 'function_handle')
+                    elem = elem(abs(u_in));
                 end
                 
-                [sblm_TM, p_in, u_in] = sblm.transfer_matrix_iter(env, p_in, u_in);
+                [sblm_TM, p_in, u_in] = elem.transfer_matrix_iter(env, p_in, u_in);
                 
                 % % debog (suite)
                 % perso_figure('p_rms');
@@ -366,7 +366,6 @@
 
             alpha = obj.alpha(env, varargin{:});
             f = env.w / (2 * pi);
-            perso_figure('Alpha assembly');
             plot(f, alpha, 'DisplayName', name);
             perso_configure_alpha_figure(3000);
         end

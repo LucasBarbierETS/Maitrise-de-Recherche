@@ -48,6 +48,7 @@ dB = 134;
 % dB = 120;
 M = 0.1;
 env = handle_env(dB, M);
+env0 = handle_env(dB, 0);
 
 %% Paramètres géométriques invariants
 
@@ -108,10 +109,12 @@ NV = 2;
 % NV = 3; % Nombre de variables pour chaque solution (rayon des perforations, nombre de perfs en largeur, espacement des perfs en largeur)
 N = 5; % Nombre de plaques optimisées indépendantes pour chaque solution
 
-% NP = 500; % Nombre de points de départ
-NP = 100;
+NP = 500; % Nombre de points de départ
+% NP = 100;
 % NP = 50;
 % NP = 10;
+% NP = 5;
+% NP = 2;
 
 % Récupération des parties du vecteur d'optimisation
 x_TP_ETS = @(x) x(:, 1 : NTP); % Plaque couvrante ETS
@@ -275,7 +278,7 @@ Objets.MPPSBH_i = @(x_ETS, x_radius, i) classMPPSBH_Rectangular( ...
 % Objets.MPPSBH_i(x_ETS(x0(1, :)), x_SPLX(x0(1, :)), 1).plot_alpha(env, 'modèle linéaire');
 % close();
 
-Objets.MPPSBH_HL_i = @(x_ETS, x_radius, i) classMPPSBH_Rectangular_HL_iter( ...
+Objets.MPPSBH_HL_i = @(x_ETS, x_radius, i) classMPPSBH_Rectangular_HL( ...
     classMPPSBH_Rectangular.create_explicit_slit_pattern_config( ...
         ETS_input_surface, N, ETS_cavities_depth, ETS_cavities_width, ...
         {x_radius}, ... {radius(x_ETS(i, :, 1))}, ... {eval_r(x0(:, 1, i))}, ... % rayon des perforations
@@ -286,15 +289,19 @@ Objets.MPPSBH_HL_i = @(x_ETS, x_radius, i) classMPPSBH_Rectangular_HL_iter( ...
         {plates_thickness}, ... % épaisseur des plaques (supérieure + internes)
         {ETS_cavities_thickness})); % {perso_simplex_map(x_SPLX, ETS_cavities_total_thickness)}));  % épaisseur de cavité 
 
-% % Debog (OK)
-% figure()
-% Objets.MPPSBH_HL_i(x_ETS(x0(1, :)), x_SPLX(x0(1, :)), 1).plot_alpha(env, 'HL, dB spec');
-% Objets.MPPSBH_HL_i(x_ETS(x0(1, :)), x_SPLX(x0(1, :)), 1).plot_alpha(env, 'HL, dB rms');
-% Objets.MPPSBH_HL_i(x_ETS(x0(1, :)), x_SPLX(x0(1, :)), 1).plot_alpha(env, 'HL, dB max');
-% close();
+Objets.MPPSBH_HL_iter_i = @(x_ETS, x_radius, i) classMPPSBH_Rectangular_HL_iter( ...
+    classMPPSBH_Rectangular.create_explicit_slit_pattern_config( ...
+        ETS_input_surface, N, ETS_cavities_depth, ETS_cavities_width, ...
+        {x_radius}, ... {radius(x_ETS(i, :, 1))}, ... {eval_r(x0(:, 1, i))}, ... % rayon des perforations
+        {x_ETS(i, :, 1)}, ... % distance entre perforations (width)
+        {ETS_cavities_depth/depth_holes_number}, ... % distance entre perforations (depth)
+        {depth_holes_number}, ... {transpose(x0(:, 3, i))}, ... % nombre de perforations en profondeur
+        {x_ETS(i, :, 2)}, ... % nombre de perforations en largeur
+        {plates_thickness}, ... % épaisseur des plaques (supérieure + internes)
+        {ETS_cavities_thickness})); % {perso_simplex_map(x_SPLX, ETS_cavities_total_thickness)}));  % épaisseur de cavité 
 
 % % Debog : Approche itérative (OK)
-% Objets.MPPSBH_HL_i(x_ETS(x0(1, :)), radius(x_radius(x0(1, :))), 1).plot_alpha(env, 'HL, dB spec', 'iter');
+% Objets.MPPSBH_HL_iter_i(x_ETS(x0(1, :)), radius(x_radius(x0(1, :))), 1).plot_alpha(env, 'HL, dB spec', 'iter');
 % close();
 
 % Construction d'une solution en rajoutant une cavité au dessus de la solution MPPSBH
@@ -308,9 +315,14 @@ Objets.MPPSBH_HL_element_i = @(x, i) classelement( ...
     classcavity(classcavity.create_config(ETS_cavities_thickness, ETS_cavities_width, ETS_cavities_depth)) ...
     Objets.MPPSBH_HL_i(x_ETS(x), radius(x_radius(x)), i)}, 'closed', ETS_input_surface));
 
+Objets.MPPSBH_HL_iter_element_i = @(x, i) classelement( ...
+    classelement.create_config({ ...
+    classcavity(classcavity.create_config(ETS_cavities_thickness, ETS_cavities_width, ETS_cavities_depth)) ...
+    Objets.MPPSBH_HL_iter_i(x_ETS(x), radius(x_radius(x)), i)}, 'closed', ETS_input_surface));
+
 % % Debog : Approche itérative (OK)
 % Objets.MPPSBH_element_i(x0(1, :), 1).plot_alpha(env, 'HL, dB spec');
-% Objets.MPPSBH_HL_element_i(x0(1, :), 1).plot_alpha(env, 'Element MPPSBH HL', 'iter');
+% Objets.MPPSBH_HL_iter_element_i(x0(1, :), 1).plot_alpha(env, 'Element MPPSBH HL', 'iter');
 % close();
 
 % % Debog : MPPSBH_element_i
@@ -324,32 +336,47 @@ Objets.cell_of_MPPSBH_elements = @(x) arrayfun(@(i) ...
 Objets.cell_of_MPPSBH_HL_elements = @(x) arrayfun(@(i) ...
     Objets.MPPSBH_HL_element_i(x, i), 1:NS ,'UniformOutput', false);
 
-%% Plaque couvrantes, Airs gaps, Cavités jaunes
+Objets.cell_of_MPPSBH_HL_iter_elements = @(x) arrayfun(@(i) ...
+    Objets.MPPSBH_HL_iter_element_i(x, i), 1:NS ,'UniformOutput', false);
+
+%% Plaques couvrantes, Airs gaps, Cavités jaunes
 
 porosity = @(x) pi * (radius(x(1)))^2 / x(2)^2;
 
 top_plate = @(x_TP) classMPP_Circular(classMPP_Circular.create_config(total_input_surface,  ...
 top_plate_thickness, radius(x_TP(1)), porosity(x_TP)));
 
-top_plate_HL = @(x_TP) classMPP_Circular_HL_iter(classMPP_Circular.create_config(total_input_surface,  ...
+top_plate_HL_flow = @(x_TP) classMPP_Circular_HL_flow(classMPP_Circular.create_config(total_input_surface,  ...
+top_plate_thickness, radius(x_TP(1)), porosity(x_TP)));
+
+top_plate_HL_flow_iter = @(x_TP) classMPP_Circular_HL_flow_iter(classMPP_Circular.create_config(total_input_surface,  ...
 top_plate_thickness, radius(x_TP(1)), porosity(x_TP)));
 
 top_plate_ETS = @(x_TP_ETS) classMPP_Circular(classMPP_Circular.create_config(ETS_input_surface, ...
 top_plate_thickness, radius(x_TP_ETS(1)), top_plate(x_TP_ETS).Configuration.Porosity, ETS_width, ETS_depth));
 
-top_plate_ETS_HL = @(x_TP_ETS) classMPP_Circular_HL_iter(classMPP_Circular.create_config(ETS_input_surface, ...
+top_plate_ETS_HL_flow = @(x_TP_ETS) classMPP_Circular_HL_flow(classMPP_Circular.create_config(ETS_input_surface, ...
+top_plate_thickness, radius(x_TP_ETS(1)), top_plate(x_TP_ETS).Configuration.Porosity, ETS_width, ETS_depth));
+
+top_plate_ETS_HL_flow_iter = @(x_TP_ETS) classMPP_Circular_HL_flow_iter(classMPP_Circular.create_config(ETS_input_surface, ...
 top_plate_thickness, radius(x_TP_ETS(1)), top_plate(x_TP_ETS).Configuration.Porosity, ETS_width, ETS_depth));
 
 top_plate_Poly = @(x_TP_Poly) classMPP_Circular(classMPP_Circular.create_config(Poly_input_surface, ...
 top_plate_thickness, radius(x_TP_Poly(1)), top_plate(x_TP_Poly).Configuration.Porosity, Poly_width, Poly_depth));
 
-top_plate_Poly_HL = @(x_TP_Poly) classMPP_Circular_HL_iter(classMPP_Circular.create_config(Poly_input_surface, ...
+top_plate_Poly_HL_flow = @(x_TP_Poly) classMPP_Circular_HL_flow(classMPP_Circular.create_config(Poly_input_surface, ...
+top_plate_thickness, radius(x_TP_Poly(1)), top_plate(x_TP_Poly).Configuration.Porosity, Poly_width, Poly_depth));
+
+top_plate_Poly_HL_flow_iter = @(x_TP_Poly) classMPP_Circular_HL_flow_iter(classMPP_Circular.create_config(Poly_input_surface, ...
 top_plate_thickness, radius(x_TP_Poly(1)), top_plate(x_TP_Poly).Configuration.Porosity, Poly_width, Poly_depth));
 
 top_plate_yc = @(x_TP_yc) classMPP_Circular(classMPP_Circular.create_config(yc_input_surface, ...
 top_plate_thickness, radius(x_TP_yc(1)), top_plate(x_TP_yc).Configuration.Porosity, yc_width, yc_depth));
 
-top_plate_yc_HL = @(x_TP_yc) classMPP_Circular_HL_iter(classMPP_Circular.create_config(yc_input_surface, ...
+top_plate_yc_HL_flow = @(x_TP_yc) classMPP_Circular_HL_flow(classMPP_Circular.create_config(yc_input_surface, ...
+top_plate_thickness, radius(x_TP_yc(1)), top_plate(x_TP_yc).Configuration.Porosity, yc_width, yc_depth));
+
+top_plate_yc_HL_flow_iter = @(x_TP_yc) classMPP_Circular_HL_flow_iter(classMPP_Circular.create_config(yc_input_surface, ...
 top_plate_thickness, radius(x_TP_yc(1)), top_plate(x_TP_yc).Configuration.Porosity, yc_width, yc_depth));
 
 % Distance Plaque - Solutions
@@ -390,18 +417,24 @@ Contributions.contribution_MPPSBH_element_i = @(x, i) classelement(classelement.
 % close();
 
 Contributions.contribution_MPPSBH_element_HL_i = @(x, i) classelement(classelement.create_config( ...
-    {top_plate_ETS_HL(x_TP_ETS(x)), ...
+    {top_plate_ETS_HL_flow(x_TP_ETS(x)), ...
      air_gap_ETS, ...
      classcavity(classcavity.create_config(ETS_cavities_thickness, ETS_cavities_width, ETS_cavities_depth)), ...
      Objets.MPPSBH_HL_i(x_ETS(x), radius(x_radius(x)), i)}, 'closed', ETS_input_surface));
 
+Contributions.contribution_MPPSBH_element_HL_iter_i = @(x, i) classelement(classelement.create_config( ...
+    {top_plate_ETS_HL_flow_iter(x_TP_ETS(x)), ...
+     air_gap_ETS, ...
+     classcavity(classcavity.create_config(ETS_cavities_thickness, ETS_cavities_width, ETS_cavities_depth)), ...
+     Objets.MPPSBH_HL_iter_i(x_ETS(x), radius(x_radius(x)), i)}, 'closed', ETS_input_surface));
+
 % % Debog : Approche itérative (OK)
-% Contributions.contribution_MPPSBH_element_HL_i(x0(1, :), 1).plot_alpha(env, 'Contribution Element MPPSBH HL', 'iter');
+% Contributions.contribution_MPPSBH_element_HL_iter_i(x0(1, :), 1).plot_alpha(env, 'Contribution Element MPPSBH HL', 'iter');
 % perso_configure_alpha_figure(2000)
 % close();
 
 Contributions.contribution_MPPSBH_element_HL_fp_i = @(x, i) classelement(classelement.create_config( ...
-    {top_plate_ETS_HL(x_TP_ETS(x)), ...
+    {top_plate_ETS_HL_flow(x_TP_ETS(x)), ...
      air_gap_ETS, ...
      classcavity(classcavity.create_config(ETS_cavities_thickness, ETS_cavities_width, ETS_cavities_depth)), ...
      Objets.MPPSBH_i(x_ETS(x), radius(x_radius(x)), i)}, 'closed', ETS_input_surface));
@@ -412,6 +445,9 @@ Contributions.contribution_cell_of_MPPSBH_element = @(x) arrayfun(@(i) ...
 Contributions.contribution_cell_of_MPPSBH_HL_element = @(x) arrayfun(@(i) ...
     Contributions.contribution_MPPSBH_element_HL_i(x, i), 1:NS ,'UniformOutput', false);
 
+Contributions.contribution_cell_of_MPPSBH_HL_iter_element = @(x) arrayfun(@(i) ...
+    Contributions.contribution_MPPSBH_element_HL_iter_i(x, i), 1:NS ,'UniformOutput', false);
+
 Contributions.contribution_cell_of_MPPSBH_HL_fp_element = @(x) arrayfun(@(i) ...
     Contributions.contribution_MPPSBH_element_HL_fp_i(x, i), 1:NS ,'UniformOutput', false);
 
@@ -421,7 +457,12 @@ Contributions.contribution_Poly_element = @(x) classelement(classelement.create_
      imported_Poly_subelement}, 'closed', Poly_input_surface));
 
 Contributions.contribution_Poly_HL_element = @(x) classelement(classelement.create_config( ...
-    {top_plate_Poly_HL(x_TP_Poly(x)), ...
+    {top_plate_Poly_HL_flow(x_TP_Poly(x)), ...
+     air_gap_Poly, ...
+     imported_Poly_subelement}, 'closed', Poly_input_surface));
+
+Contributions.contribution_Poly_HL_iter_element = @(x) classelement(classelement.create_config( ...
+    {top_plate_Poly_HL_flow_iter(x_TP_Poly(x)), ...
      air_gap_Poly, ...
      imported_Poly_subelement}, 'closed', Poly_input_surface));
 
@@ -431,7 +472,12 @@ Contributions.contribution_Poly_numerical_element = @(x) classelement(classeleme
      numerical_Poly_subelement}, 'closed', Poly_input_surface));
 
 Contributions.contribution_Poly_HL_numerical_element = @(x) classelement(classelement.create_config( ...
-    {top_plate_Poly_HL(x_TP_Poly(x)), ...
+    {top_plate_Poly_HL_flow(x_TP_Poly(x)), ...
+     air_gap_Poly, ...
+     numerical_Poly_subelement}, 'closed', Poly_input_surface));
+
+Contributions.contribution_Poly_HL_iter_numerical_element = @(x) classelement(classelement.create_config( ...
+    {top_plate_Poly_HL_flow_iter(x_TP_Poly(x)), ...
      air_gap_Poly, ...
      numerical_Poly_subelement}, 'closed', Poly_input_surface));
 
@@ -441,13 +487,21 @@ Contributions.cell_of_Poly_element_contribution = @(x) arrayfun(@(i) ...
 Contributions.cell_of_Poly_HL_element_contribution = @(x) arrayfun(@(i) ...
     Contributions.contribution_Poly_HL_element(x), 1:NS ,'UniformOutput', false);
 
+Contributions.cell_of_Poly_HL_iter_element_contribution = @(x) arrayfun(@(i) ...
+    Contributions.contribution_Poly_HL_iter_element(x), 1:NS ,'UniformOutput', false);
+
 Contributions.contribution_ETS_yellow_cavity = @(x) classelement(classelement.create_config( ...
     {top_plate_yc(x_TP_ETS(x)), ...
      air_gap_yc, ...
      yellow_cavity_ETS}, 'closed', yc_input_surface));
 
 Contributions.contribution_ETS_HL_yellow_cavity = @(x) classelement(classelement.create_config( ...
-    {top_plate_yc_HL(x_TP_ETS(x)), ...
+    {top_plate_yc_HL_flow(x_TP_ETS(x)), ...
+     air_gap_yc, ...
+     yellow_cavity_ETS}, 'closed', yc_input_surface));
+
+Contributions.contribution_ETS_HL_iter_yellow_cavity = @(x) classelement(classelement.create_config( ...
+    {top_plate_yc_HL_flow_iter(x_TP_ETS(x)), ...
      air_gap_yc, ...
      yellow_cavity_ETS}, 'closed', yc_input_surface));
 
@@ -455,11 +509,14 @@ Contributions.cell_of_ETS_yellow_cavity_contributions = @(x) arrayfun(@(i) ...
     Contributions.contribution_ETS_yellow_cavity(x), 1:4 ,'UniformOutput', false);
 
 Contributions.cell_of_ETS_HL_yellow_cavity_contributions = @(x) arrayfun(@(i) ...
-    Contributions.contribution_ETS_yellow_cavity(x), 1:4 ,'UniformOutput', false);
+    Contributions.contribution_ETS_HL_yellow_cavity(x), 1:4 ,'UniformOutput', false);
+
+Contributions.cell_of_ETS_HL_iter_yellow_cavity_contributions = @(x) arrayfun(@(i) ...
+    Contributions.contribution_ETS_HL_iter_yellow_cavity(x), 1:4 ,'UniformOutput', false);
 
 % % Debog : Approche itérative (OK)
 % Contributions.cell_of_ETS_yellow_cavity_contributions(x0(1, :)).plot_alpha(env, 'Contribution cavités jaunes module ETS');
-% classelementassembly(classelementassembly.create_config(Contributions.cell_of_ETS_HL_yellow_cavity_contributions(x0(1, :)))).plot_alpha(env, 'Contribution cavités jaunes module ETS HL', 'iter');
+% classelementassembly(classelementassembly.create_config(Contributions.cell_of_ETS_HL_iter_yellow_cavity_contributions(x0(1, :)))).plot_alpha(env, 'Contribution cavités jaunes module ETS HL', 'iter');
 % perso_configure_alpha_figure(2000)
 % close();
 
@@ -469,7 +526,12 @@ Contributions.contribution_Poly_yellow_cavity = @(x) classelement(classelement.c
      yellow_cavity_Poly}, 'closed', yc_input_surface));
 
 Contributions.contribution_Poly_HL_yellow_cavity = @(x) classelement(classelement.create_config( ...
-    {top_plate_yc_HL(x_TP_Poly(x)), ...
+    {top_plate_yc_HL_flow(x_TP_Poly(x)), ...
+     air_gap_yc, ...
+     yellow_cavity_Poly}, 'closed', yc_input_surface));
+
+Contributions.contribution_Poly_HL_iter_yellow_cavity = @(x) classelement(classelement.create_config( ...
+    {top_plate_yc_HL_flow_iter(x_TP_Poly(x)), ...
      air_gap_yc, ...
      yellow_cavity_Poly}, 'closed', yc_input_surface));
 
@@ -478,6 +540,9 @@ Contributions.cell_of_Poly_yellow_cavity_contributions = @(x) arrayfun(@(i) ...
 
 Contributions.cell_of_Poly_HL_yellow_cavity_contributions = @(x) arrayfun(@(i) ...
     Contributions.contribution_Poly_HL_yellow_cavity(x), 1:4 ,'UniformOutput', false);
+
+Contributions.cell_of_Poly_HL_iter_yellow_cavity_contributions = @(x) arrayfun(@(i) ...
+    Contributions.contribution_Poly_HL_iter_yellow_cavity(x), 1:4 ,'UniformOutput', false);
 
 %% Validation numérique 2D des contributions (honnête)
 
@@ -502,9 +567,13 @@ Modules.module_ETS_HL = @(x) classelementassembly(classelementassembly.create_co
         [Objets.cell_of_MPPSBH_HL_elements(x), ... % Solutions ETS
             repmat({yellow_cavity_element_ETS}, 1, 4)])); % Solutions HR 
 
+Modules.module_ETS_HL_iter = @(x) classelementassembly(classelementassembly.create_config( ...
+        [Objets.cell_of_MPPSBH_HL_iter_elements(x), ... % Solutions ETS
+            repmat({yellow_cavity_element_ETS}, 1, 4)])); % Solutions HR 
+
 % % Debog : Approche itérative (OK)
 % Modules.module_ETS(x0(1, :)).plot_alpha(env, 'Module ETS');
-% Modules.module_ETS_HL(x0(1, :)).plot_alpha(env, 'Module ETS HL', 'iter');
+% Modules.module_ETS_HL_iter(x0(1, :)).plot_alpha(env, 'Module ETS HL', 'iter');
 % perso_configure_alpha_figure(2000);
 % close();
 
@@ -512,17 +581,22 @@ Modules.module_Poly = @(x) classelementassembly(classelementassembly.create_conf
                 [repmat({imported_Poly_element}, 1, NS), ... % Solutions Poly
                     repmat({yellow_cavity_element_Poly}, 1, 4)])); % Solutions HR 
 
-% Modules.module_Poly_sans_HR = @(x) classelementassembly(classelementassembly.create_config(repmat({imported_Poly_element}, 1, NS)));
-
 %% Création dynamique des cartouches
 
 Cartouches = struct();
 
+% Cartouches ETS
 Cartouches.cartouche_ETS = @(x) classelement(classelement.create_config( ...
     {top_plate(x_TP_ETS(x)), air_gap, Modules.module_ETS(x)}, 'closed', total_input_surface));
 
 Cartouches.cartouche_ETS_HL = @(x) classelement(classelement.create_config( ...
-    {top_plate_HL(x_TP_ETS(x)), air_gap, Modules.module_ETS_HL(x)}, 'closed', total_input_surface));
+    {top_plate_HL_flow(x_TP_ETS(x)), air_gap, Modules.module_ETS_HL(x)}, 'closed', total_input_surface));
+
+Cartouches.cartouche_ETS_HL_iter = @(x) classelement(classelement.create_config( ...
+    {top_plate_HL_flow_iter(x_TP_ETS(x)), air_gap, Modules.module_ETS_HL_iter(x)}, 'closed', total_input_surface));
+
+Cartouches.cartouche_ETS_HL_fp = @(x) classelement(classelement.create_config( ...
+    {top_plate_HL_flow(x_TP_ETS(x)), air_gap, Modules.module_ETS(x)}, 'closed', total_input_surface));
 
 % % Debog : Approche itérative (OK)
 % Cartouches.cartouche_ETS(x0(1, :)).plot_alpha(env, 'Module ETS');
@@ -530,44 +604,50 @@ Cartouches.cartouche_ETS_HL = @(x) classelement(classelement.create_config( ...
 % perso_configure_alpha_figure(2000);
 % close();
 
-Cartouches.cartouche_ETS_HL_fp = @(x) classelement(classelement.create_config( ...
-    {top_plate_HL(x_TP_ETS(x)), air_gap, Modules.module_ETS_HL_fp(x)}, 'closed', total_input_surface));
+Cartouches.cartouche_ETS_contributions = @(x) classelement(classelement.create_config( ...
+    {classelementassembly(classelementassembly.create_config( ...
+    [Contributions.contribution_cell_of_MPPSBH_element(x), Contributions.cell_of_ETS_yellow_cavity_contributions(x)]))}, 'closed', total_input_surface));
 
-Cartouches.cartouche_ETS_contributions = @(x) classelementassembly(classelementassembly.create_config( ...
-    [Contributions.contribution_cell_of_MPPSBH_element(x), Contributions.cell_of_ETS_yellow_cavity_contributions(x)]));
+Cartouches.cartouche_ETS_HL_contributions = @(x) classelement(classelement.create_config( ...
+    {classelementassembly(classelementassembly.create_config( ...
+    [Contributions.contribution_cell_of_MPPSBH_HL_element(x), Contributions.cell_of_ETS_HL_yellow_cavity_contributions(x)]))}, 'closed', total_input_surface));
 
-Cartouches.cartouche_ETS_HL_contributions = @(x) classelementassembly(classelementassembly.create_config( ...
-    [Contributions.contribution_cell_of_MPPSBH_HL_element(x), Contributions.cell_of_ETS_HL_yellow_cavity_contributions(x)]));
+Cartouches.cartouche_ETS_HL_iter_contributions = @(x) classelement(classelement.create_config( ...
+    {classelementassembly(classelementassembly.create_config( ...
+    [Contributions.contribution_cell_of_MPPSBH_HL_iter_element(x), Contributions.cell_of_ETS_HL_yellow_cavity_contributions(x)]))}, 'closed', total_input_surface));
 
 Cartouches.cartouche_ETS_HL_fp_contributions = @(x) classelement(classelement.create_config( ...
     {classelementassembly(classelementassembly.create_config( ...
     [Contributions.contribution_cell_of_MPPSBH_HL_fp_element(x), Contributions.cell_of_ETS_HL_yellow_cavity_contributions(x)]))}, 'closed', total_input_surface));
 
-% Cartouches.cartouche_ETS_sans_HR_contributions = @(x) classelementassembly(classelementassembly.create_config( ...
-%     Contributions.contribution_cell_of_MPPSBH_element(x)));
-
+% Cartouches Poly
 Cartouches.cartouche_Poly = @(x) classelement(classelement.create_config( ...
     {top_plate(x_TP_Poly(x)), air_gap, Modules.module_Poly(x)}, 'closed', total_input_surface));
 
 Cartouches.cartouche_Poly_HL = @(x) classelement(classelement.create_config( ...
-    {top_plate_HL(x_TP_Poly(x)), air_gap, Modules.module_Poly(x)}, 'closed', total_input_surface));
+    {top_plate_HL_flow(x_TP_Poly(x)), air_gap, Modules.module_Poly(x)}, 'closed', total_input_surface));
 
-% Cartouches.cartouche_Poly_sans_HR = @(x) classelement(classelement.create_config( ...
-%     {top_plate(x_TP_Poly(x)), air_gap, Modules.module_Poly_sans_HR(x)}, 'closed', total_input_surface));
+Cartouches.cartouche_Poly_HL_iter = @(x) classelement(classelement.create_config( ...
+    {top_plate_HL_flow_iter(x_TP_Poly(x)), air_gap, Modules.module_Poly(x)}, 'closed', total_input_surface));
 
-Cartouches.cartouche_Poly_contributions = @(x) classelementassembly(classelementassembly.create_config( ...
-    [Contributions.cell_of_Poly_element_contribution(x), Contributions.cell_of_Poly_yellow_cavity_contributions(x)]));
+Cartouches.cartouche_Poly_contributions = @(x) classelement(classelement.create_config( ...
+    {classelementassembly(classelementassembly.create_config( ...
+    [Contributions.cell_of_Poly_element_contribution(x), Contributions.cell_of_Poly_yellow_cavity_contributions(x)]))}, 'closed', total_input_surface));
 
 Cartouches.cartouche_Poly_HL_contributions = @(x) classelement(classelement.create_config( ...
     {classelementassembly(classelementassembly.create_config( ...
     [Contributions.cell_of_Poly_HL_element_contribution(x), Contributions.cell_of_Poly_HL_yellow_cavity_contributions(x)]))}, 'closed', total_input_surface));
 
-% Cartouches.cartouche_Poly_sans_HR_contributions = @(x) classelementassembly(classelementassembly.create_config( ...
-%     Contributions.cell_of_Poly_element_contribution(x)));
+Cartouches.cartouche_Poly_HL_iter_contributions = @(x) classelement(classelement.create_config( ...
+    {classelementassembly(classelementassembly.create_config( ...
+    [Contributions.cell_of_Poly_HL_iter_element_contribution(x), Contributions.cell_of_Poly_HL_iter_yellow_cavity_contributions(x)]))}, 'closed', total_input_surface));
 
+% Cartouches globales
 Cartouches.cartouche_globale = @(x) classelementassembly(classelementassembly.create_config({Cartouches.cartouche_ETS(x), Cartouches.cartouche_Poly(x)}));
 
 Cartouches.cartouche_globale_HL = @(x) classelementassembly(classelementassembly.create_config({Cartouches.cartouche_ETS_HL(x), Cartouches.cartouche_Poly_HL(x)}));
+
+Cartouches.cartouche_globale_HL_iter = @(x) classelementassembly(classelementassembly.create_config({Cartouches.cartouche_ETS_HL_iter(x), Cartouches.cartouche_Poly_HL(x)}));
 
 Cartouches.cartouche_globale_HL_fp = @(x) classelementassembly(classelementassembly.create_config({Cartouches.cartouche_ETS_HL_fp(x), Cartouches.cartouche_Poly_HL(x)}));
 
@@ -575,8 +655,25 @@ Cartouches.cartouche_globale_contributions = @(x) classelementassembly(classelem
 
 Cartouches.cartouche_globale_HL_contributions = @(x) classelementassembly(classelementassembly.create_config({Cartouches.cartouche_ETS_HL_contributions(x), Cartouches.cartouche_Poly_HL_contributions(x)}));
 
+Cartouches.cartouche_globale_HL_iter_contributions = @(x) classelementassembly(classelementassembly.create_config({Cartouches.cartouche_ETS_HL_iter_contributions(x), Cartouches.cartouche_Poly_HL_iter_contributions(x)}));
+
 Cartouches.cartouche_globale_HL_fp_contributions = @(x) classelementassembly(classelementassembly.create_config({Cartouches.cartouche_ETS_HL_fp_contributions(x), Cartouches.cartouche_Poly_HL_contributions(x)}));
 
+% % Debog : Approche itérative (OK)
+% % Cartouches.cartouche_globale(x0(1, :)).plot_alpha(env, 'Cartouche globale');
+% % Cartouches.cartouche_globale_HL(x0(1, :)).plot_alpha(env, 'Cartouche globale HL');
+% Cartouches.cartouche_globale_HL_iter(x0(1, :)).plot_alpha(env, 'Cartouche globale HL iter', 'iter');
+% Cartouches.cartouche_globale_HL_iter(x0(1, :)).plot_alpha(env0, 'Cartouche globale HL iter sans écoulement', 'iter');
+% % Cartouches.cartouche_globale_HL_fp(x0(1, :)).plot_alpha(env, 'Cartouche globale HL fp');
+% perso_configure_alpha_figure(2000);
+% 
+% perso_figure('Impédance de surface des cartouches globales');
+% % perso_plot_surface_impedance(Cartouches.cartouche_globale(x0(1, :)).surface_impedance(env), env, 'Cartouche globale');
+% % perso_plot_surface_impedance(Cartouches.cartouche_globale_HL(x0(1, :)).surface_impedance(env), env, 'Cartouche globale HL');
+% perso_plot_surface_impedance(Cartouches.cartouche_globale_HL_iter(x0(1, :)).surface_impedance_iter(env), env, 'Cartouche globale HL iter');
+% perso_plot_surface_impedance(Cartouches.cartouche_globale_HL_iter(x0(1, :)).surface_impedance_iter(env0), env, 'Cartouche globale HL iter sans écoulement');
+% % perso_plot_surface_impedance(Cartouches.cartouche_globale_HL_fp(x0(1, :)).surface_impedance(env), env, 'Cartouche globale HL fp');
+% % close();
 
 %% Fonction de définitions de la matrice de contraintes non linéaires  
 
@@ -614,7 +711,8 @@ handle_nonlconf = @(x) perso_nonlconf(x_ETS(x), N, NS, top_plate_ETS(x_TP_ETS(x)
 % handle_alpha = @(x, env, g_obj) subsref(Cartouches.cartouche_globale_HL(x).alpha(env), substruct('()', {g_obj(env)}));
 % handle_alpha = @(x, env, g_obj) subsref(Cartouches.cartouche_globale_HL_fp(x).alpha(env), substruct('()', {g_obj(env)}));
 
-handle_alpha = @(x, env, g_obj) subsref(Cartouches.cartouche_globale_HL_fp_contributions(x).alpha(env), substruct('()', {g_obj(env)}));
+% handle_alpha = @(x, env, g_obj) subsref(Cartouches.cartouche_globale_HL_iter(x).alpha(env, 'iter'), substruct('()', {g_obj(env)}));
+handle_alpha = @(x, env, g_obj) subsref(Cartouches.cartouche_globale_HL_fp(x).alpha(env), substruct('()', {g_obj(env)}));
 handle_cost_function = @(x, env, g_obj) mean(1 - handle_alpha(x, env, g_obj));
 handle_objective = @(x, env, g_obj_cell) arrayfun(@(i) handle_cost_function(x, env, g_obj_cell{i}), 1:length(g_obj_cell) ,'UniformOutput', false);
 
@@ -627,7 +725,6 @@ handle_objective = @(x, env, g_obj_cell) arrayfun(@(i) handle_cost_function(x, e
 % objective = @(x) cell2mat(handle_objective(x, env, {g_obj_h2, g_obj_lb})); % Objectif Cartouche Poly
 
 objective = @(x) cell2mat(handle_objective(x, env, {g_obj_h1, g_obj_h2, g_obj_h3, g_obj_h4, g_obj_lb})); % Objectif Cartouche globale
-
 
 %% Debog des performances et des contributions
 
@@ -663,10 +760,16 @@ timeGa = toc;
 %% Conditionnement du vecteur d'optimisation
 
 xopti_to_cell_array_of_alpha = @(x, env) arrayfun(@(i) vertcat(Cartouches.cartouche_globale(x(i, :)).alpha(env), ...
-                                                               Cartouches.cartouche_globale_HL_fp_contributions(x(i, :)).alpha(env)), 1:size(x, 1), 'UniformOutput', false);
+                                                               Cartouches.cartouche_globale_HL_fp(x(i, :)).alpha(env), ...
+                                                               Cartouches.cartouche_globale_HL(x(i, :)).alpha(env), ...
+                                                               Cartouches.cartouche_globale_HL_iter(x(i, :)).alpha(env, 'iter')), ...
+                                                       1:size(x, 1), 'UniformOutput', false);
+
 
 xopti_to_cell_array_of_Zs = @(x, env) arrayfun(@(i) vertcat(Cartouches.cartouche_globale(x(i, :)).surface_impedance(env)/env.air.parameters.Z0, ...
-                                                            Cartouches.cartouche_globale_HL_fp_contributions(x(i, :)).surface_impedance(env)/env.air.parameters.Z0), ...
+                                                            Cartouches.cartouche_globale_HL_fp(x(i, :)).surface_impedance(env)/env.air.parameters.Z0, ...
+                                                            Cartouches.cartouche_globale_HL(x(i, :)).surface_impedance(env)/env.air.parameters.Z0, ...
+                                                            Cartouches.cartouche_globale_HL_iter(x(i, :)).surface_impedance_iter(env)/env.air.parameters.Z0), ...
                                                     1:size(x, 1), 'UniformOutput', false);
 
 % On récupère les vecteurs d'absorption des meilleures configurations
@@ -701,8 +804,8 @@ optimisation_type = '\optimisation_ETS_Poly_';
 % objective_type = 'H1_';
 % objective_type = 'H2_';
 % objective_type = 'H1_H2_';
-% objective_type = 'H1-4_';
-objective_type = 'neutre_';
+objective_type = 'H1-4_';
+% objective_type = 'neutre_';
 
 folder_full_name = [folderName, optimisation_type, objective_type, currentTime];
 mkdir(folder_full_name);
@@ -713,23 +816,73 @@ save([folder_full_name, '\environnement matlab.mat']);
 
 % temp_plot_MPPSBH_results(x_opti, 1);
 % temp_plot_module_ETS(x_opti);
-temp_plot_cartouche_ETS(x_opti);
-temp_plot_cartouches(x_opti);
+% temp_plot_cartouche_ETS(x_opti);
+% temp_plot_cartouches(x_opti);
 
 x_TP_ETS(x_opti);
 x_TP_Poly(x_opti);
 top_plate(x_TP_ETS(x_opti)).Configuration % Plaque ETS
 top_plate(x_TP_Poly(x_opti)).Configuration % Plaque Poly
 
-figure()
+perso_figure('Prédiction des performances de la configuration optimale');
 hold on
+title('Prédiction des performances de la configuration optimale');
 Cartouches.cartouche_globale(x_opti).plot_alpha(env, 'Cartouche globale');
-Cartouches.cartouche_globale_HL_fp(x_opti).plot_alpha(env, 'Cartouche globale_HL fp');
-perso_configure_alpha_figure(2000);
+% Cartouches.cartouche_globale_HL_fp(x_opti).plot_alpha(env, 'Cartouche globale HL fp');
+Cartouches.cartouche_globale_HL_iter(x_opti).plot_alpha(env, 'Cartouche globale HL fp iter', 'iter');
+perso_plot_targetted_frequencies(Frequences, 1);
+perso_configure_alpha_figure(3000);
+
 saveas(gcf, [folder_full_name, '\Figures\Prédiction des performances de la configuration optimale.fig']);
 
+perso_figure('Surface d''impédance de la configuration optimale')
+hold on
+title('Surface d''impédance de la configuration optimale');
+perso_plot_surface_impedance(Cartouches.cartouche_globale(x_opti).surface_impedance(env), env, 'Cartouche globale');
+% perso_plot_surface_impedance(Cartouches.cartouche_globale_HL_fp(x_opti).surface_impedance(env), env, 'Cartouche globale HL fp');
+perso_plot_surface_impedance(Cartouches.cartouche_globale_HL_iter(x_opti).surface_impedance_iter(env), env, 'Cartouche globale HL iter');
 
+saveas(gcf, [folder_full_name, '\Figures\Surface d''impédance de la configuration optimale.fig']);
 
+perso_figure('Prédiction des performances de la cartouche ETS');
+hold on
+title('Prédiction des performances de la cartouche ETS');
+Cartouches.cartouche_ETS(x_opti).plot_alpha(env, 'Cartouche ETS');
+% Cartouches.cartouche_ETS_HL_fp(x_opti).plot_alpha(env, 'Cartouche v HL fp');
+Cartouches.cartouche_ETS_HL_iter(x_opti).plot_alpha(env, 'Cartouche ETS HL fp iter', 'iter');
+perso_plot_targetted_frequencies(Frequences, 1);
+perso_configure_alpha_figure(3000);
+
+saveas(gcf, [folder_full_name, '\Figures\Prédiction des performances de la cartouche ETS.fig']);
+
+perso_figure('Surface d''impédance de la cartouche ETS')
+hold on
+title('Surface d''impédance de la cartouche ETS');
+perso_plot_surface_impedance(Cartouches.cartouche_ETS(x_opti).surface_impedance(env), env, 'cartouche ETS');
+% perso_plot_surface_impedance(Cartouches.cartouche_ETS_HL_fp(x_opti).surface_impedance(env), env, 'cartouche ETS HL fp');
+perso_plot_surface_impedance(Cartouches.cartouche_ETS_HL_iter(x_opti).surface_impedance_iter(env), env, 'cartouche ETS HL iter');
+
+saveas(gcf, [folder_full_name, '\Figures\Surface d''impédance de la cartouche ETS.fig']);
+
+perso_figure('Prédiction des performances de la cartouche Poly');
+hold on
+title('Prédiction des performances de la cartouche Poly');
+Cartouches.cartouche_Poly(x_opti).plot_alpha(env, 'Cartouche Poly');
+% Cartouches.cartouche_Poly_HL_fp(x_opti).plot_alpha(env, 'Cartouche v HL fp');
+Cartouches.cartouche_Poly_HL_iter(x_opti).plot_alpha(env, 'Cartouche Poly HL fp iter', 'iter');
+perso_plot_targetted_frequencies(Frequences, 1);
+perso_configure_alpha_figure(3000);
+
+saveas(gcf, [folder_full_name, '\Figures\Prédiction des performances de la cartouche Poly.fig']);
+
+perso_figure('Surface d''impédance de la cartouche Poly')
+hold on
+title('Surface d''impédance de la cartouche Poly');
+perso_plot_surface_impedance(Cartouches.cartouche_Poly(x_opti).surface_impedance(env), env, 'cartouche Poly');
+% perso_plot_surface_impedance(Cartouches.cartouche_Poly_HL_fp(x_opti).surface_impedance(env), env, 'cartouche Poly HL fp');
+perso_plot_surface_impedance(Cartouches.cartouche_Poly_HL_iter(x_opti).surface_impedance_iter(env), env, 'cartouche Poly HL iter');
+
+saveas(gcf, [folder_full_name, '\Figures\Surface d''impédance de la cartouche Poly.fig']);
 
 %% Validation des contributions individuelles
 
@@ -787,24 +940,21 @@ perso_configure_alpha_figure(2000);
 saveas(gcf, [folder_full_name, '\Figures\Validation de la contribution de la cavité jaune de la cartouche Poly.fig']);
 % mphsave(Tube_Poly_yc_contrib.Configuration.ComsolModel, [folder_full_name, '\validation_2D_Poly_yellow_cavity.mph']);
 
-
-
 %% Sauvegarde des rapports de configuration
 
+% Rapport de configuration des plaques couvrantes
 report_root = [folder_full_name, '\Rapports de configuration des plaques couvrantes'];
 mkdir(report_root);
 
 perso_top_plate_export_report(x_TP_ETS(x_opti), radius, [report_root, '\rapport de configuration plaque ETS.xlsx']);
-perso_top_plate_export_report(x_TP_Poly(x_opti), radius, [report_root, '\rapport de configuration plaque ETS.xlsx']);
+perso_top_plate_export_report(x_TP_Poly(x_opti), radius, [report_root, '\rapport de configuration plaque Poly.xlsx']);
 
+% Rapport de configuration des MPPSBHs
 report_root = [folder_full_name, '\Rapports de configuration des MPPSBHs'];
+mkdir(report_root);
 
 for i = 1:NS
-
-    MPPSBH_lb_hf_1.export_report([report_root, 'rapport de configuration - solution 1.xlsx'])
-    MPPSBH_lb_hf_2.export_report([report_root, 'rapport de configuration - solution 2.xlsx'])
-    MPPSBH_lb_hf_3.export_report([report_root, 'rapport de configuration - solution 3.xlsx'])
-    MPPSBH_lb_hf_4.export_report([report_root, 'rapport de configuration - solution 4.xlsx'])
+    Objets.MPPSBH_i(x_ETS(x_opti), radius(x_radius(x_opti)), i).export_report([report_root, '\rapport de configuration - MPPSBH ', num2str(i), '.xlsx'])
 end
 
 

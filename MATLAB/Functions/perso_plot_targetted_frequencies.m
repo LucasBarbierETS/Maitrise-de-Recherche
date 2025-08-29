@@ -1,13 +1,13 @@
 function perso_plot_targetted_frequencies(Frequences, y_max)
     
     patch([Frequences.f_min_h1, Frequences.f_min_h1, Frequences.f_max_h1, Frequences.f_max_h1], [0, y_max, y_max, 0], 'red', ...
-          'FaceAlpha', 0.2, 'EdgeColor','none', 'DisplayName', 'Bande d''optimisation 1');
+          'FaceAlpha', 0.2, 'EdgeColor','none', 'DisplayName', 'Bande d''optimisation 1', 'HandleVisibility', 'off');
     patch([Frequences.f_min_h2, Frequences.f_min_h2, Frequences.f_max_h2, Frequences.f_max_h2], [0, y_max, y_max, 0], 'red', ...
-          'FaceAlpha', 0.2, 'EdgeColor','none', 'DisplayName', 'Bande d''optimisation 2');
+          'FaceAlpha', 0.2, 'EdgeColor','none', 'DisplayName', 'Bande d''optimisation 2', 'HandleVisibility', 'off');
     patch([Frequences.f_min_h3, Frequences.f_min_h3, Frequences.f_max_h3, Frequences.f_max_h3], [0, y_max, y_max, 0], 'red', ...
-          'FaceAlpha', 0.2, 'EdgeColor','none', 'DisplayName', 'Bande d''optimisation 3');
+          'FaceAlpha', 0.2, 'EdgeColor','none', 'DisplayName', 'Bande d''optimisation 3', 'HandleVisibility', 'off');
     patch([Frequences.f_min_h4, Frequences.f_min_h4, Frequences.f_max_h4, Frequences.f_max_h4], [0, y_max, y_max, 0], 'red', ...
-          'FaceAlpha', 0.2, 'EdgeColor','none', 'DisplayName', 'Bande d''optimisation 4');
+          'FaceAlpha', 0.2, 'EdgeColor','none', 'DisplayName', 'Bande d''optimisation 4', 'HandleVisibility', 'off');
     patch([Frequences.f_min_lb, Frequences.f_min_lb, Frequences.f_max_lb, Frequences.f_max_lb], [0, y_max, y_max, 0], 'green', ...
-          'FaceAlpha', 0.2, 'EdgeColor','none', 'DisplayName', 'Bande d''optimisation élargie');
+          'FaceAlpha', 0.2, 'EdgeColor','none', 'DisplayName', 'Bande d''optimisation élargie', 'HandleVisibility', 'off');
 end

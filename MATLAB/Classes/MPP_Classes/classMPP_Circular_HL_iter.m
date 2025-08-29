@@ -106,12 +106,12 @@ classdef classMPP_Circular_HL_iter < classMPP_Circular
 
             beta = 1.6; % [5] p.8
             Cd = 0.76; % [5] p.8
-            q = 0.3; % voir modèle Laly écoulement
+            % q = 0.3; % voir modèle Laly écoulement
 
             % Résistivité au passage de l'air ([5], p. 7, eq. 20)
             sig = 8 * env.air.parameters.eta / (phi * pr^2) ... résistivité linéaire
-            + beta * env.air.parameters.rho * (1 - phi^2) / (pi * t * phi * Cd^2) * u_rms/S ... % fort niveau en fonction du débit RMS
-            + env.air.parameters.rho * env.air.parameters.c0 * (1 - phi^2) / (phi * t) * q * env.M; % écoulement en fonction du nombre de Mach moyen
+            + beta * env.air.parameters.rho * (1 - phi^2) / (pi * t * phi * Cd^2) * u_rms/S; ... % fort niveau en fonction du débit RMS
+            % + env.air.parameters.rho * env.air.parameters.c0 * (1 - phi^2) / (phi * t) * q * env.M; % écoulement en fonction du nombre de Mach moyen
 
             % % debog : Tracé de la résistivité au passage de l'air en fonction de la fréquence
             % perso_figure('sig')

@@ -12,7 +12,7 @@ $k$ et $Z_{c}$ sont les grandeurs caractéristiques de la couche de fluide équi
 
 Dans la matrice **la section $S$ correspond à la surface au travers de laquelle le fluide s'écoule** soit la surface apparente de la couche multipliée par sa porosité de surface  (<1) ou son taux de perforation dans le cas d'une plaque microperforée.
 
-Dans le [[Modèle JCAL]], ces grandeurs sont définis à partir de la compressibilité et de la densité effectives ![[Propagation of Sound in Porous Media#^8fee5f]]
+Dans le [[Modèle JCA]], ces grandeurs sont définis à partir de la compressibilité et de la densité effectives ![[Propagation of Sound in Porous Media#^8fee5f]]
 
 
 

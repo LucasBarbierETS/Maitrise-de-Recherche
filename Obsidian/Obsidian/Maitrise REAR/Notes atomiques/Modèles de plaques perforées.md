@@ -1,6 +1,6 @@
 [[Modèle JCA de plaques perforées]] 
 
-Les modèles de plaques étudiés donnent des formulations propres aux plaques pour les variables d'intérêt utilisées pour définir le comportement acoustiques des matériaux homogènes en général en particulier pour les [[Modèle JCAL|paramètres JCAL]]. 
+Les modèles de plaques étudiés donnent des formulations propres aux plaques pour les variables d'intérêt utilisées pour définir le comportement acoustiques des matériaux homogènes en général en particulier pour les [[Modèle JCA|paramètres JCAL]]. 
 #### Matrice de transfert d'une plaque perforée
 
 La matrice de transfert d'une plaque perforée décrit les relations entre les variables d'état du problème en amont et en aval de la plaque (en A' et en B' sur le schéma). En [[convention Pression - Débit]] on ne se préoccupe pas des changement de section car **le débit en A et égal au débit en A'**.

@@ -9,7 +9,7 @@ aliases:
 publisher: ""
 citation key: "TheseLaly"
 DOI: ""
-"created date:": "2025-08-22T16:37:45-04:00"  
+"created date:": "2025-08-28T11:43:37-04:00"  
 "modified date:": 
 ---
 # (Z) Thèse Laly
@@ -43,7 +43,7 @@ DOI: ""
 ## Reading notes
 
 
-*Imported: 2025-08-22 16:37*
+*Imported: 2025-08-28 11:43*
 
 ### ✅ Supporting Argument or Example
 
@@ -110,6 +110,9 @@ DOI: ""
 >
 >COMMENT:
 > - a tout cela j'ajouterais quel sens donner à l'impédance dans un contexte de multi-incidence
+
+> [!quote|yellow]+ Image ([page. 49](zotero://open-pdf/library/items/CMZQ7B9B?page=49&annotation=NIHVXQTQ))
+> ![[Zotero/TheseLaly/Images/TheseLaly-49-x126-y502.png]]
 
 > [!quote|yellow]+ Note ([page. 70](zotero://open-pdf/library/items/CMZQ7B9B?page=70&annotation=TD9GT8PU))
 >
@@ -202,6 +205,18 @@ DOI: ""
 >
 >COMMENT:
 > - que signifie comparé numériquement? Ce ne sont pas simplement plusieurs modèles analytiques?
+
+> [!quote|yellow]+ Image ([page. 148](zotero://open-pdf/library/items/CMZQ7B9B?page=148&annotation=QTTEY57P))
+> ![[Zotero/TheseLaly/Images/TheseLaly-148-x218-y111.png]]
+
+> [!quote|yellow]+ Image ([page. 149](zotero://open-pdf/library/items/CMZQ7B9B?page=149&annotation=BHRGTK2N))
+> ![[Zotero/TheseLaly/Images/TheseLaly-149-x211-y546.png]]
+
+> [!quote|yellow]+ Image ([page. 149](zotero://open-pdf/library/items/CMZQ7B9B?page=149&annotation=JABZZ47C))
+> ![[Zotero/TheseLaly/Images/TheseLaly-149-x199-y125.png]]
+
+> [!quote|yellow]+ Image ([page. 150](zotero://open-pdf/library/items/CMZQ7B9B?page=150&annotation=WLSE9GHJ))
+> ![[Zotero/TheseLaly/Images/TheseLaly-150-x205-y537.png]]
 
 > [!quote|yellow]+ Image ([page. 164](zotero://open-pdf/library/items/CMZQ7B9B?page=164&annotation=2ANX5W9J))
 > ![[Zotero/TheseLaly/Images/TheseLaly-164-x175-y619.png]]

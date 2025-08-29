@@ -25,9 +25,11 @@ function perso_interactive_multi_plot(x, alpha, Zs, f_max, Frequences)
     hold(s_alpha,'on'); box(s_alpha,'on');
 
     yA = alpha{currentIndex}; % [2 x numel(x)]
-    hAlpha1 = plot(s_alpha, x, yA(1,:), 'DisplayName','Cartouche globale');
-    hAlpha2 = plot(s_alpha, x, yA(2,:), 'DisplayName','Cartouche globale HL fp');
-
+    hAlpha1 = plot(s_alpha, x, yA(1,:), 'DisplayName', 'Cartouche globale');
+    hAlpha2 = plot(s_alpha, x, yA(2,:), 'DisplayName', 'Cartouche globale HL fp');
+    hAlpha3 = plot(s_alpha, x, yA(3,:), 'DisplayName', 'Cartouche globale HL');
+    hAlpha4 = plot(s_alpha, x, yA(4,:), 'DisplayName', 'Cartouche globale HL iter');
+    
     addBands(s_alpha, Frequences);
     title(s_alpha, sprintf('α — Tracé %d / %d', currentIndex, numPlots));
     perso_configure_alpha_figure(f_max);
@@ -51,18 +53,24 @@ function perso_interactive_multi_plot(x, alpha, Zs, f_max, Frequences)
 
     yZ = Zs{currentIndex}; % [2 x numel(x)] (complexe)
     % Réel
-    hZR1 = plot(s_zs_real, x, real(yZ(1,:)), 'DisplayName','Re(Z_s) globale');
-    hZR2 = plot(s_zs_real, x, real(yZ(2,:)), 'DisplayName','Re(Z_s) HL fp');
+    hZR1 = plot(s_zs_real, x, real(yZ(1,:)), 'DisplayName','linéaire');
+    hZR2 = plot(s_zs_real, x, real(yZ(2,:)), 'DisplayName','HL fp');
+    hZR3 = plot(s_zs_real, x, real(yZ(3,:)), 'DisplayName','HL');
+    hZR4 = plot(s_zs_real, x, real(yZ(4,:)), 'DisplayName','HL iter');
+
     addBands(s_zs_real, Frequences);
-    ylabel(s_zs_real,'Re(Z_s)');
+    ylabel(s_zs_real,'Re(Z_s/Z_0)');
     title(s_zs_real, 'Partie réelle');
 
     % Imaginaire
-    hZI1 = plot(s_zs_imag, x, imag(yZ(1,:)), 'DisplayName','Im(Z_s) globale');
-    hZI2 = plot(s_zs_imag, x, imag(yZ(2,:)), 'DisplayName','Im(Z_s) HL fp');
+    hZI1 = plot(s_zs_imag, x, imag(yZ(1,:)), 'DisplayName','linéaire');
+    hZI2 = plot(s_zs_imag, x, imag(yZ(2,:)), 'DisplayName','HL fp');
+    hZI3 = plot(s_zs_imag, x, imag(yZ(3,:)), 'DisplayName','HL');
+    hZI4 = plot(s_zs_imag, x, imag(yZ(4,:)), 'DisplayName','HL iter');
+    
     addBands(s_zs_imag, Frequences);
-    xlabel(s_zs_imag,'f (Hz)'); ylabel(s_zs_imag,'Im(Z_s)');
-    title(s_zs_imag, sprintf('Z_s — Tracé %d / %d', currentIndex, numPlots));
+    xlabel(s_zs_imag,'f (Hz)'); ylabel(s_zs_imag,'Im(Z_s/Z_0)');
+    title(s_zs_imag, sprintf('Z_s/Z_0 — Tracé %d / %d', currentIndex, numPlots));
 
     legend(s_zs_real,'Location','best');
     legend(s_zs_imag,'Location','best');
@@ -93,14 +101,20 @@ function perso_interactive_multi_plot(x, alpha, Zs, f_max, Frequences)
         yA = alpha{currentIndex};
         set(hAlpha1,'XData',x,'YData',yA(1,:));
         set(hAlpha2,'XData',x,'YData',yA(2,:));
+        set(hAlpha3,'XData',x,'YData',yA(3,:));
+        set(hAlpha4,'XData',x,'YData',yA(4,:));
         title(s_alpha, sprintf('α — Tracé %d / %d', currentIndex, numPlots));
 
         % Z_s
         yZ = Zs{currentIndex};
         set(hZR1,'XData',x,'YData',real(yZ(1,:)));
         set(hZR2,'XData',x,'YData',real(yZ(2,:)));
+        set(hZR3,'XData',x,'YData',real(yZ(3,:)));
+        set(hZR4,'XData',x,'YData',real(yZ(4,:)));
         set(hZI1,'XData',x,'YData',imag(yZ(1,:)));
         set(hZI2,'XData',x,'YData',imag(yZ(2,:)));
+        set(hZI3,'XData',x,'YData',imag(yZ(3,:)));
+        set(hZI4,'XData',x,'YData',imag(yZ(4,:)));
         title(s_zs_imag, sprintf('Z_s — Tracé %d / %d', currentIndex, numPlots));
         % (titres des axes conservés)
         drawnow;
@@ -109,13 +123,15 @@ end
 
 % --- Utilitaire : bandes colorées sur un axes donné ---
 function addBands(ax, F)
+
     % Bande large (lb)
-    patch('Parent',ax, ...
-          'XData',[F.f_min_lb F.f_min_lb F.f_max_lb F.f_max_lb], ...
-          'YData',[ax.YLim(1) ax.YLim(2) ax.YLim(2) ax.YLim(1)], ...
-          'FaceColor',[0 1 0],'FaceAlpha',0.12,'EdgeColor','none', ...
-          'DisplayName','Bande optimisation (élargie)', ...
-          'HandleVisibility','off');
+    % patch('Parent',ax, ...
+    %       'XData',[F.f_min_lb F.f_min_lb F.f_max_lb F.f_max_lb], ...
+    %       'YData',[ax.YLim(1) ax.YLim(2) ax.YLim(2) ax.YLim(1)], ...
+    %       'FaceColor',[0 1 0],'FaceAlpha',0.12,'EdgeColor','none', ...
+    %       'DisplayName','Bande optimisation (élargie)', ...
+    %       'HandleVisibility','off');
+
     % H1..H4 en rouge
     drawBand(ax, F.f_min_h1, F.f_max_h1, 'bande 1 (BPF)');
     drawBand(ax, F.f_min_h2, F.f_max_h2, 'bande 2 (H1)');

@@ -1,4 +1,4 @@
-classdef classMPP_Circular_HL < classMPP_Circular
+classdef classMPP_Circular_HL_flow < classMPP_Circular
 
 % Description
 % Ce constructeur de classe permet de créer une plaque microperforée à perforations circulaires
@@ -37,7 +37,7 @@ classdef classMPP_Circular_HL < classMPP_Circular
 
     methods
 
-        function obj = classMPP_Circular_HL(config)
+        function obj = classMPP_Circular_HL_flow(config)
             
             obj@classMPP_Circular(config)
 
@@ -45,9 +45,9 @@ classdef classMPP_Circular_HL < classMPP_Circular
             pr = config.PerforationsRadius;
             t = config.Thickness;        
             
-            obj.Configuration.AirFlowResistivity = @(env) classMPP_Circular_HL.air_flow_resistivity(env, phi, pr, t);
+            obj.Configuration.AirFlowResistivity = @(env) classMPP_Circular_HL_flow.air_flow_resistivity(env, phi, pr, t);
 
-            obj.Configuration.Toruosity = @(env) classMPP_Circular_HL.tortuosity(env, phi, pr, t);
+            obj.Configuration.Toruosity = @(env) classMPP_Circular_HL_flow.tortuosity(env, phi, pr, t);
         end
     end
 
@@ -74,7 +74,7 @@ classdef classMPP_Circular_HL < classMPP_Circular
             % Résistivité au passage de l'air ([5], p. 7, eq. 27)
             sig = 8 * env.air.parameters.eta / (phi * pr^2) ...
                 + beta * env.air.parameters.Z0 / (pi * t * Cd^2) ...
-                * (-1/2 + classMPP_Circular_HL.f(env, phi)) ... % forts niveaux
+                * (-1/2 + classMPP_Circular_HL_flow.f(env, phi)) ... % forts niveaux
                 + env.air.parameters.rho * env.air.parameters.c0 * (1 - phi^2) / (phi * t) * q * env.M; % écoulement
          end
 
@@ -87,7 +87,7 @@ classdef classMPP_Circular_HL < classMPP_Circular
             % Tortuosité non linéaire ([5], p. 7, eq. 28)
             tor = 1 + 2 * psi / (1 + 305 * env.M^3) * 0.48 * sqrt(pi * pr^2) / t * sum_a ...
                 * (1 + 1 / (1 - phi^2) ...
-                * (-1/2 + classMPP_Circular_HL.f(env, phi)))^(-1);
+                * (-1/2 + classMPP_Circular_HL_flow.f(env, phi)))^(-1);
         end
          
          function validate()
@@ -434,13 +434,15 @@ classdef classMPP_Circular_HL < classMPP_Circular
             D = 20e-3;
             s = 1; % Surface arbitraire
 
-            plate = classMPP_Circular_HL(classMPP_Circular.create_config(s, t, r, phi));
+            plate = classMPP_Circular_HL_flow(classMPP_Circular.create_config(s, t, r, phi));
+            plate_iter = classMPP_Circular_HL_iter(classMPP_Circular.create_config(s, t, r, phi));
             cavity = classcavity(classcavity.create_config(D, sqrt(s), sqrt(s)));
             E = classelement(classelement.create_config({plate, cavity}, 'closed', s));
+            E_iter = classelement(classelement.create_config({plate_iter, cavity}, 'closed', s));
     
             % Modèle non linéaire itératif
             plot(env.w/(2*pi), E.alpha(env), 'DisplayName', 'Modèle non - linéaire avec écoulement');
-            plot(env.w/(2*pi), E.alpha(env, 'iter'), 'DisplayName', 'Modèle non - linéaire itératif avec écoulement');
+            plot(env.w/(2*pi), E_iter.alpha(env, 'iter'), 'DisplayName', 'Modèle non - linéaire itératif avec écoulement');
             plot(env.w/(2*pi), E.alpha(env0), 'DisplayName', 'Modèle non - linéaire sans écoulement');
             perso_configure_alpha_figure(5000);
     
@@ -467,13 +469,16 @@ classdef classMPP_Circular_HL < classMPP_Circular
             phi = 0.06;
             D = 30e-3;
             s = 1; % Surface arbitraire
-            plate = classMPP_Circular_HL(classMPP_Circular.create_config(s, t, r, phi));
+            plate = classMPP_Circular_HL_flow(classMPP_Circular.create_config(s, t, r, phi));
+            plate_iter = classMPP_Circular_HL_iter(classMPP_Circular.create_config(s, t, r, phi));
             cavity = classcavity(classcavity.create_config(D, sqrt(s), sqrt(s)));
             E = classelement(classelement.create_config({plate, cavity}, 'closed', s));
+            E_iter = classelement(classelement.create_config({plate_iter, cavity}, 'closed', s));
     
             % Modèle non linéaire itératif
-            plot(env.w/(2*pi), E.alpha(env), 'DisplayName', 'Modèle non - linéaire itératif avec écoulement');
-            plot(env.w/(2*pi), E.alpha(env0), 'DisplayName', 'Modèle non - linéaire itératif sans écoulement');
+            plot(env.w/(2*pi), E.alpha(env), 'DisplayName', 'Modèle non - linéaire avec écoulement');
+            plot(env.w/(2*pi), E_iter.alpha(env, 'iter'), 'DisplayName', 'Modèle non - linéaire itératif avec écoulement');
+            plot(env.w/(2*pi), E.alpha(env0), 'DisplayName', 'Modèle non - linéaire sans écoulement');
             perso_configure_alpha_figure(5000);
     
             % Données de références
@@ -500,13 +505,16 @@ classdef classMPP_Circular_HL < classMPP_Circular
             D = 28e-3;
             s = 1; % Surface arbitraire
 
-            plate = classMPP_Circular_HL(classMPP_Circular.create_config(s, t, r, phi));
+            plate = classMPP_Circular_HL_flow(classMPP_Circular.create_config(s, t, r, phi));
+            plate_iter = classMPP_Circular_HL_iter(classMPP_Circular.create_config(s, t, r, phi));
             cavity = classcavity(classcavity.create_config(D, sqrt(s), sqrt(s)));
             E = classelement(classelement.create_config({plate, cavity}, 'closed', s));
+            E_iter = classelement(classelement.create_config({plate_iter, cavity}, 'closed', s));
     
             % Modèle non linéaire itératif
-            plot(env.w/(2*pi), E.alpha(env), 'DisplayName', 'Modèle non - linéaire itératif avec écoulement');
-            plot(env.w/(2*pi), E.alpha(env0), 'DisplayName', 'Modèle non - linéaire itératif sans écoulement');
+            plot(env.w/(2*pi), E.alpha(env), 'DisplayName', 'Modèle non - linéaire avec écoulement');
+            plot(env.w/(2*pi), E_iter.alpha(env, 'iter'), 'DisplayName', 'Modèle non - linéaire itératif avec écoulement');
+            plot(env.w/(2*pi), E.alpha(env0), 'DisplayName', 'Modèle non - linéaire sans écoulement');
             perso_configure_alpha_figure(5000);
     
             % Données de références
