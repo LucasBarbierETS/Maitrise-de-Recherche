@@ -9,7 +9,7 @@ aliases:
 publisher: "Applied Acoustics"
 citation key: "dupont2018"
 DOI: "10.1016/j.apacoust.2018.02.016"
-"created date:": "2025-07-09T20:02:29-04:00"  
+"created date:": "2025-08-30T16:17:10-04:00"  
 "modified date:": 
 ---
 # (Z) A microstructure material design for low frequency sound absorption
@@ -28,7 +28,7 @@ DOI: "10.1016/j.apacoust.2018.02.016"
 >**Journal**:: *Applied Acoustics* 
 >
 > **Keywords**:: multi-pancake, _TMM
->**Bibliography:** Dupont, Thomas, Philippe Leclaire, Raymond Panneton, et Olga Umnova. « A Microstructure Material Design for Low Frequency Sound Absorption ». _Applied Acoustics_ 136 (juillet 2018): 86‑93. [https://doi.org/10.1016/j.apacoust.2018.02.016](https://doi.org/10.1016/j.apacoust.2018.02.016).
+>
 > **Related**:: 
 
 
@@ -44,7 +44,7 @@ DOI: "10.1016/j.apacoust.2018.02.016"
 ## Reading notes
 
 
-*Imported: 2025-07-09 20:02*
+*Imported: 2025-08-30 16:17*
 
 ### ✅ Supporting Argument or Example
 
@@ -74,5 +74,14 @@ DOI: "10.1016/j.apacoust.2018.02.016"
 > [!quote|yellow]+ Image ([page. 89](zotero://open-pdf/library/items/EI6UVSF8?page=89&annotation=R8BUCCXP))
 > ![[Zotero/dupont2018/Images/dupont2018-4-x48-y425.png]]
 
+> [!quote|yellow]+ Image ([page. 89](zotero://open-pdf/library/items/EI6UVSF8?page=89&annotation=32BFG7DG))
+> ![[Zotero/dupont2018/Images/dupont2018-4-x189-y71.png]]
+
+> [!quote|yellow]+ Image ([page. 89](zotero://open-pdf/library/items/EI6UVSF8?page=89&annotation=NQ97K4XD))
+> ![[Zotero/dupont2018/Images/dupont2018-4-x380-y53.png]]
+
+> [!quote|yellow]+ Image ([page. 90](zotero://open-pdf/library/items/EI6UVSF8?page=90&annotation=PKJY35P5))
+> ![[Zotero/dupont2018/Images/dupont2018-5-x44-y582.png]]
+
 > [!quote|yellow]+ Image ([page. 92](zotero://open-pdf/library/items/EI6UVSF8?page=92&annotation=ZPRKYVQV))
-> ![[Zotero/dupont2018/Images/dupont2018-7-x296-y453.png]]
+> ![[Zotero/dupont2018/Images/dupont2018-7-x295-y453.png]]

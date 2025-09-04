@@ -2,15 +2,16 @@
 
 ##### Redéfinition des paramètres du modèle JCAL
 
-Laly redéfinie la tortuosité et la résistivité au passage de l'air de la plaque en tenant compte de la vitesse acoustique RMS à l'entrée de celle-ci ([page. 76](zotero://open-pdf/library/items/CMZQ7B9B?page=76&annotation=6UFNB66G)) 
-$$\sigma_t=\frac{8 \eta}{\phi r^2}+\beta \frac{\rho_0\left(1-\phi^2\right)}{\pi h \phi C_D^2} V_a$$
+Laly redéfinie la tortuosité et la résistivité au passage de l'air de la plaque en tenant compte de la vitesse acoustique RMS à l'entrée de celle-ci ([page. 76](zotero://open-pdf/library/items/CMZQ7B9B?page=76&annotation=6UFNB66G)). La formulation basée sur le coefficient de décharge de la plaque vient de Zinn ([page. 70](zotero://open-pdf/library/items/CMZQ7B9B?page=70&annotation=4BWUU625))
+
+$$\sigma_t=\frac{8 \eta}{\phi r^2}+ \frac{4}{3}\frac{\rho_0\left(1-\phi^2\right)}{\pi h \phi C_D^2} V_a$$
 et $$\alpha_{\infty n l}=1+\frac{2 \varepsilon_{e n l}}{h}$$
-$$\varepsilon_{\text {enl }}=\frac{\Psi}{\left(1+V_a /\left(\phi c_0\right)\right)} 0.48 \sqrt{\pi r^2}\left[\sum_{n=0}^8 a_n(\sqrt{\phi})^n\right]$$
+$$\varepsilon_{\text {enl }}=\frac{4}{3\left(1+V_a /\left(\phi c_0\right)\right)} 0.48 \sqrt{\pi r^2}\left[\sum_{n=0}^8 a_n(\sqrt{\phi})^n\right]$$
 avec $$\begin{aligned}
 & a_0=1.0, a_1=-1.4092, a_2=0.0, a_2=0.33818, a_4=0.0 \\
 & a_5=0.06793, a_6=-0.02287, a_7=0.003015, a_8=-0.01614
 \end{aligned}$$
-et $\Psi$ une constante fixée à $4/3$. ^10b67e
+^10b67e
 #### Expression de la vitesse RMS dans les perforations
 
 Pour exprimer la vitesse RMS, deux approches sont possibles : 
@@ -20,5 +21,5 @@ Pour exprimer la vitesse RMS, deux approches sont possibles :
 
 #### Un modèle semi-empirique
 
-Ce modèle demeure un modèle semi-empirique car il tient compte de certains effets géométriques de la plaque obtenus empiriquement au moyen du [[coefficient de décharge]] de la plaque $C_{d}= 0.76$. Cette valeur est admise en général mais varie en réalité en fonction des paramètres géométriques. [Kraft](zotero://open-pdf/library/items/9IDH9DCW?page=563&annotation=7NJH4ACN) propose une formule empirique pour ce coefficient en fonction des différents paramètres géométriques de la plaque dans le cas où le rapport $t/d$ entre l'épaisseur et le diamètre des perforations est inférieur à 1 (plaques fines).
+Ce modèle demeure un modèle semi-empirique car il tient compte de certains effets géométriques de la plaque obtenus empiriquement au moyen du [[coefficient de décharge]] de la plaque $C_{d}= 0.76$. Cette valeur est admise en général mais varie en réalité en fonction des paramètres géométriques (On considère pour les cas d'applications les plus courants que le coefficient varie entre 0.6 et 0.8 ([page. 70](zotero://open-pdf/library/items/CMZQ7B9B?page=70&annotation=KYTJMKWM)) . [Kraft](zotero://open-pdf/library/items/9IDH9DCW?page=563&annotation=7NJH4ACN) propose une formule empirique pour ce coefficient en fonction des différents paramètres géométriques de la plaque dans le cas où le rapport $t/d$ entre l'épaisseur et le diamètre des perforations est inférieur à 1 (plaques fines).
 $$C_D=0.80695 \sqrt{\sigma^{0.1} / e^{-0.5072(t / d)}}$$

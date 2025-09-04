@@ -17465,6 +17465,38 @@
       "relations": {},
       "dateAdded": "2025-08-22T18:05:33Z",
       "dateModified": "2025-08-22T18:05:33Z"
+    },
+    {
+      "key": "MQB2WFQ7",
+      "version": 734,
+      "parentItem": "LHMEDENW",
+      "itemType": "annotation",
+      "annotationType": "image",
+      "annotationComment": "",
+      "annotationColor": "#ffd400",
+      "annotationPageLabel": "214",
+      "annotationSortIndex": "00004|001658|00516",
+      "annotationPosition": "{\"pageIndex\":4,\"rects\":[[279.312,92.026,520.05,242.63]]}",
+      "tags": [],
+      "relations": {},
+      "dateAdded": "2025-09-04T00:49:06Z",
+      "dateModified": "2025-09-04T00:49:06Z"
+    },
+    {
+      "key": "BKANGUF7",
+      "version": 734,
+      "parentItem": "LHMEDENW",
+      "itemType": "annotation",
+      "annotationType": "image",
+      "annotationComment": "",
+      "annotationColor": "#ffd400",
+      "annotationPageLabel": "216",
+      "annotationSortIndex": "00006|001595|00544",
+      "annotationPosition": "{\"pageIndex\":6,\"rects\":[[34.01,84.206,279.312,217.696]]}",
+      "tags": [],
+      "relations": {},
+      "dateAdded": "2025-09-04T00:48:00Z",
+      "dateModified": "2025-09-04T00:48:00Z"
     }
   ],
   "collections": [
@@ -17827,5 +17859,5 @@
     }
   ],
   "name": "Engage Silencieux",
-  "version": 733
+  "version": 734
 }

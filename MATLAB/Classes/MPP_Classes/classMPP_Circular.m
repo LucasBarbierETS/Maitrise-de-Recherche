@@ -163,7 +163,6 @@ classdef classMPP_Circular < classJCA_Rigid
             % Tube = Tube.launch_tube_measurement(env);
             
             % affichage des résultats
-            figure()
             subplot(1, 2, 1)
             hold on
             subtitle("Atalla2007 - fig. 3 - p. 9")
@@ -180,6 +179,33 @@ classdef classMPP_Circular < classJCA_Rigid
             % 'LineWidth', 1, 'DisplayName', 'modèle foam 2'); % la référence s'est trompée de mousse
             plot(x_data2, y_data2, 'Color', 'g','LineWidth', 1, 'LineStyle', '--','DisplayName', 'Données de références');
             perso_configure_alpha_figure(5000);
+
+            %% Validation classMPP_Circular - TL avec écoulement
+
+            perso_figure('Validation classMPP_Circular - TL sans écoulement')
+            % Figures de réference 
+            % perso_ouvrir_lien_Zotero('zotero://open-pdf/library/items/CMZQ7B9B?page=257&annotation=DN9BHR8G')
+
+            Lx = 50.8e-3;
+            Lz = 254e-3;
+            w = Lz; % longueur de la zone traité
+            d = Lx; % tube carré
+            r = 0.6e-3;
+            t = 1.3e-3;
+            phi = 0.078;
+            D = 17.2e-3;
+
+            % création de l'environnement
+            env = create_environnement(23, 100800, 22, 1, 3000, 200, 100);
+
+            % création de l'objet de classe
+            E = classelement(classelement.create_config(...
+                {classMPP_Circular(classMPP_Circular.create_config(w * d, t, r, phi, w, d)), ...
+                classcavity(classcavity.create_config(D, w, d))}, 'closed', w * d));
+
+            TM_sb = E.side_branch_transfer_matrix(env, Lx, 0);
+
+            perso_plot_transfer_matrix(TM_sb, env, 'test', 3000);
         end
     end
 end

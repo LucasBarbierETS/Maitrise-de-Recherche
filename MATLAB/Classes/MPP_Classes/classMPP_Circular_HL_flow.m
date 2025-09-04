@@ -435,7 +435,7 @@ classdef classMPP_Circular_HL_flow < classMPP_Circular
             s = 1; % Surface arbitraire
 
             plate = classMPP_Circular_HL_flow(classMPP_Circular.create_config(s, t, r, phi));
-            plate_iter = classMPP_Circular_HL_iter(classMPP_Circular.create_config(s, t, r, phi));
+            plate_iter = classMPP_Circular_HL_flow_iter(classMPP_Circular.create_config(s, t, r, phi));
             cavity = classcavity(classcavity.create_config(D, sqrt(s), sqrt(s)));
             E = classelement(classelement.create_config({plate, cavity}, 'closed', s));
             E_iter = classelement(classelement.create_config({plate_iter, cavity}, 'closed', s));
@@ -470,7 +470,7 @@ classdef classMPP_Circular_HL_flow < classMPP_Circular
             D = 30e-3;
             s = 1; % Surface arbitraire
             plate = classMPP_Circular_HL_flow(classMPP_Circular.create_config(s, t, r, phi));
-            plate_iter = classMPP_Circular_HL_iter(classMPP_Circular.create_config(s, t, r, phi));
+            plate_iter = classMPP_Circular_HL_flow_iter(classMPP_Circular.create_config(s, t, r, phi));
             cavity = classcavity(classcavity.create_config(D, sqrt(s), sqrt(s)));
             E = classelement(classelement.create_config({plate, cavity}, 'closed', s));
             E_iter = classelement(classelement.create_config({plate_iter, cavity}, 'closed', s));
@@ -506,7 +506,7 @@ classdef classMPP_Circular_HL_flow < classMPP_Circular
             s = 1; % Surface arbitraire
 
             plate = classMPP_Circular_HL_flow(classMPP_Circular.create_config(s, t, r, phi));
-            plate_iter = classMPP_Circular_HL_iter(classMPP_Circular.create_config(s, t, r, phi));
+            plate_iter = classMPP_Circular_HL_flow_iter(classMPP_Circular.create_config(s, t, r, phi));
             cavity = classcavity(classcavity.create_config(D, sqrt(s), sqrt(s)));
             E = classelement(classelement.create_config({plate, cavity}, 'closed', s));
             E_iter = classelement(classelement.create_config({plate_iter, cavity}, 'closed', s));

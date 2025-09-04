@@ -1,4 +1,7 @@
 
+En champ libre, si on considère qu'une onde plane d'incidence quelconque atteint une surface traitée acoustiquement, respectant les conditions de réaction localisée alors la puissance qui va travailler concrètement à exciter la traitement est la projection normale de la puissance totale. Ainsi l'énergie incidence n'est qu'une fraction de l'énergie totale transportée par l'onde plane. D'un certain point de vue on peut considérer que le traitement va donc absorber davantage d'énergie en incidence normale qu'en incidence oblique mais tant que le matériau est a réaction localisée la fraction d'énergie dissipée relativement à l'énergie incidente est constante. Le cas limite consiste à atteindre l'incidence rasante en champ libre. Dans ces conditions le traitement devrait être tout à fait inefficace bien qu'on ne puisse pas effectuer une telle mesure pratiquement. 
+
+Si cette fois on se place en guide d'onde, alors **il n'est pas possible de définir explicitement la quantité d'énergie incident sur un traitement acoustique**. 
 
 Le traitement d'une ou des parois d'une conduite modifie les modes admissibles dans celle-ci
 

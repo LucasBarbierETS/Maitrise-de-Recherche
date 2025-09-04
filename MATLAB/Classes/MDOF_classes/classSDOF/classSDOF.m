@@ -3,7 +3,7 @@ classdef classSDOF < classelement
     methods
         function obj = classSDOF(config)
 
-            obj@classelement(classelement.create_config({}, 'opened'));
+            obj@classelement(classelement.create_config({}, 'opened', 1)); % surace initiale arbitraire
             obj.Configuration = perso_transfer_fields(config, obj.Configuration);
 
             % Paramètres de la plaque
@@ -25,7 +25,7 @@ classdef classSDOF < classelement
                     classMPP_Circular_HL.create_config(pp, phr, pt, cd*cw));
             end
 
-            obj.Configuration.ListOfSubelements{end+1} = classcavity(classcavity.create_config(ct, cd * cw));
+            obj.Configuration.ListOfSubelements{end+1} = classcavity(classcavity.create_config(ct, cw, cd));
         end
     
         function output_model = set_COMSOL_2D_Model(obj, input_model, index, env)

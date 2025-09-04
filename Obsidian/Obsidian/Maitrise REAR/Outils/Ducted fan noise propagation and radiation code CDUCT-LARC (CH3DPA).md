@@ -1,7 +1,5 @@
 Article de référence : THE DEVELOPMENT OF THE DUCTED FAN NOISE PROPAGATION AND RADIATION CODE CDUCT-LARC
 
-
-
 > [!quote|green]+ Highlight ([page. 3](zotero://open-pdf/library/items/R73R9NG2?page=3&annotation=Y2AYJ4RC))
 > This code calculates the propagation of a given acoustic source ahead of the fan face or aft of the exhaust guide vanes in the inlet or exhaust ducts, respectively 
 ![[Pasted image 20250715095151.png]]
@@ -14,8 +12,15 @@ Article de référence : THE DEVELOPMENT OF THE DUCTED FAN NOISE PROPAGATION AND
 - Calcul de l'écoulement arrière
 - Radiation acoustique du conduit
 
-**Fonctionnement** : 
+##### Fonctionnement du code de propagation
 
+Le code développé à pour but de fournir une prédiction du champ acoustique à l'intérieur d'une nacelle d'avion en tenant compte d'un traitement acoustique localisé le long de la paroi de son entrée d'admission.
+
+Le code résout l'équation d'Helmholtz convectée (reformulation tenant compte de la vitesse d'écoulement moyenne) dans un système de coordonnées curvilignes épousant la surface interne de l'entrée d'admission ([page. 2](zotero://open-pdf/library/items/Z37C5XV8?page=2&annotation=WE7FQYTQ)). 
+
+Le terme de source est défini sous la forme d'un potentiel acoustique formulé uniformément sur la section plane où se situe le rotor ([page. 27](zotero://open-pdf/library/items/Z37C5XV8?page=27&annotation=28D5UMWS)). La définition de la source adopte une approche statistique ([page. 3](zotero://open-pdf/library/items/R73R9NG2?page=3&annotation=N8GWA7ZP)) ([page. 7](zotero://open-pdf/library/items/R73R9NG2?page=7&annotation=VGLPA2PR))
+
+La condition limite du traitement est fournie sous la forme d'une impédance de surface interprétée hors écoulement, avec une hypothèse de réaction localisée ([page. 5](zotero://open-pdf/library/items/Z37C5XV8?page=5&annotation=BQ576NN4)). La condition limite est reformuler sous une forme convective pour être relié au code de propagation ([page. 552](zotero://open-pdf/library/items/UI4DKWLD?page=552&annotation=E92NWFUZ)).
 #### Module de propagation des ondes
 
 ##### Equation de propagation des ondes

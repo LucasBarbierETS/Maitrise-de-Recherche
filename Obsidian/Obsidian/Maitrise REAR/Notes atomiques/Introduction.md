@@ -1,9 +1,5 @@
-**Problématique** : Etude et caractérisation de solutions acoustiques pour un rotor caréné d'hélicoptère sous excitations réalistes
+![[Contexte et enjeux]]
 
-**Délimitation du projet** :  L'objectif industriel qui motive ce projet de recherche consiste à réduire les émissions sonores d'un rotor caréné d'hélicoptère à l'aide de traitements acoustiques disposés à la surface de son carénage.
-Ce projet est très complexe et les considérations qu'il implique sont pluridisciplinaires : Elles concernent la mécanique et l'aérodynamique pour une part. En ce qui concerne l'acoustique, le problème pose la question de la production du son, de sa propagation au sein du système et de l'évaluation de la réduction du bruit obtenue avec l'introduction d'un traitement acoustique.
-La définition des grandeurs d'études (*impédance de surface, niveau sonore, absorption, réduction du bruit...*), les représentations qu'on se donne pour rendre le problème intelligible 
-(*acoustique ondulatoire, modale, approche énergétique ou géométrique...*), les hypothèses de travail qu'on fixe pour formuler nos modèles (*ondes planes, réaction localisée...*), la délimitation du système et de ses parties (*traitement acoustique, conduite formée par le carénage, sources...*), la séparation des effets et des couplages associés à la prise en compte des conditions réalistes d'excitation (*effets de forts niveaux, prise en compte de l'angle d'incidence ou de l'écoulement*) sont autant d'enjeux qui s'agit de considérer pour s'assurer de la cohérence épistémologique du travail proposé et pour définir clairement dans quelle mesure il permet de répondre à la problématique industrielle initiale.
-L'étude et la caractérisation des solutions acoustiques se heurte par ailleurs à ce qu'il est possible de mesurer. Ces limites objectives peuvent être dues à la nature des objets physiques qui nous intéressent (*champs scalaires et vectoriels*) ou plus prosaïquement, au matériel de mesures à notre disposition. Les outils et ressources numériques étant de plus en plus performants, il est possible de remédier en partie à certaines limites techniques qui s'imposent à nous mais alors des difficultés d'un nouvel ordre (*coût de calcul, prise en compte de la physique*) viennent s'ajouter la liste de nos préoccupations.
+![[Objectifs de la recherche]]
 
-La méthode suivie pour répondre à ce problème sera à l'image des considérations précédentes. Il faudra d'abord décrire notre système et poser les bases de la formulation physique du problème. 
+![[Structure du mémoire]]

@@ -9,7 +9,7 @@ aliases:
 publisher: ""
 citation key: "narkDesignAdvancedInlet2019"
 DOI: "10.2514/6.2019-2764"
-"created date:": "2025-07-15T09:40:37-04:00"  
+"created date:": "2025-09-02T16:51:48-04:00"  
 "modified date:": 
 ---
 # (Z) Design of an Advanced Inlet Liner for the Quiet Technology Demonstrator 3
@@ -43,7 +43,7 @@ DOI: "10.2514/6.2019-2764"
 ## Reading notes
 
 
-*Imported: 2025-07-15 09:40*
+*Imported: 2025-09-02 16:51*
 
 ### ✅ Supporting Argument or Example
 
@@ -64,6 +64,9 @@ DOI: "10.2514/6.2019-2764"
 
 > [!quote|green]+ Highlight ([page. 3](zotero://open-pdf/library/items/R73R9NG2?page=3&annotation=IKCHFMG2))
 > Results of the propagation module include the acoustic potential or pressure within the duct 
+
+> [!quote|green]+ Highlight ([page. 3](zotero://open-pdf/library/items/R73R9NG2?page=3&annotation=AZSVD34N))
+> The duct radiation model is based on the Ffowcs Williams-Hawkings (FW-H) equation with a permeable data surface.16 
 
 > [!quote|green]+ Highlight ([page. 3](zotero://open-pdf/library/items/R73R9NG2?page=3&annotation=2NP2FQ3G))
 > the data surface is taken to be the nacelle inlet or exhaust plane for inlet or aft-fan cases, respectively 

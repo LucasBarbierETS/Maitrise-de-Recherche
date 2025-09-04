@@ -440,7 +440,7 @@ classdef classMPPSBH_Rectangular < classelement
             ct = config.CavitiesThickness;
             mpw = config.MainPoresWidth;
             pt = config.PlatesThickness;
-            pppp = config.PlatesPerforatedPartPorosity;
+            pp = config.PlatesPorosity;
 
             tt = 0; % total thickness
 
@@ -451,7 +451,7 @@ classdef classMPPSBH_Rectangular < classelement
                 tt = tt + ct(i);
 
                 % Tracé du pore i
-                rectangle(ax, 'Position', [-mpw(i)/2 tt mpw(i) pt(i)], 'Facecolor', pppp(i) * [1 1 1]);
+                rectangle(ax, 'Position', [-mpw(i)/2 tt mpw(i) pt(i)], 'Facecolor', pp(i) * [1 1 1]);
                 tt = tt + pt(i);
             end
         end
@@ -589,7 +589,7 @@ classdef classMPPSBH_Rectangular < classelement
             % Définition de la porosité à partir de la répartition des perforations
             Nh = pd .* pw; % nombre total de perforations
             [plates_perforated_surface, Sperf] = deal(pi * hr.^2 .* Nh);
-            config.PlatesPerforatedPartPorosity = deal(Sperf ./ (mpw(1:end-1) .* mpd(1:end-1)));
+            config.PlatesPorosity = deal(Sperf ./ (mpw(1:end-1) .* mpd(1:end-1)));
             config.PlatesRealPorosity = plates_perforated_surface / (cw * cd);
 
             % Méthode de prise en compte des cavités latérales

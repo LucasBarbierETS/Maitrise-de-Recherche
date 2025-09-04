@@ -1,5 +1,7 @@
 #### Pore central constant (multi-pancakes)  
 
+^e51361
+
 En plus de l'intérêt d'utiliser plusieurs plaques successives [Dupont](zotero://open-pdf/library/items/EI6UVSF8) développe un métamatériau constitué de plaques circulaires superposées, perforées en leur centre. Le matériau obtenu est composé d'un pore central entouré d'une succession de cavité annulaires fines dites "pancakes".
 
 Dans ce matériau, des pertes visqueuses sont observées dans les perforations. 

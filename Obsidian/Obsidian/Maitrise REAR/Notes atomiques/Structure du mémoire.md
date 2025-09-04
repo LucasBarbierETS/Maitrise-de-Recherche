@@ -1,0 +1,16 @@
+Le mémoire sera composé d'une revue de littérature permettant d'introduire les différents aspects scientifiques dans laquelle la méthodologie s'intègre. La revue s'intéressera également aux méthodologies de conception existantes, aux solutions conventionnelles couramment utilisées en aéronautique, aux procédures de dimensionnement impliquant ou non une optimisation. 
+
+Dans cette optique, une rapide rétrospective concernant la réduction du bruit et sur le formalisme adopté sera présentée ainsi que les concepts et idées générales qui se cachent derrière le fonctionnement des traitements acoustiques conventionnels. Nous verrons ensuite deux cas d'application d'une méthodologie complète et nous identifierons, les besoins, les limites et les perspectives de celles-ci.
+
+Dans une deuxième partie, la méthodologie et le modèle élaborés dans le cadre de ce projet seront présentés. Après avoir exposé la philosophie générale et le formalisme élémentaire sous-jacent, un accent sera mis sur les fonctionnalités attendues du code développé et sur ses principes de conception. Les approches les plus courantes permettant de décrire phénoménologiquement les sous-composantes des matériaux structuré seront également détaillées, en précisant les hypothèses retenues et les conditions d’application.
+
+Une fois ce cadre général posé, plusieurs solutions issues de la littérature seront modélisées à l’aide de l’approche développée. Le modèle sera confronté à des résultats expérimentaux afin d’en apprécier la validité et de proposer des ajustements. Les limites inhérentes à l’approche seront discutées.
+
+Dans une seconde étape, l’extension du cadre méthodologique sera abordée afin d’intégrer les paramètres environnementaux (forts niveaux, écoulement d'air rasant) et les conditions opérationnelles des solutions acoustiques. Différents modèles correctifs et approches de reformulation des prédictions seront présentés, puis validés à partir de données issues de la littérature. Cette validation concernera plusieurs cas d’application (effets de forts niveaux sonores sur une ou plusieurs plaques, approche itérative, etc.).
+
+Dans une dernière partie nous appliquerons la méthodologie à l'application concrète auquel ce projet de recherche se rattache. 
+Nous présenterons des éléments concernant la physique et la génération du bruit dans le cadre spécifique de notre application ainsi que des mesures concrètes effectuées au préalable permettant de définir un cahier des charges acoustiques. Celui-ci sera défini clairement, parallèlement aux autres considérations et contraintes imposés d'autre part dans ce projet par les différents acteurs.
+Une étude de la solution retenue sera faite. Une optimisation non contrainte sera réalisée pour obtenir un idée des perspectives de notre solution. Cette solution sera ensuite optimisée conformément à notre compréhension de celle-ci et aux contraintes définies en groupe.
+Une description des conditions de validation du projet, la limite de l'interprétation des mesures réalisable sera formulée et présentée conjointement à des résultats expérimentaux. Enfin des préconisations et des remarques sur le projet seront faites permettant d'ouvrir de nouveaux questionnements et d'imaginer de nouvelle direction pour la recherche dans ce domaine
+
+

@@ -9,7 +9,7 @@ aliases:
 publisher: ""
 citation key: "nicolasDeveloppementDunCode"
 DOI: ""
-"created date:": "2025-03-17T08:54:39-04:00"  
+"created date:": "2025-08-30T15:52:44-04:00"  
 "modified date:": 
 ---
 # (Z) Développement d’un code de simulation acoustique et d’optimisation de silencieux réactifs pour cheminées industrielles
@@ -28,7 +28,7 @@ DOI: ""
 >**Journal**:: ** 
 >
 > 
->**Bibliography:** Nicolas, Joly, et Lopez Maël. « Développement d’un code de simulation acoustique et d’optimisation de silencieux réactifs pour cheminées industrielles », s. d.
+>
 > **Related**:: 
 
 
@@ -44,9 +44,15 @@ DOI: ""
 ## Reading notes
 
 
-*Imported: 2025-03-17 08:54*
+*Imported: 2025-08-30 15:52*
 
 ### ⭐ Interesting point
+
+> [!quote|yellow]+ Image ([page. 9](zotero://open-pdf/library/items/GNXTFEBQ?page=9&annotation=GDK2P74H))
+> ![[Zotero/nicolasDeveloppementDunCode/Images/nicolasDeveloppementDunCode-14-x148-y466.png]]
+
+> [!quote|yellow]+ Image ([page. 9](zotero://open-pdf/library/items/GNXTFEBQ?page=9&annotation=EWD8933D))
+> ![[Zotero/nicolasDeveloppementDunCode/Images/nicolasDeveloppementDunCode-14-x152-y239.png]]
 
 > [!quote|yellow]+ Image ([page. 27](zotero://open-pdf/library/items/GNXTFEBQ?page=27&annotation=L929ZIHP))
 > ![[Zotero/nicolasDeveloppementDunCode/Images/nicolasDeveloppementDunCode-32-x134-y388.png]]

@@ -1,33 +1,19 @@
 https://perso.univ-lemans.fr/~odazel/vrac/
 
-Le modèle JCAL et un modèle de à partir de 5 paramètres de cette couche : la porosité $\phi$, la tortuosité $\alpha_{\infty}$, la résistivité au passage de l'air
-
-Matrice de transfert d'une couche de fluide équivalente (c.p.d.)
-
-![[Matrice de transfert d'une couche de fluide équivalente (c.p.d.)#^a271bc]]
-
-On sait par ailleurs que ![[Propagation of Sound in Porous Media#^8fee5f]]
-
-**Impédance d'une couche poreuse sur fond rigide**  
-
-![[Propagation of Sound in Porous Media#^c50868]]
-
-Si on connait la matrice de transfert de notre matériau on voit qu'on obtient de manière équivalente 
-$$Z_s = -jZ_{c}\cot(kd)= S*\frac{T_{11}}{T_{12}}$$
-
+Le modèle JCAL et un modèle permettant de retrouver les paramètres acoustiques effectifs de la couche de fluide équivalent homogène d'un matériau poreux à partir de 5 paramètres de cette couche : la porosité $\phi$, la tortuosité $\alpha_{\infty}$, la résistivité au passage de l'air $\sigma$ ainsi que les longueurs caractéristiques visqueuse et thermique. Il se base sur l'étude de la forme explicite des pertes qui adviennent dans un pore.
 #### Histoire du modèle
 
 ##### Premier modèle empirique
 
-En 1970, Delany et Bazley propose un modèle empirique pour l'impédance caractéristique équivalente et pour le nombre d'onde équivalent en fonction de la fréquence et de la [[résistivité au passage de l'air]]. L'approche consiste alors à ajuster par optimisation les coefficients d'un polynôme complexe en $\frac{\rho_0f}{\sigma}$ (adimensionnel) sur divers résultats expérimentaux divers, en imposant la conformité au principe de **causalité physique**. (la partie réelle de l'impédance et, à plus forte raison, le coefficient d'absorption doivent rester positifs sur tout le spectre).
+En 1970, Delany et Bazley propose un modèle empirique pour l'impédance caractéristique équivalente et pour le nombre d'onde équivalent en fonction de la fréquence et de la [[résistivité au passage de l'air]]. L'approche consiste alors à ajuster par optimisation les coefficients d'un polynôme complexe en $\frac{\rho_0f}{\sigma}$ (adimensionnel) sur divers résultats expérimentaux, en imposant la conformité au principe de **causalité physique**. (la partie réelle de l'impédance et, à plus forte raison, le coefficient d'absorption doivent rester positifs sur tout le spectre).
 $$Z_{e q}=\rho_0 c_0\left[1+0.0785 (\frac{\rho_0f}{\sigma})^{-0.632}-j 0.120 (\frac{\rho_0f}{\sigma})^{-0.632}\right]$$
 $$k_{e q}=\frac{\omega}{c_o}\left[1+0.0978 (\frac{\rho_0f}{\sigma})^{-0.700}-j 0.189 (\frac{\rho_0f}{\sigma})^{-0.595}\right]$$
 *Remarque : Cette dernière formulation est équivalente à la formulation d'une célérité équivalente des ondes dépendant de la fréquence $c_{eq} = \frac{\omega}{k_{eq}}$
-
 ##### Etude d'un matériau à pore cylindrique
 
 La difficulté qu'on rencontre lorsqu'on cherche à modéliser un matériau poreux vient du fait que dans le cas général on ne sait pas comment formuler et donc quantifier les phénomènes dissipatifs. Par ailleurs il n'est pas possible de décrire exactement le champ de pression en tenant compte de la géométrie réelle de la matrice poreuse. On étudie alors une situation de difficulté intermédiaire dans laquelle les pores sont droits, cylindriques à base circulaire. Dans cette situation il est possible de reformuler les équations de propagation des ondes.
-Le but est ici de **faire apparaitre des formes générales permettant de décrire les effets de dissipation visco-thermiques** pour une forme spécifique de poreux, et de les adapter par la suite à tous les autres.
+
+Le but est ici de **faire apparaitre des formes générales explicites permettant de décrire les effets de dissipation visco-thermiques** pour une forme spécifique de poreux, et de les adapter par la suite à tous les autres.
 
 Il est possible de modéliser les phénomènes dissipatifs dans un pore cylindrique en tenant compte séparément des pertes visqueuses et thermiques (Zwikker & Kosten, 1949). 
 
@@ -35,9 +21,7 @@ Il est possible de modéliser les phénomènes dissipatifs dans un pore cylindri
 	En particulier on peut reformuler l'équation de conservation de la masse :
 	
 	![[Propagation of Sound in Porous Media#^bc2dd6]]
-	
 	La résolution de cette équation en coordonnées cylindriques nous permet d'obtenir le profil de la vitesse axiale tenant compte des frottements visqueux aux parois. Par volonté d'homogénéisation, on décide ramener les équations sous leur forme linéaire conservative. On réécrit l'équation d'Euler généralisée équivalente, reliant la pression $p$ (uniforme sur la section du pore) et la vitesse axiale moyenne $\bar{v}$ au moyen d'une densité équivalente :
-	
 	![[Propagation of Sound in Porous Media#^25888e]]	
 	*Remarque : La densité traduit les effets de masse inertielle, exprimé dans le principe fondamental de la dynamique. Ici **on intègre les effets visqueux aux effets inertiels en écrivant la densité sous forme complexe**.
 	

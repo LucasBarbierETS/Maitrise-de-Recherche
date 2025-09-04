@@ -126,7 +126,7 @@ classdef classMPP_Circular_HL_flow_iter < classMPP_Circular
             sum_a = dot(a, sqrt(phi).^(0:length(a)-1));
 
             % Tortuosité non linéaire ([5], p. 7, eq. 22, 23)
-            tor = 1 + 2 * psi ./ (t * (1 + u_rms/S / (phi * env.air.parameters.c0))) ...
+            tor = 1 + 2 * psi / (1 + 305 * env.M^3) ./ (t * (1 + u_rms/S / (phi * env.air.parameters.c0))) ...
             * 0.48 * sqrt(pi * pr^2) * sum_a;
 
             % % debog : Tracé de la tortuosité en fonction de la fréquence

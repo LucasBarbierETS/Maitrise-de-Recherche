@@ -9,7 +9,7 @@ aliases:
 publisher: ""
 citation key: "TheseLaly"
 DOI: ""
-"created date:": "2025-08-28T11:43:37-04:00"  
+"created date:": "2025-09-04T12:12:36-04:00"  
 "modified date:": 
 ---
 # (Z) Thèse Laly
@@ -43,7 +43,7 @@ DOI: ""
 ## Reading notes
 
 
-*Imported: 2025-08-28 11:43*
+*Imported: 2025-09-04 12:12*
 
 ### ✅ Supporting Argument or Example
 
@@ -267,6 +267,9 @@ comment connais on k0
 
 > [!quote|yellow]+ Image ([page. 255](zotero://open-pdf/library/items/CMZQ7B9B?page=255&annotation=PUSQZPS8))
 > ![[Zotero/TheseLaly/Images/TheseLaly-255-x74-y283.png]]
+
+> [!quote|yellow]+ Image ([page. 257](zotero://open-pdf/library/items/CMZQ7B9B?page=257&annotation=DN9BHR8G))
+> ![[Zotero/TheseLaly/Images/TheseLaly-257-x111-y273.png]]
 
 > [!quote|yellow]+ Note ([page. 260](zotero://open-pdf/library/items/CMZQ7B9B?page=260&annotation=U8XBS97X))
 >

@@ -5999,50 +5999,6 @@
       "dateModified": "2025-03-28T18:50:16Z"
     },
     {
-      "key": "Y6UALWDC",
-      "version": 19449,
-      "itemType": "journalArticle",
-      "title": "Hybrid composite meta-porous structure for improving and broadening sound absorption",
-      "creators": [
-        {"creatorType": "author", "firstName": "Nansha", "lastName": "Gao"},
-        {"creatorType": "author", "firstName": "Jianguo", "lastName": "Wu"},
-        {"creatorType": "author", "firstName": "Kuan", "lastName": "Lu"},
-        {"creatorType": "author", "firstName": "Haibin", "lastName": "Zhong"}
-      ],
-      "abstractNote": "In order to improve and broaden the sound absorption performance of porous materials with low ﬂow resistance, this study proposes the composite meta-porous structure embedded multiple lateral plates of different lengths, and investigates the corresponding sound absorption coefﬁcients with the ﬁxed and periodic boundary. Characteristics of spatial ﬂuctuation and slow wave effect are embodied in acoustic pressure distributions. Further, the hybrid composite meta-porous structure with periodic boundary could achieve high sound absorption in range of 0–6.4 kHz. The Theoretical model using transfer matrix method suitable for these models is proposed, and verify the FEM results. Normalized surface impedance, phase and trajectory of the complex reﬂective coefﬁcient illustrates the loss of acoustic energy inside the structure and leakage to the outside. By detailed discussion on the relationship between the geometric parameters and the corresponding sound absorption coefﬁcients, the three boundaries would have different effects on sound absorption performance. Sound absorption test results by acoustic impedance tube conﬁrm the rationality of the composite meta-porous structure with ﬁxed boundary in range of 0.2–5.716 kHz and its practical application in the noise reduction.",
-      "publicationTitle": "Mechanical Systems and Signal Processing",
-      "volume": "154",
-      "issue": "",
-      "pages": "107504",
-      "date": "06/2021",
-      "series": "",
-      "seriesTitle": "",
-      "seriesText": "",
-      "journalAbbreviation": "Mechanical Systems and Signal Processing",
-      "language": "en",
-      "DOI": "10.1016/j.ymssp.2020.107504",
-      "ISSN": "08883270",
-      "shortTitle": "",
-      "url": "https://linkinghub.elsevier.com/retrieve/pii/S0888327020308906",
-      "accessDate": "2024-10-04T19:57:40Z",
-      "archive": "",
-      "archiveLocation": "",
-      "libraryCatalog": "DOI.org (Crossref)",
-      "callNumber": "",
-      "rights": "",
-      "extra": "",
-      "tags": [
-        {"tag": "_MLB"},
-        {"tag": "_Niloofar"},
-        {"tag": "_meta-porous"},
-        {"tag": "_metamaterials"}
-      ],
-      "collections": [],
-      "relations": {},
-      "dateAdded": "2024-10-04T19:57:40Z",
-      "dateModified": "2025-03-28T18:49:28Z"
-    },
-    {
       "key": "ENSNKG94",
       "version": 19443,
       "parentItem": "233HZ8GN",
@@ -11200,26 +11156,6 @@
       "dateModified": "2025-01-26T04:32:46Z"
     },
     {
-      "key": "UDCIT46P",
-      "version": 16566,
-      "parentItem": "ESYPZ872",
-      "itemType": "attachment",
-      "linkMode": "imported_file",
-      "title": "Pongratz et Redmann - ACOUSTIC LINER DESIGN FOR FENESTRON® NOISE REDUCTI.pdf",
-      "accessDate": "",
-      "url": "",
-      "note": "",
-      "contentType": "application/pdf",
-      "charset": "",
-      "filename": "Pongratz et Redmann - ACOUSTIC LINER DESIGN FOR FENESTRON® NOISE REDUCTI.pdf",
-      "md5": null,
-      "mtime": null,
-      "tags": [],
-      "relations": {},
-      "dateAdded": "2025-01-26T04:29:19Z",
-      "dateModified": "2025-01-26T04:29:27Z"
-    },
-    {
       "key": "MLDSFVPJ",
       "version": 16470,
       "parentItem": "8YQWGQMS",
@@ -11360,55 +11296,6 @@
       "relations": {},
       "dateAdded": "2024-10-28T17:57:40Z",
       "dateModified": "2024-10-28T17:57:45Z"
-    },
-    {
-      "key": "5PTLA2A5",
-      "version": 16144,
-      "itemType": "journalArticle",
-      "title": "A microstructure material design for low frequency sound absorption",
-      "creators": [
-        {"creatorType": "author", "firstName": "Thomas", "lastName": "Dupont"},
-        {
-          "creatorType": "author",
-          "firstName": "Philippe",
-          "lastName": "Leclaire"
-        },
-        {
-          "creatorType": "author",
-          "firstName": "Raymond",
-          "lastName": "Panneton"
-        },
-        {"creatorType": "author", "firstName": "Olga", "lastName": "Umnova"}
-      ],
-      "abstractNote": "The acoustic properties of an air-saturated porous material depend on its microstructure and the thickness of the sample. Thick samples of conventional acoustic materials are required to achieve good absorption at low frequencies. This study suggests a new micro-structure for the design of low-frequency resonant acoustic absorbers. A perforated material is studied, in which the main perforations are connected to a collection of periodically spaced very thin annular dead-end pores with respect to the lateral size, these absorbers are called multi-pancake materials. It is shown, that at low frequencies, the periodic array of annular dead-end pores increases the effective compressibility without modifying the eﬀective dynamic density. Due to this eﬀect, the ﬁrst sound absorption peak appears at much lower frequency, compared to that of the structure without dead-end pores. A transfer matrix approach is proposed to model and optimize the absorber. Prototypes have been 3D printed and tested for sound absorption and transmission loss. This design allowed to design materials capable of producing absorption peaks at a few hundred Hz and constituted of a stacking of 10–20 annular dead-end pores, each deadend having a thickness of the order of 1 mm or less so that the overall material thickness was of a few cm. A good agreement between the data and the model predictions is demonstrated.",
-      "publicationTitle": "Applied Acoustics",
-      "volume": "136",
-      "issue": "",
-      "pages": "86-93",
-      "date": "07/2018",
-      "series": "",
-      "seriesTitle": "",
-      "seriesText": "",
-      "journalAbbreviation": "Applied Acoustics",
-      "language": "en",
-      "DOI": "10.1016/j.apacoust.2018.02.016",
-      "ISSN": "0003682X",
-      "shortTitle": "",
-      "url": "https://linkinghub.elsevier.com/retrieve/pii/S0003682X1730991X",
-      "accessDate": "2023-12-01T13:26:06Z",
-      "archive": "",
-      "archiveLocation": "",
-      "libraryCatalog": "DOI.org (Crossref)",
-      "callNumber": "",
-      "rights": "",
-      "extra": "",
-      "tags": [{"tag": "_TMM"}, {"tag": "multi-pancake"}],
-      "collections": ["8EC9KT2E", "A33RS6TI", "7GIT4683"],
-      "relations": {
-        "owl:sameAs": "http://zotero.org/groups/2456963/items/3YM8CRIC"
-      },
-      "dateAdded": "2023-12-01T13:26:06Z",
-      "dateModified": "2024-10-26T17:23:11Z"
     },
     {
       "key": "QLW3FP87",
@@ -13029,26 +12916,6 @@
       "relations": {},
       "dateAdded": "2024-10-07T21:25:56Z",
       "dateModified": "2024-10-07T21:25:56Z"
-    },
-    {
-      "key": "KNULTB8D",
-      "version": 14370,
-      "parentItem": "Y6UALWDC",
-      "itemType": "attachment",
-      "linkMode": "imported_file",
-      "title": "Gao et al. - 2021 - Hybrid composite meta-porous structure for improvi.pdf",
-      "accessDate": "",
-      "url": "",
-      "note": "",
-      "contentType": "application/pdf",
-      "charset": "",
-      "filename": "Gao et al. - 2021 - Hybrid composite meta-porous structure for improvi.pdf",
-      "md5": null,
-      "mtime": null,
-      "tags": [],
-      "relations": {},
-      "dateAdded": "2024-10-04T19:57:34Z",
-      "dateModified": "2024-10-04T19:57:43Z"
     },
     {
       "key": "A3GRHE8L",
@@ -24428,61 +24295,6 @@
       "dateModified": "2024-06-07T12:40:44Z"
     },
     {
-      "key": "U39HLCGF",
-      "version": 20136,
-      "itemType": "journalArticle",
-      "title": "Thin metamaterial using acoustic black hole profiles for broadband sound absorption",
-      "creators": [
-        {
-          "creatorType": "author",
-          "firstName": "Gauthier",
-          "lastName": "Bezançon"
-        },
-        {
-          "creatorType": "author",
-          "firstName": "Olivier",
-          "lastName": "Doutres"
-        },
-        {"creatorType": "author", "firstName": "Olga", "lastName": "Umnova"},
-        {
-          "creatorType": "author",
-          "firstName": "Philippe",
-          "lastName": "Leclaire"
-        },
-        {"creatorType": "author", "firstName": "Thomas", "lastName": "Dupont"}
-      ],
-      "abstractNote": "The multi-pancake absorber is a thin acoustic metamaterial composed of periodically arranged thin annular cavities separated by the plates and connected by a main pore, enabling low frequency sound absorption. However, with a constant main pore radius, this structure exhibits tonal absorption behavior characterized by narrow peaks with varying amplitudes due to an imbalance in losses between the modes. This work investigates a geometric variation of the main pore, focusing on the designs with a gradually decreasing radius known as acoustic black hole profiles, to achieve broadband absorption. An analytical model based on the transfer matrix approach and lumped elements is proposed to predict the acoustic properties. Validation is conducted through thermo-visco-acoustic finite element simulations and impedance tube measurements. Multiple main pore profiles are investigated and the complex frequency plane representation is used to improve the balance of losses. An understanding of the influence of the main pore radius at the entrance and backing of the sample, allows design of a decreasing main pore radius profile that results in a high absorption coefficient value across a broad fre­ quency range. Non-linear decreasing main pore profiles can be used, if necessary, to accentuate losses and achieve absorption peaks of similar amplitude.",
-      "publicationTitle": "Applied Acoustics",
-      "volume": "216",
-      "issue": "",
-      "pages": "109744",
-      "date": "01/2024",
-      "series": "",
-      "seriesTitle": "",
-      "seriesText": "",
-      "journalAbbreviation": "Applied Acoustics",
-      "language": "en",
-      "DOI": "10.1016/j.apacoust.2023.109744",
-      "ISSN": "0003682X",
-      "shortTitle": "",
-      "url": "https://linkinghub.elsevier.com/retrieve/pii/S0003682X2300542X",
-      "accessDate": "2024-04-13T19:31:54Z",
-      "archive": "",
-      "archiveLocation": "",
-      "libraryCatalog": "DOI.org (Crossref)",
-      "callNumber": "",
-      "rights": "",
-      "extra": "",
-      "tags": [],
-      "collections": ["M79YLPCD"],
-      "relations": {
-        "owl:sameAs": "http://zotero.org/groups/2456963/items/L3EK75JQ",
-        "dc:relation": "http://zotero.org/users/12361571/items/UKEYNGS4"
-      },
-      "dateAdded": "2024-05-30T03:04:01Z",
-      "dateModified": "2024-05-30T03:04:01Z"
-    },
-    {
       "key": "4R6FV355",
       "version": 8399,
       "parentItem": "ZC36VJYU",
@@ -24698,73 +24510,6 @@
       "relations": {},
       "dateAdded": "2024-04-30T14:55:05Z",
       "dateModified": "2024-04-30T14:55:09Z"
-    },
-    {
-      "key": "6IBSLWE5",
-      "version": 19877,
-      "itemType": "journalArticle",
-      "title": "A broadband and low-frequency sound absorber of sonic black holes with multi-layered micro-perforated panels",
-      "creators": [
-        {"creatorType": "author", "firstName": "Yunwei", "lastName": "Chen"},
-        {"creatorType": "author", "firstName": "Kangfan", "lastName": "Yu"},
-        {"creatorType": "author", "firstName": "Qidi", "lastName": "Fu"},
-        {"creatorType": "author", "firstName": "Jianrun", "lastName": "Zhang"},
-        {"creatorType": "author", "firstName": "Xi", "lastName": "Lu"},
-        {"creatorType": "author", "firstName": "Xiaofei", "lastName": "Du"},
-        {"creatorType": "author", "firstName": "Xiaojuan", "lastName": "Sun"}
-      ],
-      "abstractNote": "Sonic black hole (SBH) absorber is a promising strategy in noise reduction. However, low-frequency sound waves are difficult to be captured and dissipate due to the terminal truncation and the discontinuity of the admittance for the actual SBH. To make up the disadvantages, this paper incorporates micro-perforated panels (MPP) into the SBH to improve its low-frequency property. The design is realized by inserting the multi-layered MPPs (MLP) into the rings with decaying inner radius inside a SBH duct, termed the MLPSBH duct. The theoretical and numerical results show that the proposed absorber can achieve effective sound absorption in the frequencies above 225 Hz, in which the thickness of the absorber is only λ/15 with the λ being the corresponding wavelength. Mechanism studies indicate that the specific slow wave effect of the SBH can effectively mitigate the re­ quirements for the absorber length. Closer examination reveals that the high acoustic resistance characteristics of the MLP remarkably compensate for the acoustic resistance mismatch of the SBH in low-frequency range. Thus, attributing to the interplay of the SBH and MLP effects, the proposed absorber achieves broadband and lowfrequency sound absorption. Based on the deduction and validation of the transfer matrix method (TMM), the influence of the structural parameters on the sound absorption is investigated. The analysis indicates that the absorption performance of the proposed absorber barely depends on the damping and the number of rings, which allows the MLPSBH duct to maintain the excellent performance without abundant rings and extra absorbent material. The proposed strategy is an inspiration for the application of the SBH-based structures.",
-      "publicationTitle": "Applied Acoustics",
-      "volume": "217",
-      "issue": "",
-      "pages": "109817",
-      "date": "02/2024",
-      "series": "",
-      "seriesTitle": "",
-      "seriesText": "",
-      "journalAbbreviation": "Applied Acoustics",
-      "language": "en",
-      "DOI": "10.1016/j.apacoust.2023.109817",
-      "ISSN": "0003682X",
-      "shortTitle": "",
-      "url": "https://linkinghub.elsevier.com/retrieve/pii/S0003682X23006151",
-      "accessDate": "2024-04-30T12:19:39Z",
-      "archive": "",
-      "archiveLocation": "",
-      "libraryCatalog": "DOI.org (Crossref)",
-      "callNumber": "",
-      "rights": "",
-      "extra": "",
-      "tags": [],
-      "collections": ["8EC9KT2E", "6QHYH8YC"],
-      "relations": {
-        "dc:relation": [
-          "http://zotero.org/users/12361571/items/ALWLEIWM",
-          "http://zotero.org/users/12361571/items/MJM9WBIX"
-        ]
-      },
-      "dateAdded": "2024-04-30T12:19:39Z",
-      "dateModified": "2024-04-30T12:19:39Z"
-    },
-    {
-      "key": "AH7QFLYS",
-      "version": 7729,
-      "parentItem": "6IBSLWE5",
-      "itemType": "attachment",
-      "linkMode": "imported_file",
-      "title": "Chen et al. - 2024 - A broadband and low-frequency sound absorber of so.pdf",
-      "accessDate": "",
-      "url": "",
-      "note": "",
-      "contentType": "application/pdf",
-      "charset": "",
-      "filename": "Chen et al. - 2024 - A broadband and low-frequency sound absorber of so.pdf",
-      "md5": null,
-      "mtime": null,
-      "tags": [],
-      "relations": {},
-      "dateAdded": "2024-04-30T12:19:36Z",
-      "dateModified": "2024-04-30T12:19:39Z"
     },
     {
       "key": "MGBCHMSH",
@@ -29178,54 +28923,6 @@
       "dateModified": "2023-11-13T21:21:48Z"
     },
     {
-      "key": "U6XGJJS3",
-      "version": 6088,
-      "itemType": "journalArticle",
-      "title": "Acoustical modeling of micro-perforated panel at high sound pressure levels using equivalent fluid approach",
-      "creators": [
-        {"creatorType": "author", "firstName": "Zacharie", "lastName": "Laly"},
-        {
-          "creatorType": "author",
-          "firstName": "Noureddine",
-          "lastName": "Atalla"
-        },
-        {
-          "creatorType": "author",
-          "firstName": "Sid-Ali",
-          "lastName": "Meslioui"
-        }
-      ],
-      "abstractNote": "An acoustic impedance model to characterize micro-perforated panels at high sound pressure levels is proposed. The model uses a rigid frame porous medium, where the micro-perforated panel is modeled with an effective density, function of the frequency following the approach of Johnson-Allard and the equivalent ﬂuid parameters such as the tortuosity and the ﬂow resistivity are expressed as function of the incident sound pressure which is considered as a main variable. Unlike existing models which are limited to microperforated panels coupled to air cavity, the present model predicts correctly the acoustic response of micro-perforated panel backed by porous media which can be air cavity, porous material or resistive screen. Micro-perforated panel backed by porous media involves a distortion of the ﬂow caused by the perforations through the porous media, thus the micro-perforated panel is modeled in this case using an equivalent tortuosity where a correction term is proposed to account for the ﬂow distortion effect and it depends on the dynamic tortuosity of the porous layer and the incident sound pressure. The proposed impedance model is compared numerically with other existing nonlinear impedance models for different conﬁgurations of the micro-perforated panel. The results show a good agreement among each other for sound pressure levels up to 150 dB. In addition, experimental measurements were performed on several micro-perforated panels backed by air cavities or porous material using the classical impedance tube. A good correlation between theoretical and experimental results is obtained. Some validation and benchmarking results are illustrated and discussed in this paper. It is shown that the high sound pressure levels decrease the tortuosity and increase the ﬂow resistivity of the micro-perforated panel. Furthermore, the acoustic energy dissipation by the micro-perforated panel absorber with a large perforation diameter which is low in the linear regime can become important and interesting at high sound pressure level.",
-      "publicationTitle": "Journal of Sound and Vibration",
-      "volume": "427",
-      "issue": "",
-      "pages": "134-158",
-      "date": "08/2018",
-      "series": "",
-      "seriesTitle": "",
-      "seriesText": "",
-      "journalAbbreviation": "Journal of Sound and Vibration",
-      "language": "en",
-      "DOI": "v",
-      "ISSN": "0022460X",
-      "shortTitle": "",
-      "url": "https://linkinghub.elsevier.com/retrieve/pii/S0022460X17306740",
-      "accessDate": "2023-10-03T14:35:19Z",
-      "archive": "",
-      "archiveLocation": "",
-      "libraryCatalog": "DOI.org (Crossref)",
-      "callNumber": "",
-      "rights": "",
-      "extra": "",
-      "tags": [{"tag": "carte mentale"}],
-      "collections": ["8EC9KT2E", "V227JF7V", "ESR3XUVU"],
-      "relations": {
-        "owl:sameAs": "http://zotero.org/groups/2456963/items/NLMDULYW"
-      },
-      "dateAdded": "2023-10-03T14:35:19Z",
-      "dateModified": "2023-11-09T20:58:47Z"
-    },
-    {
       "key": "JCBI6VBC",
       "version": 2885,
       "parentItem": "4A7P8YEU",
@@ -30889,28 +30586,6 @@
       "relations": {},
       "dateAdded": "2023-10-03T14:38:38Z",
       "dateModified": "2023-10-03T14:38:38Z"
-    },
-    {
-      "key": "C3F2ZIGB",
-      "version": 6088,
-      "parentItem": "U6XGJJS3",
-      "itemType": "attachment",
-      "linkMode": "imported_file",
-      "title": "Laly et al. - 2018 - Acoustical modeling of micro-perforated panel at h.pdf",
-      "accessDate": "",
-      "url": "",
-      "note": "",
-      "contentType": "application/pdf",
-      "charset": "",
-      "filename": "Laly et al. - 2018 - Acoustical modeling of micro-perforated panel at h.pdf",
-      "md5": "a41f81f7a62afcccdb7090600c393b8a",
-      "mtime": 1696343719980,
-      "tags": [],
-      "relations": {
-        "owl:sameAs": "http://zotero.org/groups/2456963/items/6INWUFU5"
-      },
-      "dateAdded": "2023-10-03T14:35:15Z",
-      "dateModified": "2023-10-03T14:35:19Z"
     },
     {
       "key": "MZTTUIPG",
@@ -33622,53 +33297,6 @@
       "dateModified": "2025-08-22T18:56:21Z"
     },
     {
-      "key": "ESYPZ872",
-      "version": 22382,
-      "itemType": "journalArticle",
-      "title": "ACOUSTIC LINER DESIGN FOR FENESTRON® NOISE REDUCTION",
-      "creators": [
-        {
-          "creatorType": "author",
-          "firstName": "Reinhard",
-          "lastName": "Pongratz"
-        },
-        {"creatorType": "author", "firstName": "Daniel", "lastName": "Redmann"}
-      ],
-      "abstractNote": "The paper presents work done on the design of two different liners for FENESTRON® noise reduction on a 0.7:1 scaled H135 test rig. A short presentation of typical H135 spectral noise emission is given which forms the basis for the liner design regarding its spectral absorption domain. The existing H135 test rig is described, the modification according to the BLUECOPTER™ design of Airbus Helicopters as shroud design, stator design and fan blade design are presented. After describing test procedure and test parameter the design of the liner is given. According to tonal BPF noise components resulting from turbulent inflow conditions and rotor stator interaction and stochastic broadband components due to high vorticity flow at the fan blade tips two kind of liner haven been designed. An acoustic, double degree of freedom (DDOF) liner was studied both, numerically and by experiments and integrated behind the fan plane. His absorption efficiency was simulated and tested. In addition an aerodynamic liner was integrated for vorticity reduction in the vicinity of the fan blade tips by allowing flow penetration into a partially permeable shroud surface. Stochastic noise reduction was expected due to vorticity reduction. The efficiency of both types of liner could be demonstrated by measurements. Up to 3 dB(A) OASPL reduction was demonstrated.",
-      "publicationTitle": "",
-      "volume": "",
-      "issue": "",
-      "pages": "",
-      "date": "",
-      "series": "",
-      "seriesTitle": "",
-      "seriesText": "",
-      "journalAbbreviation": "",
-      "language": "en",
-      "DOI": "",
-      "ISSN": "",
-      "shortTitle": "",
-      "url": "",
-      "accessDate": "",
-      "archive": "",
-      "archiveLocation": "",
-      "libraryCatalog": "Zotero",
-      "callNumber": "",
-      "rights": "",
-      "extra": "",
-      "tags": [],
-      "collections": [],
-      "relations": {
-        "dc:relation": [
-          "http://zotero.org/users/12361571/items/GJ3B7FTV",
-          "http://zotero.org/users/12361571/items/Z3YAC27Y",
-          "http://zotero.org/users/12361571/items/7C27BMD2"
-        ]
-      },
-      "dateAdded": "2025-01-26T04:29:26Z",
-      "dateModified": "2025-01-26T04:29:26Z"
-    },
-    {
       "key": "A9Y5MZWZ",
       "version": 22495,
       "parentItem": "CMZQ7B9B",
@@ -34132,6 +33760,541 @@
       },
       "dateAdded": "2023-09-19T14:18:39Z",
       "dateModified": "2023-10-31T20:45:11Z"
+    },
+    {
+      "key": "32BFG7DG",
+      "version": 22676,
+      "parentItem": "EI6UVSF8",
+      "itemType": "annotation",
+      "annotationType": "image",
+      "annotationComment": "",
+      "annotationColor": "#ffd400",
+      "annotationPageLabel": "89",
+      "annotationSortIndex": "00003|003073|00679",
+      "annotationPosition": "{\"pageIndex\":3,\"rects\":[[188.715,70.628,556.424,114.378]]}",
+      "tags": [],
+      "relations": {},
+      "dateAdded": "2025-08-30T20:13:36Z",
+      "dateModified": "2025-08-30T20:13:36Z"
+    },
+    {
+      "key": "GDK2P74H",
+      "version": 22673,
+      "parentItem": "GNXTFEBQ",
+      "itemType": "annotation",
+      "annotationType": "image",
+      "annotationComment": "",
+      "annotationColor": "#ffd400",
+      "annotationPageLabel": "9",
+      "annotationSortIndex": "00013|000173|00210",
+      "annotationPosition": "{\"pageIndex\":13,\"rects\":[[148,465.5,325,581.5]]}",
+      "tags": [],
+      "relations": {},
+      "dateAdded": "2025-08-30T19:51:41Z",
+      "dateModified": "2025-08-30T19:51:41Z"
+    },
+    {
+      "key": "AZSVD34N",
+      "version": 22726,
+      "parentItem": "R73R9NG2",
+      "itemType": "annotation",
+      "annotationType": "highlight",
+      "annotationText": "The duct radiation model is based on the Ffowcs Williams-Hawkings (FW-H) equation with a permeable data surface.16",
+      "annotationComment": "",
+      "annotationColor": "#5fb236",
+      "annotationPageLabel": "3",
+      "annotationSortIndex": "00002|001992|00382",
+      "annotationPosition": "{\"pageIndex\":2,\"rects\":[[86.944,400.655,540.021,409.293],[72,388.7,110.525,399.267]]}",
+      "tags": [],
+      "relations": {},
+      "dateAdded": "2025-09-02T20:46:34Z",
+      "dateModified": "2025-09-02T20:46:34Z"
+    },
+    {
+      "key": "Y6UALWDC",
+      "version": 22782,
+      "itemType": "journalArticle",
+      "title": "Hybrid composite meta-porous structure for improving and broadening sound absorption",
+      "creators": [
+        {"creatorType": "author", "firstName": "Nansha", "lastName": "Gao"},
+        {"creatorType": "author", "firstName": "Jianguo", "lastName": "Wu"},
+        {"creatorType": "author", "firstName": "Kuan", "lastName": "Lu"},
+        {"creatorType": "author", "firstName": "Haibin", "lastName": "Zhong"}
+      ],
+      "abstractNote": "In order to improve and broaden the sound absorption performance of porous materials with low ﬂow resistance, this study proposes the composite meta-porous structure embedded multiple lateral plates of different lengths, and investigates the corresponding sound absorption coefﬁcients with the ﬁxed and periodic boundary. Characteristics of spatial ﬂuctuation and slow wave effect are embodied in acoustic pressure distributions. Further, the hybrid composite meta-porous structure with periodic boundary could achieve high sound absorption in range of 0–6.4 kHz. The Theoretical model using transfer matrix method suitable for these models is proposed, and verify the FEM results. Normalized surface impedance, phase and trajectory of the complex reﬂective coefﬁcient illustrates the loss of acoustic energy inside the structure and leakage to the outside. By detailed discussion on the relationship between the geometric parameters and the corresponding sound absorption coefﬁcients, the three boundaries would have different effects on sound absorption performance. Sound absorption test results by acoustic impedance tube conﬁrm the rationality of the composite meta-porous structure with ﬁxed boundary in range of 0.2–5.716 kHz and its practical application in the noise reduction.",
+      "publicationTitle": "Mechanical Systems and Signal Processing",
+      "volume": "154",
+      "issue": "",
+      "pages": "107504",
+      "date": "06/2021",
+      "series": "",
+      "seriesTitle": "",
+      "seriesText": "",
+      "journalAbbreviation": "Mechanical Systems and Signal Processing",
+      "language": "en",
+      "DOI": "10.1016/j.ymssp.2020.107504",
+      "ISSN": "08883270",
+      "shortTitle": "",
+      "url": "https://linkinghub.elsevier.com/retrieve/pii/S0888327020308906",
+      "accessDate": "2024-10-04T19:57:40Z",
+      "archive": "",
+      "archiveLocation": "",
+      "libraryCatalog": "DOI.org (Crossref)",
+      "callNumber": "",
+      "rights": "",
+      "extra": "",
+      "tags": [
+        {"tag": "_MLB"},
+        {"tag": "_Niloofar"},
+        {"tag": "_meta-porous"},
+        {"tag": "_metamaterials"}
+      ],
+      "collections": [],
+      "relations": {
+        "owl:sameAs": "http://zotero.org/groups/5573789/items/V34CD5J9"
+      },
+      "dateAdded": "2024-10-04T19:57:40Z",
+      "dateModified": "2025-03-28T18:49:28Z"
+    },
+    {
+      "key": "UDCIT46P",
+      "version": 22781,
+      "parentItem": "ESYPZ872",
+      "itemType": "attachment",
+      "linkMode": "imported_file",
+      "title": "Pongratz et Redmann - ACOUSTIC LINER DESIGN FOR FENESTRON® NOISE REDUCTI.pdf",
+      "accessDate": "",
+      "url": "",
+      "note": "",
+      "contentType": "application/pdf",
+      "charset": "",
+      "filename": "Pongratz et Redmann - ACOUSTIC LINER DESIGN FOR FENESTRON® NOISE REDUCTI.pdf",
+      "md5": null,
+      "mtime": null,
+      "tags": [],
+      "relations": {
+        "owl:sameAs": "http://zotero.org/groups/5573789/items/LVNY7LKD"
+      },
+      "dateAdded": "2025-01-26T04:29:19Z",
+      "dateModified": "2025-01-26T04:29:27Z"
+    },
+    {
+      "key": "ESYPZ872",
+      "version": 22781,
+      "itemType": "journalArticle",
+      "title": "ACOUSTIC LINER DESIGN FOR FENESTRON® NOISE REDUCTION",
+      "creators": [
+        {
+          "creatorType": "author",
+          "firstName": "Reinhard",
+          "lastName": "Pongratz"
+        },
+        {"creatorType": "author", "firstName": "Daniel", "lastName": "Redmann"}
+      ],
+      "abstractNote": "The paper presents work done on the design of two different liners for FENESTRON® noise reduction on a 0.7:1 scaled H135 test rig. A short presentation of typical H135 spectral noise emission is given which forms the basis for the liner design regarding its spectral absorption domain. The existing H135 test rig is described, the modification according to the BLUECOPTER™ design of Airbus Helicopters as shroud design, stator design and fan blade design are presented. After describing test procedure and test parameter the design of the liner is given. According to tonal BPF noise components resulting from turbulent inflow conditions and rotor stator interaction and stochastic broadband components due to high vorticity flow at the fan blade tips two kind of liner haven been designed. An acoustic, double degree of freedom (DDOF) liner was studied both, numerically and by experiments and integrated behind the fan plane. His absorption efficiency was simulated and tested. In addition an aerodynamic liner was integrated for vorticity reduction in the vicinity of the fan blade tips by allowing flow penetration into a partially permeable shroud surface. Stochastic noise reduction was expected due to vorticity reduction. The efficiency of both types of liner could be demonstrated by measurements. Up to 3 dB(A) OASPL reduction was demonstrated.",
+      "publicationTitle": "",
+      "volume": "",
+      "issue": "",
+      "pages": "",
+      "date": "",
+      "series": "",
+      "seriesTitle": "",
+      "seriesText": "",
+      "journalAbbreviation": "",
+      "language": "en",
+      "DOI": "",
+      "ISSN": "",
+      "shortTitle": "",
+      "url": "",
+      "accessDate": "",
+      "archive": "",
+      "archiveLocation": "",
+      "libraryCatalog": "Zotero",
+      "callNumber": "",
+      "rights": "",
+      "extra": "",
+      "tags": [],
+      "collections": [],
+      "relations": {
+        "dc:relation": [
+          "http://zotero.org/users/12361571/items/GJ3B7FTV",
+          "http://zotero.org/users/12361571/items/Z3YAC27Y",
+          "http://zotero.org/users/12361571/items/7C27BMD2",
+          "http://zotero.org/users/12361571/items/TM6ANTY8"
+        ],
+        "owl:sameAs": "http://zotero.org/groups/5573789/items/MCNG66Z5"
+      },
+      "dateAdded": "2025-01-26T04:29:26Z",
+      "dateModified": "2025-01-26T04:29:26Z"
+    },
+    {
+      "key": "5PTLA2A5",
+      "version": 22778,
+      "itemType": "journalArticle",
+      "title": "A microstructure material design for low frequency sound absorption",
+      "creators": [
+        {"creatorType": "author", "firstName": "Thomas", "lastName": "Dupont"},
+        {
+          "creatorType": "author",
+          "firstName": "Philippe",
+          "lastName": "Leclaire"
+        },
+        {
+          "creatorType": "author",
+          "firstName": "Raymond",
+          "lastName": "Panneton"
+        },
+        {"creatorType": "author", "firstName": "Olga", "lastName": "Umnova"}
+      ],
+      "abstractNote": "The acoustic properties of an air-saturated porous material depend on its microstructure and the thickness of the sample. Thick samples of conventional acoustic materials are required to achieve good absorption at low frequencies. This study suggests a new micro-structure for the design of low-frequency resonant acoustic absorbers. A perforated material is studied, in which the main perforations are connected to a collection of periodically spaced very thin annular dead-end pores with respect to the lateral size, these absorbers are called multi-pancake materials. It is shown, that at low frequencies, the periodic array of annular dead-end pores increases the effective compressibility without modifying the eﬀective dynamic density. Due to this eﬀect, the ﬁrst sound absorption peak appears at much lower frequency, compared to that of the structure without dead-end pores. A transfer matrix approach is proposed to model and optimize the absorber. Prototypes have been 3D printed and tested for sound absorption and transmission loss. This design allowed to design materials capable of producing absorption peaks at a few hundred Hz and constituted of a stacking of 10–20 annular dead-end pores, each deadend having a thickness of the order of 1 mm or less so that the overall material thickness was of a few cm. A good agreement between the data and the model predictions is demonstrated.",
+      "publicationTitle": "Applied Acoustics",
+      "volume": "136",
+      "issue": "",
+      "pages": "86-93",
+      "date": "07/2018",
+      "series": "",
+      "seriesTitle": "",
+      "seriesText": "",
+      "journalAbbreviation": "Applied Acoustics",
+      "language": "en",
+      "DOI": "10.1016/j.apacoust.2018.02.016",
+      "ISSN": "0003682X",
+      "shortTitle": "",
+      "url": "https://linkinghub.elsevier.com/retrieve/pii/S0003682X1730991X",
+      "accessDate": "2023-12-01T13:26:06Z",
+      "archive": "",
+      "archiveLocation": "",
+      "libraryCatalog": "DOI.org (Crossref)",
+      "callNumber": "",
+      "rights": "",
+      "extra": "",
+      "tags": [{"tag": "_TMM"}, {"tag": "multi-pancake"}],
+      "collections": ["8EC9KT2E", "A33RS6TI", "7GIT4683"],
+      "relations": {
+        "owl:sameAs": "http://zotero.org/groups/5573789/items/U8ZUT9C8"
+      },
+      "dateAdded": "2023-12-01T13:26:06Z",
+      "dateModified": "2024-10-26T17:23:11Z"
+    },
+    {
+      "key": "KNULTB8D",
+      "version": 22782,
+      "parentItem": "Y6UALWDC",
+      "itemType": "attachment",
+      "linkMode": "imported_file",
+      "title": "Gao et al. - 2021 - Hybrid composite meta-porous structure for improvi.pdf",
+      "accessDate": "",
+      "url": "",
+      "note": "",
+      "contentType": "application/pdf",
+      "charset": "",
+      "filename": "Gao et al. - 2021 - Hybrid composite meta-porous structure for improvi.pdf",
+      "md5": null,
+      "mtime": null,
+      "tags": [],
+      "relations": {
+        "owl:sameAs": "http://zotero.org/groups/5573789/items/BP9MI83L"
+      },
+      "dateAdded": "2024-10-04T19:57:34Z",
+      "dateModified": "2024-10-04T19:57:43Z"
+    },
+    {
+      "key": "U39HLCGF",
+      "version": 22779,
+      "itemType": "journalArticle",
+      "title": "Thin metamaterial using acoustic black hole profiles for broadband sound absorption",
+      "creators": [
+        {
+          "creatorType": "author",
+          "firstName": "Gauthier",
+          "lastName": "Bezançon"
+        },
+        {
+          "creatorType": "author",
+          "firstName": "Olivier",
+          "lastName": "Doutres"
+        },
+        {"creatorType": "author", "firstName": "Olga", "lastName": "Umnova"},
+        {
+          "creatorType": "author",
+          "firstName": "Philippe",
+          "lastName": "Leclaire"
+        },
+        {"creatorType": "author", "firstName": "Thomas", "lastName": "Dupont"}
+      ],
+      "abstractNote": "The multi-pancake absorber is a thin acoustic metamaterial composed of periodically arranged thin annular cavities separated by the plates and connected by a main pore, enabling low frequency sound absorption. However, with a constant main pore radius, this structure exhibits tonal absorption behavior characterized by narrow peaks with varying amplitudes due to an imbalance in losses between the modes. This work investigates a geometric variation of the main pore, focusing on the designs with a gradually decreasing radius known as acoustic black hole profiles, to achieve broadband absorption. An analytical model based on the transfer matrix approach and lumped elements is proposed to predict the acoustic properties. Validation is conducted through thermo-visco-acoustic finite element simulations and impedance tube measurements. Multiple main pore profiles are investigated and the complex frequency plane representation is used to improve the balance of losses. An understanding of the influence of the main pore radius at the entrance and backing of the sample, allows design of a decreasing main pore radius profile that results in a high absorption coefficient value across a broad fre­ quency range. Non-linear decreasing main pore profiles can be used, if necessary, to accentuate losses and achieve absorption peaks of similar amplitude.",
+      "publicationTitle": "Applied Acoustics",
+      "volume": "216",
+      "issue": "",
+      "pages": "109744",
+      "date": "01/2024",
+      "series": "",
+      "seriesTitle": "",
+      "seriesText": "",
+      "journalAbbreviation": "Applied Acoustics",
+      "language": "en",
+      "DOI": "10.1016/j.apacoust.2023.109744",
+      "ISSN": "0003682X",
+      "shortTitle": "",
+      "url": "https://linkinghub.elsevier.com/retrieve/pii/S0003682X2300542X",
+      "accessDate": "2024-04-13T19:31:54Z",
+      "archive": "",
+      "archiveLocation": "",
+      "libraryCatalog": "DOI.org (Crossref)",
+      "callNumber": "",
+      "rights": "",
+      "extra": "",
+      "tags": [],
+      "collections": ["M79YLPCD"],
+      "relations": {
+        "owl:sameAs": "http://zotero.org/groups/5573789/items/8V2MPI8Z",
+        "dc:relation": "http://zotero.org/users/12361571/items/UKEYNGS4"
+      },
+      "dateAdded": "2024-05-30T03:04:01Z",
+      "dateModified": "2024-05-30T03:04:01Z"
+    },
+    {
+      "key": "AH7QFLYS",
+      "version": 22782,
+      "parentItem": "6IBSLWE5",
+      "itemType": "attachment",
+      "linkMode": "imported_file",
+      "title": "Chen et al. - 2024 - A broadband and low-frequency sound absorber of so.pdf",
+      "accessDate": "",
+      "url": "",
+      "note": "",
+      "contentType": "application/pdf",
+      "charset": "",
+      "filename": "Chen et al. - 2024 - A broadband and low-frequency sound absorber of so.pdf",
+      "md5": null,
+      "mtime": null,
+      "tags": [],
+      "relations": {
+        "owl:sameAs": "http://zotero.org/groups/5573789/items/WCDWBPEC"
+      },
+      "dateAdded": "2024-04-30T12:19:36Z",
+      "dateModified": "2024-04-30T12:19:39Z"
+    },
+    {
+      "key": "6IBSLWE5",
+      "version": 22782,
+      "itemType": "journalArticle",
+      "title": "A broadband and low-frequency sound absorber of sonic black holes with multi-layered micro-perforated panels",
+      "creators": [
+        {"creatorType": "author", "firstName": "Yunwei", "lastName": "Chen"},
+        {"creatorType": "author", "firstName": "Kangfan", "lastName": "Yu"},
+        {"creatorType": "author", "firstName": "Qidi", "lastName": "Fu"},
+        {"creatorType": "author", "firstName": "Jianrun", "lastName": "Zhang"},
+        {"creatorType": "author", "firstName": "Xi", "lastName": "Lu"},
+        {"creatorType": "author", "firstName": "Xiaofei", "lastName": "Du"},
+        {"creatorType": "author", "firstName": "Xiaojuan", "lastName": "Sun"}
+      ],
+      "abstractNote": "Sonic black hole (SBH) absorber is a promising strategy in noise reduction. However, low-frequency sound waves are difficult to be captured and dissipate due to the terminal truncation and the discontinuity of the admittance for the actual SBH. To make up the disadvantages, this paper incorporates micro-perforated panels (MPP) into the SBH to improve its low-frequency property. The design is realized by inserting the multi-layered MPPs (MLP) into the rings with decaying inner radius inside a SBH duct, termed the MLPSBH duct. The theoretical and numerical results show that the proposed absorber can achieve effective sound absorption in the frequencies above 225 Hz, in which the thickness of the absorber is only λ/15 with the λ being the corresponding wavelength. Mechanism studies indicate that the specific slow wave effect of the SBH can effectively mitigate the re­ quirements for the absorber length. Closer examination reveals that the high acoustic resistance characteristics of the MLP remarkably compensate for the acoustic resistance mismatch of the SBH in low-frequency range. Thus, attributing to the interplay of the SBH and MLP effects, the proposed absorber achieves broadband and lowfrequency sound absorption. Based on the deduction and validation of the transfer matrix method (TMM), the influence of the structural parameters on the sound absorption is investigated. The analysis indicates that the absorption performance of the proposed absorber barely depends on the damping and the number of rings, which allows the MLPSBH duct to maintain the excellent performance without abundant rings and extra absorbent material. The proposed strategy is an inspiration for the application of the SBH-based structures.",
+      "publicationTitle": "Applied Acoustics",
+      "volume": "217",
+      "issue": "",
+      "pages": "109817",
+      "date": "02/2024",
+      "series": "",
+      "seriesTitle": "",
+      "seriesText": "",
+      "journalAbbreviation": "Applied Acoustics",
+      "language": "en",
+      "DOI": "10.1016/j.apacoust.2023.109817",
+      "ISSN": "0003682X",
+      "shortTitle": "",
+      "url": "https://linkinghub.elsevier.com/retrieve/pii/S0003682X23006151",
+      "accessDate": "2024-04-30T12:19:39Z",
+      "archive": "",
+      "archiveLocation": "",
+      "libraryCatalog": "DOI.org (Crossref)",
+      "callNumber": "",
+      "rights": "",
+      "extra": "",
+      "tags": [],
+      "collections": ["8EC9KT2E", "6QHYH8YC"],
+      "relations": {
+        "dc:relation": [
+          "http://zotero.org/users/12361571/items/ALWLEIWM",
+          "http://zotero.org/users/12361571/items/MJM9WBIX"
+        ],
+        "owl:sameAs": "http://zotero.org/groups/5573789/items/74TI9JLS"
+      },
+      "dateAdded": "2024-04-30T12:19:39Z",
+      "dateModified": "2024-04-30T12:19:39Z"
+    },
+    {
+      "key": "U6XGJJS3",
+      "version": 22782,
+      "itemType": "journalArticle",
+      "title": "Acoustical modeling of micro-perforated panel at high sound pressure levels using equivalent fluid approach",
+      "creators": [
+        {"creatorType": "author", "firstName": "Zacharie", "lastName": "Laly"},
+        {
+          "creatorType": "author",
+          "firstName": "Noureddine",
+          "lastName": "Atalla"
+        },
+        {
+          "creatorType": "author",
+          "firstName": "Sid-Ali",
+          "lastName": "Meslioui"
+        }
+      ],
+      "abstractNote": "An acoustic impedance model to characterize micro-perforated panels at high sound pressure levels is proposed. The model uses a rigid frame porous medium, where the micro-perforated panel is modeled with an effective density, function of the frequency following the approach of Johnson-Allard and the equivalent ﬂuid parameters such as the tortuosity and the ﬂow resistivity are expressed as function of the incident sound pressure which is considered as a main variable. Unlike existing models which are limited to microperforated panels coupled to air cavity, the present model predicts correctly the acoustic response of micro-perforated panel backed by porous media which can be air cavity, porous material or resistive screen. Micro-perforated panel backed by porous media involves a distortion of the ﬂow caused by the perforations through the porous media, thus the micro-perforated panel is modeled in this case using an equivalent tortuosity where a correction term is proposed to account for the ﬂow distortion effect and it depends on the dynamic tortuosity of the porous layer and the incident sound pressure. The proposed impedance model is compared numerically with other existing nonlinear impedance models for different conﬁgurations of the micro-perforated panel. The results show a good agreement among each other for sound pressure levels up to 150 dB. In addition, experimental measurements were performed on several micro-perforated panels backed by air cavities or porous material using the classical impedance tube. A good correlation between theoretical and experimental results is obtained. Some validation and benchmarking results are illustrated and discussed in this paper. It is shown that the high sound pressure levels decrease the tortuosity and increase the ﬂow resistivity of the micro-perforated panel. Furthermore, the acoustic energy dissipation by the micro-perforated panel absorber with a large perforation diameter which is low in the linear regime can become important and interesting at high sound pressure level.",
+      "publicationTitle": "Journal of Sound and Vibration",
+      "volume": "427",
+      "issue": "",
+      "pages": "134-158",
+      "date": "08/2018",
+      "series": "",
+      "seriesTitle": "",
+      "seriesText": "",
+      "journalAbbreviation": "Journal of Sound and Vibration",
+      "language": "en",
+      "DOI": "v",
+      "ISSN": "0022460X",
+      "shortTitle": "",
+      "url": "https://linkinghub.elsevier.com/retrieve/pii/S0022460X17306740",
+      "accessDate": "2023-10-03T14:35:19Z",
+      "archive": "",
+      "archiveLocation": "",
+      "libraryCatalog": "DOI.org (Crossref)",
+      "callNumber": "",
+      "rights": "",
+      "extra": "",
+      "tags": [{"tag": "carte mentale"}],
+      "collections": ["8EC9KT2E", "V227JF7V", "ESR3XUVU"],
+      "relations": {
+        "owl:sameAs": [
+          "http://zotero.org/groups/2456963/items/NLMDULYW",
+          "http://zotero.org/groups/5573789/items/MI4JCQI7"
+        ]
+      },
+      "dateAdded": "2023-10-03T14:35:19Z",
+      "dateModified": "2023-11-09T20:58:47Z"
+    },
+    {
+      "key": "C3F2ZIGB",
+      "version": 22782,
+      "parentItem": "U6XGJJS3",
+      "itemType": "attachment",
+      "linkMode": "imported_file",
+      "title": "Laly et al. - 2018 - Acoustical modeling of micro-perforated panel at h.pdf",
+      "accessDate": "",
+      "url": "",
+      "note": "",
+      "contentType": "application/pdf",
+      "charset": "",
+      "filename": "Laly et al. - 2018 - Acoustical modeling of micro-perforated panel at h.pdf",
+      "md5": "a41f81f7a62afcccdb7090600c393b8a",
+      "mtime": 1696343719980,
+      "tags": [],
+      "relations": {
+        "owl:sameAs": [
+          "http://zotero.org/groups/2456963/items/6INWUFU5",
+          "http://zotero.org/groups/5573789/items/8D7U8YKS"
+        ]
+      },
+      "dateAdded": "2023-10-03T14:35:15Z",
+      "dateModified": "2023-10-03T14:35:19Z"
+    },
+    {
+      "key": "8IZHEC75",
+      "version": 22861,
+      "parentItem": "A4GBSUW5",
+      "itemType": "annotation",
+      "annotationType": "image",
+      "annotationComment": "",
+      "annotationColor": "#ffd400",
+      "annotationPageLabel": "29",
+      "annotationSortIndex": "00050|000216|00223",
+      "annotationPosition": "{\"pageIndex\":50,\"rects\":[[64.947,494.632,567.053,568.842]]}",
+      "tags": [],
+      "relations": {},
+      "dateAdded": "2025-09-04T00:26:18Z",
+      "dateModified": "2025-09-04T00:26:18Z"
+    },
+    {
+      "key": "73XCDAWI",
+      "version": 22856,
+      "parentItem": "A4GBSUW5",
+      "itemType": "annotation",
+      "annotationType": "highlight",
+      "annotationText": "Non-linear models",
+      "annotationComment": "",
+      "annotationColor": "#5fb236",
+      "annotationPageLabel": "28",
+      "annotationSortIndex": "00049|000107|00209",
+      "annotationPosition": "{\"pageIndex\":49,\"rects\":[[132.726,570.791,256.993,582.411]]}",
+      "tags": [],
+      "relations": {},
+      "dateAdded": "2025-09-04T00:23:46Z",
+      "dateModified": "2025-09-04T00:23:46Z"
+    },
+    {
+      "key": "LIPLSDWY",
+      "version": 22849,
+      "parentItem": "A4GBSUW5",
+      "itemType": "annotation",
+      "annotationType": "image",
+      "annotationComment": "",
+      "annotationColor": "#ffd400",
+      "annotationPageLabel": "31",
+      "annotationSortIndex": "00052|000088|00127",
+      "annotationPosition": "{\"pageIndex\":52,\"rects\":[[74.421,580.737,552.053,664.421]]}",
+      "tags": [],
+      "relations": {},
+      "dateAdded": "2025-09-04T00:18:11Z",
+      "dateModified": "2025-09-04T00:18:11Z"
+    },
+    {
+      "key": "H35DR9M8",
+      "version": 22808,
+      "parentItem": "A4GBSUW5",
+      "itemType": "annotation",
+      "annotationType": "image",
+      "annotationComment": "",
+      "annotationColor": "#ffd400",
+      "annotationPageLabel": "12",
+      "annotationSortIndex": "00033|000035|00071",
+      "annotationPosition": "{\"pageIndex\":33,\"rects\":[[87.842,433.263,529.947,720.632]]}",
+      "tags": [],
+      "relations": {},
+      "dateAdded": "2025-09-04T00:05:55Z",
+      "dateModified": "2025-09-04T00:05:55Z"
+    },
+    {
+      "key": "27TQXVN8",
+      "version": 22795,
+      "parentItem": "A4GBSUW5",
+      "itemType": "annotation",
+      "annotationType": "image",
+      "annotationComment": "",
+      "annotationColor": "#ffd400",
+      "annotationPageLabel": "8",
+      "annotationSortIndex": "00029|000034|00075",
+      "annotationPosition": "{\"pageIndex\":29,\"rects\":[[82.136,508.864,543.727,716.818]]}",
+      "tags": [],
+      "relations": {},
+      "dateAdded": "2025-09-03T23:56:59Z",
+      "dateModified": "2025-09-03T23:56:59Z"
+    },
+    {
+      "key": "ISYG7TEI",
+      "version": 22793,
+      "parentItem": "A4GBSUW5",
+      "itemType": "annotation",
+      "annotationType": "image",
+      "annotationComment": "",
+      "annotationColor": "#ffd400",
+      "annotationPageLabel": "9",
+      "annotationSortIndex": "00030|000034|00069",
+      "annotationPosition": "{\"pageIndex\":30,\"rects\":[[130.54544969038528,262,501.45454059947616,722.909]]}",
+      "tags": [],
+      "relations": {},
+      "dateAdded": "2025-09-03T23:56:26Z",
+      "dateModified": "2025-09-03T23:56:37Z"
     }
   ],
   "collections": [
@@ -34442,5 +34605,5 @@
       }
     }
   ],
-  "version": 22672
+  "version": 22940
 }

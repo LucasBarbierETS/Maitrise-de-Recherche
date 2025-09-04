@@ -4,24 +4,67 @@
     "type": "split",
     "children": [
       {
-        "id": "692a61a97bac4bd2",
+        "id": "07aa93fc3235c0ce",
         "type": "tabs",
         "children": [
           {
-            "id": "55205bc336e699d8",
+            "id": "e555fde693bde625",
             "type": "leaf",
             "state": {
               "type": "markdown",
               "state": {
-                "file": "Notes atomiques/Hypothèses et cadre d'étude des milieux stratifiés.md",
+                "file": "Notes atomiques/Distinction entre un comportement dépendant de l'angle d'incidence (MPP cavités non séparés) et réduction de l'énergie incident normalement à cause de l'angle.md",
                 "mode": "source",
                 "source": false
               },
               "icon": "lucide-file",
-              "title": "Hypothèses et cadre d'étude des milieux stratifiés"
+              "title": "Distinction entre un comportement dépendant de l'angle d'incidence (MPP cavités non séparés) et réduction de l'énergie incident normalement à cause de l'angle"
+            }
+          },
+          {
+            "id": "43ca471d490a2575",
+            "type": "leaf",
+            "state": {
+              "type": "markdown",
+              "state": {
+                "file": "Notes atomiques/2.2 - Introduction.md",
+                "mode": "source",
+                "source": false
+              },
+              "icon": "lucide-file",
+              "title": "2.2 - Introduction"
+            }
+          },
+          {
+            "id": "18d335405aaa3368",
+            "type": "leaf",
+            "state": {
+              "type": "markdown",
+              "state": {
+                "file": "Zotero/TheseLaly/Thèse Laly.md",
+                "mode": "source",
+                "source": false
+              },
+              "icon": "lucide-file",
+              "title": "Thèse Laly"
+            }
+          },
+          {
+            "id": "e0b80162b9d12afa",
+            "type": "leaf",
+            "state": {
+              "type": "markdown",
+              "state": {
+                "file": "Zotero/fengEtudeNumeriqueExperimentale2024/Étude numérique et expérimentale du comportement non linéaire des plaques perforées en présence d’écoulement.md",
+                "mode": "source",
+                "source": false
+              },
+              "icon": "lucide-file",
+              "title": "Étude numérique et expérimentale du comportement non linéaire des plaques perforées en présence d’écoulement"
             }
           }
-        ]
+        ],
+        "currentTab": 2
       }
     ],
     "direction": "vertical"
@@ -53,7 +96,7 @@
             "state": {
               "type": "search",
               "state": {
-                "query": "table des matières",
+                "query": "thèse",
                 "matchingCase": false,
                 "explainSearch": false,
                 "collapseAll": true,
@@ -74,12 +117,11 @@
               "title": "Bookmarks"
             }
           }
-        ],
-        "currentTab": 1
+        ]
       }
     ],
     "direction": "horizontal",
-    "width": 200
+    "width": 296.5
   },
   "right": {
     "id": "2afa7ea527d3110b",
@@ -176,7 +218,8 @@
       }
     ],
     "direction": "horizontal",
-    "width": 265.5
+    "width": 200,
+    "collapsed": true
   },
   "left-ribbon": {
     "hiddenItems": {
@@ -193,54 +236,53 @@
       "smart-gantt:Smart Gantt": false
     }
   },
-  "active": "55205bc336e699d8",
+  "active": "18d335405aaa3368",
   "lastOpenFiles": [
-    "Notes atomiques/Table des matières.md",
-    "Notes atomiques/Solutions industrielles courantes.md",
-    "Notes atomiques/Fonctionnement des solutions acoustiques élémentaires, résonateur quart d'onde, matériau poreux et résonateur de Helmholtz,.md",
-    "Notes atomiques/Interprétation des phénomènes dissipatifs.md",
-    "Notes atomiques/Introduction au formalisme.md",
-    "Notes atomiques/Formulation complexe de la pression acoustique.md",
-    "Notes atomiques/Propagation of Sound in Porous Media.md",
-    "Notes atomiques/Matériau stratifié, grandeurs d'expression des performances acoustiques.md",
-    "Notes atomiques/Matrice de transfert des éléments simples.md",
-    "Notes atomiques/Modèles de plaques perforées.md",
-    "Notes atomiques/Hypothèses et cadre d'étude des milieux stratifiés.md",
-    "Notes atomiques/Matrice de transfert d'une couche de fluide équivalente (c.p.d.).md",
-    "Notes atomiques/Chapitre 3 - Introduction.md",
-    "Notes atomiques/Introduction aux phénomènes acoustiques.md",
-    "Concepts/Impédance de surface.md",
-    "Notes atomiques MdmM/Optimisation d'un liner à profondeurs variables.md",
-    "Notes atomiques/Objectifs de la recherche.md",
-    "Méthodologie/Cartographie des approches industrielles pour la réduction de bruit en aéronautique.md",
-    "Notes atomiques/Chapitre 1 - Introduction.md",
-    "Notes atomiques/Deux approches, la description géométrique et la description énergétique.md",
-    "Notes atomiques/Effets des termes de sources.md",
-    "Notes atomiques/Prise en compte de l'impédance de surface d'un traitement en incidence rasante.md",
-    "Notes atomiques/Etude en 2D de la propagation en conduite traitée.md",
-    "Notes atomiques/Description du modèle approché utilisé à partir du nombre de Mach moyen.md",
-    "Notes atomiques/Revue empirique des phénomènes liés à l'écoulement (doppler, sifflements au niveau des perforations, etc.).md",
-    "Notes atomiques/Etat de l'art des méthodologies d'optimisation.md",
-    "Zotero/jones2020/Images/jones2020-9-x181-y500.png",
-    "Zotero/jones2020/Images/jones2020-7-x131-y420.png",
-    "Zotero/jones2020/Images/jones2020-40-x266-y568.png",
-    "Zotero/jones2020/Images/jones2020-40-x146-y159.png",
-    "Zotero/jones2020/Images/jones2020-40-x206-y508.png",
-    "Zotero/jones2020/Images/jones2020-40-x205-y388.png",
-    "Zotero/jones2020/Images/jones2020-40-x128-y676.png",
-    "Zotero/jones2020/Images/jones2020-39-x144-y122.png",
-    "Zotero/jones2020/Images",
-    "Zotero/jones2020",
-    "Zotero/dililloDesignOptimizationAcoustica/Images/dililloDesignOptimizationAcoustica-35-x127-y398.png",
-    "Zotero/dililloDesignOptimizationAcoustica/Images/dililloDesignOptimizationAcoustica-31-x91-y593.png",
-    "Zotero/dililloDesignOptimizationAcoustica/Images",
-    "Zotero/dililloDesignOptimizationAcoustica",
+    "Zotero/TheseLaly/Thèse Laly.md",
+    "Zotero/TheseLaly/Images/TheseLaly-96-x78-y268.png",
+    "Zotero/TheseLaly/Images/TheseLaly-76-x263-y207.png",
+    "Zotero/TheseLaly/Images/TheseLaly-97-x78-y494.png",
+    "Zotero/TheseLaly/Images/TheseLaly-87-x74-y129.png",
+    "Zotero/TheseLaly/Images/TheseLaly-85-x72-y392.png",
+    "Zotero/TheseLaly/Images/TheseLaly-278-x139-y184.png",
+    "Zotero/TheseLaly/Images/TheseLaly-84-x242-y293.png",
+    "Zotero/TheseLaly/Images/TheseLaly-81-x61-y505.png",
+    "Zotero/TheseLaly/Images/TheseLaly-78-x89-y476.png",
+    "Zotero/TheseLaly/Images/TheseLaly-78-x191-y667.png",
     "Zotero/TheseLaly/Images",
     "Zotero/TheseLaly",
-    "Zotero/jones2022/Images",
-    "Zotero/jones2022",
-    "Zotero/jonesEvaluationVariableDepthLiner2015/Images",
-    "Zotero/jonesEvaluationVariableDepthLiner2015",
+    "Notes atomiques/2.2 - Introduction.md",
+    "Notes atomiques/Table des matières.md",
+    "Notes atomiques/1. Etat de l'art sur les solutions acoustiques pour la réduction de bruit en aéronautique.md",
+    "Notes atomiques/2.1 Présentation du modèle analytique général.md",
+    "Notes atomiques/Matrice de transfert des éléments simples.md",
+    "Notes atomiques/Modèles de plaques perforées.md",
+    "Notes atomiques/Utilisation de la TMM pour les trous noirs acoustiques.md",
+    "Notes atomiques/Chapitre 2 - Introduction.md",
+    "Notes atomiques/Plaque perforées.md",
+    "Notes atomiques/Quart d'onde - plaque + comparaison (HR).md",
+    "Notes atomiques/Réduction du pore central.md",
+    "Notes atomiques/Distinction entre un comportement dépendant de l'angle d'incidence (MPP cavités non séparés) et réduction de l'énergie incident normalement à cause de l'angle.md",
+    "Zotero/fengEtudeNumeriqueExperimentale2024/Étude numérique et expérimentale du comportement non linéaire des plaques perforées en présence d’écoulement.md",
+    "Zotero/ingardAcousticCirculationEffects1950/Acoustic Circulation Effects and the Nonlinear Impedance of Orifices.md",
+    "Notes atomiques/Revue empirique des phénomènes liés à l'écoulement (doppler, sifflements au niveau des perforations, etc.).md",
+    "Notes atomiques/Effets des termes de sources.md",
+    "Notes atomiques/Intégration du modèle fort niveau de Laly avec une approche multi-plaques.md",
+    "Notes atomiques/Approche phénoménologique (empirique) + mise en physique du problème de fort niveau.md",
+    "Zotero/ingardAcousticCirculationEffects1950/Images",
+    "Zotero/ingardAcousticCirculationEffects1950",
+    "Notes atomiques/Modèle de plaque avec forts niveaux.md",
+    "Notes atomiques/Description du modèle approché utilisé à partir du nombre de Mach moyen.md",
+    "Zotero/fengEtudeNumeriqueExperimentale2024/Images",
+    "Zotero/fengEtudeNumeriqueExperimentale2024",
+    "Notes atomiques/Solutions industrielles courantes.md",
+    "Notes atomiques/Réaction localisée.md",
+    "Notes atomiques MdmM/vena contracta.md",
+    "Notes atomiques/Vena Contracta.md",
+    "Zotero/jones2020/Images",
+    "Zotero/jones2020",
+    "Zotero/dililloDesignOptimizationAcoustica/Images",
+    "Zotero/dililloDesignOptimizationAcoustica",
     "Diagramme du projet QTD3.canvas",
     "Cartographie des approches industrielles pour la réduction de bruit en aéronautique.canvas",
     "Notes atomiques MdmM/Sujet de discussion.canvas",
