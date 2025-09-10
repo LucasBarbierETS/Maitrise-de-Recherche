@@ -1,2 +1,6 @@
 *.mph
-*.mat"*.mat" 
+*.mat
+*.fig
+*.xlsx
+*.mph.lock
+*.mph.backup

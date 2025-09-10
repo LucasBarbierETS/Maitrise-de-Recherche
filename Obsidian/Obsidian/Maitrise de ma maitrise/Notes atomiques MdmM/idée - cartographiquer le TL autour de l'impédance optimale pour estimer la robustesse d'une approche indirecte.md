@@ -1,1 +1,0 @@
-[[méthode d'optimisation indirecte]] 

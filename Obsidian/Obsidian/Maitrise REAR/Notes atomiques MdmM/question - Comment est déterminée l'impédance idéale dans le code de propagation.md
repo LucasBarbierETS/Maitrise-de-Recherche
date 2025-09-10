@@ -1,1 +1,0 @@
-[[méthode pour déterminer l'impédance acoustique d'un liner basée sur l'équation de Helmholtz convectée (CHE)]]

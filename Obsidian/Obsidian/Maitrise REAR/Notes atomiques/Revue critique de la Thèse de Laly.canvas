@@ -1,8 +1,0 @@
-{
-	"nodes":[
-		{"id":"7259ab1a6d9f65f5","type":"text","text":"","x":-260,"y":-221,"width":250,"height":60},
-		{"id":"5fc2b66acd81fba2","type":"text","text":"[[Forts niveaux et angle d'incidence chez Laly]]\n","x":-260,"y":-220,"width":250,"height":57},
-		{"id":"f0f442bb7f560ccb","x":-260,"y":-80,"width":250,"height":60,"type":"text","text":"[[Forts niveaux et écoulement rasant chez Laly]]"}
-	],
-	"edges":[]
-}

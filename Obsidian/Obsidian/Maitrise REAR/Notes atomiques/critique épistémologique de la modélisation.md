@@ -1,3 +1,0 @@
-Cette partie à pour but d'élaborer des outils pour juger le processus de modélisation et son rapport avec le réel qui est modélise. Entre autre il faudra **définir la nature des entrants et sortants du modèle**, **discuter du caractère intrinsèque ou non des propriétés étudiées**, mais également **établir comment et sous quelles conditions on peut définir un objet "modélisable"**.
-
-Dans un second temps, il sera question de **critiquer la modélisation dans le cadre particulier de l'acoustique et de la mécanique des fluides**. 

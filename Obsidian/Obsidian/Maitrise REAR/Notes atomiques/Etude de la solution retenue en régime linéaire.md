@@ -1,1 +1,0 @@
-La solution finalement retenue est issue de plusieurs compromis. D'abord on utilise un pore central de largeur variable afin d'élargir la largeur de bande en moyenne et hautes fréquences. 

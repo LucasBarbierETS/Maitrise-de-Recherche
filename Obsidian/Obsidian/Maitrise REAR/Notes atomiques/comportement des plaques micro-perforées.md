@@ -1,1 +1,0 @@
-D'après les modèles : [[Modèles de plaques perforées]] 

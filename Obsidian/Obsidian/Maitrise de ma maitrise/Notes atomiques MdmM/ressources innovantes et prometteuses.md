@@ -1,6 +1,0 @@
-- [[Packing3D]]
-- [[application OPAL]]
-- [[application Actran]] 
-- Méthode de Fischer
-- [[méthode d'optimisation directe]]
-- [[méthode d'optimisation indirecte]]

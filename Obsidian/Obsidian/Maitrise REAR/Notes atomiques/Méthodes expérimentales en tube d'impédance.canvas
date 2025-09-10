@@ -1,8 +1,0 @@
-{
-	"nodes":[
-		{"id":"edac9bd256d5a3be","type":"text","text":"[[Méthode de mesure à 3 microphones et 2 cavités]]","x":-250,"y":-160,"width":250,"height":60},
-		{"id":"35869441501de0bd","type":"text","text":"[[Méthode expérimentale pour la caractérisation de matériaux acoustiques en tenant compte des forts niveaux et de l'écoulement]] ","x":40,"y":-360,"width":320,"height":120},
-		{"id":"905231ecab672efc","type":"text","text":"[[Méthode de mesure à deux microphones]]","x":-375,"y":-390,"width":250,"height":60}
-	],
-	"edges":[]
-}

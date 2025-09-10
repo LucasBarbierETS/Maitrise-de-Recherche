@@ -1,8 +1,0 @@
-{
-	"nodes":[
-		{"id":"8555052ad1dde2fa","type":"file","file":"Notes atomiques MdmM/interface graphique.md","x":-280,"y":-340,"width":400,"height":400,"color":"6"},
-		{"id":"02dca9cc329cef2e","type":"file","file":"Notes atomiques MdmM/Méthodologie.canvas","x":-280,"y":180,"width":400,"height":400,"color":"4"},
-		{"id":"c1b3dfaa4d5ba6ce","type":"file","file":"Notes atomiques MdmM/optimisation.md","x":260,"y":-340,"width":400,"height":400,"color":"5"}
-	],
-	"edges":[]
-}

@@ -1,3 +1,0 @@
-Comme mentionné dans l'introduction, le secteur de l'aéronautique s'intéresse depuis longtemps à la réduction du bruit produit par les engins motorisés. Plusieurs solutions conventionnelles ont été mises au point, étudiées et testées expérimentalement. Elle sont largement utilisée pour de nombreuses applications industrielles à l'heure actuelle.
-
-Pour pouvoir présenter ces dispositifs et leur fonctionnement, il faut définir un certain nombre de paradigmes qui sont utilisées pour comprendre et formaliser la réduction du bruit en acoustique, présenter les hypothèses fortes et les limites interprétatives des modèles qui sont développer dans ce domaine

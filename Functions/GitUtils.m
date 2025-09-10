@@ -1,0 +1,381 @@
+classdef GitUtils
+    % GITUTILS Safe, minimal Git wrappers for MATLAB workflows.
+    %   Place this file somewhere on your MATLAB path (e.g., +tools/GitUtils.m).
+    %   Usage examples at bottom of file.
+    %
+    %   Design goals:
+    %   - Avoid opening GitHub UI: do everything from MATLAB via system git (and optional gh CLI).
+    %   - Fail fast with readable errors.
+    %   - Provide a safe sync cycle: pull --rebase, resolve/stash if needed, push.
+    %   - Remain repo-agnostic and OS-agnostic.
+    %
+    %   Prereqs: Git installed and on PATH. SSH keys configured (recommended) or HTTPS PAT cached.
+    %
+    %   Optional machine-specific paths: see CONFIG section at bottom.
+
+    methods(Static)
+        function assertGit()
+            [ok, out] = GitUtils.cmd('git --version');
+            if ~ok, error('Git not detected on PATH. Output: %s', out); end
+        end
+
+        function [ok, out] = cmd(cmdline, workdir)
+            % Execute a shell command; capture output and status.
+            if nargin < 2 || isempty(workdir)
+                workdir = pwd;
+            end
+            if ispc
+                fullcmd = sprintf('cd /d "%s" && %s', workdir, cmdline);
+            else
+                fullcmd = sprintf('cd "%s" && %s', workdir, cmdline);
+            end
+            [status, out] = system(fullcmd);
+            ok = (status == 0);
+        end
+
+        function out = repoRoot(startDir)
+            if nargin < 1 || isempty(startDir), startDir = pwd; end
+            [ok, out] = GitUtils.cmd('git rev-parse --show-toplevel', startDir);
+            if ~ok, error('Not inside a git repository.'); end
+            out = strtrim(out);
+        end
+
+        %% --- Setup / Clone / Remote ---
+        function clone(remoteURL, destFolder)
+            arguments, remoteURL (1,:) char, destFolder (1,:) char, end
+            GitUtils.assertGit();
+            [ok, out] = GitUtils.cmd(sprintf('git clone "%s" "%s"', remoteURL, destFolder), pwd);
+            if ~ok, error('Clone failed: %s', out); end
+        end
+
+        function initRepo(destFolder)
+            if nargin < 1 || isempty(destFolder), destFolder = pwd; end
+            GitUtils.assertGit();
+            [ok, out] = GitUtils.cmd('git init', destFolder);
+            if ~ok, error('git init failed: %s', out); end
+        end
+
+        function setUser(name, email, repoDir)
+            if nargin < 3 || isempty(repoDir), repoDir = pwd; end
+            GitUtils.assertGit();
+            [ok, out] = GitUtils.cmd(sprintf('git config user.name "%s"', name), repoDir);
+            if ~ok, error(out); end
+            [ok, out] = GitUtils.cmd(sprintf('git config user.email "%s"', email), repoDir);
+            if ~ok, error(out); end
+        end
+
+        function setRemote(name, url, repoDir)
+            if nargin < 3 || isempty(repoDir), repoDir = pwd; end
+            [ok, ~] = GitUtils.cmd(sprintf('git remote get-url %s', name), repoDir);
+            if ok
+                [ok2, out2] = GitUtils.cmd(sprintf('git remote set-url %s "%s"', name, url), repoDir);
+                if ~ok2, error('remote set-url failed: %s', out2); end
+            else
+                [ok3, out3] = GitUtils.cmd(sprintf('git remote add %s "%s"', name, url), repoDir);
+                if ~ok3, error('remote add failed: %s', out3); end
+            end
+        end
+
+        function ok = checkSSH()
+            [ok, ~] = GitUtils.cmd('ssh -T git@github.com 2>&1 | find "success"'); %#ok<*NASGU>
+        end
+
+        %% --- Branch & Status ---
+        function name = currentBranch(repoDir)
+            if nargin < 1 || isempty(repoDir), repoDir = pwd; end
+            [ok, out] = GitUtils.cmd('git rev-parse --abbrev-ref HEAD', repoDir);
+            if ~ok, error('Failed to get current branch.'); end
+            name = strtrim(out);
+        end
+
+        function createBranch(branch, repoDir, startPoint)
+            if nargin < 2 || isempty(repoDir), repoDir = pwd; end
+            if nargin < 3 || isempty(startPoint), startPoint = 'origin/main'; end
+            [ok, out] = GitUtils.cmd(sprintf('git fetch origin && git branch "%s" %s', branch, startPoint), repoDir);
+            if ~ok, error('createBranch failed: %s', out); end
+        end
+
+        function switchBranch (branch, repoDir)
+            if nargin < 2 || isempty(repoDir), repoDir = pwd; end
+            [ok, out] = GitUtils.cmd(sprintf('git checkout "%s"', branch), repoDir);
+            if ~ok
+                % If branch does not exist locally, try create-tracking
+                [ok2, out2] = GitUtils.cmd(sprintf('git checkout -b "%s" --track origin/"%s"', branch, branch), repoDir);
+                if ~ok2, error('checkout failed: %s | %s', out, out2); end
+            end
+        end
+
+        function tf = isClean(repoDir)
+            if nargin < 1 || isempty(repoDir), repoDir = pwd; end
+            [ok, out] = GitUtils.cmd('git status --porcelain', repoDir);
+            if ~ok, error('git status failed'); end
+            tf = isempty(strtrim(out));
+        end
+
+        %% --- Add / Commit / Pull / Push ---
+        function addAll(repoDir)
+            if nargin < 1 || isempty(repoDir), repoDir = pwd; end
+            [ok, out] = GitUtils.cmd('git add -A', repoDir);
+            if ~ok, error('git add failed: %s', out); end
+        end
+
+        function commit(msg, repoDir)
+            if nargin < 2 || isempty(repoDir), repoDir = pwd; end
+            [ok, out] = GitUtils.cmd(sprintf('git commit -m "%s"', GitUtils.escapeQuotes(msg)), repoDir);
+            if ~ok
+                if contains(out, 'nothing to commit')
+                    warning('Nothing to commit. Working tree clean.');
+                else
+                    error('git commit failed: %s', out);
+                end
+            end
+        end
+
+        function pullRebase(repoDir, remote, branch)
+            if nargin < 2 || isempty(remote), remote = 'origin'; end
+            if nargin < 3 || isempty(branch), branch = GitUtils.currentBranch(repoDir); end
+            [ok, out] = GitUtils.cmd(sprintf('git pull --rebase %s %s', remote, branch), repoDir);
+            if ~ok
+                if contains(out, 'CONFLICT')
+                    error(['Rebase conflict detected. Resolve files, then run:\n' ...
+                           '  GitUtils.addAll(); GitUtils.continueRebase();']);
+                else
+                    error('git pull --rebase failed: %s', out);
+                end
+            end
+        end
+
+        function continueRebase(repoDir)
+            if nargin < 1 || isempty(repoDir), repoDir = pwd; end
+            [ok, out] = GitUtils.cmd('git rebase --continue', repoDir);
+            if ~ok, error('git rebase --continue failed: %s', out); end
+        end
+
+        function abortRebase(repoDir)
+            if nargin < 1 || isempty(repoDir), repoDir = pwd; end
+            GitUtils.cmd('git rebase --abort', repoDir); 
+        end
+
+        function push(repoDir, remote, branch, setUpstream)
+            if nargin < 2 || isempty(remote), remote = 'origin'; end
+            if nargin < 3 || isempty(branch), branch = GitUtils.currentBranch(repoDir); end
+            if nargin < 4, setUpstream = false; end
+            if setUpstream
+                [ok, out] = GitUtils.cmd(sprintf('git push -u %s %s', remote, branch), repoDir);
+            else
+                [ok, out] = GitUtils.cmd(sprintf('git push %s %s', remote, branch), repoDir);
+            end
+            if ~ok, error('git push failed: %s', out); end
+        end
+
+        function syncAndPush(msg, repoDir)
+            % Safe cycle: pull --rebase → add/commit → pull --rebase → push
+            if nargin < 2 || isempty(repoDir), repoDir = pwd; end
+            if nargin < 1 || isempty(msg), msg = datetime('now', 'InputFormat', 'yyyy-mm-dd HH:MM:SS'); end
+            GitUtils.pullRebase(repoDir);
+            GitUtils.addAll(repoDir);
+            GitUtils.commit(msg, repoDir);
+            GitUtils.pullRebase(repoDir);
+            GitUtils.push(repoDir);
+        end
+
+        %% --- Stash & Merge helpers ---
+        function stashSave(msg, repoDir)
+            if nargin < 2 || isempty(repoDir), repoDir = pwd; end
+            if nargin < 1 || isempty(msg), msg = 'WIP'; end
+            [ok, out] = GitUtils.cmd(sprintf('git stash push -u -m "%s"', GitUtils.escapeQuotes(msg)), repoDir);
+            if ~ok, error('git stash failed: %s', out); end
+        end
+
+        function stashPop(repoDir)
+            if nargin < 1 || isempty(repoDir), repoDir = pwd; end
+            [ok, out] = GitUtils.cmd('git stash pop', repoDir);
+            if ~ok
+                if contains(out, 'CONFLICT')
+                    error('Conflicts after stash pop. Resolve, then GitUtils.addAll(); GitUtils.commit("resolve stash");');
+                else
+                    error('git stash pop failed: %s', out);
+                end
+            end
+        end
+
+        function merge(fromBranch, repoDir)
+            if nargin < 2 || isempty(repoDir), repoDir = pwd; end
+            [ok, out] = GitUtils.cmd(sprintf('git merge "%s"', fromBranch), repoDir);
+            if ~ok
+                if contains(out, 'CONFLICT')
+                    error('Merge conflict. Resolve files, then GitUtils.addAll(); GitUtils.commit("merge resolved");');
+                else
+                    error('git merge failed: %s', out);
+                end
+            end
+        end
+
+        %% --- Optional: create PR with GitHub CLI (gh) ---
+        function prCreate(title, body, repoDir, base, head)
+            if nargin < 3 || isempty(repoDir), repoDir = pwd; end
+            if nargin < 4 || isempty(base), base = 'main'; end
+            if nargin < 5 || isempty(head), head = GitUtils.currentBranch(repoDir); end
+            [ok, ~] = GitUtils.cmd('gh --version');
+            if ~ok, error('GitHub CLI (gh) not installed. Install from https://cli.github.com/'); end
+            cmd = sprintf('gh pr create --base "%s" --head "%s" --title "%s" --body "%s"', base, head, GitUtils.escapeQuotes(title), GitUtils.escapeQuotes(body));
+            [ok2, out2] = GitUtils.cmd(cmd, repoDir);
+            if ~ok2, error('gh pr create failed: %s', out2); end
+        end
+
+        %% --- Utilities ---
+        function s = escapeQuotes(s)
+            s = strrep(s, '"', '\"');
+        end
+
+        function ensureIgnoreLocalConfig(repoDir)
+            if nargin < 1 || isempty(repoDir), repoDir = pwd; end
+            cfg = fullfile(repoDir, '.gitignore');
+            lines = { 'config_local.json', 'config_local.m', '.env.local', 'local/*.json', 'local/*.mat' };
+            if isfile(cfg)
+                txt = fileread(cfg);
+            else
+                txt = '';
+            end
+            changed = false;
+            for i = 1:numel(lines)
+                if ~contains(txt, lines{i})
+                    txt = sprintf('%s\n%s\n', strtrim(txt), lines{i}); 
+                    changed = true;
+                end
+            end
+            if changed
+                fid = fopen(cfg, 'w'); fprintf(fid, '%s\n', strtrim(txt)); fclose(fid);
+            end
+        end
+
+        function conf = loadLocalConfig(repoDir)
+            % Machine-specific configuration (paths, secrets) kept out of Git.
+            % Looks for config_local.json in repo root or repo/local/.
+            if nargin < 1 || isempty(repoDir), repoDir = GitUtils.repoRoot(pwd); end
+            candidates = { fullfile(repoDir, 'config_local.json'), fullfile(repoDir, 'local', 'config_local.json') };
+            conf = struct();
+            for i = 1:numel(candidates)
+                if isfile(candidates{i})
+                    txt = fileread(candidates{i});
+                    conf = jsondecode(txt);
+                    return
+                end
+            end
+        end
+
+        function saveLocalConfig(conf, repoDir)
+            if nargin < 2 || isempty(repoDir), repoDir = GitUtils.repoRoot(pwd); end
+            target = fullfile(repoDir, 'config_local.json');
+            GitUtils.ensureIgnoreLocalConfig(repoDir);
+            if ~isfolder(fileparts(target)), mkdir(fileparts(target)); end
+            fid = fopen(target, 'w'); fwrite(fid, jsonencode(conf, 'PrettyPrint', true)); fclose(fid);
+        end
+
+        function pushVerbose(repoDir, remote, branch)
+            % Show live progress in MATLAB console (lines may not wrap nicely)
+            if nargin < 1 || isempty(repoDir), repoDir = pwd; end
+            if nargin < 2 || isempty(remote), remote = 'origin'; end
+            if nargin < 3 || isempty(branch), branch = GitUtils.currentBranch(repoDir); end
+            cmd = sprintf('git push --progress %s %s', remote, branch);
+            if ispc
+                system(sprintf('cd /d "%s" && %s', repoDir, cmd), '-echo');
+            else
+                system(sprintf('cd "%s" && %s', repoDir, cmd), '-echo');
+            end
+        end
+
+        function pushExternal(repoDir, remote, branch)
+            % Open a real terminal window to see proper progress lines
+            if nargin < 1 || isempty(repoDir), repoDir = pwd; end
+            if nargin < 2 || isempty(remote), remote = 'origin'; end
+            if nargin < 3 || isempty(branch), branch = GitUtils.currentBranch(repoDir); end
+            if ispc
+                system(sprintf('start cmd /k "cd /d \"%s\" && git push --progress %s %s"', repoDir, remote, branch));
+            else
+                system(sprintf('x-terminal-emulator -e bash -lc "cd \"%s\"; git push --progress %s %s; exec bash"', repoDir, remote, branch));
+            end
+        end
+
+        function log = pushLog(repoDir, remote, branch)
+            % Capture push output, normalize carriage returns to newlines, and return log
+            if nargin < 1 || isempty(repoDir), repoDir = pwd; end
+            if nargin < 2 || isempty(remote), remote = 'origin'; end
+            if nargin < 3 || isempty(branch), branch = GitUtils.currentBranch(repoDir); end
+            [~, out] = GitUtils.cmd(sprintf('git push --progress %s %s', remote, branch), repoDir);
+            log = regexprep(out, '', '');
+            fprintf('%s', log);
+        end
+
+        function report = listLargestObjects(repoDir, topN)
+            % List largest git objects in history (helps diagnose slow pushes)
+            if nargin < 1 || isempty(repoDir), repoDir = pwd; end
+            if nargin < 2 || isempty(topN), topN = 20; end
+            cmd = ['git rev-list --objects --all | ' ...
+                   'git cat-file --batch-check="%(objecttype) %(objectname) %(objectsize) %(rest)" | ' ...
+                   'sort -k3 -n'];
+            [ok, out] = GitUtils.cmd(cmd, repoDir);
+            if ~ok, error('Failed to inspect objects'); end
+            lines = splitlines(strtrim(out));
+            lines = lines(max(1, numel(lines)-topN+1):end);
+            report = strjoin(lines, newline);
+            fprintf('%s', report);
+        end
+
+        function ensureDefaultGitignore(repoDir)
+            % Append common heavy/temp patterns for MATLAB/COMSOL projects
+            if nargin < 1 || isempty(repoDir), repoDir = pwd; end
+            GitUtils.ensureIgnoreLocalConfig(repoDir);
+            gi = fullfile(repoDir, '.gitignore');
+            patterns = strjoin({...
+                '# MATLAB', '*.asv', '*.fig', '*.mlx.autosave', '*.slxc', '*.mex*',...
+                '*.mat', ...
+                '', '# COMSOL', '*.mph', '*.mphbin', ...
+                '', '# Data/output', 'data/', 'results/', 'output/', 'local/', ...
+                '', '# OS/IDE', '.DS_Store', 'Thumbs.db', '.idea/', '.vscode/'}, '');
+            if isfile(gi)
+                txt = fileread(gi);
+            else
+                txt = '';
+            end
+            if ~contains(txt, '*.mat') || ~contains(txt, '*.mph')
+                fid = fopen(gi, 'a'); fprintf(fid, '%s', patterns); fclose(fid);
+            end
+        end
+
+    end
+end
+
+%% ----------------- USAGE RECIPES -----------------
+% 1) First-time clone on each machine (SSH recommended):
+%    GitUtils.clone('git@github.com:owner/repo.git', 'C:/work/repo');
+%
+% 2) Set author (per-repo) if needed:
+%    GitUtils.setUser('Lucas Barbier', 'lucas@example.com', 'C:/work/repo');
+%
+% 3) Create a feature branch and switch to it:
+%    GitUtils.createBranch('feature-ui', 'C:/work/repo');
+%    GitUtils.switchBranch('feature-ui', 'C:/work/repo');
+%
+% 4) Safe sync-and-push cycle (from repo root):
+%    GitUtils.syncAndPush('update plotting utils', 'C:/work/repo');
+%
+% 5) Merge feature back into main locally:
+%    GitUtils.switchBranch('main');
+%    GitUtils.pullRebase();
+%    GitUtils.merge('feature-ui');
+%    GitUtils.push();
+%
+% 6) Optional: Open a Pull Request without browser (requires gh):
+%    GitUtils.prCreate('UI improvements', 'Refactor tiles + add tests');
+%
+% 7) Machine-specific paths:
+%    conf = GitUtils.loadLocalConfig();
+%    if ~isfield(conf,'data_dir'), conf.data_dir = 'D:/DATA/exp1'; GitUtils.saveLocalConfig(conf); end
+%    % Read it in your code: d = conf.data_dir;  % different on each PC
+%
+% Notes:
+% - If pull --rebase reports conflicts, resolve files in MATLAB editor, then:
+%     GitUtils.addAll(); GitUtils.continueRebase();
+% - To temporarily shelve local edits before pulling:
+%     GitUtils.stashSave('WIP'); GitUtils.pullRebase(); GitUtils.stashPop();

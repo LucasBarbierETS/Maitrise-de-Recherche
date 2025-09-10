@@ -1,1 +1,0 @@
-[[question - comment redéfinir l'impédance idéale à atteindre]]?
