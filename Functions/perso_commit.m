@@ -4,7 +4,7 @@ function perso_commit(message)
 %   en excluant les fichiers avec l'extension .mph via .gitignore.
 
     % Définir le chemin du dépôt
-    repo_path = 'C:\Users\lucas.barbier\Documents\Maitrise ETS\MATLAB';
+    repo_path = 'C:\Users\lucas.barbier\Documents\Maitrise ETS\Répertoire GitHub';
 
     % Vérifier si le dossier existe
     if ~isfolder(repo_path)
