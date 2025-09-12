@@ -16,7 +16,7 @@ classdef classMPPSBH_Rectangular_HL_first_plate < classMPPSBH_Rectangular
             pt = config.PlatesThickness;
 
             % Modification de la première plaque perforée
-            obj.Configuration.ListOfSubelements{1} = classMPP_Circular_HL(classMPP_Circular.create_config(mpw(1)*mpd(1), pt(1), phr(1), pp(1), mpw(1), mpd(1)));
+            obj.Configuration.ListOfSubelements{1} = classMPP_Circular_HL_flow(classMPP_Circular.create_config(mpw(1)*mpd(1), pt(1), phr(1), pp(1), mpw(1), mpd(1)));
         end
     end
 end

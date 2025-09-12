@@ -320,10 +320,10 @@ classdef classelement
 
                 convergence_criterium = max(abs(new_u_rms - u_rms));
 
-                % Debog : Critère de convergence
-                perso_figure('Convergence');
-                scatter(iter, convergence_criterium, 'Color', 'b', 'HandleVisibility', 'off');
-                % ylim([-1e-2 1e-2]);
+                % % Debog : Critère de convergence
+                % perso_figure('Convergence');
+                % scatter(iter, convergence_criterium, 'Color', 'b', 'HandleVisibility', 'off');
+                % % ylim([-1e-2 1e-2]);
 
                 if convergence_criterium < tol
                     converged = true;

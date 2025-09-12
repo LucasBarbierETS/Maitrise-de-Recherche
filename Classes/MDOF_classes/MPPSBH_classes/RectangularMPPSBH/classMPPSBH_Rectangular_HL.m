@@ -23,7 +23,11 @@ classdef classMPPSBH_Rectangular_HL < classMPPSBH_Rectangular
                 for i = 1:length(pp)
 
                     % Plaque perforée
-                    obj.Configuration.ListOfSubelements{end+1} = classMPP_Circular_HL(classMPP_Circular.create_config(mpw(i)*mpd(i), pt(i), phr(i), pp(i), mpw(i), mpd(i)));
+                    if i == 1
+                        obj.Configuration.ListOfSubelements{end+1} = classMPP_Circular_HL_flow(classMPP_Circular.create_config(mpw(i)*mpd(i), pt(i), phr(i), pp(i), mpw(i), mpd(i)));
+                    else
+                        obj.Configuration.ListOfSubelements{end+1} = classMPP_Circular_HL(classMPP_Circular.create_config(mpw(i)*mpd(i), pt(i), phr(i), pp(i), mpw(i), mpd(i)));
+                    end
         
                     % Cavité cylindrique
                     wc = (mpw(i) + mpw(i+1))/2;
