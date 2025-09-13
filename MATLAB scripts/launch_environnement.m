@@ -5,13 +5,20 @@
 % import com.comsol.model.util.*
 
 %% Ajout des chemins d'accès
-% root_A = 'E:\Montréal 2023 - 2025\Maitrise LB';
-root_B = 'C:\Users\lucas.barbier\Documents\Maitrise ETS\Répertoire GitHub';
 
-% addpath([root_A, '\MATLAB\Functions'])
-addpath([root_B, '\Functions'])
-% perso_add_all_paths([root_A, '\MATLAB']);
-perso_add_all_paths(root_B);
+try
+    % root = 'E:\Montréal 2023 - 2025\Maitrise LB';
+    % addpath([root_A, '\MATLAB\Functions'])
+    % perso_add_all_paths([root_A, '\MATLAB']);
+catch
+end
+
+try
+    addpath('C:\Users\lucas.barbier\Documents\Maitrise ETS\Répertoire GitHub\Functions')
+    root = 'C:\Users\lucas.barbier\Documents\Maitrise ETS\Répertoire GitHub';
+    perso_add_all_paths(root);
+catch
+end
 
 %% Importation des mises à jour depuis GitHub
 % system('git pull');
@@ -29,8 +36,8 @@ fmax = 5000;
 points = 5000;
 
 % Niveau sonore
-env = create_environnement(t, sp, hum, fmin, fmax, points);
-handle_env = @(dB, M) create_environnement(t, sp, hum, fmin, fmax, points, dB, M);
+env = create_environnement(root, t, sp, hum, fmin, fmax, points);
+handle_env = @(dB, M) create_environnement(root, t, sp, hum, fmin, fmax, points, dB, M);
 
 %% Fermeture du serveur COMSOL (si besoin)
 % ModelUtil.disconnect

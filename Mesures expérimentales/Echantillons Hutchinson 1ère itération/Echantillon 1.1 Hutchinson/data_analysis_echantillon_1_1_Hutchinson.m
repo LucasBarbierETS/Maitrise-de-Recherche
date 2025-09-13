@@ -1,7 +1,7 @@
 % Exploitation des données expérimentales en tube à incidence normale
 % Echantillon 1
 
-data1 = perso_load_mecanum_files('C:\Users\lucas.barbier\Documents\Maitrise ETS\Mesures expérimentales\Echantillons Hutchinson 1ère itération\Echantillon 1.1 Hutchinson\Export_Data');
+data1 = perso_load_mecanum_files([env.Root, '\Mesures expérimentales\Echantillons Hutchinson 1ère itération\Echantillon 1.1 Hutchinson\Export_Data']);
 
 % Coefficient d'absorption
 alpha1 = data1.AbsorptionCoefficientOnCavity;
@@ -85,10 +85,10 @@ legend()
 % Modèle non-linéaire itératif
 SPL1_145_interpolated = interp1(f, SPL1_145, env.w / (2*pi));
 
-% Debug : Niveau sonore mesuré
-perso_figure('Niveau sonore mesuré')
-plot(env.w/(2*pi), SPL1_145_interpolated)
-% close();
+% % Debug : Niveau sonore mesuré
+% perso_figure('Niveau sonore mesuré')
+% plot(env.w/(2*pi), SPL1_145_interpolated)
+% % close();
 
 alpha_model_HL_first_plate = classMPPSBH_Rectangular_HL_iter(config3).alpha(env(SPL1_145_interpolated), 'iter');
 alpha_model_HL_iter = classMPPSBH_Rectangular_HL_iter(config1).alpha(handle_env(145, 0), 'iter', 1e-8);

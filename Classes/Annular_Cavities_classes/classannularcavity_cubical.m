@@ -13,7 +13,8 @@ classdef classannularcavity_cubical < classsubelement
             w = env.w;
             air = env.air;
             rho = air.parameters.rho;
-            c0 = air.parameters.c0;
+            % c0 = air.parameters.c0;
+            c0 = air.parameters.c0 * (1+0.05*1j); % perso_ouvrir_lien_Zotero('zotero://open-pdf/library/items/233HZ8GN?page=7&annotation=QLW3FP87')
          
             mpw = config.MainPoreWidth;
             cw  = config.CavityWidth;

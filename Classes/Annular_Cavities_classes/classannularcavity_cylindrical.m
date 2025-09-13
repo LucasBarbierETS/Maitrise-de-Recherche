@@ -48,7 +48,6 @@ classdef classannularcavity_cylindrical < classsubelement
             air = env.air;
             rho = air.parameters.rho;
             eta = air.parameters.eta;
-            c0 = air.parameters.c0;
          
             rmp = config.MainPoreRadius;
             rde  = config.DeadEndRadius;
@@ -86,7 +85,38 @@ classdef classannularcavity_cylindrical < classsubelement
                     % % Si Zsde est formulé selon la convention Pression - Débit
                     % Zsde = 1j .* Zde ./ Ca .* (num ./ den); 
 
+                case 'Hankel_Chen'
+
+                    % c0 = air.parameters.c0;
+                    c0 = air.parameters.c0 * (1+0.05*1j); % perso_ouvrir_lien_Zotero('zotero://open-pdf/library/items/233HZ8GN?page=7&annotation=QLW3FP87')
+                    kde = env.w/c0;
+                    Zde = rho*c0; 
+
+                    % Les paramètres équivalent ne tiennent pas compte de
+                    % la section donc on est encore en pression - vitesse à
+                    % ce moment
+    
+                    % Calcul des fonction de Hankel
+                    % [1] eq.10
+                    num = besselh(0, 1, kde *  rmp) - (besselh(1, 1, kde *  rde) ./ besselh(1, 2, kde *  rde)) .*  besselh(0, 2, kde * rmp);
+                    den = besselh(1, 1, kde *  rmp) - (besselh(1, 1, kde *  rde) ./ besselh(1, 2, kde *  rde)) .*  besselh(1, 2, kde * rmp);
+                    
+                    % Si on est en pression-vitesse et qu'on divise ici par
+                    % la surface de jonction, on fait ici le travaille de
+                    % la jonction
+
+                    % Référence : perso_ouvrir_lien_Zotero('zotero://open-pdf/library/items/EI6UVSF8?page=89&annotation=CFRH8HVT')
+
+                    % Si Zsde est formulé selon la convention Pression - Vitesse
+                    Zsde = 1j .* Zde .* (num ./ den);
+
+                    % % Si Zsde est formulé selon la convention Pression - Débit
+                    % Zsde = 1j .* Zde ./ Ca .* (num ./ den); 
+
                 case 'Volume'
+                    
+                    % c0 = air.parameters.c0;
+                    c0 = air.parameters.c0 * (1+0.05*1j); % perso_ouvrir_lien_Zotero('zotero://open-pdf/library/items/233HZ8GN?page=7&annotation=QLW3FP87')
                     
                     % Calcul du volume de la cavité
                     Vcav = pi * hde * (rde^2 - rmp^2); % Différence des volumes de deux cylindres 

@@ -1,6 +1,7 @@
-function env = create_environnement(temperature, static_pressure, relative_humidity, ...
+function env = create_environnement(root, temperature, static_pressure, relative_humidity, ...
                                     fmin, fmax, points, varargin)
     
+    env.Root = root;
     air = classair(temperature, static_pressure, relative_humidity);
     env.air = air;
 
@@ -13,13 +14,13 @@ function env = create_environnement(temperature, static_pressure, relative_humid
     env.p_ref = 20e-6; 
 
     % Si l'utilisateur à indiqué un niveau de pression totale
-    if nargin > 6
+    if nargin > 7
         p_rms = env.p_ref * 10.^(varargin{1}/20);
         env.p_rms = p_rms;
     end
 
     % Si l'utilisateur à indiqué un nombre de Mach moyen
-    if nargin > 7
+    if nargin > 8
         env.M = varargin{2};
     end
 

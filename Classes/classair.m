@@ -98,7 +98,7 @@ classdef classair
                                                      + (obj.ac(7) + obj.ac(8) * T + obj.ac(9) * T^2) * P        ...
                                                      + (obj.ac(10) + obj.ac(11) * T + obj.ac(12) * T^2) * obj.xc...
                  + obj.ac(13) * xw^2 + obj.ac(14) * P^2 + obj.ac(15) * obj.xc^2 + obj.ac(16) * xw * P * obj.xc; 
-            % param.c0 = c0 * (1+1j*0.05); % Pour la validation de classMPPSBH_Chen
+            % param.c0 = c0 * (1+1j*0.05); % perso_ouvrir_lien_Zotero('zotero://open-pdf/library/items/233HZ8GN?page=7&annotation=QLW3FP87')
             param.c0 = c0;
 
             % Dynamic viscosity of air

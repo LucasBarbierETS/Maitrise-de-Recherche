@@ -80,10 +80,7 @@ classdef classMultiAnnular < classelement
             config.CellNumber = cell_number;
         end
     
-    function validate()
-
-            % création de l'environnement
-            env = create_environnement(23, 100800, 22, 1, 6000, 1000);
+        function validate(env)
            
             %% Données de référence :
 
@@ -124,9 +121,6 @@ classdef classMultiAnnular < classelement
 
             perso_figure('Validation classMultiAnnular - profil décroissant')
             hold on   
-
-            % création de l'environnement
-            env = create_environnement(23, 100800, 22, 1, 6000, 1000);
            
             %% Données de référence : A microstructure material design for low frequency sound absorption, fig.3
 

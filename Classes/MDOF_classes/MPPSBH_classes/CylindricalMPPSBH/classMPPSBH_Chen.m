@@ -29,7 +29,6 @@ classdef classMPPSBH_Chen < classelement
                     % Cavité cylindrique
                     hc = (mpr(i) + mpr(i+1))/2;
                     obj.Configuration.ListOfSubelements{end+1} = classcavity_cylindrical(classcavity_cylindrical.create_config(ct(i), hc));
-                    % obj.Configuration.ListOfSubelements{end+1} = classcavity_conical(classcavity_conical.create_config(ct(i), mpr(i), mpr(i+1)));
         
                     % Cavité annnulaire cylindrique
                     annular_cavity = classannularcavity_cylindrical(classannularcavity_cylindrical.create_config(hc, cavr, ct(i), 'Volume'));
@@ -60,9 +59,9 @@ classdef classMPPSBH_Chen < classelement
 
     methods (Static, Access = public) % Validation
         
-        function validate()
+        function validate(env)
             
-            perso_figure('Validation classMPPSBH_Chen - profil linéaire')
+            perso_figure('Validation classMPPSBH_Chen - profil linéaire');
             hold on
 
             % Paramètres de la configuration
@@ -74,15 +73,13 @@ classdef classMPPSBH_Chen < classelement
             t = 0.2e-3;
             phi = 0.04;
             
-            % création de l'environnement
-            env = create_environnement(23, 100800, 22, 1, 5000, 5000, 140);
             % Pour cette validation la célérité de l'air doit intégrer un
             % terme dissipatif
 
             %% Profil linéaire
 
             % Importation des données de références
-            data = load('C:\Users\lucas.barbier\Documents\Maitrise dossier secondaire\MATLAB\Classes\MDOF_classes\MLPSBH_classes\RectangularMLPSBH\Courbes de références\Chen2024_fig3a_black.txt');
+            data = load('Chen2024_fig3a_black.txt');
             plot(data(:, 1), data(:, 2), 'DisplayName', 'Données de références');
             
             % Calcul de la réponse du modèle analytique
@@ -95,11 +92,11 @@ classdef classMPPSBH_Chen < classelement
 
             %% Profil quadratique
 
-            perso_figure('Validation classMPPSBH_Chen - profil quadratique')
+            perso_figure('Validation classMPPSBH_Chen - profil quadratique');
             hold on
 
             % Importation des données de références
-            data = load('C:\Users\lucas.barbier\Documents\Maitrise dossier secondaire\MATLAB\Classes\MDOF_classes\MLPSBH_classes\RectangularMLPSBH\Courbes de références\Chen2024_fig3b_black.txt');
+            data = load('Chen2024_fig3b_black.txt');
             plot(data(:, 1), data(:, 2), 'DisplayName', 'Données de références');
 
             % calcul de la réponse du modèle analytique

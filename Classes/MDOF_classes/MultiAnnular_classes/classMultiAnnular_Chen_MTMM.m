@@ -1,11 +1,11 @@
-classdef classMultiAnnular_Chen < classelement
+classdef classMultiAnnular_Chen_MTMM < classelement
 
     %% Références : 
 
     % [1] A broadband and low-frequency sound absorber of sonic black holes with multi-layered micro-perforated panels
 
     methods
-        function obj = classMultiAnnular_Chen(config)
+        function obj = classMultiAnnular_Chen_MTMM(config)
         
             % Appel du constructeur de la classe parente
             obj@classelement(classelement.create_config({}, 'closed', []));
@@ -24,16 +24,16 @@ classdef classMultiAnnular_Chen < classelement
                     % Cavité cylindrique avec pertes
                     obj.Configuration.ListOfSubelements{end+1} = classcavity_cylindrical(classcavity_cylindrical.create_config(tmp, rmp(i)));
         
-                    % Cavité cylindrique
+                    % Cavité conique
                     hc = (rmp(i) + rmp(i+1))/2;
-                    obj.Configuration.ListOfSubelements{end+1} = classcavity_cylindrical(classcavity_cylindrical.create_config(hde/2, rmp(i)));
+                    obj.Configuration.ListOfSubelements{end+1} = classcavity_conical(classcavity_conical.create_config(hde/2, rmp(i), hc));
         
-                    % Cavité annulaire torique
-                    annular_cavity = classannularcavity_cylindrical (classannularcavity_cylindrical.create_config(hc, rde, hde, 'Hankel_Chen'));
+                    % Cavité annnulaire toroidale
+                    annular_cavity = classannularcavity_toroidal(classannularcavity_toroidal.create_config(rmp(i), rmp(i+1), rde, hde, 'Hankel_Chen'));
                     obj.Configuration.ListOfSubelements{end+1} = classjunction_cylindrical(classjunction_cylindrical.create_config(annular_cavity, hc, hde));
 
-                    % Cavité cylindrique
-                    obj.Configuration.ListOfSubelements{end+1} = classcavity_cylindrical(classcavity_cylindrical.create_config(hde/2, rmp(i+1)));
+                    % Cavité conique
+                    obj.Configuration.ListOfSubelements{end+1} = classcavity_conical(classcavity_conical.create_config(hde/2, hc, rmp(i+1)));
                 end
             end
         end
@@ -41,6 +41,7 @@ classdef classMultiAnnular_Chen < classelement
 
     methods (Static, Access = public) % Création des configurations
 
+        % Définition de la configuration à partir des paramètres JCA
         function config = create_config(radius, main_pore_radius, main_pore_thickness, dead_end_radius, dead_end_thickness, cell_number)
             
             config = {};
@@ -57,13 +58,13 @@ classdef classMultiAnnular_Chen < classelement
     methods (Static, Access = public) % Validation
         
         function validate(env)
-         
+            
             % Paramètres de la configuration
             R = 30e-3;
             L = 100e-3;
             rend = 2e-3;
             t = 0.2e-3;
-            config = @(N) classMultiAnnular_Chen.create_config(R, perso_interp_config({{R, rend, N+1, 1}}, N+1), t, R, L/N - t, N);
+            config = @(N) classMultiAnnular_Chen_MTMM.create_config(R, perso_interp_config({{R, rend, N+1, 1}}, N+1), t, R, L/N - t, N);
             
             % Pour cette validation la célérité de l'air doit intégrer un
             % terme dissipatif
@@ -77,15 +78,17 @@ classdef classMultiAnnular_Chen < classelement
             hold on
 
             % Importation des données de références
-            data_mod = load([env.Root, '\Classes\MDOF_classes\Validation\validation classMultiAnnular_Chen ChenMTMM2024 fig7a black.txt']);
+            data_mod = load('validation classMultiAnnular_Chen ChenMTMM2024 fig7a black.txt');
             plot(data_mod(:, 1), data_mod(:, 2), 'DisplayName', 'Données de références - Modèle');
 
-            data_fem = load([env.Root, '\Classes\MDOF_classes\Validation\validation classMultiAnnular_Chen ChenMTMM2024 fig7a red.txt']);
+            data_fem = load('validation classMultiAnnular_Chen ChenMTMM2024 fig7a red.txt');
             plot(data_fem(:, 1), data_fem(:, 2), 'DisplayName', 'Données de références - FEM');
             
             % Calcul de la réponse du modèle analytique
             alpha_model = classMultiAnnular_Chen(config(N)).alpha(env);
+            alpha_model_MTMM = classMultiAnnular_Chen_MTMM(config(N)).alpha(env);
             plot(env.w / (2*pi), alpha_model, 'Color', 'g', 'LineWidth', 1, 'DisplayName', 'Modèle');
+            plot(env.w / (2*pi), alpha_model_MTMM, 'Color', 'k', 'LineWidth', 1, 'DisplayName', 'Modèle MTMM');
             perso_configure_alpha_figure(3000);
 
             %% 20 Plaques
@@ -97,18 +100,20 @@ classdef classMultiAnnular_Chen < classelement
             hold on
 
             % Importation des données de références
-            data_mod = load([env.Root, '\Classes\MDOF_classes\Validation\validation classMultiAnnular_Chen ChenMTMM2024 fig7b black.txt']);
+            data_mod = load('validation classMultiAnnular_Chen ChenMTMM2024 fig7b black.txt');
             plot(data_mod(:, 1), data_mod(:, 2), 'DisplayName', 'Données de références - Modèle');
 
-            data_fem = load([env.Root, '\Classes\MDOF_classes\Validation\validation classMultiAnnular_Chen ChenMTMM2024 fig7b red.txt']);
+            data_fem = load('validation classMultiAnnular_Chen ChenMTMM2024 fig7b red.txt');
             plot(data_fem(:, 1), data_fem(:, 2), 'DisplayName', 'Données de références - FEM');
             
             % Calcul de la réponse du modèle analytique
             alpha_model = classMultiAnnular_Chen(config(N)).alpha(env);
+            alpha_model_MTMM = classMultiAnnular_Chen_MTMM(config(N)).alpha(env);
             plot(env.w / (2*pi), alpha_model, 'Color', 'g', 'LineWidth', 1, 'DisplayName', 'Modèle');
+            plot(env.w / (2*pi), alpha_model_MTMM, 'Color', 'k', 'LineWidth', 1, 'DisplayName', 'Modèle MTMM');
             perso_configure_alpha_figure(3000);
 
-            %% 20 Plaques
+            %% 30 Plaques
 
             N = 30;
 
@@ -117,18 +122,20 @@ classdef classMultiAnnular_Chen < classelement
             hold on
 
             % Importation des données de références
-            data_mod = load([env.Root, '\Classes\MDOF_classes\Validation\validation classMultiAnnular_Chen ChenMTMM2024 fig7c black.txt']);
+            data_mod = load('validation classMultiAnnular_Chen ChenMTMM2024 fig7c black.txt');
             plot(data_mod(:, 1), data_mod(:, 2), 'DisplayName', 'Données de références - Modèle');
 
-            data_fem = load([env.Root, '\Classes\MDOF_classes\Validation\validation classMultiAnnular_Chen ChenMTMM2024 fig7c red.txt']);
+            data_fem = load('Validation\validation classMultiAnnular_Chen ChenMTMM2024 fig7c red.txt');
             plot(data_fem(:, 1), data_fem(:, 2), 'DisplayName', 'Données de références - FEM');
             
             % Calcul de la réponse du modèle analytique
             alpha_model = classMultiAnnular_Chen(config(N)).alpha(env);
+            alpha_model_MTMM = classMultiAnnular_Chen_MTMM(config(N)).alpha(env);
             plot(env.w / (2*pi), alpha_model, 'Color', 'g', 'LineWidth', 1, 'DisplayName', 'Modèle');
+            plot(env.w / (2*pi), alpha_model_MTMM, 'Color', 'k', 'LineWidth', 1, 'DisplayName', 'Modèle MTMM');
             perso_configure_alpha_figure(3000);
 
-            %% 20 Plaques
+            %% 40 Plaques
 
             N = 40;
 
@@ -137,16 +144,19 @@ classdef classMultiAnnular_Chen < classelement
             hold on
 
             % Importation des données de références
-            data_mod = load([env.Root, '\Classes\MDOF_classes\Validation\validation classMultiAnnular_Chen ChenMTMM2024 fig7d black.txt']);
+            data_mod = load('validation classMultiAnnular_Chen ChenMTMM2024 fig7d black.txt');
             plot(data_mod(:, 1), data_mod(:, 2), 'DisplayName', 'Données de références - Modèle');
 
-            data_fem = load([env.Root, '\Classes\MDOF_classes\Validation\validation classMultiAnnular_Chen ChenMTMM2024 fig7d red.txt']);
+            data_fem = load('validation classMultiAnnular_Chen ChenMTMM2024 fig7d red.txt');
             plot(data_fem(:, 1), data_fem(:, 2), 'DisplayName', 'Données de références - FEM');
             
             % Calcul de la réponse du modèle analytique
             alpha_model = classMultiAnnular_Chen(config(N)).alpha(env);
+            alpha_model_MTMM = classMultiAnnular_Chen_MTMM(config(N)).alpha(env);
             plot(env.w / (2*pi), alpha_model, 'Color', 'g', 'LineWidth', 1, 'DisplayName', 'Modèle');
+            plot(env.w / (2*pi), alpha_model_MTMM, 'Color', 'k', 'LineWidth', 1, 'DisplayName', 'Modèle MTMM');
             perso_configure_alpha_figure(3000);
+
         end
     end
 end
