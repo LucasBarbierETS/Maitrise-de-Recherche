@@ -31,11 +31,11 @@ classdef ImpedanceTube2D
             % Résultats numériques
             if isfield(obj.Configuration, 'Data2D')
                 data = obj.Configuration.Data2D;
-                plot(data(:, 1), data(:, 2), '--r', 'DisplayName', 'Solution numérique');
+                plot(data(:, 1), data(:, 2), '--r', 'DisplayName', name);
+                ylim([0 1]);
             end
             
             % perso_configure_alpha_figure(2000);
-            title(name);
         end
     
         function plot_alpha_mean_line(obj, f_min, f_max)

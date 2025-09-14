@@ -25,7 +25,7 @@ classdef classMPPSBH_Rectangular < classelement
                     % Plaque perforée
                     obj.Configuration.ListOfSubelements{end+1} = classMPP_Circular(classMPP_Circular.create_config(mpw(i)*mpd(i), pt(i), phr(i), pp(i), mpw(i), mpd(i)));
         
-                    % Cavité cylindrique
+                    % Cavité trapezoidale
                     wc = (mpw(i) + mpw(i+1))/2;
                     dc = (mpd(i) + mpd(i+1))/2;
                     obj.Configuration.ListOfSubelements{end+1} = classcavity_trapezoidal(classcavity_trapezoidal.create_config(ct(i)/2, mpw(i), mpd(i), wc, dc));
@@ -34,7 +34,7 @@ classdef classMPPSBH_Rectangular < classelement
                     annular_cavity = classannularcavity_cubical(classannularcavity_cubical.create_config(wc, dc, cavw, cavd, ct(i)));
                     obj.Configuration.ListOfSubelements{end+1} = classjunction(classjunction.create_config(annular_cavity, wc, dc));
         
-                    % Cavité cylindrique
+                    % Cavité trapezoidale
                     obj.Configuration.ListOfSubelements{end+1} = classcavity_trapezoidal(classcavity_trapezoidal.create_config(ct(i)/2, wc, dc, mpw(i+1), mpd(i+1)));
                 end 
             end

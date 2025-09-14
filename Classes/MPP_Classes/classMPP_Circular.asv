@@ -190,7 +190,7 @@ classdef classMPP_Circular < classJCA_Rigid
             % panel 1
             phi = 0.0812; % porosité de la plaque
             t = 1e-3; % épaisseur de la plaque
-            r = 9.9219e-4; % diamètre des perforations
+            r = 9.9219e-3; % diamètre des perforations
             w = 0.012; % Largeur
             d = 0.03; % Profondeur
             s = w*d; % Section 
@@ -238,8 +238,8 @@ classdef classMPP_Circular < classJCA_Rigid
             % subplot(1, 2, 1)
             hold on
             subtitle("Atalla2007 - fig. 3 - p. 9")
-            plot(env.w / (2*pi), E1.alpha(env), 'Color', 'b', 'LineWidth', 1, 'DisplayName', 'Modèle analytique - classMPP_Circular');
-            Tube.plot_alpha(env, 'Modèle numérique - classMPP_Circular');
+            plot(env.w / (2*pi), E1.alpha(env), 'Color', 'b', 'LineWidth', 1, 'DisplayName', 'Modèle analytique');
+            Tube.plot_alpha(env, 'Modèle numérique');
             % plot(x_data1, y_data1, 'Color', 'g','LineWidth', 1, 'LineStyle', '--', 'DisplayName', 'Données de références');
             % perso_configure_alpha_figure(5000);
 

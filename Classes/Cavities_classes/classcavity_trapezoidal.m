@@ -19,7 +19,8 @@ classdef classcavity_trapezoidal< classcavity
             % dérivé de [1] eq. 7
 
             param = air.parameters;
-            c0 = param.c0;
+            % c0 = air.parameters.c0;
+            c0 = air.parameters.c0 * (1+0.05*1j); % perso_ouvrir_lien_Zotero('zotero://open-pdf/library/items/233HZ8GN?page=7&annotation=QLW3FP87')
             k0 = w ./ c0;
             Z0 = c0 * param.rho;
 
