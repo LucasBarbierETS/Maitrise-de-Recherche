@@ -34,7 +34,7 @@ comp = model.component('component');
 geom = model.component('component').geom('geometry');
 
 MPP = geom.create(['sol' num2str(elem_index) '_sblm' num2str(sblm_index) '_MPP'], 'Rectangle');
-MPP.set('pos', {['sol' num2str(elem_index) '_xl'] ['sol' num2str(elem_index) '_sblm' num2str(sblm_index) '_yt-' num2str(l)]});
+MPP.set('pos', {['sol' num2str(elem_index) '_xc-', num2str(w/2)] ['sol' num2str(elem_index) '_sblm' num2str(sblm_index) '_yt-' num2str(l)]});
 MPP.set('size', {num2str(w) num2str(l)});
 
 % Définition de la ligne de fond du sous-élement

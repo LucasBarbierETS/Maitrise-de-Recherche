@@ -1,0 +1,57 @@
+%% Validation des configurations optimisées
+
+
+load([root, '\Optimisation\Optimisation REAR\Optimisations finales\optimisation_ETS_Poly_H1-4_08_25_06_14\environnement matlab.mat']);
+
+env = create_environnement(root, t, sp, hum, fmin, fmax, 100);
+
+Objets.MPPSBH_i = @(x_ETS, x_radius, i) classMPPSBH_Rectangular(classMPPSBH_Rectangular.create_explicit_rectangular_pattern_config( ...
+        ETS_input_surface, N, ETS_cavities_depth, ETS_cavities_width, ...
+        {x_radius}, ... {radius(x_ETS(i, :, 1))}, ... {eval_r(x0(:, 1, i))}, ... % rayon des perforations
+        {x_ETS(i, :, 1)}, ... % distance entre perforations (width)
+        {ETS_cavities_depth/depth_holes_number}, ... % distance entre perforations (depth)
+        {depth_holes_number}, ... {transpose(x0(:, 3, i))}, ... % nombre de perforations en profondeur
+        {x_ETS(i, :, 2)}, ... % nombre de perforations en largeur
+        {plates_thickness}, ... % épaisseur des plaques (supérieure + internes)
+        {ETS_cavities_thickness})); %;  % épaisseur de cavité
+
+Objets.MPPSBH_element_i = @(x, i) classelement( ...
+    classelement.create_config({ ...
+    classcavity(classcavity.create_config(ETS_cavities_thickness, ETS_cavities_width, ETS_cavities_depth)) ...
+    Objets.MPPSBH_i(x_ETS(x), radius(x_radius(x)), i)}, 'closed', ETS_input_surface));
+
+air_gap_ETS = classcavity(classcavity.create_config(air_gap_thickness, ETS_width, ETS_depth));
+
+Contributions.contribution_MPPSBH_element_i = @(x, i) classelement(classelement.create_config( ...
+    {top_plate_ETS(x_TP_ETS(x)), ...
+     air_gap_ETS, ...
+     classcavity(classcavity.create_config(ETS_cavities_thickness, ETS_cavities_width, ETS_cavities_depth)), ...
+     Objets.MPPSBH_i(x_ETS(x), radius(x_radius(x)), i)}, 'closed', ETS_input_surface));
+
+% Contributions des élements MPPSBHs
+folder_full_name = [root, '\COMSOL\Optimisation\Optimisation REAR\Optimisations finales\optimisation_ETS_Poly_H1-4_08_25_06_14'];
+mkdir([folder_full_name, '\Validation numérique 2D des contributions des élements MPPSBHs']);
+mkdir([folder_full_name, '\Figures']);
+
+
+for i = 1:NS
+    perso_figure(['Validation numérique 2D - MPPSBH ', num2str(i)])
+    Contributions.contribution_MPPSBH_element_i(x_opti, i).plot_alpha(env, 'modèle linéaire');
+    Tube_MPPSBH_element_contrib = ImpedanceTube2D(ImpedanceTube2D.create_config({Contributions.contribution_MPPSBH_element_i(x_opti, i)}));
+    Tube_MPPSBH_element_contrib = Tube_MPPSBH_element_contrib.launch_tube_measurement(env);
+    Tube_MPPSBH_element_contrib.plot_alpha(env, ['Contribution MPPSBH' num2str(i)]);
+    comsol_model = Tube_MPPSBH_element_contrib.Configuration.ComsolModel;
+    % perso_configure_alpha_figure(2000);
+    try
+        saveas(gcf, [folder_full_name, '\Figures\Validation de la contribution de MPPSBH', num2str(i) ,'.fig']);
+    catch
+        return 
+    end
+
+    perso_figure(['Géométrie 2D - MPPSBH ', num2str(i)])
+    mphgeom(Tube_MPPSBH_element_contrib.Configuration.ComsolModel);
+    saveas(gcf, [folder_full_name, '\Figures\Géométrie de l''élement MPPSBH', num2str(i), '.fig']);
+    mphsave(comsol_model, [folder_full_name, '\Validation numérique 2D des contributions des élements MPPSBHs\validation_2D_MPPSBH_', num2str(i), '.mph']);
+end
+
+

@@ -383,7 +383,7 @@ top_plate_thickness, radius(x_TP_yc(1)), top_plate(x_TP_yc).Configuration.Porosi
 
 air_gap = classcavity(classcavity.create_config(air_gap_thickness, total_width, total_depth));
 
-air_gap_ETS = classcavity(classcavity.create_config(air_gap_thickness, ETS_cavities_width, ETS_cavities_depth));
+air_gap_ETS = classcavity(classcavity.create_config(air_gap_thickness, ETS_width, ETS_depth));
 
 air_gap_Poly = classcavity(classcavity.create_config(air_gap_thickness, Poly_cavities_width, Poly_cavities_depth));
 

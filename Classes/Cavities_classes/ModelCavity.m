@@ -20,7 +20,7 @@ end
 
 if sblm_index == 1
     model.param.set(['sol' num2str(elem_index) '_sblm' num2str(sblm_index) '_yt'], '0', 'ligne d''accotement verticale en haut');
-    model.param.set(['sol' num2str(elem_index) '_w'], num2str(w), 'ligne d''accotement horizontal à gauche');
+    model.param.set(['sol' num2str(elem_index) '_w'], num2str(w), 'largeur');
     model.param.set(['sol' num2str(elem_index) '_xc'], ['sol' num2str(elem_index) '_xl+sol' num2str(elem_index) '_w/2'], 'ligne centrale');
     model.param.set(['sol' num2str(elem_index) '_xr'], ['sol' num2str(elem_index) '_xl+sol' num2str(elem_index) '_w'], 'ligne d''acotement horizontal à droite');
 else
@@ -33,7 +33,7 @@ comp = model.component('component');
 geom = model.component('component').geom('geometry');
 
 cav = geom.create(['sol' num2str(elem_index) '_sblm' num2str(sblm_index) '_cav'], 'Rectangle');
-cav.set('pos', {['sol' num2str(elem_index) '_xl'] ['sol' num2str(elem_index) '_sblm' num2str(sblm_index) '_yt-' num2str(l)]});
+cav.set('pos', {['sol' num2str(elem_index) '_xc-', num2str(w/2)] ['sol' num2str(elem_index) '_sblm' num2str(sblm_index) '_yt-' num2str(l)]});
 cav.set('size', {num2str(w) num2str(l)});
 
 % Définition de la ligne de fond du sous-élement
@@ -86,8 +86,8 @@ blp = bl.create('blp', 'BndLayerProp');
 
 % blp.selection.named(['sol' num2str(elem_index) '_sblm' num2str(sblm_index) '_bnd_lyr_tv']);
 blp.selection.named(['sol' num2str(elem_index) '_sblm' num2str(sblm_index) '_bnds']);
-blp.set('blnlayers', 3);
-blp.set('blstretch', 1.2);
+blp.set('blnlayers', 8);
+blp.set('blstretch', 1);
 blp.set('inittype', 'blhtot');
 blp.set('blhmin', 'd_visc');
 

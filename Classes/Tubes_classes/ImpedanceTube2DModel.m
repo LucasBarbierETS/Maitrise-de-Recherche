@@ -246,5 +246,4 @@ function model = ImpedanceTube2DModel(list_of_solutions, env)
     av_mic2.setIndex('descr', 'Im(Zns)', 4);
     
     av_mic2.setResult;
-
 end

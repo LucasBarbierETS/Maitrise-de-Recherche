@@ -28,7 +28,6 @@ classdef classMPPSBH_Rectangular < classelement
                     % Cavité cylindrique
                     wc = (mpw(i) + mpw(i+1))/2;
                     dc = (mpd(i) + mpd(i+1))/2;
-                    % obj.Configuration.ListOfSubelements{end+1} = classcavity(classcavity.create_config(ct(i)/2, mpw(i), mpd(i)));
                     obj.Configuration.ListOfSubelements{end+1} = classcavity_trapezoidal(classcavity_trapezoidal.create_config(ct(i)/2, mpw(i), mpd(i), wc, dc));
     
                     % Cavité cubique en parallèle
@@ -36,7 +35,6 @@ classdef classMPPSBH_Rectangular < classelement
                     obj.Configuration.ListOfSubelements{end+1} = classjunction(classjunction.create_config(annular_cavity, wc, dc));
         
                     % Cavité cylindrique
-                    % obj.Configuration.ListOfSubelements{end+1} = classcavity(classcavity.create_config(ct(i)/2, wc, dc));
                     obj.Configuration.ListOfSubelements{end+1} = classcavity_trapezoidal(classcavity_trapezoidal.create_config(ct(i)/2, wc, dc, mpw(i+1), mpd(i+1)));
                 end 
             end

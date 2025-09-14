@@ -487,7 +487,7 @@ classdef classelement
             f = env.w / (2 * pi);
             color = perso_random_color_rgb_triplet();
 
-            perso_figure('Alpha Element');
+            % perso_figure('Alpha Element');
             hold on
 
             plot(f, alpha, 'color', color, 'DisplayName', name);

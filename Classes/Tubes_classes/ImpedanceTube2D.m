@@ -19,14 +19,14 @@ classdef ImpedanceTube2D
 
             hold on
 
-            % Résultats analytiques
-            assembly = classelementassembly(classelementassembly.create_config(obj.Configuration.ListOfSolutions)); 
-            try 
-                alpha_model = assembly.alpha(env);
-                f = env.w / (2 * pi);
-                plot(f, alpha_model, 'color', 'b', 'DisplayName', 'Modèle analytique');
-            catch 
-            end
+            % % Résultats analytiques
+            % assembly = classelementassembly(classelementassembly.create_config(obj.Configuration.ListOfSolutions)); 
+            % try 
+            %     alpha_model = assembly.alpha(env);
+            %     f = env.w / (2 * pi);
+            %     plot(f, alpha_model, 'color', 'b', 'DisplayName', 'Modèle analytique');
+            % catch 
+            % end
             
             % Résultats numériques
             if isfield(obj.Configuration, 'Data2D')
@@ -34,7 +34,7 @@ classdef ImpedanceTube2D
                 plot(data(:, 1), data(:, 2), '--r', 'DisplayName', 'Solution numérique');
             end
             
-            perso_configure_alpha_figure(2000);
+            % perso_configure_alpha_figure(2000);
             title(name);
         end
     

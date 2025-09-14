@@ -45,8 +45,8 @@ for i = 1:N
     
     % Création d'un rectangle pour la cavité i
     rc = geom.create(['sol' num2str(elem_index) '_sblm' num2str(sblm_index) '_rc' num2str(i)], 'Rectangle');
-    rc.set('pos', {['sol' num2str(elem_index) '_xc-sol' num2str(elem_index) '_w/2'] ['sol' num2str(elem_index) '_sblm' num2str(sblm_index) '_yt+' num2str(-sum(pt(1:i)) - sum(ct(1:i)))]});
-    rc.set('size', {['sol' num2str(elem_index) '_w'] num2str(ct(i))});
+    rc.set('pos', {['sol' num2str(elem_index) '_xc+' num2str(-cavw/2)] ['sol' num2str(elem_index) '_sblm' num2str(sblm_index) '_yt+' num2str(-sum(pt(1:i)) - sum(ct(1:i)))]});
+    rc.set('size', {num2str(cavw), num2str(ct(i))});
 end
 
 geom.run;
@@ -169,8 +169,8 @@ blp = bl.create('blp', 'BndLayerProp');
 
 % blp.selection.named(['sol' num2str(elem_index) '_sblm' num2str(sblm_index) '_bnd_lyr_tv']);
 blp.selection.named(['sol' num2str(elem_index) '_sblm' num2str(sblm_index) '_bnds']);
-blp.set('blnlayers', 3);
-blp.set('blstretch', 1.2);
+blp.set('blnlayers', 8);
+blp.set('blstretch', 1);
 blp.set('inittype', 'blhtot');
 blp.set('blhmin', 'd_visc');
 mesh.run;
