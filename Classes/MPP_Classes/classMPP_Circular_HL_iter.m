@@ -50,7 +50,8 @@ classdef classMPP_Circular_HL_iter < classMPP_Circular
             phi = config.Porosity;
             pr = config.PerforationsRadius;
             t = config.Thickness;  
-            S = obj.Configuration.Section;
+            % S = obj.Configuration.Section;
+            S = obj.Configuration.Surface;
 
             % On encapsule les méthodes non linéaires dans la définiton des paramètres JCA
             obj.Configuration.AirFlowResistivity = @(env) classMPP_Circular_HL_iter.air_flow_resistivity(env, u_rms, phi, pr, t, S);

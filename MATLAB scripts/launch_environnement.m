@@ -15,8 +15,8 @@ end
 
 try
     addpath('C:\Users\lucas.barbier\Documents\Maitrise ETS\Répertoire GitHub\Functions')
-    root = 'C:\Users\lucas.barbier\Documents\Maitrise ETS\Répertoire GitHub';
-    perso_add_all_paths(root);
+    root = 'C:\Users\lucas.barbier\Documents\Maitrise ETS';
+    perso_add_all_paths([root, '\Répertoire GitHub']);
 catch
 end
 

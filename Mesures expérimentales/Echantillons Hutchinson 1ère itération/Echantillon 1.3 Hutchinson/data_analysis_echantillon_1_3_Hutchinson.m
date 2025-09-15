@@ -1,7 +1,7 @@
 % Exploitation des données expérimentales en tube à incidence normale
 % Echantillon 3
 
-data3 = perso_load_mecanum_files('C:\Users\lucas.barbier\Documents\Maitrise dossier secondaire\Mesures expérimentales\Echantillons Hutchinson 1ère itération\Echantillon 3 Hutchinson\Export_Data');
+data3 = perso_load_mecanum_files([env.Root, '\Mesures expérimentales\Echantillons Hutchinson 1ère itération\Echantillon 1.3 Hutchinson\Export_Data']);
 
 % Coefficient d'absorption
 SPL3 = data3.SoundPressureLevelAtMaterialSurface_dB_;
@@ -42,16 +42,16 @@ title('Echantillon 3 - 100 dB')
 plot(f, alpha3_100, 'DisplayName', 'Résultat expérimental');
 
 % Modèle linéaire
-alpha_model = classMPPSBH_Rectangular(config3).alpha(env(100));
-plot(env(100).w/(2*pi), alpha_model, 'DisplayName', 'Modèle analytique linéaire');
+alpha_model = classMPPSBH_Rectangular(config3).alpha(env);
+plot(env.w/(2*pi), alpha_model, 'DisplayName', 'Modèle analytique linéaire');
 
 % % Modèle non-linéaire appliqué à toutes les plaques
 % alpha_model_HL = classMPPSBH_Rectangular_HL(config3).alpha(env(100));
-% plot(env(100).w/(2*pi), alpha_model_HL, 'DisplayName', 'Modèle analytique non-linéaire (toutes les plaques)');
+% plot(env.w/(2*pi), alpha_model_HL, 'DisplayName', 'Modèle analytique non-linéaire (toutes les plaques)');
 
 % % Modèle non-linéaire avec seulement la première plaque concernée
 % alpha_model_HL_first_plate = classMPPSBH_Rectangular_HL_first_plate(config3).alpha(env(100));
-% plot(env(100).w/(2*pi), alpha_model_HL_first_plate, 'DisplayName', 'Modèle analytique non-linéaire première plaque');
+% plot(env.w/(2*pi), alpha_model_HL_first_plate, 'DisplayName', 'Modèle analytique non-linéaire première plaque');
 legend()
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%% 145 dB %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -67,10 +67,16 @@ plot(f, alpha3_145, 'DisplayName', 'Mesures expérimentales');
 % plot(env(145).w/(2*pi), alpha_model, 'DisplayName', 'Modèle analytique linéaire');
 % legend()
 
-% Modèle non-linéaire appliqué à toutes les plaques 
-alpha_model_HL = classMPPSBH_Rectangular_HL(config3).alpha(env(145));
-plot(env(145).w/(2*pi), alpha_model_HL, 'DisplayName', 'Modèle analytique non-linéaire (toutes les plaques)');
-legend()
+% % Validation 2D
+Tube_MPPSBH = ImpedanceTube2D(ImpedanceTube2D.create_config({classelement(classelement.create_config ...
+    ({classMPPSBH_Rectangular(config2)}, 'closed', 30e-3^2))}));
+Tube_MPPSBH = Tube_MPPSBH.launch_tube_measurement(env);
+Tube_MPPSBH.plot_alpha(env, 'Echantillon 3 - validation numérique en régime linéaire');
+
+% % Modèle non-linéaire appliqué à toutes les plaques 
+% alpha_model_HL = classMPPSBH_Rectangular_HL(config3).alpha(env(145));
+% plot(env(145).w/(2*pi), alpha_model_HL, 'DisplayName', 'Modèle analytique non-linéaire (toutes les plaques)');
+% legend()
 
 % Modèle non-linéaire itératif
 % SPL3_145_interpolated = interp1(f, SPL3_145, env([]).w / (2*pi));

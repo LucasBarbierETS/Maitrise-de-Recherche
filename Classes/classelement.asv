@@ -76,22 +76,13 @@ classdef classelement
                 % plot(env.w/(2*pi), SPL, 'DisplayName', ['Sous-élement ', num2str(i)]);
                 % legend();
 
-                % % Debog : Tracé de la puissance acoustique au niveau de chaque plaque;
-                % perso_figure('Puissance acoustique à l''entrée de chaque sous-élement');
-                % if i == 1
-                %     clf
-                % end
-                % P = 1/2*real(p_in.*conj(u_in));
-                % plot(env.w/(2*pi), P, 'DisplayName', ['Sous-élement ', num2str(i)]);
-
-                % % Debog : Tracé du débit RMS au niveau de chaque sous-élement
-                % perso_figure('u_rms au niveau de chaque sous-élement');
-                % if i == 1
-                %     clf
-                % end
-                % plot(env.w/(2*pi), abs(u_in), 'DisplayName', ['u rms après le sous-élement', num2str(i)]);
+                % Debog : Tracé de la puissance acoustique au niveau de chaque plaque;
+                perso_figure('Puissance acoustique à l''entrée de chaque sous-élement');
+                P = real(p_in.*conj(u_in));
+                plot(env.w/(2*pi), P, 'DisplayName', ['Sous-élement ', num2str(i)]);
                 
                 sblm = config.ListOfSubelements{i};
+
                 if isa(sblm, 'function_handle')
                     sblm = sblm(abs(u_in));
                 end
@@ -127,7 +118,17 @@ classdef classelement
                 else
                     try
                         [sblm_TM, p_in, u_in] = sblm.transfer_matrix_iter(env, p_in, u_in);
+                        
+                        % % Debog : Pression RMS au niveau de chaque sous-élement
+                        % perso_figure('p_rms au niveau de chaque sous-élement');
+                        % plot(env.w/(2*pi), abs(p_in), 'DisplayName', ['p rms après le sous-élement ', num2str(i)]);
+            
+                        % Debog : Débit RMS au niveau de chaque sous-élement
+                        perso_figure('u_rms au niveau de chaque sous-élement');
+                        plot(env.w/(2*pi), abs(u_in), 'DisplayName', ['u rms après le sous-élement', num2str(i)]);
+
                         TM = matprod(TM, sblm_TM);
+
                    catch
                         error('Impossible de calculer la matrice de transfert du sous-élement');
                     end
@@ -281,12 +282,12 @@ classdef classelement
             iter = 0;
             converged = false;
 
-            % % debog : Tracé des débits acoustiques RMS successives au cours de la procédure itérative
-            % perso_figure('u_rms');
-            % clf
-            % title('Débit acoustique RMS à l''entrée de l''élement')
-            % legend();
-            % plot(env.w/(2*pi), u_rms, 'DisplayName', 'Itération 0')
+            % debog : Tracé des débits acoustiques RMS successives au cours de la procédure itérative
+            perso_figure('u_rms');
+            clf
+            title('Débit acoustique RMS à l''entrée de l''élement')
+            legend();
+            plot(env.w/(2*pi), u_rms, 'DisplayName', 'Itération 0')
 
             while ~converged && iter < max_iter
                 iter = iter + 1;
@@ -300,24 +301,24 @@ classdef classelement
                 % Vérification du critère de convergence
                 Zs = obj.surface_impedance(env, TM);
 
-                % % Debog : Tracé de l'impédance de surface
-                % perso_figure('Zs');
-                % perso_plot_surface_impedance(Zs, env, ['itération ', num2str(iter)]);
+                % Debog : Tracé de l'impédance de surface
+                perso_figure('Zs');
+                perso_plot_surface_impedance(Zs, env, ['itération ', num2str(iter)]);
 
                 % Formulation en Pression - Débit
                 new_u_rms = abs(p_rms) ./ abs(Zs) * obj.Configuration.Surface;
                 % new_u_rms = abs(p_rms) ./ abs(Zs);
 
-                % % Debog (suite)
-                % perso_figure('u_rms');
-                % plot(env.w/(2*pi), new_u_rms, 'DisplayName', ['Itération ', num2str(iter)])
+                % Debog (suite)
+                perso_figure('u_rms');
+                plot(env.w/(2*pi), new_u_rms, 'DisplayName', ['Itération ', num2str(iter)])
 
                 convergence_criterium = max(abs(new_u_rms - u_rms));
 
-                % % Debog : Critère de convergence
-                % perso_figure('Convergence');
-                % scatter(iter, convergence_criterium, 'Color', 'b', 'HandleVisibility', 'off');
-                % % ylim([-1e-2 1e-2]);
+                % Debog : Critère de convergence
+                perso_figure('Convergence');
+                scatter(iter, convergence_criterium, 'Color', 'b', 'HandleVisibility', 'off');
+                % ylim([-1e-2 1e-2]);
 
                 if convergence_criterium < tol
                     converged = true;

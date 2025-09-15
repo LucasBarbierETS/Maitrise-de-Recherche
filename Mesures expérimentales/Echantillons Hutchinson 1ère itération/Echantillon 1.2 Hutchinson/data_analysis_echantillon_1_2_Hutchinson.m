@@ -1,7 +1,12 @@
 % Exploitation des données expérimentales en tube à incidence normale
 % Echantillon 2
 
-data2 = perso_load_mecanum_files('C:\Users\lucas.barbier\Documents\Maitrise ETS\Maitrise dossier secondaire\Mesures expérimentales\Echantillons Hutchinson 1ère itération\Echantillon 2 Hutchinson\Export_Data');
+env = create_environnement(root, t, sp, hum, 1, 5000, 100);
+folder_path = '\Mesures expérimentales\Echantillons Hutchinson 1ère itération\Echantillon 1.2 Hutchinson';
+mkdir(env.Root, folder_path, '\Figures');
+data2 = perso_load_mecanum_files([env.Root, folder_path, '\Export_Data']);
+
+
 
 % Coefficient d'absorption
 alpha2 = data2.AbsorptionCoefficientOnCavity;
@@ -15,7 +20,7 @@ alpha2_145 = alpha2.AbsorptionCoefficientOnCavity_5;
 alpha2_150 = alpha2.AbsorptionCoefficientOnCavity_6;
 
 % Configuration analytique
-config2 = classMPPSBH_Rectangular.create_explicit_slit_pattern_config(30e-3^2, 6, 28e-3, 28e-3, ...
+config2 = classMPPSBH_Rectangular.create_explicit_rectangular_pattern_config(30e-3^2, 6, 28e-3, 28e-3, ...
     {[0.475 0.475 0.475 0.475 0.45 0.475] *  1e-3}, ...
     {[1.425 1.425 1.425 2.464 1.406 1.35] *  1e-3}, ...
     {[2.33 2.15 2.55 2.6 2.83 4] *  1e-3}, ...
@@ -26,36 +31,34 @@ config2 = classMPPSBH_Rectangular.create_explicit_slit_pattern_config(30e-3^2, 6
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%% 100 dB %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-figure()
-subplot(2, 1, 1)
+perso_figure('Analyse des données expérimentales - Echantillon 1.2 Hutchinson')
 hold on
 title('Echantillon 2 - 100 dB')
-
-plot(f, alpha2_100, 'DisplayName', 'Résultat expérimental');
+plot(f, alpha2_100, 'DisplayName', 'Mesure');
 
 % Modèle linéaire
-alpha_model = classMPPSBH_Rectangular(config2).alpha(env(100));
-plot(env(100).w/(2*pi), alpha_model, 'DisplayName', 'Modèle analytique linéaire');
+alpha_model = classMPPSBH_Rectangular(config2).alpha(env);
+plot(env.w/(2*pi), alpha_model, 'DisplayName', 'Modèle analytique');
 
 % % Modèle non-linéaire appliqué à toutes les plaques
 % alpha_model_HL = classMPPSBH_Rectangular_HL(config2).alpha(env(100));
-% plot(env(100).w/(2*pi), alpha_model_HL, 'DisplayName', 'Modèle analytique non-linéaire (toutes les plaques)');
+% plot(env.w/(2*pi), alpha_model_HL, 'DisplayName', 'Modèle analytique non-linéaire (toutes les plaques)');
 
 % % Modèle non-linéaire avec seulement la première plaque concernée
 % alpha_model_HL_first_plate = classMPPSBH_Rectangular_HL_first_plate(config2).alpha(env(100));
-% plot(env(100).w/(2*pi), alpha_model_HL_first_plate, 'DisplayName', 'Modèle analytique non-linéaire première plaque');
+% plot(env.w/(2*pi), alpha_model_HL_first_plate, 'DisplayName', 'Modèle analytique non-linéaire première plaque');
 legend()
 
 % % Validation 2D
-% Tube_MPPSBH = ImpedanceTube2D(ImpedanceTube2D.create_config({classMPPSBH_Rectangular(config2)}));
-% Tube_MPPSBH = Tube_MPPSBH.lauch_tube_measurement(env(100));
-% Tube_MPPSBH.plot_alpha(env(100), 'Echantillon 2 - 100 dB');
+Tube_MPPSBH = ImpedanceTube2D(ImpedanceTube2D.create_config({classelement(classelement.create_config( ...
+{classMPPSBH_Rectangular(config2)}, 'closed', 30e-3^2))}));
+Tube_MPPSBH = Tube_MPPSBH.launch_tube_measurement(env);
+Tube_MPPSBH.plot_alpha(env, 'Validation numérique');
 
 % % Validation 3D
 % Tube_MPPSBH_3D = ImpedanceTube3D(ImpedanceTube3D.create_config({classMPPSBH_Rectangular(config2)}));
-% Tube_MPPSBH_3D = Tube_MPPSBH_3D.launch_tube_measurement(env(100));
-% Tube_MPPSBH_3D.plot_alpha(env(100), 'Echantillon 2 - 100 dB');
-
+% Tube_MPPSBH_3D = Tube_MPPSBH_3D.launch_tube_measurement(env);
+% Tube_MPPSBH_3D.plot_alpha(env, 'Echantillon 2 - 100 dB');
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%% 145 dB %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 

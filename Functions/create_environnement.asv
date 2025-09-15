@@ -13,7 +13,7 @@ function env = create_environnement(root, temperature, static_pressure, relative
     % Pression de référence pour l'échelle des niveau de pression
     env.p_ref = 20e-6; 
 
-    % Si l'utilisateur à indiqué un niveau de pression (total ou incident)
+    % Si l'utilisateur à indiqué un niveau de pression totale
     if nargin > 7
         env.PressureType = varargin{1};
         if strcmp(varargin{1}, 'total')
@@ -23,12 +23,6 @@ function env = create_environnement(root, temperature, static_pressure, relative
             % perso_ouvrir_lien_Zotero('zotero://open-pdf/library/items/UXM5QAPK?page=153&annotation=PTUY9E3V');
             env.pt_rms = pt_rms;
         elseif strcmp(varargin{1}, 'incident')
-            env.pi_SPL = varargin{2};
-            % pi_rms = env.p_ref * 10.^(varargin{1}/20); 
-            pi_rms = sqrt(2) * env.p_ref * 10.^(env.pi_SPL/20); 
-            % perso_ouvrir_lien_Zotero('zotero://open-pdf/library/items/UXM5QAPK?page=153&annotation=PTUY9E3V');
-            env.pi_rms = pi_rms;
-        end
     end
 
     % Si l'utilisateur à indiqué un nombre de Mach moyen

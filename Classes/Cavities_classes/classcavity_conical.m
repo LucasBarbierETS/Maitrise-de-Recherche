@@ -20,6 +20,8 @@ classdef classcavity_conical < classcavity
 
             param = env.air.parameters;
             c0 = param.c0;
+            % c0 = air.parameters.c0 * (1+0.05*1j); % perso_ouvrir_lien_Zotero('zotero://open-pdf/library/items/233HZ8GN?page=7&annotation=QLW3FP87')
+            % c0 = air.parameters.c0 * (1+0.01*1j); % perso_ouvrir_lien_Zotero('zotero://open-pdf/library/items/233HZ8GN?page=7&annotation=QLW3FP87')
             k0 = env.w ./ c0;
             Z0 = c0 * param.rho;
 

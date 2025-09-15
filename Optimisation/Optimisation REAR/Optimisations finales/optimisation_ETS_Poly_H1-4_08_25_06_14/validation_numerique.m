@@ -72,6 +72,7 @@ for i = 1:NS
     Tube_MPPSBH_element_contrib.plot_alpha(env, ['Contribution MPPSBH' num2str(i)]);
     comsol_model = Tube_MPPSBH_element_contrib.Configuration.ComsolModel;
     % perso_configure_alpha_figure(2000);
+    
     try
         saveas(gcf, [folder_full_name, '\Figures\Validation de la contribution de MPPSBH', num2str(i) ,'.fig']);
     catch

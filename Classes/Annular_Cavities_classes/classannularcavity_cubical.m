@@ -25,10 +25,6 @@ classdef classannularcavity_cubical < classsubelement
 
             switch config.CavityModel 
 
-                case 'Lossy_cavities'
-
-                    
-
                 case 'Volume'
                     
                     % Calcul du volume de la cavité :
@@ -63,7 +59,7 @@ classdef classannularcavity_cubical < classsubelement
 
     methods (Static, Access = public)
 
-        function config = create_config(main_pore_width, main_pore_depth, cavity_width, cavity_depth, cavity_thickness)
+        function config = create_config(main_pore_width, main_pore_depth, cavity_width, cavity_depth, cavity_thickness, cavity_model)
 
             config = struct();
             config.MainPoreWidth = main_pore_width;
@@ -74,6 +70,7 @@ classdef classannularcavity_cubical < classsubelement
             config.CavityThickness = cavity_thickness;
             config.CurtainArea = 2 * cavity_thickness * (main_pore_depth); % deux fentes lattérales
             % config.CurtainArea = 2 * cavity_thickness * (main_pore_width + main_pore_depth);
+            config.CavityModel = cavity_model;
         end
     end
 end
