@@ -112,11 +112,10 @@ classdef classMPP_Circular < classJCA_Rigid
             config.Porosity = config.Section / s;
         end 
        
-        function validate(env)
+        function validate(handle_env)
 
             % close all 
-            figure()
-            title('Validation Circular MPP')
+            perso_figure('Validation Circular MPP');
 
             % Données de référence : [1], fig. 3, 4 p. 9, 10
 
@@ -126,12 +125,12 @@ classdef classMPP_Circular < classJCA_Rigid
             r = 0.5e-3; % diamètre des perforations
             c = 30e-3; % côté arbitraire
             s = c^2; % Section 
-            MPP = classMPP_Circular(classMPP_Circular.create_config(s, d, r, phi, c, c));
+            MPP = classMPP_Circular(classMPP_Circular.create_config(s, d, r, phi));
             
             % Paramètres de la configuration
 
             D1 = 60e-3;
-            cavity = classcavity(classcavity.create_config(D1, c, c));
+            cavity = classcavity(classcavity.create_config(s, D1));
 
             % foam 1
             phip1 = 0.99;
@@ -159,6 +158,8 @@ classdef classMPP_Circular < classJCA_Rigid
             data2 = readmatrix('Atalla2007_fig4_red.txt');
             [x_data1, y_data1] = perso_interpole_et_lisse(data1(:, 1), data1(:, 2), 1000, 0.05);
             [x_data2, y_data2] = perso_interpole_et_lisse(data2(:, 1), data2(:, 2), 1000, 0.05);
+
+            env = handle_env('total', 100, 0);
             
             % Tube = ImpedanceTube2D(ImpedanceTube2D.create_config({E1}));
             % Tube = Tube.launch_tube_measurement(env);
@@ -182,75 +183,37 @@ classdef classMPP_Circular < classJCA_Rigid
             perso_configure_alpha_figure(5000);
 
             %% Temporaire - Validation de la contribution de la cavité jaune dans le module ETS
-
-            perso_figure('Validation numérique 2D - contribution cavité jaune - module ETS')
-
-            % Données de référence : [1], fig. 3, 4 p. 9, 10
-
-            % panel 1
-            phi = 0.0812; % porosité de la plaque
-            t = 1e-3; % épaisseur de la plaque
-            r = 9.9219e-4; % diamètre des perforations
-            w = 0.012; % Largeur
-            d = 0.03; % Profondeur
-            s = w*d; % Section 
-            MPP = classMPP_Circular(classMPP_Circular.create_config(s, t, r, phi, w, d));
-            
-            % Paramètres de la configuration
-
-            D1 = 115e-3; % 1e-3 + 114e-3
-            cavity = classcavity(classcavity.create_config(D1, w, d));
-
-            % foam 1
-            phip1 = 0.99;
-            torp1 = 1.02;
-            sigp1 = 10900;
-            vlp1 = 100e-6;
-            tlp1 = 130e-6;
-            
-            % % foam 2
-            % phip2 = 0.98;
-            % torp2 = 1.5;
-            % sigp2 = 50000;
-            % vlp2 = 34e-6;
-            % tlp2 = 130e-6;
-            % D2 = 20e-3; % épaisseur de la cavité arrière
-
-            % Porous1 = classJCA_Rigid(classJCA_Rigid.create_config(s, D2, phip1, torp1, sigp1, vlp1, tlp1));
-            
-            % Création des éléments
-            E1 = classelement(classelement.create_config({MPP, cavity}, 'closed', s)); % fig.3
-            % E2 = classelement(classelement.create_config({MPP, Porous1}, 'closed', s)); % fig.4
-
-            % importation des données de références
-            % data1 = readmatrix('Atalla2007_fig3_black_square.txt');
-            % data2 = readmatrix('Atalla2007_fig4_red.txt');
-            % [x_data1, y_data1] = perso_interpole_et_lisse(data1(:, 1), data1(:, 2), 1000, 0.05);
-            % [x_data2, y_data2] = perso_interpole_et_lisse(data2(:, 1), data2(:, 2), 1000, 0.05);
-            
-            Tube = ImpedanceTube2D(ImpedanceTube2D.create_config({E1}));
-            Tube = Tube.launch_tube_measurement(env);
-            comsol_model = Tube.Configuration.ComsolModel;
-            folder_full_name = [env.Root, '\COMSOL\Optimisation\Optimisation REAR\Optimisations finales\optimisation_ETS_Poly_H1-4_08_25_06_14'];
-            mphsave(comsol_model, [folder_full_name, '\Validation numérique\Validation de la contribution de la cavité jaune de la cartouche ETS dans classMPP_Circular.mph']);
-            
-            % affichage des résultats
-            % subplot(1, 2, 1)
-            hold on
-            subtitle("Atalla2007 - fig. 3 - p. 9")
-            plot(env.w / (2*pi), E1.alpha(env), 'Color', 'b', 'LineWidth', 1, 'DisplayName', 'Modèle analytique - classMPP_Circular');
-            Tube.plot_alpha(env, 'Modèle numérique - classMPP_Circular');
-            % plot(x_data1, y_data1, 'Color', 'g','LineWidth', 1, 'LineStyle', '--', 'DisplayName', 'Données de références');
-            % perso_configure_alpha_figure(5000);
-
-            % subplot(1, 2, 2)
+            % 
+            % perso_figure('Validation numérique 2D - contribution cavité jaune - module ETS')
+            % 
+            % % panel 1
+            % phi = 0.0812; % porosité de la plaque
+            % t = 1e-3; % épaisseur de la plaque
+            % r = 9.9219e-4; % diamètre des perforations
+            % w = 0.012; % Largeur
+            % d = 0.03; % Profondeur
+            % s = w*d; % Section 
+            % MPP = classMPP_Circular(classMPP_Circular.create_config(s, t, r, phi, w, d));
+            % 
+            % % Paramètres de la configuration
+            % 
+            % D1 = 115e-3; % 1e-3 + 114e-3
+            % cavity = classcavity(classcavity_rectangular.create_config(D1, w, d));
+            % 
+            % % Création des éléments
+            % E1 = classelement(classelement.create_config({MPP, cavity}, 'closed', s)); % fig.3
+            % 
+            % Tube = ImpedanceTube2D(ImpedanceTube2D.create_config({E1}));
+            % Tube = Tube.launch_tube_measurement(env);
+            % comsol_model = Tube.Configuration.ComsolModel;
+            % folder_full_name = [env.Root, '\COMSOL\Optimisation\Optimisation REAR\Optimisations finales\optimisation_ETS_Poly_H1-4_08_25_06_14'];
+            % mphsave(comsol_model, [folder_full_name, '\Validation numérique\Validation de la contribution de la cavité jaune de la cartouche ETS dans classMPP_Circular.mph']);
+            % 
+            % % affichage des résultats
             % hold on
-            % subtitle("Atalla2007 - fig. 4 - p. 10")
-            % plot(env.w / (2*pi), E2.alpha(env), 'Color', 'b', 'LineWidth', 1, 'DisplayName', 'modèle foam 1');
-            % plot(env.w / (2*pi), E2_2.alpha(env), 'Color', 'r',
-            % 'LineWidth', 1, 'DisplayName', 'modèle foam 2'); % la référence s'est trompée de mousse
-            % plot(x_data2, y_data2, 'Color', 'g','LineWidth', 1, 'LineStyle', '--','DisplayName', 'Données de références');
-            % perso_configure_alpha_figure(5000);
+            % subtitle("Atalla2007 - fig. 3 - p. 9")
+            % plot(env.w / (2*pi), E1.alpha(env), 'Color', 'b', 'LineWidth', 1, 'DisplayName', 'Modèle analytique - classMPP_Circular');
+            % Tube.plot_alpha(env, 'Modèle numérique - classMPP_Circular');
 
             %% Validation classMPP_Circular - TL avec écoulement
 
@@ -278,6 +241,164 @@ classdef classMPP_Circular < classJCA_Rigid
             % TM_sb = E.side_branch_transfer_matrix(env, Lx, 0);
             % 
             % perso_plot_transfer_matrix(TM_sb, env, 'test', 3000);
+
+            %% Validation avec écoulement (Thèse Laly)
+
+            perso_figure('Validation avec écoulement (Thèse Laly)');
+
+            subplot(2, 2, 1)
+            title('Fig 5.1, M = 0.1')
+            hold on 
+
+            data5_1 = load('Thèse_Laly_fig5.1_black.txt');
+
+            SPL = 110; % Pression incidente
+            M = 0.1;
+            env_i = handle_env('incident', SPL, M);
+            env_t = handle_env('total', SPL, M);
+            env0_i = handle_env('incident', SPL, 0);
+    
+            t = 1e-3;
+            r = 0.3e-3;
+            phi = 0.038;
+            D = 20e-3;
+            S = 1; % Surface arbitraire
+
+            plate_HL = classMPP_Circular_HL(classMPP_Circular.create_config(S, t, r, phi)); 
+            plate_HL_flow = classMPP_Circular_HL_flow(classMPP_Circular.create_config(S, t, r, phi));
+            plate_HL_flow_iter = classMPP_Circular_HL_flow_iter(classMPP_Circular.create_config(S, t, r, phi));
+            cavity = classcavity(classcavity.create_config(S, D));
+            E_HL = classelement(classelement.create_config({plate_HL, cavity}, 'closed', S));
+            E_HL_flow = classelement(classelement.create_config({plate_HL_flow, cavity}, 'closed', S));
+            E_HL_flow_iter = classelement(classelement.create_config({plate_HL_flow_iter, cavity}, 'closed', S));
+    
+            % Modèle non linéaire itératif
+            % plot(env.w/(2*pi), E_HL.alpha(env0_i), 'DisplayName', 'Modèle non - linéaire sans écoulement - pression incidente');
+            plot(env.w/(2*pi), E_HL_flow.alpha(env_i), 'DisplayName', 'Modèle non - linéaire avec écoulement - pression incidente');
+            plot(env.w/(2*pi), E_HL_flow_iter.alpha(env_t, 'iter'), 'DisplayName', 'Modèle non - linéaire itératif avec écoulement -pression totale');
+            perso_configure_alpha_figure(5000);
+    
+            % Données de références
+            hold on
+            plot(data5_1(:, 1), data5_1(:, 2), 'DisplayName', 'Données de référence');
+            legend('Location', 'best');
+
+            %%%
+
+            subplot(2, 2, 2)
+            title('Fig 5.2, M = 0.15')
+            hold on 
+
+            data5_2 = load('Thèse_Laly_fig5.2_black.txt');
+
+            SPL = 120; % Pression incidente
+            M = 0.15;
+            env_i = handle_env('incident', SPL, M);
+            env_t = handle_env('total', SPL, M);
+            env0_i = handle_env('incident', SPL, 0);
+    
+            t = 1e-3;
+            r = 0.5e-3;
+            phi = 0.047;
+            D = 40e-3;
+            S = 1; % Surface arbitraire
+
+            plate_HL = classMPP_Circular_HL(classMPP_Circular.create_config(S, t, r, phi)); 
+            plate_HL_flow = classMPP_Circular_HL_flow(classMPP_Circular.create_config(S, t, r, phi));
+            plate_HL_flow_iter = classMPP_Circular_HL_flow_iter(classMPP_Circular.create_config(S, t, r, phi));
+            cavity = classcavity(classcavity.create_config(S, D));
+            E_HL = classelement(classelement.create_config({plate_HL, cavity}, 'closed', S));
+            E_HL_flow = classelement(classelement.create_config({plate_HL_flow, cavity}, 'closed', S));
+            E_HL_iter = classelement(classelement.create_config({plate_HL_flow_iter, cavity}, 'closed', S));
+    
+            % Modèle non linéaire itératif
+            % plot(env.w/(2*pi), E_HL.alpha(env0_i), 'DisplayName', 'Modèle non - linéaire sans écoulement - pression incidente');
+            plot(env.w/(2*pi), E_HL_flow.alpha(env_i), 'DisplayName', 'Modèle non - linéaire avec écoulement - pression incidente');
+            plot(env.w/(2*pi), E_HL_iter.alpha(env_t, 'iter'), 'DisplayName', 'Modèle non - linéaire itératif avec écoulement -pression totale');
+            perso_configure_alpha_figure(4000);
+    
+            % Données de références
+            hold on
+            plot(data5_2(:, 1), data5_2(:, 2), 'DisplayName', 'Données de référence');
+            legend('Location', 'best');
+
+            %%%
+
+            subplot(2, 2, 3)
+            title('Fig 5.4, M = 0.3')
+            hold on 
+
+            data5_4 = load('Thèse_Laly_fig5.4_black.txt');
+    
+            SPL = 140; % % Pression incidente
+            M = 0.3;
+            env_i = handle_env('incident', SPL, M);
+            env_t = handle_env('total', SPL, M);
+            env0_i = handle_env('incident', SPL, 0);
+    
+            t = 0.8e-3;
+            r = 0.6e-3;
+            phi = 0.06;
+            D = 30e-3;
+            S = 1; % Surface arbitraire
+
+            plate_HL = classMPP_Circular_HL(classMPP_Circular.create_config(S, t, r, phi)); 
+            plate_HL_flow = classMPP_Circular_HL_flow(classMPP_Circular.create_config(S, t, r, phi));
+            plate_HL_flow_iter = classMPP_Circular_HL_flow_iter(classMPP_Circular.create_config(S, t, r, phi));
+            cavity = classcavity(classcavity.create_config(S, D));
+            E_HL = classelement(classelement.create_config({plate_HL, cavity}, 'closed', S));
+            E_HL_flow = classelement(classelement.create_config({plate_HL_flow, cavity}, 'closed', S));
+            E_HL_iter = classelement(classelement.create_config({plate_HL_flow_iter, cavity}, 'closed', S));
+    
+            % Modèle non linéaire itératif
+            % plot(env.w/(2*pi), E_HL.alpha(env0_i), 'DisplayName', 'Modèle non - linéaire sans écoulement - pression incidente');
+            plot(env.w/(2*pi), E_HL_flow.alpha(env_i), 'DisplayName', 'Modèle non - linéaire avec écoulement - pression incidente');
+            plot(env.w/(2*pi), E_HL_iter.alpha(env_t, 'iter'), 'DisplayName', 'Modèle non - linéaire itératif avec écoulement -pression totale');
+            perso_configure_alpha_figure(5000);
+    
+            % Données de références
+            hold on
+            plot(data5_4(:, 1), data5_4(:, 2), 'DisplayName', 'Données de référence');
+            legend('Location', 'best');
+
+            %%%
+
+            subplot(2, 2, 4)
+            title('Fig 5.5, M = 0.2')
+            hold on 
+
+            data5_5 = load('Thèse_Laly_fig5.5_black.txt');
+    
+            SPL = 145; % % Pression incidente
+            M = 0.2;
+            env_i = handle_env('incident', SPL, M);
+            env_t = handle_env('total', SPL, M);
+            env0_i = handle_env('incident', SPL, 0);
+    
+            t = 1.5e-3;
+            r = 0.75e-3;
+            phi = 0.056;
+            D = 28e-3;
+            S = 1; % Surface arbitraire
+
+            plate_HL = classMPP_Circular_HL(classMPP_Circular.create_config(S, t, r, phi)); 
+            plate_HL_flow = classMPP_Circular_HL_flow(classMPP_Circular.create_config(S, t, r, phi));
+            plate_HL_flow_iter = classMPP_Circular_HL_flow_iter(classMPP_Circular.create_config(S, t, r, phi));
+            cavity = classcavity(classcavity.create_config(S, D));
+            E_HL = classelement(classelement.create_config({plate_HL, cavity}, 'closed', S));
+            E_HL_flow = classelement(classelement.create_config({plate_HL_flow, cavity}, 'closed', S));
+            E_HL_iter = classelement(classelement.create_config({plate_HL_flow_iter, cavity}, 'closed', S));
+    
+            % Modèle non linéaire itératif
+            % plot(env.w/(2*pi), E_HL.alpha(env0_i), 'DisplayName', 'Modèle non - linéaire sans écoulement - pression incidente');
+            plot(env.w/(2*pi), E_HL_flow.alpha(env_i), 'DisplayName', 'Modèle non - linéaire avec écoulement - pression incidente');
+            plot(env.w/(2*pi), E_HL_iter.alpha(env_t, 'iter'), 'DisplayName', 'Modèle non - linéaire itératif avec écoulement -pression totale');
+            perso_configure_alpha_figure(5000);
+    
+            % Données de références
+            hold on
+            plot(data5_5(:, 1), data5_5(:, 2), 'DisplayName', 'Données de référence');
+            legend('Location', 'best');
         end
     end
 end

@@ -137,7 +137,6 @@ classdef classelement
                 % perso_figure('TM')
                 % perso_plot_transfer_matrix(sblm_TM, env);  
                 % close()
-
             end 
 
             % % debog : Tracé des termes complexes de la matrice de transfert de l'élement
@@ -264,11 +263,15 @@ classdef classelement
             % - on calcule la nouvelle vitesse rms de surface new_u_rms à partir de p_rms(1, :) et de la surface d'impédance obtenue 
             % - condition de convergence : max(u_rms(1, :) - new_u_rms) < seuil
 
-            % Initialisation
-            u_rms = zeros(1, length(env.w));
-            p_rms = repmat(env.p_rms, 1, length(env.w));
+            %% Initialisation de la procédure
 
-            % Paramètre de la procédure itérative
+            u_rms = zeros(1, length(env.w));
+
+            try
+                pt_rms = repmat(env.pt_rms, 1, length(env.w));
+            catch
+                sprintf('Pression acoustique totale manquante')
+            end
             
             % Tolérance pour la convergence
             if nargin > 2
@@ -288,10 +291,15 @@ classdef classelement
             % legend();
             % plot(env.w/(2*pi), u_rms, 'DisplayName', 'Itération 0')
 
+            %% Procédure itérative
+
             while ~converged && iter < max_iter
+                
+                %% Calcul de la nouvelle impédance de surface
+                
                 iter = iter + 1;
 
-                TM = obj.transfer_matrix_iter(env, p_rms, u_rms);
+                TM = obj.transfer_matrix_iter(env, pt_rms, u_rms);
 
                 % % debog : Matrice de transfert de l'élement
                 % perso_figure('TM')
@@ -304,13 +312,17 @@ classdef classelement
                 % perso_figure('Zs');
                 % perso_plot_surface_impedance(Zs, env, ['itération ', num2str(iter)]);
 
+                %% Calcul du nouveau débit RMS d'entrée
+
                 % Formulation en Pression - Débit
-                new_u_rms = abs(p_rms) ./ abs(Zs) * obj.Configuration.Surface;
+                new_u_rms = abs(pt_rms) ./ abs(Zs) * obj.Configuration.Surface;
                 % new_u_rms = abs(p_rms) ./ abs(Zs);
 
                 % % Debog (suite)
                 % perso_figure('u_rms');
                 % plot(env.w/(2*pi), new_u_rms, 'DisplayName', ['Itération ', num2str(iter)])
+
+                %% Vérification du critère de convergence
 
                 convergence_criterium = max(abs(new_u_rms - u_rms));
 
@@ -348,6 +360,18 @@ classdef classelement
             TL = 20 * log10(abs(0.5 * (TM.T11 + TM.T12 * S/Z0 + Z0/S * TM.T21 + TM.T22)));
         end 
 
+        function R = reflexion_coefficient(obj, env, varargin)
+
+            Z0 = env.air.parameters.Z0;
+            if nargin > 2
+                Zs = varargin{1};
+            else
+                Zs = obj.surface_impedance(obj, env);
+            end
+
+            R = (Zs - Z0) ./ (Zs + Z0);
+        end
+
         function alpha = alpha(obj, env, varargin) % retourne le vecteur coefficient d'absorption
 
             if nargin > 2 && strcmp(varargin{1}, 'iter')
@@ -360,9 +384,7 @@ classdef classelement
                 Zs = obj.surface_impedance(env);
             end
 
-            param = env.air.parameters;
-            Z0 = param.rho * param.c0;
-            alpha = 1 - abs((Zs - Z0) ./ (Zs + Z0)).^2;
+            alpha = 1 - abs(obj.reflexion_coefficient(env, Zs)).^2;
 
             % % Debog : Alpha négatif
             % perso_figure('Debog - classelement - alpha - Alpha négatif')

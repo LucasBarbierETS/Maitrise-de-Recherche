@@ -1,4 +1,4 @@
-classdef classMPP_Circular_HL_iter < classMPP_Circular
+classdef classMPP_Circular_HL_iter < classMPP_Circular_HL
 
 % Description
 % Ce constructeur de classe permet de créer une plaque microperforée à perforations circulaires
@@ -7,25 +7,6 @@ classdef classMPP_Circular_HL_iter < classMPP_Circular
 % obtenue suivant une procédure itérative
 
 % References
-%            [1] Atalla, Noureddine, et Franck Sgard. « Modeling of Perforated 
-%                Plates and Screens Using Rigid Frame Porous Models ». Journal 
-%                of Sound and Vibration, vol. 303, no 1‑2, juin 2007, p. 195‑208.
-%                DOI.org (Crossref), https://doi.org/10.1016/j.jsv.2007.01.012.
-% 
-%            [2] Ingard, Uno. « On the Theory and Design of Acoustic Resonators ». 
-%                The Journal of the Acoustical Society of America, vol. 25, no 6, 
-%                juin 2005, p. 1037. world, asa.scitation.org, 
-%                https://doi.org/10.1121/1.1907235.
-% 
-%            [3] Okuzono, Takeshi, et al. "Note on Microperforated Panel Model Using
-%                Equivalent-Fluid-Based Absorption Elements." Acoustical Science and 
-%                Technology, vol. 40, no. 3, May 2019, pp. 221–24. DOI.org (Crossref), 
-%                https://doi.org/10.1250/ast.40.221.)
-%
-%            [4] Stinson & Champoux, Propagation of sound and the assignment of 
-%                shape factors in model porous materials having simple pore geometries
-%                http://asa.scitation.org/doi/10.1121/1.402530
-%
 %            [5] Zacharie Laly, Acoustical modeling of micro-perforated panel at high 
 %                sound pressure levels using equivalent fluid approach
 %                https://linkinghub.elsevier.com/retrieve/pii/S0022460X17306740
@@ -40,7 +21,7 @@ classdef classMPP_Circular_HL_iter < classMPP_Circular
 
         function obj = classMPP_Circular_HL_iter(config, varargin)
             
-            obj@classMPP_Circular(config)
+            obj@classMPP_Circular_HL(config)
 
             p = inputParser;
             addOptional(p, 'u_rms', 0, @isnumeric)
@@ -54,7 +35,13 @@ classdef classMPP_Circular_HL_iter < classMPP_Circular
             S = obj.Configuration.Surface;
 
             % On encapsule les méthodes non linéaires dans la définiton des paramètres JCA
-            obj.Configuration.AirFlowResistivity = @(env) classMPP_Circular_HL_iter.air_flow_resistivity(env, u_rms, phi, pr, t, S);
+            try
+                beta = config.Beta;
+                obj.Configuration.AirFlowResistivity = @(env) classMPP_Circular_HL_iter.air_flow_resistivity(env, u_rms, phi, pr, t, S, beta);
+            catch
+                obj.Configuration.AirFlowResistivity = @(env) classMPP_Circular_HL_iter.air_flow_resistivity(env, u_rms, phi, pr, t, S);
+            end
+            
             obj.Configuration.Tortuosity = @(env) classMPP_Circular_HL_iter.tortuosity(env, u_rms, phi, pr, t, S);
         end
 
@@ -103,9 +90,15 @@ classdef classMPP_Circular_HL_iter < classMPP_Circular
 
     methods (Static, Access = public)
 
-        function sig = air_flow_resistivity(env, u_rms, phi, pr, t, S)
+        function sig = air_flow_resistivity(env, u_rms, phi, pr, t, S, varargin)
 
-            beta = 1.6; % [5] p.8
+            if nargin > 6
+                beta = varargin{1};
+            else
+                beta = 1.6; % [5] p.8
+                % beta = 1.2; 
+            end
+
             Cd = 0.76; % [5] p.8
             % q = 0.3; % voir modèle Laly écoulement
 
@@ -134,56 +127,6 @@ classdef classMPP_Circular_HL_iter < classMPP_Circular
             % perso_figure('tor')
             % plot(tor);
             % % % close();
-        end
-
-        function validate()
-
-        % launch_environnement();
-        % 
-        % % Courbe de référence
-        % % perso_ouvrir_lien_Zotero('zotero://open-pdf/library/items/C3F2ZIGB?page=145&annotation=I8FZCE7A');
-        % 
-        % s = 1; % section arbitraire
-        % t = 0.86e-3;
-        % d = 1.517e-3;
-        % phi = 0.0523;
-        % cd = 25e-3;
-        % dB1 = 125;
-        % dB2 = 150;
-        % 
-        % perso_figure('Validation avec écoulement (Thèse Laly)');
-        % 
-        % subplot(2, 2, 1)
-        % title('Fig 5.1, M = 0.1')
-        % hold on 
-        % 
-        % data5_1 = load('C:\Users\lucas.barbier\Documents\Maitrise dossier secondaire\MATLAB\Classes\MPP_Classes\Validation\Thèse_Laly_fig5.1_black.txt');
-        % 
-        % SPL = 110; % Pression incidente
-        % M = 0.1;
-        % env = handle_env(SPL, M);
-        % env0 = handle_env(SPL, 0);
-        % 
-        % t = 1e-3;
-        % r = 0.3e-3;
-        % phi = 0.038;
-        % D = 20e-3;
-        % s = 1; % Surface arbitraire
-        % 
-        % plate = classMPP_Circular_HL(classMPP_Circular.create_config(s, t, r, phi));
-        % cavity = classcavity(classcavity.create_config(D, sqrt(s), sqrt(s)));
-        % E = classelement(classelement.create_config({plate, cavity}, 'closed', s));
-        % 
-        % % Modèle non linéaire itératif
-        % plot(env.w/(2*pi), E.alpha(env), 'DisplayName', 'Modèle non - linéaire itératif avec écoulement');
-        % plot(env.w/(2*pi), E.alpha(env0), 'DisplayName', 'Modèle non - linéaire itératif sans écoulement');
-        % perso_configure_alpha_figure(5000);
-        % 
-        % % Données de références
-        % hold on
-        % plot(data5_1(:, 1), data5_1(:, 2), 'DisplayName', 'Données de référence');
-        % legend('Location', 'best');
-
         end
     end
 end

@@ -22,14 +22,10 @@ classdef classMPP_Circular_HL < classMPP_Circular
 
             phi = config.Porosity;
             pr = config.PerforationsRadius;
-            t = config.Thickness;
-
-            try
-                beta = config.Beta;
-                obj.Configuration.AirFlowResistivity = @(env) classMPP_Circular_HL.air_flow_resistivity(env, phi, pr, t, beta);
-            catch
-                obj.Configuration.AirFlowResistivity = @(env) classMPP_Circular_HL.air_flow_resistivity(env, phi, pr, t);
-            end
+            t = config.Thickness;   
+            beta = config.Beta;
+            
+            obj.Configuration.AirFlowResistivity = @(env) classMPP_Circular_HL.air_flow_resistivity(env, phi, pr, t, beta);
 
             obj.Configuration.Toruosity = @(env) classMPP_Circular_HL.tortuosity(env, phi, pr, t);
         end

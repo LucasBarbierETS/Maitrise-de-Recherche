@@ -37,7 +37,7 @@ points = 5000;
 
 % Niveau sonore
 env = create_environnement(root, t, sp, hum, fmin, fmax, points);
-handle_env = @(dB, M) create_environnement(root, t, sp, hum, fmin, fmax, points, dB, M);
+handle_env = @(pressure_type, dB, M) create_environnement(root, t, sp, hum, fmin, fmax, points, pressure_type, dB, M);
 
 %% Fermeture du serveur COMSOL (si besoin)
 % ModelUtil.disconnect
