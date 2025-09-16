@@ -118,38 +118,32 @@ classdef classMPP_Circular_HL < classMPP_Circular
             perso_figure('Validation avec forts niveaux (Thèse Laly)');
 
             subplot(2, 2, 1)
-            title('Fig 3.3, SPLi = 100 dB')
+            title('Fig 3.11, MPP#1 - SPL = 125, 150 dB')
             hold on 
 
-            data3_3 = load('Thèse_Laly_fig3.3_red.txt');
-            Beta = 1.6;
-
-            SPLi = 110; % Pression incidente
+            data3_11_125 = load('Thèse_Laly_fig3.11_grey125.txt');
+            data3_11_150 = load('Thèse_Laly_fig3.11_grey150.txt');
+            
+            SPL1 = 125; 
+            SPL2 = 150;
             M = 0;
-            env_i = handle_env('incident', SPLi, M);
-            env_t = handle_env('total', SPLi, M);
+            env1 = handle_env(SPL1, M);
+            env2 = handle_env(SPL2, M);
 
-            t = 1e-3;
-            r = 0.25e-3/2;
-            phi = 0.028;
-            D = 30e-3;
-            S = 1; % Surface arbitraire
+            t = 0.86e-3;
+            r = 1.517e-3/2;
+            phi = 0.0523;
+            D = 25e-3;
+            S = 29e-3^2; % Surface arbitraire
 
-            plate_HL = classMPP_Circular_HL(classMPP_Circular_HL.create_config(S, t, r, phi, [], [], Beta)); 
-            plate_HL_iter = classMPP_Circular_HL_iter(classMPP_Circular_HL_iter.create_config(S, t, r, phi, [], [], Beta)); 
+            plate_HL = classMPP_Circular_HL(classMPP_Circular_HL.create_config(S, t, r, phi)); 
             cavity = classcavity(classcavity.create_config(S, D));
             E_HL = classelement(classelement.create_config({plate_HL, cavity}, 'closed', S));
-            E_HL_iter = classelement(classelement.create_config({plate_HL_iter, cavity}, 'closed', S));
-            % Modèle non linéaire itératif
-            % plot(env.w/(2*pi), E_HL.alpha(env0_i), 'DisplayName', 'Modèle non - linéaire sans écoulement - pression incidente');
-            plot(env_i.w/(2*pi), E_HL.alpha(env_i), 'DisplayName', 'Modèle non - linéaire - pression incidente');
-            plot(env_t.w/(2*pi), E_HL_iter.alpha(env_t, 'iter'), 'DisplayName', 'Modèle non - linéaire itératif - pression totale');
+            plot(env1.w/(2*pi), E_HL.alpha(env1, 'iter'), 'DisplayName', 'Modèle non-linéaire - 125 dB');
+            plot(data3_11_125(:, 1), data3_11_125(:, 2), 'DisplayName', 'Données de référence - 125 dB');
+            plot(env2.w/(2*pi), E_HL.alpha(env2, 'iter'), 'DisplayName', 'Modèle non-linéaire - 125 dB');
+            plot(data3_11_150(:, 1), data3_11_150(:, 2), 'DisplayName', 'Données de référence - 150 dB ');
             perso_configure_alpha_figure(4000);
-
-            % Données de références
-            hold on
-            plot(data3_3(:, 1), data3_3(:, 2), 'DisplayName', 'Données de référence');
-            legend('Location', 'best');
 
             %%%
 
