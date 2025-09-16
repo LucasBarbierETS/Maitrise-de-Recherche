@@ -1,6 +1,6 @@
 % Exploitation des données expérimentales en tube à incidence normale Echantillon 1.1
 
-data1 = perso_load_mecanum_files([env.Root, '\Mesures expérimentales\Echantillons Hutchinson 1ère itération\Echantillon 1.1 Hutchinson\Export_Data']);
+data1 = perso_load_mecanum_files([env.Root, '\Répertoire GitHub\Mesures expérimentales\Echantillons Hutchinson 1ère itération\Echantillon 1.1 Hutchinson\Export_Data']);
 
 % Coefficient d'absorption
 alpha1 = data1.AbsorptionCoefficientOnCavity;

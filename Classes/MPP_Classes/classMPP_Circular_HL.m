@@ -74,7 +74,7 @@ classdef classMPP_Circular_HL < classMPP_Circular
             % % Debog
             % perso_figure('Debog - classMPP_Circular_HL - f - env.pi_rms')
             % plot(env.w/(2*pi), env.pi_rms)
-            % ylim([0 5e3]);
+            % % ylim([0 5e3]);
          end
 
          function sig = air_flow_resistivity(env, phi, pr, t, varargin)

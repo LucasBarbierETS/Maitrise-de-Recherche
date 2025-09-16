@@ -77,26 +77,26 @@ classdef classMPP_Circular_HL_flow < classMPP_Circular_HL
 
             data5_1 = load('Thèse_Laly_fig5.1_black.txt');
 
-            SPL = 110;
+            SPL = 110; % Pression incidente
             M = 0.1;
             env = handle_env(SPL, M);
+            env0 = handle_env(SPL, 0);
     
             t = 1e-3;
             r = 0.3e-3;
             phi = 0.038;
             D = 20e-3;
             S = 1; % Surface arbitraire
-            beta = 1.2; % Pas un gros impact
 
-            plate_HL = classMPP_Circular_HL(classMPP_Circular_HL.create_config(S, t, r, phi, [], [], beta)); 
-            plate_HL_flow = classMPP_Circular_HL_flow(classMPP_Circular_HL_flow.create_config(S, t, r, phi, [], [], beta));
+            plate_HL = classMPP_Circular_HL(classMPP_Circular.create_config(S, t, r, phi)); 
+            plate_HL_flow = classMPP_Circular_HL_flow(classMPP_Circular.create_config(S, t, r, phi));
             cavity = classcavity(classcavity.create_config(S, D));
             E_HL = classelement(classelement.create_config({plate_HL, cavity}, 'closed', S));
             E_HL_flow = classelement(classelement.create_config({plate_HL_flow, cavity}, 'closed', S));
     
             % Modèle non linéaire itératif
-            % plot(env.w/(2*pi), E_HL.alpha(env), 'DisplayName', 'Modèle non-linéaire sans écoulement');
-            plot(env.w/(2*pi), E_HL_flow.alpha(env), 'DisplayName', 'Modèle non-linéaire avec écoulement');
+            plot(env.w/(2*pi), E_HL.alpha(env0_i), 'DisplayName', 'Modèle non-linéaire sans écoulement - pression incidente');
+            plot(env.w/(2*pi), E_HL_flow.alpha(env, 'iter'), 'DisplayName', 'Modèle non-linéaire avec écoulement');
             plot(data5_1(:, 1), data5_1(:, 2), 'DisplayName', 'Données de référence');
             perso_configure_alpha_figure(5000);
    
@@ -116,19 +116,27 @@ classdef classMPP_Circular_HL_flow < classMPP_Circular_HL
             r = 0.5e-3;
             phi = 0.047;
             D = 40e-3;
+            S = 1; % Surface arbitraire
 
-            plate_HL = classMPP_Circular_HL(classMPP_Circular_HL.create_config(S, t, r, phi, [], [], beta)); 
-            plate_HL_flow = classMPP_Circular_HL_flow(classMPP_Circular_HL_flow.create_config(S, t, r, phi, [], [], beta));
+            plate_HL = classMPP_Circular_HL(classMPP_Circular.create_config(S, t, r, phi)); 
+            plate_HL_flow = classMPP_Circular_HL_flow(classMPP_Circular.create_config(S, t, r, phi));
+            plate_HL_flow_iter = classMPP_Circular_HL_flow_iter(classMPP_Circular.create_config(S, t, r, phi));
             cavity = classcavity(classcavity.create_config(S, D));
             E_HL = classelement(classelement.create_config({plate_HL, cavity}, 'closed', S));
             E_HL_flow = classelement(classelement.create_config({plate_HL_flow, cavity}, 'closed', S));
+            E_HL_iter = classelement(classelement.create_config({plate_HL_flow_iter, cavity}, 'closed', S));
     
             % Modèle non linéaire itératif
-            plot(env.w/(2*pi), E_HL.alpha(env), 'DisplayName', 'Modèle non-linéaire sans écoulement');
-            plot(env.w/(2*pi), E_HL_flow.alpha(env), 'DisplayName', 'Modèle non-linéaire avec écoulement');
-            plot(data5_2(:, 1), data5_2(:, 2), 'DisplayName', 'Données de référence');
+            % plot(env.w/(2*pi), E_HL.alpha(env0_i), 'DisplayName', 'Modèle non-linéaire sans écoulement - pression incidente');
+            plot(env.w/(2*pi), E_HL_flow.alpha(env), 'DisplayName', 'Modèle non-linéaire avec écoulement - pression incidente');
+            plot(env.w/(2*pi), E_HL_iter.alpha(env, 'iter'), 'DisplayName', 'Modèle non-linéaire itératif avec écoulement -pression totale');
             perso_configure_alpha_figure(4000);
     
+            % Données de références
+            hold on
+            plot(data5_2(:, 1), data5_2(:, 2), 'DisplayName', 'Données de référence');
+            legend('Location', 'best');
+
             %%%
 
             subplot(2, 2, 3)
@@ -145,18 +153,26 @@ classdef classMPP_Circular_HL_flow < classMPP_Circular_HL
             r = 0.6e-3;
             phi = 0.06;
             D = 30e-3;
+            S = 1; % Surface arbitraire
 
-            plate_HL = classMPP_Circular_HL(classMPP_Circular_HL.create_config(S, t, r, phi, [], [], beta)); 
-            plate_HL_flow = classMPP_Circular_HL_flow(classMPP_Circular_HL_flow.create_config(S, t, r, phi, [], [], beta));
+            plate_HL = classMPP_Circular_HL(classMPP_Circular.create_config(S, t, r, phi)); 
+            plate_HL_flow = classMPP_Circular_HL_flow(classMPP_Circular.create_config(S, t, r, phi));
+            plate_HL_flow_iter = classMPP_Circular_HL_flow_iter(classMPP_Circular.create_config(S, t, r, phi));
             cavity = classcavity(classcavity.create_config(S, D));
             E_HL = classelement(classelement.create_config({plate_HL, cavity}, 'closed', S));
             E_HL_flow = classelement(classelement.create_config({plate_HL_flow, cavity}, 'closed', S));
+            E_HL_iter = classelement(classelement.create_config({plate_HL_flow_iter, cavity}, 'closed', S));
     
             % Modèle non linéaire itératif
-            plot(env.w/(2*pi), E_HL.alpha(env), 'DisplayName', 'Modèle non-linéaire sans écoulement');
-            plot(env.w/(2*pi), E_HL_flow.alpha(env), 'DisplayName', 'Modèle non-linéaire avec écoulement');
-            plot(data5_4(:, 1), data5_4(:, 2), 'DisplayName', 'Données de référence');
+            % plot(env.w/(2*pi), E_HL.alpha(env0_i), 'DisplayName', 'Modèle non-linéaire sans écoulement - pression incidente');
+            plot(env.w/(2*pi), E_HL_flow.alpha(env), 'DisplayName', 'Modèle non-linéaire avec écoulement - pression incidente');
+            plot(env.w/(2*pi), E_HL_iter.alpha(env, 'iter'), 'DisplayName', 'Modèle non-linéaire itératif avec écoulement -pression totale');
             perso_configure_alpha_figure(5000);
+    
+            % Données de références
+            hold on
+            plot(data5_4(:, 1), data5_4(:, 2), 'DisplayName', 'Données de référence');
+            legend('Location', 'best');
 
             %%%
 
@@ -175,19 +191,26 @@ classdef classMPP_Circular_HL_flow < classMPP_Circular_HL
             r = 0.75e-3;
             phi = 0.056;
             D = 28e-3;
+            S = 1; % Surface arbitraire
 
-            plate_HL = classMPP_Circular_HL(classMPP_Circular_HL.create_config(S, t, r, phi, [], [], beta)); 
-            plate_HL_flow = classMPP_Circular_HL_flow(classMPP_Circular_HL_flow.create_config(S, t, r, phi, [], [], beta));
+            plate_HL = classMPP_Circular_HL(classMPP_Circular.create_config(S, t, r, phi)); 
+            plate_HL_flow = classMPP_Circular_HL_flow(classMPP_Circular.create_config(S, t, r, phi));
+            plate_HL_flow_iter = classMPP_Circular_HL_flow_iter(classMPP_Circular.create_config(S, t, r, phi));
             cavity = classcavity(classcavity.create_config(S, D));
             E_HL = classelement(classelement.create_config({plate_HL, cavity}, 'closed', S));
             E_HL_flow = classelement(classelement.create_config({plate_HL_flow, cavity}, 'closed', S));
+            E_HL_iter = classelement(classelement.create_config({plate_HL_flow_iter, cavity}, 'closed', S));
     
             % Modèle non linéaire itératif
-            plot(env.w/(2*pi), E_HL.alpha(env), 'DisplayName', 'Modèle non-linéaire sans écoulement');
-            plot(env.w/(2*pi), E_HL_flow.alpha(env), 'DisplayName', 'Modèle non-linéaire avec écoulement');
-            plot(data5_5(:, 1), data5_5(:, 2), 'DisplayName', 'Données de référence');
+            % plot(env.w/(2*pi), E_HL.alpha(env0_i), 'DisplayName', 'Modèle non-linéaire sans écoulement - pression incidente');
+            plot(env.w/(2*pi), E_HL_flow.alpha(env), 'DisplayName', 'Modèle non-linéaire avec écoulement - pression incidente');
+            plot(env.w/(2*pi), E_HL_iter.alpha(env, 'iter'), 'DisplayName', 'Modèle non-linéaire itératif avec écoulement -pression totale');
             perso_configure_alpha_figure(5000);
-
+    
+            % Données de références
+            hold on
+            plot(data5_5(:, 1), data5_5(:, 2), 'DisplayName', 'Données de référence');
+            legend('Location', 'best');
          end
      end
 end
