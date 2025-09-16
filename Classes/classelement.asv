@@ -51,11 +51,9 @@ classdef classelement
                     end
                     TM.T21 = TM.T21 .* config.ListOfSubelements{i}.surface_impedance(env)/S + TM.T22;
                     return
-                else
-                    if isa(sblm, 'function_handle')
-                        sblm = sblm(env);
-                    end
 
+                else
+                    % Debog
                     try
                         TM = matprod(TM, sblm.transfer_matrix(env));
                     catch
@@ -64,6 +62,89 @@ classdef classelement
                 end
             end
         end
+
+        % function [TM, p_in, u_in] =  transfer_matrix_iter(obj, env, p_in, u_in)
+        % 
+        %     config = obj.Configuration;
+        %     TM = perso_empty_TM(env.w);
+        % 
+        %     for i = 1:length(config.ListOfSubelements)
+        % 
+        %         % % debog : Tracé de la pression acoustique RMS au niveau de chaque sous-élement
+        %         % perso_figure('Niveau de pression totale à l''entrée de chaque sous-élement');
+        %         % SPL = 20 * log10(p_in ./ (sqrt(2) * env.p_ref));
+        %         % plot(env.w/(2*pi), SPL, 'DisplayName', ['Sous-élement ', num2str(i)]);
+        %         % legend();
+        % 
+        %         % % Debog : Tracé de la puissance acoustique au niveau de chaque plaque;
+        %         % perso_figure('Puissance acoustique à l''entrée de chaque sous-élement');
+        %         % if i == 1
+        %         %     clf
+        %         % end
+        %         % P = 1/2*real(p_in.*conj(u_in));
+        %         % plot(env.w/(2*pi), P, 'DisplayName', ['Sous-élement ', num2str(i)]);
+        % 
+        %         % % Debog : Tracé du débit RMS au niveau de chaque sous-élement
+        %         % perso_figure('u_rms au niveau de chaque sous-élement');
+        %         % if i == 1
+        %         %     clf
+        %         % end
+        %         % plot(env.w/(2*pi), abs(u_in), 'DisplayName', ['u rms après le sous-élement', num2str(i)]);
+        % 
+        %         sblm = config.ListOfSubelements{i};
+        %         if isa(sblm, 'function_handle')
+        %             sblm = sblm(abs(u_in));
+        %         end
+        % 
+        %         if isa(sblm, 'classsubelement_imported') || isa(sblm, 'classvolume')
+        % 
+        %             % Exlications
+        %             % perso_ouvrir_lien_Obsidian('obsidian://open?vault=Maitrise%20REAR&file=Notes%20atomiques%2FNote%20Matlab%20-%20Imp%C3%A9dance%20de%20surface%20compos%C3%A9e')
+        %             S = sblm.Configuration.Surface;
+        % 
+        %             try
+        %                 TM.T11 = TM.T11 .* sblm.surface_impedance(env)/S + TM.T12;
+        %                 TM.T21 = TM.T21 .* sblm.surface_impedance(env)/S + TM.T22;
+        %             catch
+        %                 error('Impossible de calculer l''impédance de surface du sous-élement itérativement');
+        %             end
+        % 
+        %             return
+        % 
+        %         elseif isa(sblm, 'classelementassembly')
+        % 
+        %             S = sblm.Configuration.Surface;
+        % 
+        %             try
+        %                 TM.T11 = TM.T11 .* sblm.surface_impedance_iter(env)/S + TM.T12;
+        %                 TM.T21 = TM.T21 .* sblm.surface_impedance_iter(env)/S + TM.T22;
+        %             catch
+        %                 error('Impossible de calculer l''impédance de surface du sous-élement itérativement');
+        %             end
+        % 
+        %             return
+        % 
+        %         else
+        %             try
+        %                 [sblm_TM, p_in, u_in] = sblm.transfer_matrix_iter(env, p_in, u_in);
+        %                 TM = matprod(TM, sblm_TM);
+        %            catch
+        %                 error('Impossible de calculer la matrice de transfert du sous-élement');
+        %             end
+        %         end
+        % 
+        %         % % debog : Tracé des termes complexes de la matrice de transfert du sous-élement
+        %         % perso_figure('TM')
+        %         % perso_plot_transfer_matrix(sblm_TM, env);  
+        %         % close()
+        %     end 
+        % 
+        %     % % debog : Tracé des termes complexes de la matrice de transfert de l'élement
+        %     % perso_figure('TM')
+        %     % clf
+        %     % perso_plot_transfer_matrix(TM, env);  
+        % 
+        % end
 
         function [TM, p_in, u_in] =  transfer_matrix_iter(obj, env, p_in, u_in)
 
@@ -92,14 +173,14 @@ classdef classelement
                 %     clf
                 % end
                 % plot(env.w/(2*pi), abs(u_in), 'DisplayName', ['u rms après le sous-élement', num2str(i)]);
-
+                
                 sblm = config.ListOfSubelements{i};
                 if isa(sblm, 'function_handle')
                     sblm = sblm(abs(u_in));
                 end
 
                 if isa(sblm, 'classsubelement_imported') || isa(sblm, 'classvolume')
-
+                    
                     % Exlications
                     % perso_ouvrir_lien_Obsidian('obsidian://open?vault=Maitrise%20REAR&file=Notes%20atomiques%2FNote%20Matlab%20-%20Imp%C3%A9dance%20de%20surface%20compos%C3%A9e')
                     S = sblm.Configuration.Surface;
@@ -110,7 +191,7 @@ classdef classelement
                     catch
                         error('Impossible de calculer l''impédance de surface du sous-élement itérativement');
                     end
-
+                    
                     return
 
                 elseif isa(sblm, 'classelementassembly')
@@ -123,7 +204,7 @@ classdef classelement
                     catch
                         error('Impossible de calculer l''impédance de surface du sous-élement itérativement');
                     end
-
+                    
                     return
 
                 else
@@ -147,7 +228,7 @@ classdef classelement
             % perso_plot_transfer_matrix(TM, env);  
 
         end
-
+        
         function TM_inv = inverse_transfer_matrix(obj, env) % (p2, u2) = TM_inv * (p1, u1)
 
             config = obj.Configuration;
@@ -238,14 +319,10 @@ classdef classelement
             end
 
             S = obj.Configuration.Surface;
-           
-            try
             % On revient en convention pression - vitesse
             Zs = S * TM.T11 ./ TM.T21; % rigid wall
             % Zs = TM.T11 ./ TM.T21; % rigid wall
-            catch
-                return
-            end
+
         end
 
         % function Zs_iter = surface_impedance_iter(obj, env, varargin)
@@ -369,7 +446,13 @@ classdef classelement
 
             %% Initialisation de la procédure
 
-            env.pi_rms = zeros(1, length(env.w));
+            u_rms = zeros(1, length(env.w));
+
+            try
+                pt_rms = repmat(env.pt_rms, 1, length(env.w));
+            catch
+                sprintf('Pression acoustique totale manquante')
+            end
             
             % Tolérance pour la convergence
             if nargin > 2
@@ -382,20 +465,48 @@ classdef classelement
             iter = 0;
             converged = false;
 
+            % % debog : Tracé des débits acoustiques RMS successives au cours de la procédure itérative
+            % perso_figure('u_rms');
+            % clf
+            % title('Débit acoustique RMS à l''entrée de l''élement')
+            % legend();
+            % plot(env.w/(2*pi), u_rms, 'DisplayName', 'Itération 0')
+
             %% Procédure itérative
 
             while ~converged && iter < max_iter
-                           
+                
+                %% Calcul de la nouvelle impédance de surface
+                
                 iter = iter + 1;
-               
+
+                TM = obj.transfer_matrix_iter(env, pt_rms, u_rms);
+
+                % % debog : Matrice de transfert de l'élement
+                % perso_figure('TM')
+                % perso_plot_transfer_matrix(TM, env);
+
+                % Vérification du critère de convergence
+                Zs = obj.surface_impedance(env, TM);
+
+                % % Debog : Tracé de l'impédance de surface
+                % perso_figure('Zs');
+                % perso_plot_surface_impedance(Zs, env, ['itération ', num2str(iter)]);
+
                 %% Calcul de la nouvelle pression incidente à l'entrée
 
-                R = obj.reflexion_coefficient(env);
-                new_pi_rms = env.p_ref * 10^(env.SPL/20)./ abs(1 - R);
+                % Formulation en Pression - Débit
+                R = obj.reflexion_coefficient(env, )
+                new_u_rms = abs(pt_rms) ./ abs(Zs) * obj.Configuration.Surface;
+                % new_u_rms = abs(p_rms) ./ abs(Zs);
+
+                % % Debog (suite)
+                % perso_figure('u_rms');
+                % plot(env.w/(2*pi), new_u_rms, 'DisplayName', ['Itération ', num2str(iter)])
 
                 %% Vérification du critère de convergence
 
-                convergence_criterium = max(abs(new_pi_rms - env.pi_rms));
+                convergence_criterium = max(abs(new_u_rms - u_rms));
 
                 % % Debog : Critère de convergence
                 % perso_figure('Convergence');
@@ -404,9 +515,9 @@ classdef classelement
 
                 if convergence_criterium < tol
                     converged = true;
-                    Zs_iter = obj.surface_impedance(env);
+                    Zs_iter = Zs;
                 else
-                    env.pi_rms = new_pi_rms;
+                    u_rms = new_u_rms;
                 end
             end
         end
@@ -437,7 +548,7 @@ classdef classelement
             if nargin > 2
                 Zs = varargin{1};
             else
-                Zs = obj.surface_impedance(env);
+                Zs = obj.surface_impedance(obj, env);
             end
 
             R = (Zs - Z0) ./ (Zs + Z0);
@@ -449,13 +560,13 @@ classdef classelement
                 if nargin > 3
                     Zs = obj.surface_impedance_iter(env, varargin{2}); % tol
                 else   
-                    Zs = obj.surface_impedance_iter(env); 
+                    Zs = obj.surface_impedance_iter(env);
                 end
-
-                alpha = 1 - abs(obj.reflexion_coefficient(env, Zs)).^2;
             else
-                alpha = 1 - abs(obj.reflexion_coefficient(env)).^2;
+                Zs = obj.surface_impedance(env);
             end
+
+            alpha = 1 - abs(obj.reflexion_coefficient(env, Zs)).^2;
 
             % % Debog : Alpha négatif
             % perso_figure('Debog - classelement - alpha - Alpha négatif')

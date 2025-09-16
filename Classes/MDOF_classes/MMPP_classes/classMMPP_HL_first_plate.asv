@@ -21,7 +21,7 @@ classdef classMMPP_HL_first_plate < classMMPP
 
         function alpha = alpha(obj, env)
 
-            alpha = alpha@classMMPP(obj, env, 'iter');
+            alpha = classelement.alpha(obj, env, 'iter');
         end
     end
 end

@@ -72,7 +72,7 @@ classdef classJCA_Rigid < classsubelement
 
             % On vérifie que la resistivité à été évaluée lorsque elle a été définie 
             if ~isnumeric(sig)
-                sig = sig(env)';
+                sig = sig(env);
             end
 
             vl = config.ViscousCaracteristicLength;

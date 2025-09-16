@@ -1,10 +1,10 @@
-classdef classMMPP_HL < classMMPP
+classdef classMMPP_HL < classMMPP_HL_first_plate
 
     methods
 
         function obj = classMMPP_HL(config)
         
-            obj@classMMPP({});
+            obj@classMMPP_HL_first_plate({});
                
             if nargin > 0  && ~isempty(config)
                 % Transfert des champs de la configuration d'appel vers la configuration de classe

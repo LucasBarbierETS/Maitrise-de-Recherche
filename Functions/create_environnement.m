@@ -14,20 +14,10 @@ function env = create_environnement(root, temperature, static_pressure, relative
     env.p_ref = 20e-6; 
 
     % Si l'utilisateur à indiqué un niveau de pression (total ou incident)
-    if nargin > 7
-        env.PressureType = varargin{1};
-        if strcmp(varargin{1}, 'total')
-            env.pt_SPL = varargin{2};
-            % pt_rms = env.p_ref * 10.^(env.pt_SPL/20); 
-            pt_rms = sqrt(2) * env.p_ref * 10.^(env.pt_SPL/20); % Dans Lopez : perso_ouvrir_lien_Zotero('zotero://open-pdf/library/items/UXM5QAPK?page=153&annotation=PTUY9E3V');
-            env.pt_rms = pt_rms;
-
-        elseif strcmp(varargin{1}, 'incident')
-            env.pi_SPL = varargin{2};
-            pi_rms = env.p_ref * 10.^(env.pi_SPL/20); % Dans Laly : perso_ouvrir_lien_Zotero('zotero://open-pdf/library/items/CMZQ7B9B?page=146&annotation=MPI4XPP3');
-            % pi_rms = sqrt(2) * env.p_ref * 10.^(env.pi_SPL/20); 
-            env.pi_rms = pi_rms;
-        end
+    if nargin > 8
+        env.SPL = varargin{1};
+        % env.pt_rms = env.p_ref * 10.^(env.SPL/20); Dans Laly
+        env.pt_rms = sqrt(2) * env.p_ref * 10.^(env.SPL/20); % Dans Lopez : perso_ouvrir_lien_Zotero('zotero://open-pdf/library/items/UXM5QAPK?page=153&annotation=PTUY9E3V');
     end
 
     % Si l'utilisateur à indiqué un nombre de Mach moyen

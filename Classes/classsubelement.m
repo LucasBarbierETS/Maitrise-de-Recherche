@@ -93,6 +93,26 @@ classdef classsubelement
             TM_inv.T22 = TM.T11 ./ det_TM;
         end
 
+        % function [TM, p2, u2] = transfer_matrix_iter(obj, env, p1, u1) 
+        % 
+        %     [TM, TM_inv] = obj.inverse_transfer_matrix(env);
+        % 
+        %     % % debog : Tracé des termes complexes de la matrice de transfert du sous-élement
+        %     % perso_figure('TM')
+        %     % clf
+        %     % perso_plot_transfer_matrix(TM, env, ['type d''objet : ', class(obj)]);  
+        %     % close();
+        % 
+        %     % % debog : Tracé des termes complexes de la matrice de transfert inverse du sous-élement
+        %     % perso_figure('TM')
+        %     % clf
+        %     % perso_plot_transfer_matrix(TM_inv, env, ['type d''objet : ', class(obj)]);  
+        %     % close();
+        % 
+        %     p2 = TM_inv.T11 .* p1 + TM_inv.T12 .* u1;
+        %     u2 = TM_inv.T21 .* p1 + TM_inv.T22 .* u1;
+        % end
+
         function [TM, p2, u2] = transfer_matrix_iter(obj, env, p1, u1) 
 
             [TM, TM_inv] = obj.inverse_transfer_matrix(env);

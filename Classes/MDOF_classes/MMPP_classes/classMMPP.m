@@ -61,7 +61,7 @@ classdef classMMPP < classelement
 
         function validate(handle_env)
 
-            perso_figure('Validation classMMPP - Coefficient d''absorption')
+            perso_figure('Validation classMMPP - Coefficient d''absorption');
 
             % Données de références : perso_ouvrir_lien_Zotero('zotero://open-pdf/library/items/CMZQ7B9B?page=87&annotation=K6KB5V85');
 
@@ -79,12 +79,10 @@ classdef classMMPP < classelement
             config = classMMPP.create_config(s, 2, r, phi, d, D);
             MMPP = classMMPP(config);
             MMPP_HL_fp = classMMPP_HL_first_plate(config);
-            MMPP_HL_iter = classMMPP_HL_iter(config);
             MMPP_HL = classMMPP_HL(config);
 
             % création de l'environnement
-            env_i = handle_env('incident', SPL, M);
-            env_t = handle_env('total', SPL, M);
+            env = handle_env(SPL, M);
 
             % importation des données de références
             data1 = readmatrix('validation class_MMPP_HL_iter thèseLaly fig3.16 grey.txt'); % Approche modale
@@ -95,10 +93,9 @@ classdef classMMPP < classelement
 
             hold on
             % subtitle("Atalla2007 - fig. 3 - p. 9")
-            plot(env_i.w / (2*pi), MMPP.alpha(env_i), 'Color', 'g', 'LineWidth', 0.5, 'DisplayName', 'Modèle analytique linéaire');
-            plot(env_i.w / (2*pi), MMPP_HL_fp.alpha(env_i), 'Color', 'r', 'LineWidth', 0.5, 'DisplayName', 'Modèle analytique HL appliqué à la première plaque');
-            plot(env_i.w / (2*pi), MMPP_HL.alpha(env_i), 'Color', 'm', 'LineWidth', 0.5, 'DisplayName', 'Modèle analytique HL');
-            plot(env_i.w / (2*pi), MMPP_HL_iter.alpha(env_t, 'iter'), 'Color', 'y', 'LineWidth', 0.5, 'DisplayName', 'Modèle analytique HL itératif');
+            plot(env.w / (2*pi), MMPP.alpha(env), 'Color', 'g', 'LineWidth', 0.5, 'DisplayName', 'Modèle analytique linéaire');
+            plot(env.w / (2*pi), MMPP_HL_fp.alpha(env), 'Color', 'r', 'LineWidth', 0.5, 'DisplayName', 'Modèle analytique HL appliqué à la première plaque');
+            plot(env.w / (2*pi), MMPP_HL.alpha(env), 'Color', 'm', 'LineWidth', 0.5, 'DisplayName', 'Modèle analytique HL');
             plot(x_data1, y_data1, 'Color', 'g','LineWidth', 1, 'LineStyle', '--', 'DisplayName', 'Données de références - Mesure');
             % plot(x_data2, y_data2, 'Color', 'g','LineWidth', 1, 'LineStyle', '--', 'DisplayName', 'Données de références - Ingard');
             perso_configure_alpha_figure(5000);
