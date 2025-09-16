@@ -25,8 +25,6 @@ function env = create_environnement(root, temperature, static_pressure, relative
     if nargin > 8
         env.M = varargin{2};
     end
-
-
 end
 
 
