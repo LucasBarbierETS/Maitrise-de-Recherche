@@ -14,15 +14,18 @@ classdef ImpedanceTube3D
             obj.Configuration.ComsolModel = ImpedanceTube3DModel(obj.Configuration.ListOfSolutions, env);
         end
 
-        function obj = plot_alpha(obj, env, name)
+        function obj = launch_tube_measurement_ap(obj, env)
+            obj.Configuration.ComsolModel = ImpedanceTube3DModel_ap(obj.Configuration.ListOfSolutions, env);
+        end
 
-            figure()
+        function obj = plot_alpha(obj, name)
+
             hold on
             % Résultats numériques
             if isfield(obj.Configuration, 'ComsolModel')
                 data = mphtable(obj.Configuration.ComsolModel, 'tbl1').data;
                 obj.Configuration.Alpha3D = data;
-                plot(data(:, 1), data(:, 2), 'LineStyle', '--', 'DisplayName', [name ' - Résultat FEM'])
+                plot(data(:, 1), data(:, 2), 'LineStyle', '--', 'DisplayName', name)
             end
 
             xlabel("Fréquence (Hz)")

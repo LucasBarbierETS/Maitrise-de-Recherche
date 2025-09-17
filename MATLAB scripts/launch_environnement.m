@@ -1,8 +1,14 @@
-%% Lancement du serveur COMSOL (si disponible)
-% addpath('C:\Program Files\COMSOL\COMSOL63\Multiphysics\mli');
-% mphstart;
-% import com.comsol.model.*
-% import com.comsol.model.util.*
+%% Lancement du serveur COMSOL 
+
+try
+    v = mphversion;
+catch
+    system('start comsolmphserver');
+    addpath('C:\Program Files\COMSOL\COMSOL63\Multiphysics\mli');
+    mphstart;
+    import com.comsol.model.*
+    import com.comsol.model.util.*
+end
 
 %% Ajout des chemins d'accès
 
@@ -38,6 +44,7 @@ points = 5000;
 % Niveau sonore
 env = create_environnement(root, t, sp, hum, fmin, fmax, points);
 handle_env = @(SPL, M) create_environnement(root, t, sp, hum, fmin, fmax, points, SPL, M);
+handle_env_FEM = @(points) create_environnement(root, t, sp, hum, fmin, fmax, points);
 
 %% Fermeture du serveur COMSOL (si besoin)
 % ModelUtil.disconnect

@@ -1,7 +1,7 @@
-function model = perso_create_results_table(model)
+function model = perso_create_results_table_3D(model)
 
     % Création d'un objet de ligne d'évaluation au niveau du microphone 2
-    av_mic2 = model.result.numerical.create('av_mic2', 'AvLine');   
+    av_mic2 = model.result.numerical.create('av_mic2', 'AvSurface');   
     av_mic2.selection.named('microphone2');  
     av_mic2.set('probetag', 'microphone2');  
     

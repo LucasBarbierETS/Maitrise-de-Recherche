@@ -1,13 +1,4 @@
-function model = ImpedanceTube3DModel(list_of_solutions, env)
-
-    % Cette fonction prend en entrée une liste de solutions acoustiques.
-    % Elle a pour but de modéliser à l'aide de Comsol un test d'impédance
-    % en incidence normale pour plusieurs solutions juxtaposées.
-
-    % La fonction commence par construire les solutions ainsi que leurs
-    % physiques respectives puis construit le tube auquel elle sont toutes
-    % reliées dont les dimensions sont adaptées au nombre et à la taille de
-    % ces solutions.
+function model = ImpedanceTube3DModel_ap(list_of_solutions, env)
 
     import com.comsol.model.*
     import com.comsol.model.util.*
@@ -15,9 +6,7 @@ function model = ImpedanceTube3DModel(list_of_solutions, env)
     model = ModelUtil.create('Model');
     ModelUtil.showProgress(true);
 
-    %% Création/ Mise à jour des variables et paramètres du modèle 
-  
-    % Paramètres géométriques du tube
+    %% Paramètres géométriques du tube
     model.param.set('d12', '20e-3', 'distance inter-microphone');
     model.param.set('d2s', '80e-3', 'distance microphone 2 - solution');
     model.param.set('sol1_xl', '0', 'ligne d''acotement à gauche de la solution courante');
@@ -37,39 +26,44 @@ function model = ImpedanceTube3DModel(list_of_solutions, env)
     var.set('kappa', num2str(param.kappa), 'Conductivite thermique');
     var.set('neta', num2str(param.eta), 'Viscosite dynamique');
     var.set('rho0', num2str(param.rho), 'Masse volumique de l''air');
-    var.set('gamma', num2str(param.gamma), 'Masse volumique de l''air');
+    var.set('gamma', num2str(param.gamma), 'Rapport des chaleurs spécifiques');
 
-    %% Création des objets du modèle
-
-    % On crée un composant et une géométrie
+    %% Composant et géométrie
     model.component.create('component', true);
     model.component('component').geom.create('geometry', 3);
 
-    % On crée un matériau "air_perso" qui sera appliqué automatiquement à
-    % toutes les géométries implémentées
+    % Matériau air
     model = perso_add_air_to_model(model);
     
-    % On crée deux physiques et une frontière multiphysique
+    %% Physiques
+    % --- AVANT ---
+    % ap = model.component('component').physics.create('phy_ap', 'PressureAcoustics', 'geometry');
+    % ap.selection.set([]);
+    % tv = model.component('component').physics.create('phy_tv', 'ThermoacousticsSinglePhysics', 'geometry');
+    % tv.selection.set([]);
+    % multiphy_bnd = model.component('component').multiphysics.create('multiphy_bnd', 'AcousticThermoacousticBoundary', 2);
+    % multiphy_bnd.selection.set([]);
+
+    % --- MAINTENANT ---
     ap = model.component('component').physics.create('phy_ap', 'PressureAcoustics', 'geometry');
     ap.selection.set([]);
-    tv = model.component('component').physics.create('phy_tv', 'ThermoacousticsSinglePhysics', 'geometry');
-    tv.selection.set([]);
-    multiphy_bnd = model.component('component').multiphysics.create('multiphy_bnd', 'AcousticThermoacousticBoundary', 2);
-    multiphy_bnd.selection.set([]);
 
-    % On crée un maillage
+    % % Ajout direct d’une condition de couche limite visco-thermique
+    % tvb1 = ap.create('tvb1', 'ThermoviscousBoundaryLayerImpedance', 2);
+    % % Sélection automatique des parois du tube (ou remplacer par IDs explicites)
+    % bnd_walls = model.component('component').selection.create('walls', 'Adjacent');
+    % bnd_walls.set('entitydim', 2);
+    % bnd_walls.selection('input').named('tube');
+    % tvb1.selection.named('walls');
+
+    %% Maillage
     mesh = model.component('component').mesh.create('mesh');
 
-
-    %% Géométrie
-
-    % Mise en place des solutions
-
+    %% Géométrie : solutions + tube
     for i = 1:length(list_of_solutions)
-        model = list_of_solutions{i}.set_COMSOL_3D_Model(model, i, env);
+        model = list_of_solutions{i}.set_COMSOL_3D_Model_ap(model, i, env);
     end
 
-    % Création de la géométrie du tube
     blkt1 = model.component('component').geom('geometry').create('blkt1', 'Block');
     blkt1.set('pos', {'0' '-Td/2' 'd2s'});
     blkt1.set('size', {['sol' num2str(length(list_of_solutions)) '_xr'] 'Td' 'd12'});
@@ -80,90 +74,44 @@ function model = ImpedanceTube3DModel(list_of_solutions, env)
 
     model.component('component').geom('geometry').run('fin');
 
-    %% Sélection des boites
-
-    % % Pour l'intégralité des sélection
-    % box_all = model.component('component').selection.create('all', 'Box');
-    % box_all.set('entitydim', 2); % On sélectionne les domaines
-
-    % Pour le tube d'impédance
+    %% Sélections
     box_tube = model.component('component').selection.create('tube', 'Box');
-    box_tube.set('entitydim', 3); % On sélectionne les domaines
+    box_tube.set('entitydim', 3);
     box_tube.set('zmax', 'd12+d2s+0.01[mm]');
     box_tube.set('zmin', '-0.01[mm]');
     box_tube.set('condition', 'inside');
 
-    % Pour le plan de la source acoustique
     box_src = model.component('component').selection.create('src', 'Box');
-    box_src.set('entitydim', 2); % On sélectionne les arêtes
+    box_src.set('entitydim', 2);
     box_src.set('zmax', 'd12+d2s+0.01[mm]');
     box_src.set('zmin', 'd12+d2s-0.01[mm]');
     box_src.set('condition', 'inside');
 
-    % Pour le 2nd microphone
     box_mic = model.component('component').selection.create('microphone2', 'Box');
-    box_mic.set('entitydim', 2); % On sélectionne les arêtes
+    box_mic.set('entitydim', 2);
     box_mic.set('zmax', 'd2s+0.01[mm]');
     box_mic.set('zmin', 'd2s-0.01[mm]');
     box_mic.set('condition', 'inside');
 
-    % % Pour l'air
-    % all_MPPs_selection = {};
-    % selection_list = cell(model.selection.tags);
-    % for i = 1:length(selection_list)
-    %     selection_name = selection_list{i};
-    %     if contains(selection_name, 'MPP')
-    %         all_MPPs_selection{end+1} = selection_name;
-    %     end
-    % end
-    % 
-    % box_all_MPPs = model.component('component').selection.create('all_MPPs', 'Union');
-    % box_all_MPPs.set('input', all_MPPs_selection);
-    % 
-    % box_air = model.component('component').selection.create('air', 'Difference');
-    % box_air.set('entitydim', 2);
-    % box_air.set('add', 'all');
-    % box_air.set('subtract', 'all_MPPs');
-
-    % % Pour les frontières non définies entre les domaines
-    % visco-thermique et acoustique
-    all_bnds_ap_tv_selection = {};
-    selection_list = cell(model.selection.tags);
-    for i = 1:length(selection_list)
-        selection_name = selection_list{i};
-        if contains(selection_name, 'bnd_ap_tv')
-            all_bnds_ap_tv_selection{end+1} = selection_name;
-        end
-    end
-
-    box_all_bnds_cont_ap = model.component('component').selection.create('all_bnds_ap_tv', 'Union');
-    box_all_bnds_cont_ap.set('entitydim', 2);
-    box_all_bnds_cont_ap.set('input', all_bnds_ap_tv_selection);
-
     %% Physique
-
-    % On ajoute le tube à la physique Acoustic Pressure
+    % Ajout du tube dans Pressure Acoustics
     model = perso_add_selection_to_physics(model, 'phy_ap', 'tube');
 
-    % Création d'une fonctionnalité de pression dans la physique acoustique
+    % Source plane
     pr1 = ap.create('pr1', 'Pressure', 2); 
-    pr1.selection.named('src');  % Sélection du plan de la source
-    pr1.set('p0', 1);  % Définition de la pression initiale à 1 Pa
+    pr1.selection.named('src');  
+    pr1.set('p0', 1);  
 
-    % On ajoute les frontières visco-thermiques à la multiphysique
-    model = perso_add_selection_to_multiphysics(model, 'multiphy_bnd', 'all_bnds_ap_tv');
+    % --- AVANT ---
+    % model = perso_add_selection_to_multiphysics(model, 'multiphy_bnd', 'all_bnds_ap_tv');
+    % --- SUPPRIMÉ car plus de multiphysique ---
 
     %% Maillage
-
-    % Création d'un maillage triangulaire libre
     ftri_tube = mesh.create('ftri_tet', 'FreeTet');  
-    % Sélection de la boîte pour le maillage triangulaire libre
     ftri_tube.selection.named('tube');  
-    % Création d'une taille pour le maillage triangulaire
     ftri_tube.create('size1', 'Size');  
-
     mesh.run;
-    
+
     %% Etude
 
     std1 = model.study.create('std1');  
@@ -202,16 +150,15 @@ function model = ImpedanceTube3DModel(list_of_solutions, env)
     s1.create('d1', 'Direct'); 
     s1.feature('d1').label('Direct 1.1');  
     s1.feature('d1').set('linsolver', 'pardiso');  
-    s1.feature('d1').set('pivotperturb', 1.0E-13); 
-
+    s1.feature('d1').set('pivotperturb', 1.0E-13);  
 
     %% Sauvergarde en cas d'échec
 
-    mphsave(model, 'C:\Users\lucas.barbier\Documents\Maitrise ETS\Modélisation numérique\dernier modèle numérique 3D-TV crée.mph');
+    mphsave(model, 'C:\Users\lucas.barbier\Documents\Maitrise ETS\Modélisation numérique\dernier modèle numérique 3D-AP crée.mph');
 
-    %% Calcul de la solution
     sol1.runAll;   
 
+    %% Résultats
     model = perso_create_results_table_3D(model);
-   
+
 end

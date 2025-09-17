@@ -1,0 +1,7 @@
+data_analysis_echantillon_1_1_Hutchinson;
+
+data_analysis_echantillon_1_2_Hutchinson;
+
+data_analysis_echantillon_1_3_Hutchinson;
+
+data_analysis_echantillon_1_4_Hutchinson;  

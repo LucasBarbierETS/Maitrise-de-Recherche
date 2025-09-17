@@ -5,7 +5,6 @@ function output_model = perso_add_air_to_model(input_model)
     mat.label('Air');
     mat.set('family', 'air');
     mat.materialType('nonSolid');
-    
     mat.propertyGroup('def').set('thermalexpansioncoefficient', '');
     mat.propertyGroup('def').set('molarmass', '');
     mat.propertyGroup('def').set('bulkviscosity', '');
