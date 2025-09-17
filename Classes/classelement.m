@@ -240,9 +240,9 @@ classdef classelement
             S = obj.Configuration.Surface;
            
             try
-            % On revient en convention pression - vitesse
-            Zs = S * TM.T11 ./ TM.T21; % rigid wall
-            % Zs = TM.T11 ./ TM.T21; % rigid wall
+                % On revient en convention pression - vitesse
+                Zs = S * TM.T11 ./ TM.T21; % rigid wall
+                % Zs = TM.T11 ./ TM.T21; % rigid wall
             catch
                 return
             end
@@ -494,6 +494,12 @@ classdef classelement
             peak_alpha = a(max_indices);
         end
 
+        function error = alpha_error(obj, env, alpha_comp)
+
+            error = 1/length(env.w)*sum(abs(obj.alpha(env) - alpha_comp)./alpha_comp);
+            % perso_ouvrir_lien_Zotero('zotero://open-pdf/library/items/233HZ8GN?page=8&annotation=62TL63NL');
+        end         
+            
         function output_model = set_COMSOL_2D_Model(obj, input_model, elem_index, env)
             
             config = obj.Configuration;

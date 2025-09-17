@@ -31,7 +31,7 @@ classdef classMPPSBH_Rectangular < classelement
                     obj.Configuration.ListOfSubelements{end+1} = classcavity_trapezoidal(classcavity_trapezoidal.create_config(ct(i)/2, mpw(i), mpd(i), wc, dc));
     
                     % Cavité cubique en parallèle
-                    annular_cavity = classannularcavity_cubical(classannularcavity_cubical.create_config(wc, dc, cavw, cavd, ct(i), 'Volume'));
+                    annular_cavity = classannularcavity_cubical(classannularcavity_cubical.create_config(wc, dc, cavw, cavd, ct(i), 'Lumped Volume'));
                     obj.Configuration.ListOfSubelements{end+1} = classjunction(classjunction.create_config(annular_cavity, wc, dc));
         
                     % Cavité trapezoidale
@@ -40,7 +40,8 @@ classdef classMPPSBH_Rectangular < classelement
             end
         end
     end
-    methods % COMSOL
+
+    methods % Création des modèles COMSOL
         
         function output_model = set_COMSOL_2D_Model(obj, input_model, elem_index, sblm_index, env)
             output_model = ModelMPPSBH(obj.Configuration, input_model, elem_index, sblm_index, env);
@@ -48,6 +49,10 @@ classdef classMPPSBH_Rectangular < classelement
 
         function output_model = set_COMSOL_3D_Model(obj, input_model, index, env)
             output_model = ModelMPPSBH_3D(obj.Configuration, input_model, index, env);
+        end
+
+        function output_model = set_COMSOL_3D_Model_ap(obj, input_model, index, env)
+            output_model = ModelMPPSBH_3D_ap(obj.Configuration, input_model, index, env);
         end
     end
 
@@ -595,7 +600,7 @@ classdef classMPPSBH_Rectangular < classelement
         end
     end
 
-    methods (Static, Access = public)
+    methods (Static, Access = public) % Validation
         
         function validate()
 
