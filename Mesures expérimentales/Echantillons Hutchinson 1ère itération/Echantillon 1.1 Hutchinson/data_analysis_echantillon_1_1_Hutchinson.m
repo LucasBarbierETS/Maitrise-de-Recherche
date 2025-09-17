@@ -38,16 +38,19 @@ config1 = classMPPSBH_Rectangular.create_explicit_rectangular_pattern_config(30e
 
 perso_figure('Validation expérimentale - Echantillons Hutchinson - 100 dB');
 
-% subplot(2, 2, 1)
+subplot(2, 2, 1)
 title('Echantillon 1.1')
 hold on
 
-% plot(f, alpha1_100, 'DisplayName', 'Résultat expérimental');
+plot(f, alpha1_100, 'DisplayName', 'Résultat expérimental');
 
 % Modèle linéaire
 MPPSBH = classMPPSBH_Rectangular(config1);
+% MPPSBH_sbdv = classMPPSBH_Rectangular_subdiv(config1);
 alpha_model = MPPSBH.alpha(handle_env(100, 0));
+% alpha_model_sbdv = MPPSBH_sbdv.alpha(handle_env(100, 0));
 plot(env.w/(2*pi), alpha_model, 'DisplayName', 'Modèle analytique');
+% plot(env.w/(2*pi), alpha_model_sbdv, 'DisplayName', 'Modèle analytiques subdiv');
 
 %% Validation numérique 3D
 
@@ -66,9 +69,9 @@ plot(env.w/(2*pi), alpha_model, 'DisplayName', 'Modèle analytique');
 % mphsave(Tube3D_ap.Configuration.ComsolModel, [folder_path, '\modèle numérique 3D-TV'])
 % Tube3D_ap.plot_alpha('Modélisation numérique 3D - TV')
 
-% Tube3D_ap = ImpedanceTube3D(ImpedanceTube3D.create_config({}));
-% Tube3D_ap.Configuration.ComsolModel = mphload([folder_path, '\modèle numérique 3D-AP.mph']);
-% Tube3D_ap.plot_alpha('Modélisation numérique 3D - AP');
+Tube3D_ap = ImpedanceTube3D(ImpedanceTube3D.create_config({}));
+Tube3D_ap.Configuration.ComsolModel = mphload([folder_path, '\modèle numérique 3D-AP.mph']);
+Tube3D_ap.plot_alpha('Modélisation numérique 3D - AP');
 
 xlim([f_min, f_max])
 legend('Location','best')

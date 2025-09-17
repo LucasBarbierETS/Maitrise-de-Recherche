@@ -56,8 +56,9 @@ classdef classMPP_Circular < classJCA_Rigid
             % La classe n'a pas directement accès aux propriétés de l'air
             sig = @(env) 4 * k0 * env.air.parameters.eta / (phi * rh^2); % [1] p.5 entre eq. 11 et eq.12 
 
-            % On tient compte de la correction de longueur dans la tortuosité
-            tor = 1 + 2 * tc / t; % proportionnel à sqrt(phi)
+            % % On tient compte de la correction de longueur dans la tortuosité
+            % tor = 1 + 2 * tc / t; % proportionnel à sqrt(phi)
+            tor = 1;
             
             % On créer la configuration 
             config = perso_transfer_fields(classJCA_Rigid.create_config(s, t, phi, tor, sig, rh, rh), config);

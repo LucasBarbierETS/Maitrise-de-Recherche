@@ -126,13 +126,13 @@ classdef classannularcavity_cylindrical < classsubelement
 
                     % Référence : perso_ouvrir_lien_Zotero('zotero://open-pdf/library/items/AH7QFLYS?page=4&annotation=34H3J6W6')
                     
-                    % Si l'admittance est formulée selon la convention Pression - Vitesse
-                    Ycav = 1j * k/Z0 / Ca * Vcav;
+                    Ycav = 1j * k/Z0 * Vcav;
+  
+                    % Si l'impédance est formulée selon la convention Pression - Vitesse
+                    Zsde = Ca ./ Ycav;
 
                     % % Si l'admittance est formulée selon la convention Pression - Débit
-                    % Ycav = 1j * k/Z0 * Vcav;   
-                
-                    Zsde = 1 ./ Ycav;
+                    % Zsde = 1 ./ Ycav;
             end
         end
     end
@@ -142,14 +142,13 @@ classdef classannularcavity_cylindrical < classsubelement
         function config = create_config(main_pore_radius, dead_end_radius, dead_end_thickness, cavity_model)
 
             config = struct();
-            config.MainPoreRadius = main_pore_radius;
+            [config.MainPoreRadius, r] = deal(main_pore_radius);
+            config.Section = pi*r^2;
             config.DeadEndRadius = dead_end_radius;
             config.DeadEndThickness = dead_end_thickness;
             config.CurtainArea = pi*main_pore_radius^2*dead_end_thickness;
             config.CavityModel = cavity_model;
-            
         end
-
     end
 end
 

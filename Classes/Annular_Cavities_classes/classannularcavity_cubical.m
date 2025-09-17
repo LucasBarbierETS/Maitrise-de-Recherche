@@ -25,7 +25,7 @@ classdef classannularcavity_cubical < classsubelement
 
             switch config.CavityModel 
 
-                case 'Volume'
+                case 'Lumped Volume'
                     
                     % Calcul du volume de la cavité :
                     % Vcav = ct * (cd - mpd) * (cw - mpw); % Différence des volumes de deux cubes
@@ -53,6 +53,11 @@ classdef classannularcavity_cubical < classsubelement
                     % Ycav = 1j * k/Z0 * Vcav;   
                 
                     Zsde = 1 ./ Ycav;
+
+                case 'Plane Wave'
+                    
+                    cavity = classcavity_rectangular(classcavity_rectangular.create_config(cw - mpw, ct, cd));
+                    Zsde = 2 * cavity.surface_impedance(env);
             end
         end
     end
@@ -68,8 +73,8 @@ classdef classannularcavity_cubical < classsubelement
             [config.CavityDepth, d] = deal(cavity_depth);
             config.Section = w * d;
             config.CavityThickness = cavity_thickness;
-            config.CurtainArea = 2 * cavity_thickness * (main_pore_depth); % deux fentes lattérales
-            % config.CurtainArea = 2 * cavity_thickness * (main_pore_width + main_pore_depth);
+            % config.CurtainArea = 2 * cavity_thickness * (main_pore_depth); % deux fentes lattérales
+            config.CurtainArea = 2 * cavity_thickness * (main_pore_width + main_pore_depth);
             config.CavityModel = cavity_model;
         end
     end

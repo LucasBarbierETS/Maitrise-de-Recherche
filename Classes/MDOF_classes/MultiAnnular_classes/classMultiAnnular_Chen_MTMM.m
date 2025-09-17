@@ -1,4 +1,4 @@
-classdef classMultiAnnular_Chen_MTMM < classelement
+classdef classMultiAnnular_Chen_MTMM < classMultiAnnular_Chen
 
     %% Références : 
 
@@ -8,9 +8,9 @@ classdef classMultiAnnular_Chen_MTMM < classelement
         function obj = classMultiAnnular_Chen_MTMM(config)
         
             % Appel du constructeur de la classe parente
-            obj@classelement(classelement.create_config({}, 'closed', []));
+            obj@classMultiAnnular_Chen({});
                
-            if nargin > 0    
+            if nargin > 0 && ~isempty(config)     
                 % Transfert des champs de la configuration d'appel vers la configuration de classe
                 obj.Configuration = perso_transfer_fields(config, obj.Configuration);
     
@@ -26,6 +26,7 @@ classdef classMultiAnnular_Chen_MTMM < classelement
         
                     % Cavité conique
                     hc = (rmp(i) + rmp(i+1))/2;
+                    % obj.Configuration.ListOfSubelements{end+1} = classcavity_cylindrical(classcavity_cylindrical.create_config(hde/2, rmp(i)));
                     obj.Configuration.ListOfSubelements{end+1} = classcavity_conical(classcavity_conical.create_config(hde/2, rmp(i), hc));
         
                     % Cavité annnulaire toroidale
@@ -34,24 +35,9 @@ classdef classMultiAnnular_Chen_MTMM < classelement
 
                     % Cavité conique
                     obj.Configuration.ListOfSubelements{end+1} = classcavity_conical(classcavity_conical.create_config(hde/2, hc, rmp(i+1)));
+                    % obj.Configuration.ListOfSubelements{end+1} = classcavity_cylindrical(classcavity_cylindrical.create_config(hde/2, hc));
                 end
             end
-        end
-    end
-
-    methods (Static, Access = public) % Création des configurations
-
-        % Définition de la configuration à partir des paramètres JCA
-        function config = create_config(radius, main_pore_radius, main_pore_thickness, dead_end_radius, dead_end_thickness, cell_number)
-            
-            config = {};
-            config.Radius = radius;
-            config.Surface = pi*radius^2;
-            config.MainPoresRadius = main_pore_radius;
-            config.MainPoresThickness = main_pore_thickness;
-            config.DeadEndRadius = dead_end_radius;
-            config.DeadEndThickness = dead_end_thickness;
-            config.CellNumber = cell_number;
         end
     end
 
@@ -87,8 +73,10 @@ classdef classMultiAnnular_Chen_MTMM < classelement
             % Calcul de la réponse du modèle analytique
             alpha_model = classMultiAnnular_Chen(config(N)).alpha(env);
             alpha_model_MTMM = classMultiAnnular_Chen_MTMM(config(N)).alpha(env);
+            % alpha_model_MTMM_subdiv = classMultiAnnular_Chen_MTMM_subdiv(config(N)).alpha(env);
             plot(env.w / (2*pi), alpha_model, 'Color', 'g', 'LineWidth', 1, 'DisplayName', 'Modèle');
             plot(env.w / (2*pi), alpha_model_MTMM, 'Color', 'k', 'LineWidth', 1, 'DisplayName', 'Modèle MTMM');
+            % plot(env.w / (2*pi), alpha_model_MTMM_subdiv, 'Color', 'k', 'LineWidth', 1, 'DisplayName', 'Modèle MTMM subdiv');
             perso_configure_alpha_figure(3000);
 
             %% 20 Plaques
@@ -109,8 +97,10 @@ classdef classMultiAnnular_Chen_MTMM < classelement
             % Calcul de la réponse du modèle analytique
             alpha_model = classMultiAnnular_Chen(config(N)).alpha(env);
             alpha_model_MTMM = classMultiAnnular_Chen_MTMM(config(N)).alpha(env);
+            % alpha_model_MTMM_subdiv = classMultiAnnular_Chen_MTMM_subdiv(config(N)).alpha(env);
             plot(env.w / (2*pi), alpha_model, 'Color', 'g', 'LineWidth', 1, 'DisplayName', 'Modèle');
             plot(env.w / (2*pi), alpha_model_MTMM, 'Color', 'k', 'LineWidth', 1, 'DisplayName', 'Modèle MTMM');
+            % plot(env.w / (2*pi), alpha_model_MTMM_subdiv, 'Color', 'k', 'LineWidth', 1, 'DisplayName', 'Modèle MTMM subdiv');
             perso_configure_alpha_figure(3000);
 
             %% 30 Plaques
@@ -131,8 +121,10 @@ classdef classMultiAnnular_Chen_MTMM < classelement
             % Calcul de la réponse du modèle analytique
             alpha_model = classMultiAnnular_Chen(config(N)).alpha(env);
             alpha_model_MTMM = classMultiAnnular_Chen_MTMM(config(N)).alpha(env);
+            % alpha_model_MTMM_subdiv = classMultiAnnular_Chen_MTMM_subdiv(config(N)).alpha(env);
             plot(env.w / (2*pi), alpha_model, 'Color', 'g', 'LineWidth', 1, 'DisplayName', 'Modèle');
             plot(env.w / (2*pi), alpha_model_MTMM, 'Color', 'k', 'LineWidth', 1, 'DisplayName', 'Modèle MTMM');
+            % plot(env.w / (2*pi), alpha_model_MTMM_subdiv, 'Color', 'k', 'LineWidth', 1, 'DisplayName', 'Modèle MTMM subdiv');
             perso_configure_alpha_figure(3000);
 
             %% 40 Plaques
@@ -153,8 +145,10 @@ classdef classMultiAnnular_Chen_MTMM < classelement
             % Calcul de la réponse du modèle analytique
             alpha_model = classMultiAnnular_Chen(config(N)).alpha(env);
             alpha_model_MTMM = classMultiAnnular_Chen_MTMM(config(N)).alpha(env);
+            % alpha_model_MTMM_subdiv = classMultiAnnular_Chen_MTMM_subdiv(config(N)).alpha(env);
             plot(env.w / (2*pi), alpha_model, 'Color', 'g', 'LineWidth', 1, 'DisplayName', 'Modèle');
             plot(env.w / (2*pi), alpha_model_MTMM, 'Color', 'k', 'LineWidth', 1, 'DisplayName', 'Modèle MTMM');
+            % plot(env.w / (2*pi), alpha_model_MTMM_subdiv, 'Color', 'k', 'LineWidth', 1, 'DisplayName', 'Modèle MTMM subdiv');
             perso_configure_alpha_figure(3000);
 
         end

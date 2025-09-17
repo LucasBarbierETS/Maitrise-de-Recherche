@@ -10,7 +10,7 @@ classdef classMultiAnnular_Chen < classelement
             % Appel du constructeur de la classe parente
             obj@classelement(classelement.create_config({}, 'closed', []));
                
-            if nargin > 0    
+            if nargin > 0 && ~isempty(config)   
                 % Transfert des champs de la configuration d'appel vers la configuration de classe
                 obj.Configuration = perso_transfer_fields(config, obj.Configuration);
     
@@ -33,7 +33,7 @@ classdef classMultiAnnular_Chen < classelement
                     obj.Configuration.ListOfSubelements{end+1} = classjunction_cylindrical(classjunction_cylindrical.create_config(annular_cavity, hc, hde));
 
                     % Cavité cylindrique
-                    obj.Configuration.ListOfSubelements{end+1} = classcavity_cylindrical(classcavity_cylindrical.create_config(hde/2, rmp(i+1)));
+                    obj.Configuration.ListOfSubelements{end+1} = classcavity_cylindrical(classcavity_cylindrical.create_config(hde/2, hc));
                 end
             end
         end
