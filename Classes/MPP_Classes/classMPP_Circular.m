@@ -57,8 +57,8 @@ classdef classMPP_Circular < classJCA_Rigid
             sig = @(env) 4 * k0 * env.air.parameters.eta / (phi * rh^2); % [1] p.5 entre eq. 11 et eq.12 
 
             % % On tient compte de la correction de longueur dans la tortuosité
-            % tor = 1 + 2 * tc / t; % proportionnel à sqrt(phi)
-            tor = 1;
+            tor = 1 + 2 * tc / t; % proportionnel à sqrt(phi)
+            % tor = 1;
             
             % On créer la configuration 
             config = perso_transfer_fields(classJCA_Rigid.create_config(s, t, phi, tor, sig, rh, rh), config);
@@ -160,7 +160,7 @@ classdef classMPP_Circular < classJCA_Rigid
             [x_data1, y_data1] = perso_interpole_et_lisse(data1(:, 1), data1(:, 2), 1000, 0.05);
             [x_data2, y_data2] = perso_interpole_et_lisse(data2(:, 1), data2(:, 2), 1000, 0.05);
 
-            env = handle_env('total', 100, 0);
+            env = handle_env(100, 0);
             
             % Tube = ImpedanceTube2D(ImpedanceTube2D.create_config({E1}));
             % Tube = Tube.launch_tube_measurement(env);

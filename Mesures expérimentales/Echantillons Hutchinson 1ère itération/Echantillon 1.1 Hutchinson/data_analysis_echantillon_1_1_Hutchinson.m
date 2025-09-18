@@ -38,7 +38,7 @@ config1 = classMPPSBH_Rectangular.create_explicit_rectangular_pattern_config(30e
 
 perso_figure('Validation expérimentale - Echantillons Hutchinson - 100 dB');
 
-subplot(2, 2, 1)
+% subplot(2, 2, 1)
 title('Echantillon 1.1')
 hold on
 
@@ -69,9 +69,9 @@ plot(env.w/(2*pi), alpha_model, 'DisplayName', 'Modèle analytique');
 % mphsave(Tube3D_ap.Configuration.ComsolModel, [folder_path, '\modèle numérique 3D-TV'])
 % Tube3D_ap.plot_alpha('Modélisation numérique 3D - TV')
 
-Tube3D_ap = ImpedanceTube3D(ImpedanceTube3D.create_config({}));
-Tube3D_ap.Configuration.ComsolModel = mphload([folder_path, '\modèle numérique 3D-AP.mph']);
-Tube3D_ap.plot_alpha('Modélisation numérique 3D - AP');
+% Tube3D_ap = ImpedanceTube3D(ImpedanceTube3D.create_config({}));
+% Tube3D_ap.Configuration.ComsolModel = mphload([folder_path, '\modèle numérique 3D-AP.mph']);
+% Tube3D_ap.plot_alpha('Modélisation numérique 3D - AP');
 
 xlim([f_min, f_max])
 legend('Location','best')

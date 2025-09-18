@@ -28,14 +28,18 @@ classdef classMPPSBH_Rectangular < classelement
                     % Cavité trapezoidale
                     wc = (mpw(i) + mpw(i+1))/2;
                     dc = (mpd(i) + mpd(i+1))/2;
-                    obj.Configuration.ListOfSubelements{end+1} = classcavity_trapezoidal(classcavity_trapezoidal.create_config(ct(i)/2, mpw(i), mpd(i), wc, dc));
+
+                    % Cavité trapezoidale
+                    obj.Configuration.ListOfSubelements{end+1} = classcavity_rectangular(classcavity_rectangular.create_config(ct(i)/2, mpw(i), mpd(i)));
+                    % obj.Configuration.ListOfSubelements{end+1} = classcavity_trapezoidal(classcavity_trapezoidal.create_config(ct(i)/2, mpw(i), mpd(i), wc, dc));
     
                     % Cavité cubique en parallèle
                     annular_cavity = classannularcavity_cubical(classannularcavity_cubical.create_config(wc, dc, cavw, cavd, ct(i), 'Lumped Volume'));
                     obj.Configuration.ListOfSubelements{end+1} = classjunction(classjunction.create_config(annular_cavity, wc, dc));
         
                     % Cavité trapezoidale
-                    obj.Configuration.ListOfSubelements{end+1} = classcavity_trapezoidal(classcavity_trapezoidal.create_config(ct(i)/2, wc, dc, mpw(i+1), mpd(i+1)));
+                    obj.Configuration.ListOfSubelements{end+1} = classcavity_rectangular(classcavity_rectangular.create_config(ct(i)/2, wc,dc));
+                    % obj.Configuration.ListOfSubelements{end+1} = classcavity_trapezoidal(classcavity_trapezoidal.create_config(ct(i)/2, wc, dc, mpw(i+1), mpd(i+1)));
                 end 
             end
         end
