@@ -612,51 +612,19 @@ classdef classelement
             end
         end
 
-        function obj = plot_surface_impedance(obj, env)
+        function obj = plot_surface_impedance(obj, env, name, varargin)
 
             hold on
             
-            title('Impédance acoustique')
-            f = env.w / (2 * pi);
-
-            subplot(2, 1, 1)
-            xlabel("Fréquence (Hz)")
-            ylabel("Re(Zs)")
-            xlim([0 3000])
-
-            subplot(2, 1, 2)
-            xlabel("Fréquence (Hz)")
-            ylabel("Im(Zs)")
-            
-            % xlim([0 f(end)])
-            xlim([0 3000])
-
-            % Résultats analytiques
-            
-            Zs_anal = obj.surface_impedance(env);
-
-            subplot(2, 1, 1)
-            yyaxis left
-            plot(f, real(Zs_anal), 'DisplayName', 'Résultat Analytique');
-
-            subplot(2, 1, 2)
-            yyaxis left
-            plot(f, imag(Zs_anal), 'DisplayName', 'Résultat Analytique');
-
-            % Résultats numériques
-            if isfield(obj.Configuration, 'ComsolModel')
-                Zs_FEM = mphtable(obj.Configuration.ComsolModel, 'tbl1').data;
-
-                subplot(2, 1, 1)
-                yyaxis right
-                plot(Zs_FEM(:, 1), Zs_FEM(:, 5), 'DisplayName', 'Résultats numériques')
-    
-                subplot(2, 1, 2)
-                yyaxis right
-                plot(Zs_FEM(:, 1), Zs_FEM(:, 6), 'DisplayName', 'Résultat numérique')
+            if nargin > 3
+                Zs = obj.surface_impedance(env, varargin{:});
+            else
+                Zs = obj.surface_impedance(env);
             end
 
-            legend()
+            % On normalise l'impédance
+            Zsn = Zs/env.air.parameters.Z0;
+            perso_plot_surface_impedance(env.w/(2*pi), Zsn, env, name)
          end
         
         function save_class_object(obj, filename)

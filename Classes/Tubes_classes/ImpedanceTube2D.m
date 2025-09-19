@@ -15,29 +15,33 @@ classdef ImpedanceTube2D
             obj.Configuration.Data2D = mphtable(obj.Configuration.ComsolModel, 'tbl1').data;
         end
 
-        function obj = plot_alpha(obj, env, name)
+        function obj = plot_alpha(obj, name)
+
+            hold on
+            
+            try 
+                data = obj.Configuration.Data2D;
+                plot(data(:, 1), data(:, 2), '--r', 'DisplayName', name);
+            catch
+                return
+            end
+            
+            perso_configure_alpha_figure(3000);
+        end
+    
+        function obj = plot_surface_impedance(obj, env, name)
 
             hold on
 
-            % % Résultats analytiques
-            % assembly = classelementassembly(classelementassembly.create_config(obj.Configuration.ListOfSolutions)); 
-            % try 
-            %     alpha_model = assembly.alpha(env);
-            %     f = env.w / (2 * pi);
-            %     plot(f, alpha_model, 'color', 'b', 'DisplayName', 'Modèle analytique');
-            % catch 
-            % end
-            
-            % Résultats numériques
-            if isfield(obj.Configuration, 'Data2D')
+            try
                 data = obj.Configuration.Data2D;
-                plot(data(:, 1), data(:, 2), '--r', 'DisplayName', name);
-                ylim([0 1]);
+                Zs_num = data(:, 5) + 1i*data(:, 6);
+                perso_plot_surface_impedance(data(:, 1), Zs_num, env, name);
+            catch 
+                return
             end
-            
-            % perso_configure_alpha_figure(2000);
-        end
-    
+        end        
+        
         function plot_alpha_mean_line(obj, f_min, f_max)
 
             hold on
@@ -53,6 +57,14 @@ classdef ImpedanceTube2D
         function config = create_config(list_of_solutions)
             config = struct();
             config.ListOfSolutions = list_of_solutions;
+        end
+    
+
+        function Tube2D = load_model(model)
+            
+            Tube2D = ImpedanceTube2D({});
+            Tube2D.Configuration.ComsolModel = model;
+            Tube2D.Configuration.Data2D = mphtable(Tube2D.Configuration.ComsolModel, 'tbl1').data;
         end
     end
 end

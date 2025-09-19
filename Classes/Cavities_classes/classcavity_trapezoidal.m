@@ -14,118 +14,102 @@ classdef classcavity_trapezoidal< classcavity
             obj@classcavity(config);
         end
 
-        % function T = transfer_matrix(obj, env)
-        % 
-        %     % dérivé de [1] eq. 7
-        % 
-        %     air = env.air;
-        %     w = env.w;
-        %     param = air.parameters;
-        % 
-        %     % Modification des propriétés dissipatives de l'air (très peu d'effet)
-        %     % c0 = air.parameters.c0;
-        %     c0 = air.parameters.c0 * (1+0.05*1j); % perso_ouvrir_lien_Zotero('zotero://open-pdf/library/items/233HZ8GN?page=7&annotation=QLW3FP87')
-        % 
-        %     k0 = w ./ c0;
-        %     Z0 = c0 * param.rho;
-        % 
-        %     % Paramètres géométriques
-        %     config = obj.Configuration;
-        %     d = config.Thickness;
-        %     wi = config.Width;
-        %     di = config.Depth;
-        %     wo = config.WidthOut;
-        %     do = config.DepthOut;
-        % 
-        %     Lz = d * wi / (wi - wo); % Distance orthogonale entre la surface et le sommet du cône de la cavité
-        %     kd = k0 .* d;
-        %     kl = k0 .* Lz;
-        %     R = sqrt(wo*do / (wi*di)); % le ratio des rayons de sortie et d'entrée
-        %     Si = wi*di; % la section d'entrée de la cavité
-        % 
-        %     T.T11 = R .* cos(kd) + 1 ./ (kl) .* sin(kd);
-        %     T.T12 = 1j * Z0 * R .* sin(kd);
-        %     T.T21 = 1j * Si / Z0 * ((R + 1 ./ (kl).^2) .* sin(kd) - d ./ (k0 * Lz^2) .* cos(kd));
-        %     T.T22 = 1 / R * (cos(kd) - 1 ./ kl .* sin(kd));
-        % end
+        function T = transfer_matrix(obj, env)
+
+            % dérivé de [1] eq. 7
+
+            air = env.air;
+            w = env.w;
+            param = air.parameters;
+
+            % Modification des propriétés dissipatives de l'air (très peu d'effet)
+            c0 = air.parameters.c0;
+            % c0 = air.parameters.c0 * (1+0.05*1j); % perso_ouvrir_lien_Zotero('zotero://open-pdf/library/items/233HZ8GN?page=7&annotation=QLW3FP87')
+
+            k0 = w ./ c0;
+            Z0 = c0 * param.rho;
+
+            % Paramètres géométriques
+            config = obj.Configuration;
+            d = config.Thickness;
+            wi = config.Width;
+            di = config.Depth;
+            wo = config.WidthOut;
+            do = config.DepthOut;
+
+            Lz = d * wi / (wi - wo); % Distance orthogonale entre la surface et le sommet du cône de la cavité
+            kd = k0 .* d;
+            kl = k0 .* Lz;
+            R = sqrt(wo*do / (wi*di)); % le ratio des rayons de sortie et d'entrée
+            Si = wi*di; % la section d'entrée de la cavité
+
+            T.T11 = R .* cos(kd) + 1 ./ (kl) .* sin(kd);
+            T.T12 = 1j * Z0 * R .* sin(kd);
+            T.T21 = 1j * Si / Z0 * ((R + 1 ./ (kl).^2) .* sin(kd) - d ./ (k0 * Lz^2) .* cos(kd));
+            T.T22 = 1 / R * (cos(kd) - 1 ./ kl .* sin(kd));
+        end
 
         % function T = transfer_matrix(obj, env)
-        %     % Cavité rectangulaire trapézoïdale (section variable) – forme fermée (type Chen modifié)
-        %     % Convention: état y = [p ; U] (pression, débit volumique)
+        %     % Cavité trapézoïdale (rectangle de taille variable) -> forme fermée type MTMM (Eq. 7)
+        %     % Remapping conique par l’aire : r := sqrt(S), S = w*d
+        %     % Cas limite ro ~ ri : tube à section constante (Si)
         % 
-        %     % --- Fluide
-        %     param = env.air.parameters;
-        %     rho0  = param.rho;
-        %     c0    = param.c0;                  % tu peux garder ton petit j*eta si tu veux
-        %     wvec  = env.w(:);                  % scalaire ou vecteur
-        %     kvec  = wvec ./ c0;
+        %         % --- Fluide ---
+        %         param = env.air.parameters;
+        %         c0    = param.c0;               % comme ta version conique validée
+        %         % c0  = param.c0 * (1+0.05*1j); % (optionnel) légère dissipation
+        %         k0    = env.w ./ c0;
+        %         Z0    = c0 * param.rho;
         % 
-        %     % --- Géométrie
-        %     cfg = obj.Configuration;
-        %     d   = cfg.Thickness;
-        %     wi  = cfg.Width;     di = cfg.Depth;     Si = wi*di;
-        %     wo  = cfg.WidthOut;  do = cfg.DepthOut;  So = wo*do;
+        %         % --- Géométrie trapézoïdale (rectangulaire) ---
+        %         cfg = obj.Configuration;
+        %         d   = cfg.Thickness;     % longueur axiale de la cavité
+        %         wi  = cfg.Width;         % largeur entrée
+        %         di  = cfg.Depth;         % hauteur/profondeur entrée
+        %         wo  = cfg.WidthOut;      % largeur sortie
+        %         do  = cfg.DepthOut;      % hauteur/profondeur sortie
         % 
-        %     % “rayons d’aire” pour la mise en cône par l’aire
-        %     ri = sqrt(Si);
-        %     ro = sqrt(So);
-        %     R  = ro/ri;                           % = sqrt(So/Si)
-        %     Sbar = 0.5*(Si+So);
+        %         % Aires d'entrée/sortie et "rayons d’aire"
+        %         Si = wi * di;            % section d'entrée
+        %         So = wo * do;            % section de sortie
+        %         ri = sqrt(Si);
+        %         ro = sqrt(So);
         % 
-        %     nF = numel(wvec);
-        %     T(nF) = struct('T11',[],'T12',[],'T21',[],'T22',[]);
+        %         % Paramètres d'onde
+        %         kd = k0 .* d;
         % 
-        %     for i = 1:nF
-        %         w  = wvec(i);
-        %         k0 = kvec(i);
+        %         if abs(ro - ri) < 1e-3 * ri
+        %             % ---- Cas limite : section constante = Si (cylindre) ----
+        %             ckd = cos(kd);
+        %             skd = sin(kd);
         % 
-        %         % fallback tube uniforme si variation négligeable (évite annulations)
-        %         if abs(So - Si) < 1e-10*max(1,Sbar)
-        %             kd  = k0*d;
-        %             ckd = cos(kd); skd = sin(kd);
-        %             Zc  = rho0*c0/Si;            % Zc duct (p–U)
-        %             T(i).T11 = ckd;
-        %             T(i).T12 = 1j*Zc*skd;
-        %             T(i).T21 = 1j*(1/Zc)*skd;
-        %             T(i).T22 = ckd;
-        %             continue;
-        %         end
+        %             T11 = ckd;
+        %             T12 = 1j * Z0 / Si .* skd;   % ATTENTION: /Si
+        %             T21 = 1j * Si / Z0 .* skd;
+        %             T22 = ckd;
         % 
-        %         % paramètres coniques (par l’aire)
-        %         Lz = d * ri / (ri - ro);         % apex (aire-cone), ATTENTION: ri, ro (pas wi, wo)
-        %         kd = k0*d;     kl = k0*Lz;
-        % 
-        %         % --- matrice de transfert “aire-cone” en p–U (forme type Eq.7 corrigée p/U)
-        %         % T11
-        %         T11 = R*cos(kd) + (1/kl)*sin(kd);
-        % 
-        %         % T12 (réactif) : j * (ρ c / Si) * (R) * sin(kd)
-        %         T12 = 1j * (rho0*c0/Si) * R * sin(kd);
-        % 
-        %         % T21 (admittif)
-        %         % j * (Si/(ρ c)) * [ (R + 1/kl^2) * sin(kd) - (d/(k0*Lz^2)) * cos(kd) ]
-        %         T21 = 1j * (Si/(rho0*c0)) * ( (R + 1/(kl^2))*sin(kd) - (d/(k0*Lz^2))*cos(kd) );
-        % 
-        %         % T22
-        %         T22 = (1/R) * ( cos(kd) - (1/kl)*sin(kd) );
-        % 
-        %         % guardrail: si des NaN/Inf apparaissent (kl ~ 0, inversion numérique), fallback
-        %         if ~all(isfinite([T11,T12,T21,T22]))
-        %             kd  = k0*d;
-        %             ckd = cos(kd); skd = sin(kd);
-        %             Zc  = rho0*c0/Si;
-        %             T(i).T11 = ckd;
-        %             T(i).T12 = 1j*Zc*skd;
-        %             T(i).T21 = 1j*(1/Zc)*skd;
-        %             T(i).T22 = ckd;
         %         else
-        %             T(i).T11 = T11;  T(i).T12 = T12;
-        %             T(i).T21 = T21;  T(i).T22 = T22;
+        %             % ---- Forme fermée type conique via r = sqrt(S) ----
+        %             R   = ro / ri;               % = sqrt(So/Si)
+        %             Lz  = d * ri / (ri - ro);    % "sommet" équivalent par l’aire
+        %             klz = k0 .* Lz;
+        % 
+        %             ckd = cos(kd);
+        %             skd = sin(kd);
+        % 
+        %             T11 = R .* ckd + 1 ./ klz .* skd;
+        %             T12 = 1j * Z0 * (R ./ Si) .* skd;                                  % (/Si corrigé)
+        %             T21 = 1j * Si / Z0 .* ( (R + 1 ./ (klz.^2)) .* skd ...
+        %                                   - (d ./ (k0 .* Lz.^2)) .* ckd );
+        %             T22 = (1 ./ R) .* ( ckd - 1 ./ klz .* skd );
         %         end
+        % 
+        %         % Sortie au format struct
+        %         T.T11 = T11;  T.T12 = T12;
+        %         T.T21 = T21;  T.T22 = T22;
         %     end
-        % end
 
-        % function T = transfer_matrix(obj, env)
+        % function T = transfer_matrix(obj, env) % mieux mais still pas ouf
         % 
         %     % Cavité centrale trapézoïdale (section rectangulaire variable) adaptée de (7)
         %     % Référence: MTMM conique (Eq. 7) -> remapping r := sqrt(S), S = w*d
@@ -246,93 +230,93 @@ classdef classcavity_trapezoidal< classcavity
         %     end
         % end
 
-        function T = transfer_matrix(obj, env)
-            % TRANSFER_MATRIX — Cavité rectangulaire trapézoïdale (S(x)=Si+a x)
-            % Formulation fermée (Bessel d’ordre 0, équation de Webster rectangulaire).
-            % Convention d’état : y = [p ; U] avec U = débit volumique.
-            %
-            % Sortie : tableau struct T(1..Nf) avec champs T11,T12,T21,T22.
-            
-                % --- Fluide
-                param = env.air.parameters;
-                rho0  = param.rho;
-                c0    = param.c0;        % éventuellement complexifié si pertes
-                wvec  = env.w(:);        % scalaire ou vecteur
-                kvec  = wvec ./ c0;
-            
-                % --- Géométrie
-                cfg = obj.Configuration;
-                d   = cfg.Thickness;
-                Si  = cfg.Width  * cfg.Depth;       % section entrée
-                So  = cfg.WidthOut * cfg.DepthOut;  % section sortie
-                a   = (So - Si) / d;
-                Sbar = 0.5*(Si+So);
-            
-                % --- Préallocation
-                Nf = numel(wvec);
-                T(Nf) = struct('T11',[],'T12',[],'T21',[],'T22',[]);
-            
-                % --- Seuils de robustesse
-                tol_uniform = 1e-10 * max(1, Sbar);
-                tol_det     = 1e-12;
-            
-                for i = 1:Nf
-                    w  = wvec(i);
-                    k0 = kvec(i);
-            
-                    % Cas limite : tube uniforme
-                    if abs(So - Si) <= tol_uniform || abs(a) <= eps
-                        kd  = k0 * d;
-                        ckd = cos(kd); skd = sin(kd);
-                        Zc  = rho0*c0 / Si;   % impédance carac. entrée (réf Si)
-                        T(i).T11 = ckd;
-                        T(i).T12 = 1j*Zc*skd;
-                        T(i).T21 = 1j*(1/Zc)*skd;
-                        T(i).T22 = ckd;
-                        continue;
-                    end
-            
-                    % --- Paramètres Bessel (formulation Webster rectangulaire)
-                    beta = k0 / a;           % = k0 / pente
-                    z1   = beta * Si;
-                    z2   = beta * So;
-            
-                    % Fonctions de Bessel aux deux extrémités
-                    J0z1 = besselj(0, z1);  J1z1 = besselj(1, z1);
-                    Y0z1 = bessely(0, z1);  Y1z1 = bessely(1, z1);
-                    J0z2 = besselj(0, z2);  J1z2 = besselj(1, z2);
-                    Y0z2 = bessely(0, z2);  Y1z2 = bessely(1, z2);
-            
-                    % Coefficient alpha (p–U convention)
-                    alpha = (a*beta) / (1j*w*rho0);   % ~ k0/(jωρ0)
-            
-                    % Matrices fondamentales : dépendent de la section locale
-                    M1 = [ J0z1,           Y0z1;
-                           alpha*Si*J1z1,  alpha*Si*Y1z1 ];
-                    M2 = [ J0z2,           Y0z2;
-                           alpha*So*J1z2,  alpha*So*Y1z2 ];
-            
-                    % Inversion 2x2
-                    detM1 = M1(1,1)*M1(2,2) - M1(1,2)*M1(2,1);
-            
-                    if ~isfinite(detM1) || abs(detM1) < tol_det
-                        % Fallback tube uniforme (référence Si)
-                        kd  = k0 * d;
-                        ckd = cos(kd); skd = sin(kd);
-                        Zc  = rho0*c0 / Si;
-                        T(i).T11 = ckd;
-                        T(i).T12 = 1j*Zc*skd;
-                        T(i).T21 = 1j*(1/Zc)*skd;
-                        T(i).T22 = ckd;
-                    else
-                        invM1 = [  M1(2,2), -M1(1,2);
-                                  -M1(2,1),  M1(1,1) ] / detM1;
-                        M = M2 * invM1;
-                        T(i).T11 = M(1,1);  T(i).T12 = M(1,2);
-                        T(i).T21 = M(2,1);  T(i).T22 = M(2,2);
-                    end
-                end
-            end
+        % function T = transfer_matrix(obj, env) % idem qu'un autre pas ouf
+        %     % TRANSFER_MATRIX — Cavité rectangulaire trapézoïdale (S(x)=Si+a x)
+        %     % Formulation fermée (Bessel d’ordre 0, équation de Webster rectangulaire).
+        %     % Convention d’état : y = [p ; U] avec U = débit volumique.
+        %     %
+        %     % Sortie : tableau struct T(1..Nf) avec champs T11,T12,T21,T22.
+        % 
+        %         % --- Fluide
+        %         param = env.air.parameters;
+        %         rho0  = param.rho;
+        %         c0    = param.c0;        % éventuellement complexifié si pertes
+        %         wvec  = env.w(:);        % scalaire ou vecteur
+        %         kvec  = wvec ./ c0;
+        % 
+        %         % --- Géométrie
+        %         cfg = obj.Configuration;
+        %         d   = cfg.Thickness;
+        %         Si  = cfg.Width  * cfg.Depth;       % section entrée
+        %         So  = cfg.WidthOut * cfg.DepthOut;  % section sortie
+        %         a   = (So - Si) / d;
+        %         Sbar = 0.5*(Si+So);
+        % 
+        %         % --- Préallocation
+        %         Nf = numel(wvec);
+        %         T(Nf) = struct('T11',[],'T12',[],'T21',[],'T22',[]);
+        % 
+        %         % --- Seuils de robustesse
+        %         tol_uniform = 1e-10 * max(1, Sbar);
+        %         tol_det     = 1e-12;
+        % 
+        %         for i = 1:Nf
+        %             w  = wvec(i);
+        %             k0 = kvec(i);
+        % 
+        %             % Cas limite : tube uniforme
+        %             if abs(So - Si) <= tol_uniform || abs(a) <= eps
+        %                 kd  = k0 * d;
+        %                 ckd = cos(kd); skd = sin(kd);
+        %                 Zc  = rho0*c0 / Si;   % impédance carac. entrée (réf Si)
+        %                 T(i).T11 = ckd;
+        %                 T(i).T12 = 1j*Zc*skd;
+        %                 T(i).T21 = 1j*(1/Zc)*skd;
+        %                 T(i).T22 = ckd;
+        %                 continue;
+        %             end
+        % 
+        %             % --- Paramètres Bessel (formulation Webster rectangulaire)
+        %             beta = k0 / a;           % = k0 / pente
+        %             z1   = beta * Si;
+        %             z2   = beta * So;
+        % 
+        %             % Fonctions de Bessel aux deux extrémités
+        %             J0z1 = besselj(0, z1);  J1z1 = besselj(1, z1);
+        %             Y0z1 = bessely(0, z1);  Y1z1 = bessely(1, z1);
+        %             J0z2 = besselj(0, z2);  J1z2 = besselj(1, z2);
+        %             Y0z2 = bessely(0, z2);  Y1z2 = bessely(1, z2);
+        % 
+        %             % Coefficient alpha (p–U convention)
+        %             alpha = (a*beta) / (1j*w*rho0);   % ~ k0/(jωρ0)
+        % 
+        %             % Matrices fondamentales : dépendent de la section locale
+        %             M1 = [ J0z1,           Y0z1;
+        %                    alpha*Si*J1z1,  alpha*Si*Y1z1 ];
+        %             M2 = [ J0z2,           Y0z2;
+        %                    alpha*So*J1z2,  alpha*So*Y1z2 ];
+        % 
+        %             % Inversion 2x2
+        %             detM1 = M1(1,1)*M1(2,2) - M1(1,2)*M1(2,1);
+        % 
+        %             if ~isfinite(detM1) || abs(detM1) < tol_det
+        %                 % Fallback tube uniforme (référence Si)
+        %                 kd  = k0 * d;
+        %                 ckd = cos(kd); skd = sin(kd);
+        %                 Zc  = rho0*c0 / Si;
+        %                 T(i).T11 = ckd;
+        %                 T(i).T12 = 1j*Zc*skd;
+        %                 T(i).T21 = 1j*(1/Zc)*skd;
+        %                 T(i).T22 = ckd;
+        %             else
+        %                 invM1 = [  M1(2,2), -M1(1,2);
+        %                           -M1(2,1),  M1(1,1) ] / detM1;
+        %                 M = M2 * invM1;
+        %                 T(i).T11 = M(1,1);  T(i).T12 = M(1,2);
+        %                 T(i).T21 = M(2,1);  T(i).T22 = M(2,2);
+        %             end
+        %         end
+        %     end
                 
         function Zs = surfaceimpedance(obj, Air, w)
 

@@ -20,12 +20,12 @@ ct = @(N) L/N - pt; % Epaisseur (égale) des cavités
 N = linspace(1, 6, 6);
 
 for i = 1:length(N)
-    MMPP = classMMPP(classMMPP.create_config(S, N(i), d, w, {r}, {phi}, {pt}, {ct(N(i))}));
+    MMPP = classMMPP(classMMPP.create_config(S, N(i), {r}, {phi}, {pt}, {ct(N(i))}));
     
     set(0, 'CurrentFigure', f1_1);
     plot(env.w/(2*pi), MMPP.alpha(env), 'DisplayName', [num2str(i), 'P'])
     set(0, 'CurrentFigure', f1_2);
-    perso_plot_surface_impedance(MMPP.surface_impedance(env), env, [num2str(i), 'P'], 20);
+    perso_plot_surface_impedance(env.w/(2*pi), MMPP.surface_impedance(env)/env.air.parameters.Z0, env, [num2str(i), 'P'], 20);
 end
 
 %% Etude sur l'épaisseur d'une plaque
@@ -43,12 +43,12 @@ hold on
 pt = linspace(1, 6, 6) * 1e-3; % Epaisseur des plaques
 
 for i = 1:length(pt)
-    MMPP = classMMPP(classMMPP.create_config(S, N, d, w, {r}, {phi}, {pt(i)}, {ct(N)}));
+    MMPP = classMMPP(classMMPP.create_config(S, N, {r}, {phi}, {pt(i)}, {ct(N)}));
     
     set(0, 'CurrentFigure', f2_1);
     plot(env.w/(2*pi), MMPP.alpha(env), 'DisplayName', [num2str(i), 'P'])
     set(0, 'CurrentFigure', f2_2);
-    perso_plot_surface_impedance(MMPP.surface_impedance(env), env, [num2str(i), 'P'], 20);
+    perso_plot_surface_impedance(env.w/(2*pi), MMPP.surface_impedance(env)/env.air.parameters.Z0, env, [num2str(i), 'P'], 20);
 end
 
 %% Etude sur le rayon des perforations à 6 plaques équi-distantes
@@ -66,12 +66,12 @@ hold on
 r = linspace(1e-4, 4e-4, 8); % Rayon des perforations
 
 for i = 1:length(r)
-    MMPP = classMMPP(classMMPP.create_config(S, N, d, w, {r(i)}, {phi}, {pt}, {ct}));
+    MMPP = classMMPP(classMMPP.create_config(S, N, {r(i)}, {phi}, {pt}, {ct}));
     
     set(0, 'CurrentFigure', f3_1);
     plot(env.w/(2*pi), MMPP.alpha(env), 'DisplayName', [num2str(i), 'P'])
     set(0, 'CurrentFigure', f3_2);
-    perso_plot_surface_impedance(MMPP.surface_impedance(env), env, [num2str(i), 'P'], 20);
+    perso_plot_surface_impedance(env.w/(2*pi), MMPP.surface_impedance(env)/env.air.parameters.Z0, env, [num2str(i), 'P'], 20);
 end
 
 %% Etude sur le rayon des perforations à 6 plaques équi-distantes - rayons inhomogènes
@@ -92,10 +92,10 @@ r = randn(N);
 
 for i = 1:length(m)
     r = m(i) + e * randn(N); % Rayon des perforations
-    MMPP = classMMPP(classMMPP.create_config(S, N, d, w, {r}, {phi}, {pt}, {ct}));
+    MMPP = classMMPP(classMMPP.create_config(S, N, {r}, {phi}, {pt}, {ct}));
     
     set(0, 'CurrentFigure', f4_1);
     plot(env.w/(2*pi), MMPP.alpha(env), 'DisplayName', [num2str(i), 'P'])
     set(0, 'CurrentFigure', f3_2);
-    perso_plot_surface_impedance(MMPP.surface_impedance(env), env, [num2str(i), 'P'], 20);
+    perso_plot_surface_impedance(env.w/(2*pi), MMPP.surface_impedance(env)/env.air.parameters.Z0, env, [num2str(i), 'P'], 20);
 end

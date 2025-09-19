@@ -59,13 +59,11 @@ classdef classlossycavity < classsubelement
 
     methods (Static, Access = public)
     
-        function config = create_config(thickness, width, depth)
+        function config = create_config(surface, thickness)
 
             config = struct();
-            config.Thickness = thickness;
-            [config.Width, w] = deal(width);
-            [config.Depth, d] = deal(depth);
-            [config.Section, config.Surface] = deal(w*d);
+            [config.Section, config.Surface] = deal(surface);
+            config.Thickness = thickness; 
         end
     end
 end

@@ -1,4 +1,4 @@
-function perso_plot_surface_impedance(Zs, env, name, varargin)
+function perso_plot_surface_impedance(f, Zs, env, name, varargin)
 
     % Partie réelle
     subplot(2, 1, 1)
@@ -6,7 +6,7 @@ function perso_plot_surface_impedance(Zs, env, name, varargin)
     xlabel('Fréquence (Hz)')
     ylabel('Re(Zs/Z0)')
 
-    if nargin > 3
+    if nargin > 4
         y_real_max = varargin{1};
     else
         y_real_max = 30;
@@ -14,8 +14,10 @@ function perso_plot_surface_impedance(Zs, env, name, varargin)
 
     ylim([0 y_real_max])
 
-    ReZs = real(Zs/env.air.parameters.Z0);
-    ImZs = imag(Zs/env.air.parameters.Z0);
+    % ReZs = real(Zs/env.air.parameters.Z0);
+    % ImZs = imag(Zs/env.air.parameters.Z0);
+    ReZs = real(Zs);
+    ImZs = imag(Zs);
 
     mask = ImZs(1:end-1) .* ImZs(2:end) < 0;
     % f0 = f(mask);
@@ -26,7 +28,7 @@ function perso_plot_surface_impedance(Zs, env, name, varargin)
     %     % yline(ReZs0(i), '--', 'HandleVisibility', 'off')
     % end
 
-    plot(env.w/(2*pi), ReZs, 'DisplayName', name);
+    plot(f, ReZs, 'DisplayName', name);
     yline(1, '--', 'HandleVisibility', 'off');
     legend('Location', 'best');
 
@@ -40,7 +42,7 @@ function perso_plot_surface_impedance(Zs, env, name, varargin)
     % for i = 1:length(f0)
     %     xline(f0(i), '--', 'HandleVisibility', 'off')
     % end
-    plot(env.w/(2*pi), ImZs, 'DisplayName', name);
+    plot(f, ImZs, 'DisplayName', name);
     yline(0, '--', 'HandleVisibility', 'off');
     legend('Location', 'best');
 end

@@ -39,8 +39,8 @@ hum = 50; % Humidité relative
 % Support fréquentiel
 fmin = 1;
 fmax = 5000;
-% points = 5000;
-points = 100;
+points = 5000;
+% points = 100;
 
 % Niveau sonore
 env = create_environnement(root, t, sp, hum, fmin, fmax, points);

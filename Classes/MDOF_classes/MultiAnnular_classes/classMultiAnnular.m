@@ -22,7 +22,6 @@ classdef classMultiAnnular < classelement
                 % Tranfert des champs de la configuration d'appel vers la configuration de classe
                 obj.Configuration = perso_transfer_fields(config, obj.Configuration);
 
-                R = config.Radius;
                 S = config.Surface;
                 rmp = config.MainPoresRadius;
                 hmp = config.MainPoresThickness;
@@ -81,12 +80,16 @@ classdef classMultiAnnular < classelement
         end
     
         function validate(env)
-           
-            %% Données de référence :
+
+            perso_figure('Validation classMultiAnnular')
+          
+            subplot(2, 1, 1)
+            title('Profil constant (Dupont)')
+            hold on
 
             % création de l'objet de classe
             N = 15;
-            MultiAnnular = classMultiAnnular(classMultiAnnular.create_config(14.5e-3, repmat(2e-3, 1, N+1), 1e-3, 13e-3, 1e-3, N));
+            MultiAnnular_QWL = classMultiAnnular(classMultiAnnular.create_config(14.5e-3, repmat(2e-3, 1, N+1), 1e-3, 13e-3, 1e-3, N));
 
             % % Debog : Comparaison entre les admittances de surface des cavités annulaires avec Hankel et avec l'approximation volumique
             % perso_figure('Debog - classannularcavity_cylindrical dans classMultiAnnular/validation - Zs_Hankel / Zs_Volume');
@@ -95,39 +98,33 @@ classdef classMultiAnnular < classelement
             % annular_cavity.Configuration.CavityModel = 'Volume';
             % perso_plot_surface_impedance(annular_cavity.surface_impedance(env), env, 'Volume');
 
-            alpha_model = MultiAnnular.alpha(env);
+            alpha_model = MultiAnnular_QWL.alpha(env);
             
             % importation des données de références
             data_mes = csvread('validation classMultiAnnular Dupont2018 fig5 black.txt');
             [x_data_mes, y_data_mes] = perso_interpole_et_lisse(data_mes(:, 1), data_mes(:, 2), 1000, 0.05);
 
             data_mod = csvread('validation classMultiAnnular Dupont2018 fig5 blue.txt');
-            [x_data_mod, y_data_mod] = perso_interpole_et_lisse(data_mod(:, 1), data_mod(:, 2), 1000, 0.05);
-            
-            perso_figure('Validation classMultiAnnular - profil constant')
-            hold on
+            [x_data_mod, y_data_mod] = perso_interpole_et_lisse(data_mod(:, 1), data_mod(:, 2), 1000, 0.05); 
 
             plot(env.w/ (2*pi), alpha_model, 'Color', 'g', 'LineWidth', 1, 'DisplayName', 'Modèle');
             plot(x_data_mes, y_data_mes, 'Color', 'k','LineWidth', 1, 'LineStyle', '--', 'DisplayName', 'Données de références - Mesure ');
             plot(x_data_mod, y_data_mod, 'Color', 'b','LineWidth', 1, 'LineStyle', '--', 'DisplayName', 'Données de références - Modèle');
             
-            xlabel("Fréquence (Hz)")
-            ylabel("Coefficient d'Absorption")
-            ylim([0 1])
-            legend()
-
+            perso_configure_alpha_figure(4000);
 
             %% Validation profil décroissant
 
-            perso_figure('Validation classMultiAnnular - profil décroissant')
+            subplot(2, 1, 2)
+            title('Profil Décroissant (Bezançon)')
             hold on   
            
             %% Données de référence : A microstructure material design for low frequency sound absorption, fig.3
 
             % création de l'objet de classe
             N = 15;
-            MultiAnnular = classMultiAnnular(classMultiAnnular.create_config(22.2e-3, perso_interp_config({{4e-3, 0.5e-3, 15, 1}}, 15), 1e-3, 21e-3, 1e-3, N));
-            alpha_model = MultiAnnular.alpha(env);
+            MultiAnnular_QWL = classMultiAnnular_QWL(classMultiAnnular.create_config(22.2e-3, perso_interp_config({{4e-3, 0.5e-3, 15, 1}}, 15), 1e-3, 21e-3, 1e-3, N));
+            alpha_model = MultiAnnular_QWL.alpha(env);
             
             % importation des données de références
             data_mes = csvread('validation classMultiAnnular Bezançon2024 fig5b black.txt');
@@ -140,11 +137,7 @@ classdef classMultiAnnular < classelement
             plot(x_data_mes, y_data_mes, 'Color', 'k','LineWidth', 1, 'LineStyle', '--', 'DisplayName', 'Données de références - Mesure ');
             plot(x_data_mod, y_data_mod, 'Color', 'b','LineWidth', 1, 'LineStyle', '--', 'DisplayName', 'Données de références - Modèle');
 
-            xlabel("Fréquence (Hz)")
-            ylabel("Coefficient d'Absorption")
-            ylim([0 1])
-            xlim([0 4000])
-            legend()
+            perso_configure_alpha_figure(4000);
         end
     end
 

@@ -59,7 +59,7 @@ classdef classMPP_Circular_HL_flow < classMPP_Circular_HL
             a = [1.0 -1.4092 0.0 0.33818 0.0 0.06793 -0.02287 0.003015 -0.01614];
             sum_a = dot(a, sqrt(phi).^(0:length(a)-1));
 
-            % Tortuosité non linéaire ([5], p. 7, eq. 28)
+            % Tortuosité non linéaire ([5], p. 7, eq. 28) 
             tor = 1 + 2 * psi / (1 + 305 * env.M^3) * 0.48 * sqrt(pi * pr^2) / t * sum_a ...
                 * (1 + 1 / (1 - phi^2) ...
                 * (-1/2 + classMPP_Circular_HL.f(env, phi)))^(-1);

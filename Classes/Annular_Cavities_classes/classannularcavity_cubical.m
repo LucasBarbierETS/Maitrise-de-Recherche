@@ -15,6 +15,7 @@ classdef classannularcavity_cubical < classsubelement
             rho = air.parameters.rho;
             % c0 = air.parameters.c0;
             c0 = air.parameters.c0 * (1+0.05*1j); % perso_ouvrir_lien_Zotero('zotero://open-pdf/library/items/233HZ8GN?page=7&annotation=QLW3FP87')
+            % c0 = air.parameters.c0 * (1+0.01*1j); % perso_ouvrir_lien_Zotero('zotero://open-pdf/library/items/233HZ8GN?page=7&annotation=QLW3FP87')
          
             mpw = config.MainPoreWidth;
             cw  = config.CavityWidth;
@@ -29,7 +30,9 @@ classdef classannularcavity_cubical < classsubelement
                     
                     % Calcul du volume de la cavité :
                     % Vcav = ct * (cd - mpd) * (cw - mpw); % Différence des volumes de deux cubes
-                    Vcav = ct * cd *cw - ct * mpd * mpw; % Différence des volumes de deux cubes
+                    Vcav = (ct * cd * cw - ct * mpd * mpw)/2; % Différence des volumes de deux cubes
+                    % Vcav = (ct * cd * cw - ct * mpd * mpw); % Différence des volumes de deux cubes
+                    % Vcav = ct * cd * cw / 2; % Demi cube
                     % Si on considère que la surface ou s'applique l'admittance
                     % voit a chaque fois la moitié du volume seulement, il faut
                     % alors divise ce volume par 2.
@@ -56,8 +59,9 @@ classdef classannularcavity_cubical < classsubelement
 
                 case 'Plane Wave'
                     
-                    cavity = classcavity_rectangular(classcavity_rectangular.create_config(cw - mpw, ct, cd));
-                    Zsde = 2 * cavity.surface_impedance(env);
+                    cavity = classcavity(classcavity_rectangular.create_config((cw - mpw)/2, ct, cd));
+                    % cavity = classcavity(classcavity_rectangular.create_config(cw/2, ct, cd));
+                    Zsde = cavity.surface_impedance(env);
             end
         end
     end
