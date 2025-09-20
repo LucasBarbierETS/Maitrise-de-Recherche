@@ -1,4 +1,4 @@
-%% Exploitation des données expérimentales en tube à incidence normale Echantillon 4
+%% Exploitation des données expérimentales en tube à incidence normale Echantillon 42
 
 %%  Gestion des adresses et des répértoires
 folder_path = [env.Root, '\Répertoire GitHub\Mesures expérimentales\Echantillons Hutchinson 1ère itération\Echantillon 1.4 Hutchinson'];
@@ -8,15 +8,15 @@ folder_path = [env.Root, '\Répertoire GitHub\Mesures expérimentales\Echantillo
 data4 = perso_load_mecanum_files([folder_path, '\Export_Data']);
 
 % Coefficient d'absorption
-alpha4 = data4.AbsorptionCoefficientOnCavity;
-f = alpha4.Sample1_Frequency_Hz_;
-alpha4_100 = alpha4.AbsorptionCoefficientOnCavity;
-alpha4_110 = alpha4.AbsorptionCoefficientOnCavity_1;
-alpha4_120 = alpha4.AbsorptionCoefficientOnCavity_2;
-alpha4_130 = alpha4.AbsorptionCoefficientOnCavity_3;
-alpha4_140 = alpha4.AbsorptionCoefficientOnCavity_4;
-alpha4_145 = alpha4.AbsorptionCoefficientOnCavity_5;
-alpha4_150 = alpha4.AbsorptionCoefficientOnCavity_6;
+alpha4 = data4.alpha;
+f = data4.f;
+alpha4_100 = alpha4.Sample1;
+alpha4_110 = alpha4.Sample2;
+alpha4_120 = alpha4.Sample3;
+alpha4_130 = alpha4.Sample4;
+alpha4_140 = alpha4.Sample5;
+alpha4_145 = alpha4.Sample6;
+alpha4_150 = alpha4.Sample7;
 
 %% Définition de la configuration géométrique
 
@@ -65,7 +65,7 @@ env_FEM = handle_env_FEM(points_FEM);
 % Tube3D_ap.plot_alpha(env_FEM, 'Modélisation numérique 3D - TV')
 
 Tube3D_ap = ImpedanceTube3D(ImpedanceTube3D.create_config({}));
-Tube3D_ap.Configuration.ComsolModel = mphload([folder_path, '\modèle numérique 3D-AP.mph']);
+Tube3D_ap = Tube3D_ap.load_model(mphload([folder_path, '\modèle numérique 3D-AP.mph']));
 Tube3D_ap.plot_alpha('Modélisation numérique 3D - AP');
 
 xlim([f_min, f_max])

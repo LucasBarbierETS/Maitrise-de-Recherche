@@ -8,23 +8,15 @@ folder_path = [env.Root, '\Répertoire GitHub\Mesures expérimentales\Echantillo
 data3 = perso_load_mecanum_files([folder_path, '\Export_Data']);
 
 % Coefficient d'absorption
-SPL3 = data3.SoundPressureLevelAtMaterialSurface_dB_;
-alpha3 = data3.AbsorptionCoefficientOnCavity;
-f = alpha3.Sample1_Frequency_Hz_;
-alpha3_100 = alpha3.AbsorptionCoefficientOnCavity;
-SPL3_100 = SPL3.SoundPressureLevelAtMaterialSurface_dB_;
-alpha3_110 = alpha3.AbsorptionCoefficientOnCavity_1;
-SPL3_110 = SPL3.SoundPressureLevelAtMaterialSurface_dB__1;
-alpha3_120 = alpha3.AbsorptionCoefficientOnCavity_2;
-SPL3_120 = SPL3.SoundPressureLevelAtMaterialSurface_dB__2;
-alpha3_130 = alpha3.AbsorptionCoefficientOnCavity_3;
-SPL3_130 = SPL3.SoundPressureLevelAtMaterialSurface_dB__3;
-alpha3_140 = alpha3.AbsorptionCoefficientOnCavity_4;
-SPL3_140 = SPL3.SoundPressureLevelAtMaterialSurface_dB__4;
-alpha3_145 = alpha3.AbsorptionCoefficientOnCavity_5;
-SPL3_145 = SPL3.SoundPressureLevelAtMaterialSurface_dB__5;
-alpha3_150 = alpha3.AbsorptionCoefficientOnCavity_6;
-SPL3_150 = SPL3.SoundPressureLevelAtMaterialSurface_dB__6;
+alpha3 = data3.alpha;
+f = data3.f;
+alpha3_100 = alpha3.Sample1;
+alpha3_110 = alpha3.Sample2;
+alpha3_120 = alpha3.Sample3;
+alpha3_130 = alpha3.Sample4;
+alpha3_140 = alpha3.Sample5;
+alpha3_145 = alpha3.Sample6;
+alpha3_150 = alpha3.Sample7;
 
 %% Définition de la configuration géométrique
 
@@ -73,8 +65,9 @@ plot(env.w/(2*pi), alpha_model, 'DisplayName', 'Modèle analytique');
 % Tube3D_ap.plot_alpha('Modélisation numérique 3D - AP')
 
 Tube3D_ap = ImpedanceTube3D(ImpedanceTube3D.create_config({}));
-Tube3D_ap.Configuration.ComsolModel = mphload([folder_path, '\modèle numérique 3D-AP.mph']);
+Tube3D_ap = Tube3D_ap.load_model(mphload([folder_path, '\modèle numérique 3D-AP.mph']));
 Tube3D_ap.plot_alpha('Modélisation numérique 3D - AP');
+
 xlim([f_min, f_max])
 legend('Location','best')
 

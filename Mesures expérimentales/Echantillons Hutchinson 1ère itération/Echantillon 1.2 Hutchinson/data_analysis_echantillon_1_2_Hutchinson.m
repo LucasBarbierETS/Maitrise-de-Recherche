@@ -8,15 +8,15 @@ folder_path = [env.Root, '\Répertoire GitHub\Mesures expérimentales\Echantillo
 data2 = perso_load_mecanum_files([folder_path, '\Export_Data']);
 
 % Coefficient d'absorption
-alpha2 = data2.AbsorptionCoefficientOnCavity;
-f = alpha2.Sample1_Frequency_Hz_;
-alpha2_100 = alpha2.AbsorptionCoefficientOnCavity;
-alpha2_110 = alpha2.AbsorptionCoefficientOnCavity_1;
-alpha2_120 = alpha2.AbsorptionCoefficientOnCavity_2;
-alpha2_130 = alpha2.AbsorptionCoefficientOnCavity_3;
-alpha2_140 = alpha2.AbsorptionCoefficientOnCavity_4;
-alpha2_145 = alpha2.AbsorptionCoefficientOnCavity_5;
-alpha2_150 = alpha2.AbsorptionCoefficientOnCavity_6;
+alpha2 = data2.alpha;
+f = data2.f;
+alpha2_100 = alpha2.Sample1;
+alpha2_110 = alpha2.Sample2;
+alpha2_120 = alpha2.Sample3;
+alpha2_130 = alpha2.Sample4;
+alpha2_140 = alpha2.Sample5;
+alpha2_145 = alpha2.Sample6;
+alpha2_150 = alpha2.Sample7;
 
 %% Définition de la configuration géométrique
 
@@ -65,7 +65,7 @@ plot(env.w/(2*pi), alpha_model, 'DisplayName', 'Modèle analytique');
 % Tube3D_ap.plot_alpha('Modélisation numérique 3D - AP')
 
 Tube3D_ap = ImpedanceTube3D(ImpedanceTube3D.create_config({}));
-Tube3D_ap.Configuration.ComsolModel = mphload([folder_path, '\modèle numérique 3D-AP.mph']);
+Tube3D_ap = Tube3D_ap.load_model(mphload([folder_path, '\modèle numérique 3D-AP.mph']));
 Tube3D_ap.plot_alpha('Modélisation numérique 3D - AP');
 
 xlim([f_min, f_max])

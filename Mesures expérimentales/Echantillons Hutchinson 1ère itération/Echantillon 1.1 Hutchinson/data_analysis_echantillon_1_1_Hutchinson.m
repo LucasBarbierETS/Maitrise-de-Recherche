@@ -8,17 +8,16 @@ folder_path = [env.Root, '\Répertoire GitHub\Mesures expérimentales\Echantillo
 data1 = perso_load_mecanum_files([folder_path, '\Export_Data']);
 
 % Coefficient d'absorption
-alpha1 = data1.AbsorptionCoefficientOnCavity;
-SPL1 = data1.SoundPressureLevelAtMaterialSurface_dB_;
-f = alpha1.Sample1_Frequency_Hz_; f_min = f(1); f_max = f(end);
-alpha1_100 = alpha1.AbsorptionCoefficientOnCavity;
-alpha1_110 = alpha1.AbsorptionCoefficientOnCavity_1;
-alpha1_120 = alpha1.AbsorptionCoefficientOnCavity_2;
-alpha1_130 = alpha1.AbsorptionCoefficientOnCavity_3;
-alpha1_140 = alpha1.AbsorptionCoefficientOnCavity_4;
-alpha1_145 = alpha1.AbsorptionCoefficientOnCavity_5;
-SPL1_145 = SPL1.SoundPressureLevelAtMaterialSurface_dB__5;
-alpha1_150 = alpha1.AbsorptionCoefficientOnCavity_6;
+alpha1 = data1.alpha;
+SPL1 = data1.SPL;
+f = data1.f; f_min = f(1); f_max = f(end);
+alpha1_100 = data1.alpha.Sample1;
+alpha1_110 = data1.alpha.Sample2;
+alpha1_120 = data1.alpha.Sample3;
+alpha1_130 = data1.alpha.Sample4;
+alpha1_140 = data1.alpha.Sample5;
+alpha1_145 = data1.alpha.Sample6;
+alpha1_150 = data1.alpha.Sample7;
 
 %% Définition de la configuration géométrique
 
@@ -37,6 +36,7 @@ config1 = classMPPSBH_Rectangular.create_explicit_rectangular_pattern_config(30e
 %% Résultats expérimentaux
 
 perso_figure('Validation expérimentale - Echantillons Hutchinson - 100 dB');
+% perso_figure('alpha');
 
 subplot(2, 2, 1)
 title('Echantillon 1.1')
@@ -81,7 +81,7 @@ plot(env.w/(2*pi), alpha_model, 'DisplayName', 'Modèle analytique');
 % Tube3D_ap.plot_alpha('Modélisation numérique 3D - TV')
 
 Tube3D_ap = ImpedanceTube3D(ImpedanceTube3D.create_config({}));
-Tube3D_ap.Configuration.ComsolModel = mphload([folder_path, '\modèle numérique 3D-AP.mph']);
+Tube3D_ap = Tube3D_ap.load_model(mphload([folder_path, '\modèle numérique 3D-AP.mph']));
 Tube3D_ap.plot_alpha('Modélisation numérique 3D - AP');
 
 xlim([f_min, f_max])

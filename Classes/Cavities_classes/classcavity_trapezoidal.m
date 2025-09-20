@@ -318,10 +318,11 @@ classdef classcavity_trapezoidal< classcavity
         %         end
         %     end
                 
-        function Zs = surfaceimpedance(obj, Air, w)
+        function Zs = surfaceimpedance(obj, env)
 
-            T = obj.transfer_matrix(Air, w);
-            Zs = T.T11 ./ T.T21;
+            T = obj.transfer_matrix(env);
+            S = obj.Configuration.Surface;
+            Zs = S * T.T11 ./ T.T21;
         end
     end
 

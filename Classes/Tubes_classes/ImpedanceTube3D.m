@@ -34,14 +34,14 @@ classdef ImpedanceTube3D
             perso_configure_alpha_figure(3000);
         end
 
-        function obj = plot_surface_impedance(obj, name)
+        function obj = plot_surface_impedance(obj, env, name)
 
             hold on
 
             try
                 data = obj.Configuration.Data3D;
                 Zs_num = data(:, 5) + 1i*data(:, 6);
-                perso_plot_surface_impedance(data(:, 1), Zs_num, name);
+                perso_plot_surface_impedance(data(:, 1), Zs_num, env, name);
             catch 
                 return
             end
