@@ -3,19 +3,22 @@
 try
     v = mphversion;
 catch
-    system('start comsolmphserver');
-    addpath('C:\Program Files\COMSOL\COMSOL63\Multiphysics\mli');
-    mphstart;
-    import com.comsol.model.*
-    import com.comsol.model.util.*
+    try
+        system('start comsolmphserver');
+        addpath('C:\Program Files\COMSOL\COMSOL63\Multiphysics\mli');
+        mphstart;
+        import com.comsol.model.*
+        import com.comsol.model.util.*
+    catch
+    end
 end
 
 %% Ajout des chemins d'accès
 
 try
-    % root = 'E:\Montréal 2023 - 2025\Maitrise LB';
-    % addpath([root_A, '\MATLAB\Functions'])
-    % perso_add_all_paths([root_A, '\MATLAB']);
+    addpath('C:\Users\paulf\Documents\GitHub\Maitrise-de-Recherche\Functions')
+    root = 'C:\Users\lucas.barbier\Documents\Maitrise ETS';
+    perso_add_all_paths([root, '\Répertoire GitHub']);
 catch
 end
 

@@ -41,21 +41,18 @@ Contributions.contribution_MPPSBH_element_i = @(x, i) classelement(classelement.
      classcavity_rectangular(classcavity_rectangular.create_config(ETS_cavities_thickness, ETS_cavities_width, ETS_cavities_depth)), ...
      Objets.MPPSBH_i(x_ETS(x), radius(x_radius(x)), i)}, 'closed', ETS_input_surface));
 
+%% Elements MPPSBHs
+
+% mkdir([folder_path, '\Validations numériques\Validation 2D-TV des élements MPPSBHs']);
+% mkdir([folder_path, '\Validations numériques\Validation 3D-AP des con élements MPPSBHs']);
+% mkdir([folder_path, '\Figures']);
+
+
 %% Contributions des élements MPPSBHs
+
 % mkdir([folder_path, '\Validations numériques\Validation 2D-TV des contributions des élements MPPSBHs']);
 % mkdir([folder_path, '\Validations numériques\Validation 3D-AP des contributions des élements MPPSBHs']);
 % mkdir([folder_path, '\Figures']);
-
-%% Validation de la cavité jaune
-% 
-% perso_figure('Validation numérique 2D - contribution cavité jaune - module ETS'); 
-% Tube_ETS_yc_contrib = ImpedanceTube2D(ImpedanceTube2D.create_config({Contributions.contribution_ETS_yellow_cavity(x_opti)}));
-% Tube_ETS_yc_contrib = Tube_ETS_yc_contrib.launch_tube_measurement(env_FEM);
-% Tube_ETS_yc_contrib.plot_alpha(env_FEM, 'Contribution ETS cavité jaune');
-% comsol_model = Tube_ETS_yc_contrib.Configuration.ComsolModel;
-% Contributions.contribution_ETS_yellow_cavity(x_opti).plot_alpha(env_FEM, 'modèle linéaire');
-% saveas(gcf, [folder_path, '\Figures\Validation de la contribution de la cavité jaune de la cartouche ETS.fig']);
-% mphsave(comsol_model, [folder_path, '\Validation numérique\Validation de la contribution de la cavité jaune de la cartouche ETS.mph']);
 
 N = linspace(1, 8, 8);
 % N = [1,8];
