@@ -1,7 +1,7 @@
 p0 = 20e-6;
 
 % Lis le fichier en ignorant les lignes qui commencent par '#'
-M = readmatrix('C:\Users\lucas.barbier\Documents\Maitrise dossier secondaire\MATLAB\Optimisation\Optimisation REAR\stator_spectrum_data.txt', ...
+M = readmatrix([env.Root, '\Répertoire GitHub\Optimisation\Optimisation REAR\stator_spectrum_data.txt'], ...
                'CommentStyle', '#');
 
 f1 = M(:,1); 

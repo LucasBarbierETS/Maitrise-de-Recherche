@@ -33,18 +33,21 @@ classdef classMultiAnnular < classelement
                 Smp = @(i) pi*rmp(i)^2;
 
                 % Résistivité au passage de l'air du pore principal
-                sig_mp = @(env) 8*env.air.parameters.eta /(hde^2); % [4] Table 2
+                % sig_mp = @(env) 8*env.air.parameters.eta /(rmp^2); % [4] Table 2
                 
                 % Demi-pore principal 
-                half_main_pore = @(i) classJCA_Rigid(classJCA_Rigid.create_config(Smp(i), hmp/2, 1, 1, sig_mp, rmp(i), rmp(i)));
+                half_main_pore = @(i) classQWL_Circle(classQWL_Circle.create_config(hmp/2, rmp(i)));
+                % half_main_pore = @(i) classJCA_Rigid(classJCA_Rigid.create_config(Smp(i), hmp/2, 1, 1, @(env) sig_mp(env, i), rmp(i), rmp(i)));
                 
                 % Cellule annulaire (common pore + annular cavity)
                 annular_cell = @(i) classannularcell(classannularcell.create_config(rmp(i), rmp(i+1), rde, hde));
 
                 % Rayonnement
                 s = @(i) Smp(i)/S; % Porosité apparente
+                % hend = @(i) 0;
                 hend = @(i) 0.48*sqrt(pi)*rmp(i)*(1-1.14*sqrt(s(i)));
-                end_effect = @(i) classJCA_Rigid(classJCA_Rigid.create_config(Smp(i), hend(i), 1, 1, sig_mp, rmp(i), rmp(i)));
+                end_effect = @(i) classQWL_Circle(classQWL_Circle.create_config(hend(i), rmp(i)));
+                % end_effect = @(i) classJCA_Rigid(classJCA_Rigid.create_config(Smp(i), hend(i), 1, 1, sig_mp, rmp(i), rmp(i)));
 
                 obj.Configuration.ListOfSubelements{end+1} = end_effect(1);
                 % obj.Configuration.ListOfSubelements{end+1} = half_main_pore(1);
@@ -101,10 +104,10 @@ classdef classMultiAnnular < classelement
             alpha_model = MultiAnnular_QWL.alpha(env);
             
             % importation des données de références
-            data_mes = csvread('validation classMultiAnnular Dupont2018 fig5 black.txt');
+            data_mes = readmatrix('validation classMultiAnnular Dupont2018 fig5 black.txt');
             [x_data_mes, y_data_mes] = perso_interpole_et_lisse(data_mes(:, 1), data_mes(:, 2), 1000, 0.05);
 
-            data_mod = csvread('validation classMultiAnnular Dupont2018 fig5 blue.txt');
+            data_mod = readmatrix('validation classMultiAnnular Dupont2018 fig5 blue.txt');
             [x_data_mod, y_data_mod] = perso_interpole_et_lisse(data_mod(:, 1), data_mod(:, 2), 1000, 0.05); 
 
             plot(env.w/ (2*pi), alpha_model, 'Color', 'g', 'LineWidth', 1, 'DisplayName', 'Modèle');
@@ -118,19 +121,19 @@ classdef classMultiAnnular < classelement
             subplot(2, 1, 2)
             title('Profil Décroissant (Bezançon)')
             hold on   
-           
+
             %% Données de référence : A microstructure material design for low frequency sound absorption, fig.3
 
             % création de l'objet de classe
             N = 15;
             MultiAnnular_QWL = classMultiAnnular_QWL(classMultiAnnular.create_config(22.2e-3, perso_interp_config({{4e-3, 0.5e-3, 15, 1}}, 15), 1e-3, 21e-3, 1e-3, N));
             alpha_model = MultiAnnular_QWL.alpha(env);
-            
+
             % importation des données de références
-            data_mes = csvread('validation classMultiAnnular Bezançon2024 fig5b black.txt');
+            data_mes = readmatrix('validation classMultiAnnular Bezançon2024 fig5b black.txt');
             [x_data_mes, y_data_mes] = perso_interpole_et_lisse(data_mes(:, 1), data_mes(:, 2), 1000, 0.05);
 
-            data_mod = csvread('validation classMultiAnnular Bezançon2024 fig5b blue.txt');
+            data_mod = readmatrix('validation classMultiAnnular Bezançon2024 fig5b blue.txt');
             [x_data_mod, y_data_mod] = perso_interpole_et_lisse(data_mod(:, 1), data_mod(:, 2), 1000, 0.05);
 
             plot(env.w/ (2*pi), alpha_model, 'Color', 'g', 'LineWidth', 1, 'DisplayName', 'Modèle');

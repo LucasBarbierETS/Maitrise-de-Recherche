@@ -23,11 +23,17 @@ classdef classQWL < classJCA_Rigid
             l = config.Length;
             s = config.Surface;
 
+            if isfield(config, 'CorrectionLength')
+                l_corr = l + config.CorrectionLength;
+            else
+                l_corr = l;
+            end
+
             % Définir la résistivité
             resistivity = @(env) 4 * k0 * env.air.parameters.eta / rh^2;
 
             % Appeler le constructeur de la classe parent
-            obj@classJCA_Rigid(classJCA_Rigid.create_config(s, l, 1, 1, resistivity, rh, rh));
+            obj@classJCA_Rigid(classJCA_Rigid.create_config(s, l_corr, 1, 1, resistivity, rh, rh));
     
             % On tranfert les paramètres de la configuration d'appel vers
             % la configuration de classe

@@ -15,7 +15,7 @@ classdef classQWL_Circle < classQWL
     
     methods (Static, Access = public)
 
-        function config = create_config(length, radius)
+        function config = create_config(length, radius, varargin)
         
             config = struct();
             config.Length = length;
@@ -24,6 +24,10 @@ classdef classQWL_Circle < classQWL
             config.Surface = pi*radius^2;
             config.PermeabilityCoefficient = 2; % [1] p. 8
             config.HydraulicRadius = radius; % [1] p. 8
+
+            if nargin > 2
+                config.CorrectionLength = varargin{1};
+            end
         end
     end
 end

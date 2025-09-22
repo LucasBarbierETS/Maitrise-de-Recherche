@@ -71,10 +71,10 @@ classdef classMPP_Maa
     
     methods (Static, Access = public)
 
-        function config = create_config(section, thickness, perforations_radius, porosity)
+        function config = create_config(surface, thickness, perforations_radius, porosity)
             
             config = struct();
-            config.Section = section;
+            [config.Section, config.Surface] = deal(surface);
             config.Thickness = thickness;
             config.PerforationsRadius = perforations_radius;
             config.Porosity = porosity;

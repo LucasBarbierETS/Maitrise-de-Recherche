@@ -10,7 +10,7 @@ data  = perso_load_mecanum_files([exp_data_path, '\Export_Data_bloc', num2str(N)
 
 %% Choix de la mesure étudiée
 
-mes = 6;
+mes = 3;
 
 %% Vérification de la mesure choisie pour l'échantillon choisi
 
@@ -25,18 +25,18 @@ title('alpha'); legend('Location', 'best');
 subplot(2, 2, 2);
 hold on
 plot(data.f, abs(data.Zs.(['Sample', num2str(mes)])), 'DisplayName', 'Flat at Sample');
-plot(data.f, abs(data.Zs.(['Sample', num2str(mes)])), 'DisplayName', 'Flat at Mic');
+plot(data.f, abs(data.Zs.(['Sample', num2str(mes + 6)])), 'DisplayName', 'Flat at Mic');
 title('abs(Zs)'); legend('Location', 'best');
 
 subplot(2, 2, 3);
 hold on
 plot(data.f, abs(data.R.(['Sample', num2str(mes)])), 'DisplayName', 'Flat at Sample');
-plot(data.f, abs(data.R.(['Sample', num2str(mes)])), 'DisplayName', 'Flat at Mic');
+plot(data.f, abs(data.R.(['Sample', num2str(mes + 6)])), 'DisplayName', 'Flat at Mic');
 title('abs(R)'); legend('Location', 'best');
 subplot(2, 2, 4);
 hold on
 plot(data.f, abs(data.SPL.(['Sample', num2str(mes)])), 'DisplayName', 'Flat at Sample');
-plot(data.f, abs(data.SPL.(['Sample', num2str(mes)])), 'DisplayName', 'Flat at Mic');
+plot(data.f, abs(data.SPL.(['Sample', num2str(mes + 6)])), 'DisplayName', 'Flat at Mic');
 title('SPL'); legend('Location', 'best');
 
 %% Configurations des 4 échantillons

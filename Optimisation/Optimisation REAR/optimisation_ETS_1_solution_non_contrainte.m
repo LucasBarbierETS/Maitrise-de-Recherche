@@ -1,7 +1,7 @@
 %% Sélection du dossier de destination des élements sauvegardés
 
 % folderName = uigetdir();
-folderName = 'C:\Users\lucas.barbier\Documents\Maitrise dossier secondaire\MATLAB\Optimisation\Optimisation REAR';
+folderName = [env.Root, '\Optimisation\Optimisation REAR'];
 % folderName = 'C:\Users\lucas.barbier\Documents\Maitrise dossier secondaire\MATLAB\Optimisation\Optimisation REAR\Validation numérique';
 
 %% Ouverture de l'environnement matlab
@@ -67,7 +67,7 @@ depth_holes_distance = ETS_cavities_depth / (depth_holes_number + 1);
 
 %% Structure des variables optimisées
 
-NS = 1; % Nombre de MPPSBH optimisés
+NS = 4; % Nombre de MPPSBH optimisés
 NV = 4;
 % NV = 3; % Nombre de variables pour chaque solution (rayon des perforations, nombre de perfs en largeur, espacement des perfs en largeur)
 N = 6; % Nombre de plaques optimisées indépendantes pour chaque solution

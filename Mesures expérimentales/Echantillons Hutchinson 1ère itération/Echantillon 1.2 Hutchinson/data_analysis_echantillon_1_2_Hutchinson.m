@@ -18,6 +18,22 @@ alpha2_140 = alpha2.Sample5;
 alpha2_145 = alpha2.Sample6;
 alpha2_150 = alpha2.Sample7;
 
+%% Affichage des résultats expérimentaux
+
+perso_figure('Validation expérimentale - Echantillon 1.2 Hutchinson - 100-150 dB');
+title('Echantillon 1.2')
+hold on
+
+plot(f, alpha2_100, 'DisplayName', '100 dB');
+plot(f, alpha2_110, 'DisplayName', '110 dB');
+plot(f, alpha2_120, 'DisplayName', '120 dB');
+plot(f, alpha2_130, 'DisplayName', '130 dB');
+plot(f, alpha2_140, 'DisplayName', '140 dB');
+plot(f, alpha2_145, 'DisplayName', '145 dB');
+plot(f, alpha2_150, 'DisplayName', '150 dB');
+perso_configure_alpha_figure(fmax);
+xlim([f_min, f_max])
+
 %% Définition de la configuration géométrique
 
 % Configuration analytique
@@ -36,16 +52,18 @@ config2 = classMPPSBH_Rectangular.create_explicit_rectangular_pattern_config(30e
 
 perso_figure('Validation expérimentale - Echantillons Hutchinson - 100 dB')
 
-subplot(2, 2, 2)
+subplot(2, 1, 2)
 title('Echantillon 1.2')
 hold on
 
 plot(f, alpha2_100, 'DisplayName', 'Résultat expérimental');
 
 % Modèle linéaire
-MPPSBH = classMPPSBH_Rectangular(config2);
+MPPSBH = classMPPSBH_Rectangular_frustum(config2);
 alpha_model = MPPSBH.alpha(handle_env(100, 0));
-plot(env.w/(2*pi), alpha_model, 'DisplayName', 'Modèle analytique');
+plot(env.w/(2*pi), alpha_model, 'DisplayName', 'Modèle analytique - approx.p');
+perso_configure_alpha_figure
+xlim([f_min, f_max])
 
 %% Validation numérique 3D
 
@@ -68,7 +86,7 @@ Tube3D_ap = ImpedanceTube3D(ImpedanceTube3D.create_config({}));
 Tube3D_ap = Tube3D_ap.load_model(mphload([folder_path, '\modèle numérique 3D-AP.mph']));
 Tube3D_ap.plot_alpha('Modélisation numérique 3D - AP');
 
-xlim([f_min, f_max])
+xlim([0, f_max])
 legend('Location','best')
 
 % %%%%%%%%%%%%%%%%%%%%%%%%%%%% 145 dB %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%

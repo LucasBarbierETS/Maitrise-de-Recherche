@@ -38,18 +38,22 @@ config1 = classMPPSBH_Rectangular.create_explicit_rectangular_pattern_config(30e
 perso_figure('Validation expérimentale - Echantillons Hutchinson - 100 dB');
 % perso_figure('alpha');
 
-subplot(2, 2, 1)
+subplot(2, 1, 1)
 title('Echantillon 1.1')
 hold on
 
 plot(f, alpha1_100, 'DisplayName', 'Résultat expérimental');
 
 % Modèle linéaire
-MPPSBH = classMPPSBH_Rectangular(config1);
+% MPPSBH = classMPPSBH_Rectangular(config1);
+MPPSBH_frustum = classMPPSBH_Rectangular_frustum(config1);
 % MPPSBH_sbdv = classMPPSBH_Rectangular_subdiv(config1);
-alpha_model = MPPSBH.alpha(handle_env(100, 0));
+% alpha_model = MPPSBH.alpha(handle_env(100, 0));
+alpha_model_frustum = MPPSBH_frustum.alpha(handle_env(100, 0));
+
 % alpha_model_sbdv = MPPSBH_sbdv.alpha(handle_env(100, 0));
-plot(env.w/(2*pi), alpha_model, 'DisplayName', 'Modèle analytique');
+% plot(env.w/(2*pi), alpha_model, 'DisplayName', 'Modèle analytique - approx. p');
+plot(env.w/(2*pi), alpha_model_frustum, 'DisplayName', 'Modèle analytique - approx. c');
 % plot(env.w/(2*pi), alpha_model_sbdv, 'DisplayName', 'Modèle analytiques subdiv');
 
 %% Validation numérique 2D
@@ -96,45 +100,76 @@ legend('Location','best')
 % plot(env.w/(2*pi), MPPSBH.transmission_loss(handle_env(100, 0), TM_sb), 'DisplayName', 'Modèle')
 % legend()
 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%% 140 dB %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-% %%%%%%%%%%%%%%%%%%%%%%%%%%%% 145 dB %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-% 
-% perso_figure('Validation expérimentale - Echantillon Hutchinson 1.1 - 145 dB')
-% subplot(2, 1, 1)
+perso_figure('Validation expérimentale - Echantillon Hutchinson 1.1 - Forts niveaux')
+subplot(2, 1, 1)
+title('140 dB')
+hold on
+
+plot(f, alpha1_140, 'DisplayName', 'Mesures expérimentales');
+
+% % Modèle linéaire
+% alpha_model = classMPPSBH_Rectangular(config1).alpha(handle_env(145, 0));
+% plot(env.w/(2*pi), alpha_model, 'DisplayName', 'Modèle analytique linéaire');
+% legend()
+
+% Modèle non-linéaire appliqué à toutes les plaques 
+Zs_NL = classMPPSBH_Rectangular_HL(config1).alpha(handle_env(140, 0), 'iter');
+plot(env.w/(2*pi), Zs_NL, 'DisplayName', 'Modèle analytique non-linéaire itératif');
+legend()
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%% 150 dB %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+subplot(2, 1, 2)
+title('150 dB')
+hold on
+
+plot(f, alpha1_150, 'DisplayName', 'Mesures expérimentales');
+
+% % Modèle linéaire
+% alpha_model = classMPPSBH_Rectangular(config1).alpha(handle_env(145, 0));
+% plot(env.w/(2*pi), alpha_model, 'DisplayName', 'Modèle analytique linéaire');
+% legend()
+
+% Modèle non-linéaire appliqué à toutes les plaques 
+Zs_NL = classMPPSBH_Rectangular_HL(config1).alpha(handle_env(150, 0), 'iter');
+plot(env.w/(2*pi), Zs_NL, 'DisplayName', 'Modèle analytique non-linéaire itératif');
+legend()
+
+perso_figure('Validation expérimentale - Echantillon Hutchinson 1.1 - 145 dB -  Surface d''impédance')
+hold on
+
+perso_plot_surface_impedance(f, data1.Zs.Sample6, 'DisplayName', 'Mesures expérimentales - 145 dB');
+
+% % Modèle linéaire
+% alpha_model = classMPPSBH_Rectangular(config1).alpha(handle_env(145, 0));
+% plot(env.w/(2*pi), alpha_model, 'DisplayName', 'Modèle analytique linéaire');
+% legend()
+
+% Modèle non-linéaire appliqué à toutes les plaques 
+Zs_NL = classMPPSBH_Rectangular_HL(config1).alpha(handle_env(145, 0), 'iter');
+perso_plot_surface_impedance(env.w/(2*pi), Zs_NL/env.air.parameters.Z0, 'DisplayName', 'Modèle analytique non-linéaire itératif');
+legend();
+
+% % Modèle non-linéaire itératif
+% SPL1_145_interpolated = interp1(f, SPL1_145, env.w / (2*pi));
+
+% % Debug : Niveau sonore mesuré
+% perso_figure('Niveau sonore mesuré')
+% plot(env.w/(2*pi), SPL1_145_interpolated)
+% % close();
+
+% % % Modèle non-linéaire avec seulement la première plaque concernée
+% alpha_model_HL_first_plate = classMPPSBH_Rectangular_HL_first_plate(config1).alpha(handle_env(145, 0));
+% plot(env145, 0).w/(2*pi), alpha_model_HL_first_plate, 'DisplayName', 'Modèle analytique non-linéaire première plaque');
+% legend()
+
+% % Transmission Loss en incidence rasante
+% subplot(2, 1, 2)
 % hold on
 % 
-% plot(f, alpha1_145, 'DisplayName', 'Mesures expérimentales');
-% 
-% % % Modèle linéaire
-% % alpha_model = classMPPSBH_Rectangular(config1).alpha(handle_env(145, 0));
-% % plot(env.w/(2*pi), alpha_model, 'DisplayName', 'Modèle analytique linéaire');
-% % legend()
-% 
-% % Modèle non-linéaire appliqué à toutes les plaques 
-% alpha_model_HL = classMPPSBH_Rectangular_HL(config1).alpha(handle_env(145, 0));
-% plot(env.w/(2*pi), alpha_model_HL, 'DisplayName', 'Modèle analytique non-linéaire (toutes les plaques)');
+% TM_sb = MPPSBH.side_branch_transfer_matrix(handle_env(145, 0), 38.1e-3, 0);
+% MPPSBH.transmission_loss(handle_env(145, 0), TM_sb);
+% plot(env, MPPSBH.transmission_loss(handle_env(145, 0), TM_sb), 'DisplayName', 'Modèle')
 % legend()
-% 
-% % % Modèle non-linéaire itératif
-% % SPL1_145_interpolated = interp1(f, SPL1_145, env.w / (2*pi));
-% 
-% % % Debug : Niveau sonore mesuré
-% % perso_figure('Niveau sonore mesuré')
-% % plot(env.w/(2*pi), SPL1_145_interpolated)
-% % % close();
-% 
-% 
-% 
-% % % % Modèle non-linéaire avec seulement la première plaque concernée
-% % alpha_model_HL_first_plate = classMPPSBH_Rectangular_HL_first_plate(config1).alpha(handle_env(145, 0));
-% % plot(env145, 0).w/(2*pi), alpha_model_HL_first_plate, 'DisplayName', 'Modèle analytique non-linéaire première plaque');
-% % legend()
-% 
-% % % Transmission Loss en incidence rasante
-% % subplot(2, 1, 2)
-% % hold on
-% % 
-% % TM_sb = MPPSBH.side_branch_transfer_matrix(handle_env(145, 0), 38.1e-3, 0);
-% % MPPSBH.transmission_loss(handle_env(145, 0), TM_sb);
-% % plot(env, MPPSBH.transmission_loss(handle_env(145, 0), TM_sb), 'DisplayName', 'Modèle')
-% % legend()

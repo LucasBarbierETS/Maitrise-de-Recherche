@@ -1,7 +1,7 @@
-classdef classMPPSBH_Rectangular < classelement
+classdef classMPPSBH_Rectangular_frustum < classelement
 
     methods
-        function obj = classMPPSBH_Rectangular(config)
+        function obj = classMPPSBH_Rectangular_frustum(config)
         
             % Appel du constructeur de la classe parente
             obj@classelement(classelement.create_config({}, 'closed', []));
@@ -30,13 +30,16 @@ classdef classMPPSBH_Rectangular < classelement
                     dc = (mpd(i) + mpd(i+1))/2;
 
                     % Cavité trapezoidale
+                    % obj.Configuration.ListOfSubelements{end+1} = classcavity_rectangular(classcavity_rectangular.create_config(ct(i)/2, mpw(i), mpd(i)));
                     obj.Configuration.ListOfSubelements{end+1} = classcavity_trapezoidal_subdiv(classcavity_trapezoidal_subdiv.create_config(ct(i)/2, mpw(i), mpd(i), wc, dc));
     
                     % Cavité cubique en parallèle
-                    annular_cavity = classannularcavity_cubical(classannularcavity_rectangular_frustum.create_config(mpw(i), mpd(i), mpw(i+1), mpd(i+1), cavw, cavd, ct));
+                    annular_cavity = classannularcavity_rectangular_frustum(classannularcavity_rectangular_frustum.create_config(mpw(i), mpd(i), mpw(i+1), mpd(i+1), cavw, cavd, ct(i)));
+                    % annular_cavisty = classannularcavity_cubical(classannularcavity_cubical.create_config(wc, dc, cavw, cavd, ct(i), 'Plane Wave'));
                     obj.Configuration.ListOfSubelements{end+1} = classjunction(classjunction.create_config(annular_cavity, wc, dc));
         
                     % Cavité trapezoidale
+                    % obj.Configuration.ListOfSubelements{end+1} = classcavity_rectangular(classcavity_rectangular.create_config(ct(i)/2, wc,dc));
                     obj.Configuration.ListOfSubelements{end+1} = classcavity_trapezoidal_subdiv(classcavity_trapezoidal_subdiv.create_config(ct(i)/2, wc, dc, mpw(i+1), mpd(i+1)));
                 end 
             end
@@ -284,14 +287,14 @@ classdef classMPPSBH_Rectangular < classelement
             externalDepth = 37.8;
             
             % Extraire les dimensions de la cavité
-            % cavityWidth = config.CavitiesWidth * 1e3;
-            % cavityDepth = config.CavitiesDepth * 1e3;
+            cavityWidth = config.CavitiesWidth * 1e3;
+            cavityDepth = config.CavitiesDepth * 1e3;
             
             % Nombre de plaques
             numPlates = config.NumberOfPlates;
 
             % Paramètre de kerf
-            % kerf = 0.2; % Exemple : ajuster selon votre machine laser, ici 0.3 mm
+            kerf = 0.2; % Exemple : ajuster selon votre machine laser, ici 0.3 mm
             
             % Générer un fichier DXF pour chaque plaque
             for plateIdx = 1:numPlates
@@ -514,35 +517,6 @@ classdef classMPPSBH_Rectangular < classelement
             config.PlatesPorosity = pi * hr.^2 .* Nh ./ (mpw(1:end-1) .* mpd(1:end-1));
         end
 
-        function config = create_explicit_slit_pattern_config(surface, number_of_plates, cavities_depth, cavities_width, plates_holes_radius, plates_width_holes_distance, plates_depth_holes_distance, plates_depth_holes_number, plates_width_holes_number, plates_thickness, cavities_thickness) 
-
-            config = {};
-            config.Surface = surface;
-            [config.NumberOfPlates, N] = deal(number_of_plates);
-
-            % Paramètres globaux
-            config.CavitiesDepth = cavities_depth;
-            config.CavitiesWidth = cavities_width;
-
-            % Paramètres variables en fonction des cellules
-            config.PlatesThickness = perso_interp_config(plates_thickness, N);
-            config.CavitiesThickness = perso_interp_config(cavities_thickness, N);
-            [config.PlatesHolesRadius, hr] = deal(perso_interp_config(plates_holes_radius, N)); % r
-            [config.PlatesDepthHolesNumber, pd] = deal(perso_interp_config(plates_depth_holes_number, N)); % m
-            [config.PlatesWidthHolesNumber, pw] = deal(perso_interp_config(plates_width_holes_number, N)); % n
-
-            [config.PlatesWidthHolesDistance, dw] = deal(perso_interp_config(plates_width_holes_distance, N)); % d
-            [config.PlatesDepthHolesDistance, dd] = deal(perso_interp_config(plates_depth_holes_distance, N)); % d
-
-            [config.MainPoresWidth, mpw] = deal(perso_interp_config({pw .* dw}, N + 1));
-            [config.MainPoresDepth, mpd] = deal(perso_interp_config({pd .* dd}, N + 1));
-            
-            % Définition de la porosité à partir de la répartition des perforations
-            Nh = pd .* pw; % nombre total de perforations
-            config.PlatesPorosity = pi * hr.^2 .* Nh ./ (mpw(1:end-1) .* mpd(1:end-1));
-        end
-
-
         function config = create_explicit_rectangular_pattern_config_without_first_plate(surface, number_of_plates, cavities_depth, cavities_width, plates_holes_radius, ...
             plates_width_holes_distance, plates_depth_holes_distance, ...
             plates_depth_holes_number, plates_width_holes_number, ...
@@ -653,12 +627,12 @@ classdef classMPPSBH_Rectangular < classelement
             env = create_environnement(23, 100800, 22, 1, 5000, 5000, 140);
 
             %% Profil linéaire
-            config = classMPPSBH_Rectangular.create_config( ...
+            config = classMPPSBH_Rectangular_frustum.create_config( ...
                 N, R, R, {{R, rend, N+1, 1}}, {{R, rend, N+1, 1}}, ...
                 {d/2}, {phi}, {t}, {L/N - t});
             
             % calcul de la réponse des modèles analytiques
-            alpha_model = classMPPSBH_Rectangular(config).alpha(env);
+            alpha_model = classMPPSBH_Rectangular_frustum(config).alpha(env);
             alpha_model_HL = classMPPSBH_Rectangular_HL(config).alpha(env);
             alpha_model_HL_fp = classMPPSBH_Rectangular_HL_first_plate(config).alpha(env);
 
