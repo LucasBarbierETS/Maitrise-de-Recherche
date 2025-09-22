@@ -6,12 +6,12 @@
 
 %% Ajout des chemins d'accès
 % root_A = 'E:\Montréal 2023 - 2025\Maitrise LB';
-root_B = 'C:\Users\lucas.barbier\Documents\Maitrise ETS';
+root_B = 'C:\Users\paulf\Documents\GitHub\Maitrise-de-Recherche';
 
 % addpath([root_A, '\MATLAB\Functions'])
-addpath([root_B, '\MATLAB\Functions'])
+addpath([root_B, '\Functions'])
 % perso_add_all_paths([root_A, '\MATLAB']);
-perso_add_all_paths([root_B, '\MATLAB']);
+perso_add_all_paths(root_B);
 
 %% Importation des mises à jour depuis GitHub
 % system('git pull');

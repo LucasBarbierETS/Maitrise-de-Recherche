@@ -154,10 +154,10 @@ classdef classMPP_Circular < classJCA_Rigid
             E2 = classelement(classelement.create_config({MPP, Porous1}, 'closed', s)); % fig.4
 
             % importation des données de références
-            data1 = csvread('Atalla2007_fig3_black_square.txt');
-            data2 = csvread('Atalla2007_fig4_red.txt');
-            [x_data1, y_data1] = perso_interpole_et_lisse(data1(:, 1), data1(:, 2), 1000, 0.05);
-            [x_data2, y_data2] = perso_interpole_et_lisse(data2(:, 1), data2(:, 2), 1000, 0.05);
+            % darta1 = csvread('Atalla2007_fig3_black_square.txt');
+            % data2 = csvread('Atalla2007_fig4_red.txt');
+            % % [x_data1, y_data1] = perso_interpole_et_lisse(data1(:, 1), data1(:, 2), 1000, 0.05);
+            % [x_data2, y_data2] = perso_interpole_et_lisse(data2(:, 1), data2(:, 2), 1000, 0.05);
             
             % Tube = ImpedanceTube2D(ImpedanceTube2D.create_config({E1}));
             % Tube = Tube.launch_tube_measurement(env);
@@ -168,7 +168,7 @@ classdef classMPP_Circular < classJCA_Rigid
             subtitle("Atalla2007 - fig. 3 - p. 9")
             plot(env.w / (2*pi), E1.alpha(env), 'Color', 'b', 'LineWidth', 1, 'DisplayName', 'Modèle analytique');
             % Tube.plot_alpha(env, 'Modèle numérique');
-            plot(x_data1, y_data1, 'Color', 'g','LineWidth', 1, 'LineStyle', '--', 'DisplayName', 'Données de références');
+            % plot(x_datra1, y_data1, 'Color', 'g','LineWidth', 1, 'LineStyle', '--', 'DisplayName', 'Données de références');
             perso_configure_alpha_figure(5000);
 
             subplot(1, 2, 2)
@@ -177,7 +177,7 @@ classdef classMPP_Circular < classJCA_Rigid
             plot(env.w / (2*pi), E2.alpha(env), 'Color', 'b', 'LineWidth', 1, 'DisplayName', 'modèle foam 1');
             % plot(env.w / (2*pi), E2_2.alpha(env), 'Color', 'r',
             % 'LineWidth', 1, 'DisplayName', 'modèle foam 2'); % la référence s'est trompée de mousse
-            plot(x_data2, y_data2, 'Color', 'g','LineWidth', 1, 'LineStyle', '--','DisplayName', 'Données de références');
+            % plot(x_data2, y_data2, 'Color', 'g','LineWidth', 1, 'LineStyle', '--','DisplayName', 'Données de références');
             perso_configure_alpha_figure(5000);
 
             %% Validation classMPP_Circular - TL avec écoulement
