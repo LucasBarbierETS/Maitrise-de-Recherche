@@ -1,14 +1,14 @@
 %% Exploitation des données expérimentales en tube à incidence normale Echantillon 1.1
 
 %%  Gestion des adresses et des répértoires
-folder_path = [env.Root, '\Répertoire GitHub\Mesures expérimentales\Echantillons Hutchinson 1ère itération\Echantillon 1.1 Hutchinson'];
+folder_path = [env.Root, '\Mesures expérimentales\Echantillons Hutchinson 1ère itération\Echantillon 1.1 Hutchinson'];
 
 %% Importation des données
 
 data1 = perso_load_mecanum_files([folder_path, '\Export_Data']);
 
 % Coefficient d'absorption
-alpha1 = data1.alpha;
+alpha1 = data1.alpha.x1Hutchinson;
 SPL1 = data1.SPL;
 f = data1.f; f_min = f(1); f_max = f(end);
 alpha1_100 = data1.alpha.Sample1;
@@ -38,7 +38,7 @@ config1 = classMPPSBH_Rectangular.create_explicit_rectangular_pattern_config(30e
 perso_figure('Validation expérimentale - Echantillons Hutchinson - 100 dB');
 % perso_figure('alpha');
 
-subplot(2, 1, 1)
+subplot(2, 2, 1)
 title('Echantillon 1.1')
 hold on
 
@@ -46,7 +46,7 @@ plot(f, alpha1_100, 'DisplayName', 'Résultat expérimental');
 
 % Modèle linéaire
 % MPPSBH = classMPPSBH_Rectangular(config1);
-MPPSBH_frustum = classMPPSBH_Rectangular_frustum(config1);
+MPPSBH_frustum = classMPPSBH_Rectangular(config1);
 % MPPSBH_sbdv = classMPPSBH_Rectangular_subdiv(config1);
 % alpha_model = MPPSBH.alpha(handle_env(100, 0));
 alpha_model_frustum = MPPSBH_frustum.alpha(handle_env(100, 0));
@@ -57,7 +57,7 @@ plot(env.w/(2*pi), alpha_model_frustum, 'DisplayName', 'Modèle analytique - app
 % plot(env.w/(2*pi), alpha_model_sbdv, 'DisplayName', 'Modèle analytiques subdiv');
 
 %% Validation numérique 2D
-
+%
 % points_FEM = 100;
 % env_FEM = handle_env_FEM(points_FEM);
 % 
@@ -102,55 +102,55 @@ legend('Location','best')
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%% 140 dB %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-perso_figure('Validation expérimentale - Echantillon Hutchinson 1.1 - Forts niveaux')
-subplot(2, 1, 1)
-title('140 dB')
-hold on
-
-plot(f, alpha1_140, 'DisplayName', 'Mesures expérimentales');
-
-% % Modèle linéaire
-% alpha_model = classMPPSBH_Rectangular(config1).alpha(handle_env(145, 0));
-% plot(env.w/(2*pi), alpha_model, 'DisplayName', 'Modèle analytique linéaire');
+% perso_figure('Validation expérimentale - Echantillon Hutchinson 1.1 - Forts niveaux')
+% subplot(2, 1, 1)
+% title('140 dB')
+% hold on
+% 
+% plot(f, alpha1_140, 'DisplayName', 'Mesures expérimentales');
+% 
+% % % Modèle linéaire
+% % alpha_model = classMPPSBH_Rectangular(config1).alpha(handle_env(145, 0));
+% % plot(env.w/(2*pi), alpha_model, 'DisplayName', 'Modèle analytique linéaire');
+% % legend()
+% 
+% % Modèle non-linéaire appliqué à toutes les plaques 
+% Zs_NL = classMPPSBH_Rectangular_HL(config1).alpha(handle_env(140, 0), 'iter');
+% plot(env.w/(2*pi), Zs_NL, 'DisplayName', 'Modèle analytique non-linéaire itératif');
 % legend()
-
-% Modèle non-linéaire appliqué à toutes les plaques 
-Zs_NL = classMPPSBH_Rectangular_HL(config1).alpha(handle_env(140, 0), 'iter');
-plot(env.w/(2*pi), Zs_NL, 'DisplayName', 'Modèle analytique non-linéaire itératif');
-legend()
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%% 150 dB %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
-subplot(2, 1, 2)
-title('150 dB')
-hold on
-
-plot(f, alpha1_150, 'DisplayName', 'Mesures expérimentales');
-
-% % Modèle linéaire
-% alpha_model = classMPPSBH_Rectangular(config1).alpha(handle_env(145, 0));
-% plot(env.w/(2*pi), alpha_model, 'DisplayName', 'Modèle analytique linéaire');
+% 
+% %%%%%%%%%%%%%%%%%%%%%%%%%%%% 150 dB %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% 
+% subplot(2, 1, 2)
+% title('150 dB')
+% hold on
+% 
+% plot(f, alpha1_150, 'DisplayName', 'Mesures expérimentales');
+% 
+% % % Modèle linéaire
+% % alpha_model = classMPPSBH_Rectangular(config1).alpha(handle_env(145, 0));
+% % plot(env.w/(2*pi), alpha_model, 'DisplayName', 'Modèle analytique linéaire');
+% % legend()
+% 
+% % Modèle non-linéaire appliqué à toutes les plaques 
+% Zs_NL = classMPPSBH_Rectangular_HL(config1).alpha(handle_env(150, 0), 'iter');
+% plot(env.w/(2*pi), Zs_NL, 'DisplayName', 'Modèle analytique non-linéaire itératif');
 % legend()
-
-% Modèle non-linéaire appliqué à toutes les plaques 
-Zs_NL = classMPPSBH_Rectangular_HL(config1).alpha(handle_env(150, 0), 'iter');
-plot(env.w/(2*pi), Zs_NL, 'DisplayName', 'Modèle analytique non-linéaire itératif');
-legend()
-
-perso_figure('Validation expérimentale - Echantillon Hutchinson 1.1 - 145 dB -  Surface d''impédance')
-hold on
-
-perso_plot_surface_impedance(f, data1.Zs.Sample6, 'DisplayName', 'Mesures expérimentales - 145 dB');
-
-% % Modèle linéaire
-% alpha_model = classMPPSBH_Rectangular(config1).alpha(handle_env(145, 0));
-% plot(env.w/(2*pi), alpha_model, 'DisplayName', 'Modèle analytique linéaire');
-% legend()
-
-% Modèle non-linéaire appliqué à toutes les plaques 
-Zs_NL = classMPPSBH_Rectangular_HL(config1).alpha(handle_env(145, 0), 'iter');
-perso_plot_surface_impedance(env.w/(2*pi), Zs_NL/env.air.parameters.Z0, 'DisplayName', 'Modèle analytique non-linéaire itératif');
-legend();
+% 
+% perso_figure('Validation expérimentale - Echantillon Hutchinson 1.1 - 145 dB -  Surface d''impédance')
+% hold on
+% 
+% perso_plot_surface_impedance(f, data1.Zs.Sample6, 'DisplayName', 'Mesures expérimentales - 145 dB');
+% 
+% % % Modèle linéaire
+% % alpha_model = classMPPSBH_Rectangular(config1).alpha(handle_env(145, 0));
+% % plot(env.w/(2*pi), alpha_model, 'DisplayName', 'Modèle analytique linéaire');
+% % legend()
+% 
+% % Modèle non-linéaire appliqué à toutes les plaques 
+% Zs_NL = classMPPSBH_Rectangular_HL(config1).alpha(handle_env(145, 0), 'iter');
+% perso_plot_surface_impedance(env.w/(2*pi), Zs_NL/env.air.parameters.Z0, 'DisplayName', 'Modèle analytique non-linéaire itératif');
+% legend();
 
 % % Modèle non-linéaire itératif
 % SPL1_145_interpolated = interp1(f, SPL1_145, env.w / (2*pi));

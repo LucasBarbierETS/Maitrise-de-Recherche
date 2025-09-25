@@ -14,17 +14,15 @@ classdef classannularcavity_cubical < classsubelement
             air = env.air;
             rho = air.parameters.rho;
             c0 = air.parameters.c0;
-         
-            mpw = config.MainPoreWidth;
-            cw  = config.CavityWidth;
-            cd = config.CavityDepth;
-            ct = config.CavityThickness;
-            Ca = config.CurtainArea;
-            Vcav = config.CavityVolume;
 
             switch config.CavityModel 
                     
                 case 'Plane Wave'
+
+                    mpw = config.MainPoreWidth;
+                    cw  = config.CavityWidth;
+                    cd = config.CavityDepth;
+                    ct = config.CavityThickness;
                     
                     % Fente pour un des deux côtés
                     QWL_Slit = classQWL_Slit(classQWL_Slit.create_config((cw - mpw)/2, ct, cd));
@@ -32,12 +30,15 @@ classdef classannularcavity_cubical < classsubelement
                     Zsde = 2 * QWL_Slit.surface_impedance(env);
 
                 case 'Lumped Volume'
+
+                    Ca = config.CurtainArea;
+                    Vcav = config.CavityVolume;
                       
                     k = w/c0;
                     Z0 = rho * c0; 
                        
                     % L'admittance est formulée selon la convention Pression - Vitesse
-                    Ycav = 1j * k/Z0 / Ca * Vcav;
+                    Ycav = 1j * k/Z0 / Ca .* Vcav;
     
                     Zsde = 1 ./ Ycav;  
             end

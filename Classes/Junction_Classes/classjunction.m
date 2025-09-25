@@ -28,7 +28,13 @@ classdef classjunction < classsubelement
             % [1] eq.11
             config = obj.Configuration;
             w = env.w;
-            Ca = config.JunctionElement.Configuration.CurtainArea;
+
+            try
+                Ca = config.JunctionElement.Configuration.CurtainArea;
+            catch
+                Ca = config.JunctionElement.Configuration.Surface;
+            end
+
             TM.T11 = ones(1, length(w));
             TM.T12 = zeros(1, length(w));
 
@@ -58,13 +64,11 @@ classdef classjunction < classsubelement
 
     methods (Static, Access = public)
 
-        function config = create_config(junction_element, junction_width, junction_depth)
+        function config = create_config(junction_element, section)
             
             config = struct();
             config.JunctionElement = junction_element;
-            config.JunctionWidth = junction_width;
-            config.JunctionDepth = junction_depth;
-            config.Section = junction_width * junction_depth;
+            config.Section = section;
         end
     end
 end

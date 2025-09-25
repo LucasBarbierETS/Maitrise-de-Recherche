@@ -31,7 +31,7 @@ classdef ImpedanceTube3D
                 return
             end
 
-            perso_configure_alpha_figure(3000);
+            perso_configure_alpha_figure(4000);
         end
 
         function obj = plot_surface_impedance(obj, env, name)

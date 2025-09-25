@@ -1,0 +1,15 @@
+extraction_des_donnees_experimentales_IN_C_2_1;
+
+extraction_des_donnees_experimentales_IN_C_2_2;
+
+extraction_des_donnees_experimentales_IN_C_2_3;
+
+extraction_des_donnees_experimentales_IN_C_2_4;
+
+extraction_des_donnees_experimentales_IN_C_2_5;
+
+extraction_des_donnees_experimentales_IN_C_2_6;
+
+extraction_des_donnees_experimentales_IN_C_2_7;
+
+extraction_des_donnees_experimentales_IN_C_2_8;

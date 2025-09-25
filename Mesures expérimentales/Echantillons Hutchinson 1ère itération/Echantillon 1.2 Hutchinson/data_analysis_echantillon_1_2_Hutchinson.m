@@ -1,7 +1,7 @@
 %% Exploitation des données expérimentales en tube à incidence normale Echantillon 2
 
 %%  Gestion des adresses et des répértoires
-folder_path = [env.Root, '\Répertoire GitHub\Mesures expérimentales\Echantillons Hutchinson 1ère itération\Echantillon 1.2 Hutchinson'];
+folder_path = [env.Root, '\Mesures expérimentales\Echantillons Hutchinson 1ère itération\Echantillon 1.2 Hutchinson'];
 
 %% Importation des données
 
@@ -52,7 +52,7 @@ config2 = classMPPSBH_Rectangular.create_explicit_rectangular_pattern_config(30e
 
 perso_figure('Validation expérimentale - Echantillons Hutchinson - 100 dB')
 
-subplot(2, 1, 2)
+subplot(2, 2, 2)
 title('Echantillon 1.2')
 hold on
 

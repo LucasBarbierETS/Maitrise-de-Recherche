@@ -16,8 +16,8 @@ classdef classannularcavity_trapezoidal < classannularcavity_cubical
             config = struct();
             [config.MainPoreWidthIn,  wi]  = deal(main_pore_width_in);
             [config.MainPoreWidthOut, wo] = deal(main_pore_width_out);
-            % config.MainPoreWidth = (wi + wo)/2;
-            config.MainPoreWidth = min(wi, wo);
+            config.MainPoreWidth = (wi + wo)/2;
+            % config.MainPoreWidth = min(wi, wo);
             [config.CavityWidth, w] = deal(cavity_width);
             [config.CavityDepth, d] = deal(cavity_depth);
             [config.CavityThickness, ct] = deal(cavity_thickness);

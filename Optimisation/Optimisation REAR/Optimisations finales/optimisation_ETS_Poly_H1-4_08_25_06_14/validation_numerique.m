@@ -1,12 +1,12 @@
 %% Validation des configurations optimisées
 
-folder_path = [env.Root, '\Répertoire GitHub\Optimisation\Optimisation REAR\Optimisations finales\optimisation_ETS_Poly_H1-4_08_25_06_14'];
+folder_path = [env.Root, '\Optimisation\Optimisation REAR\Optimisations finales\optimisation_ETS_Poly_H1-4_08_25_06_14'];
 load([folder_path, '\environnement matlab.mat']);
 launch_environnement;    
 
 % Solution ETS
 ETS_width = 30e-3;
-ETS_depth = 28e-3;
+ETS_depth = 30e-3;
 ETS_cavities_width = 28e-3; 
 ETS_cavities_depth = 28e-3; 
 ETS_input_surface = ETS_width * ETS_depth;
@@ -27,6 +27,16 @@ Objets.MPPSBH_i = @(x_ETS, x_radius, i) classMPPSBH_Rectangular_iter2(classMPPSB
         {x_ETS(i, :, 2)}, ... % nombre de perforations en largeur
         {plates_thickness}, ... % épaisseur des plaques (supérieure + internes)
         {ETS_cavities_thickness})); %;  % épaisseur de cavité
+
+Objets.MPPSBH_i_LV = @(x_ETS, x_radius, i) classMPPSBH_Rectangular_iter2(classMPPSBH_Rectangular.create_explicit_slit_pattern_config( ...
+        ETS_input_surface, N, ETS_cavities_depth, ETS_cavities_width, ...
+        {x_radius}, ... {radius(x_ETS(i, :, 1))}, ... {eval_r(x0(:, 1, i))}, ... % rayon des perforations
+        {x_ETS(i, :, 1)}, ... % distance entre perforations (width)
+        {ETS_cavities_depth/depth_holes_number}, ... % distance entre perforations (depth)
+        {depth_holes_number}, ... {transpose(x0(:, 3, i))}, ... % nombre de perforations en profondeur
+        {x_ETS(i, :, 2)}, ... % nombre de perforations en largeur
+        {plates_thickness}, ... % épaisseur des plaques (supérieure + internes)
+        {ETS_cavities_thickness}, 'Lumped Volume')); %;  % épaisseur de cavité
 
 Objets.MPPSBH_element_i = @(x, i) classelement( ...
     classelement.create_config({ ...
@@ -70,11 +80,13 @@ for i = 1:length(N)
     Tube2D_tv = ImpedanceTube2D.load_model(mphload([folder_path, '\Validations numériques\Validation 2D-TV des contributions des élements MPPSBHs\validation_2D_TV_MPPSBH_', num2str(N(i)), '.mph']));
     perso_figure(['Validation numérique - MPPSBH ', num2str(N(i))]); hold on
     % perso_figure('Validation numérique - Série d''échantillons 2'); subplot(1, 2, i); title('Echantillon 2.', num2str(N(i))); hold on
-    Objets.MPPSBH_i(x_ETS(x_opti), radius(x_radius(x_opti)), N(i)).plot_alpha(env, 'modèle linéaire');
+    Objets.MPPSBH_i(x_ETS(x_opti), radius(x_radius(x_opti)), N(i)).plot_alpha(env, 'modèle linéaire - PW');
+    Objets.MPPSBH_i_LV(x_ETS(x_opti), radius(x_radius(x_opti)), N(i)).plot_alpha(env, 'modèle linéaire - LV');
     Tube2D_tv.plot_alpha('Modélisation numérique 2D - TV');
 
     perso_figure(['Impédance de surface - MPPSBH ', num2str(N(i))]); hold on
-    Objets.MPPSBH_i(x_ETS(x_opti), radius(x_radius(x_opti)), N(i)).plot_surface_impedance(env, 'modèle linéaire');
+    Objets.MPPSBH_i(x_ETS(x_opti), radius(x_radius(x_opti)), N(i)).plot_surface_impedance(env, 'modèle linéaire - PW');
+    Objets.MPPSBH_i_LV(x_ETS(x_opti), radius(x_radius(x_opti)), N(i)).plot_surface_impedance(env, 'modèle linéaire - LV');
     Tube2D_tv.plot_surface_impedance(env, 'Impédance de surface 2D - TV')
     
     % % Calcul

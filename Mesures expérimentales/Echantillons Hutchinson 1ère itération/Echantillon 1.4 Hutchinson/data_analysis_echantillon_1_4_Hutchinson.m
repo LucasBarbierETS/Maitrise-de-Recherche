@@ -1,7 +1,7 @@
 %% Exploitation des données expérimentales en tube à incidence normale Echantillon 42
 
 %%  Gestion des adresses et des répértoires
-folder_path = [env.Root, '\Répertoire GitHub\Mesures expérimentales\Echantillons Hutchinson 1ère itération\Echantillon 1.4 Hutchinson'];
+folder_path = [env.Root, '\Mesures expérimentales\Echantillons Hutchinson 1ère itération\Echantillon 1.4 Hutchinson'];
 
 %% Importation des données
 

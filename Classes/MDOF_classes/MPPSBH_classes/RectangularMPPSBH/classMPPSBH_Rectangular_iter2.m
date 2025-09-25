@@ -18,6 +18,7 @@ classdef classMPPSBH_Rectangular_iter2 < classMPPSBH_Rectangular
                 phr = config.PlatesHolesRadius;
                 pt = config.PlatesThickness;
                 ct = config.CavitiesThickness;
+                cm = config.CavityModel;
 
                 % On ajoute péridiquement la cellule plaque + cavité
                 for i = 1:length(pp)
@@ -35,7 +36,7 @@ classdef classMPPSBH_Rectangular_iter2 < classMPPSBH_Rectangular
                     obj.Configuration.ListOfSubelements{end+1} = classcavity_trapezoidal_subdiv(classcavity_trapezoidal_subdiv.create_config(ct(i)/2, mpw(i), mpd(i), wc, dc, 20));
     
                     % Cavité cubique en parallèle
-                    annular_cavity = classannularcavity_trapezoidal(classannularcavity_trapezoidal.create_config(mpw(i), mpw(i+1), cavw, cavd, ct(i), 'Plane Wave'));
+                    annular_cavity = classannularcavity_trapezoidal(classannularcavity_trapezoidal.create_config(mpw(i), mpw(i+1), cavw, cavd, ct(i), cm));
                     obj.Configuration.ListOfSubelements{end+1} = classjunction(classjunction.create_config(annular_cavity, wc, dc));
         
                     % Cavité trapezoidale

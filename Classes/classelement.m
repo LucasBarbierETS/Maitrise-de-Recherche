@@ -160,74 +160,74 @@ classdef classelement
                 end
             end
         end
-  
-        function TM_sb = side_branch_transfer_matrix(obj, env, Lx, M)
-
-            opts = optimoptions('fsolve','Display','off','FunctionTolerance',1e-12,'StepTolerance',1e-12);
-
-            TM_sb = struct();
-
-            % perso_ouvrir_lien_Obsidian('obsidian://open?vault=Maitrise%20REAR&file=Notes%20atomiques%2FDescription%20du%20mod%C3%A8le%20approch%C3%A9%20utilis%C3%A9%20%C3%A0%20partir%20du%20nombre%20de%20Mach%20moyen')
-            Z = obj.surface_impedance_iter(env);
-            % Z = obj.surface_impedance(env);
-            Lz = obj.Configuration.ListOfSubelements{1}.Configuration.Width;
-            param = env.air.parameters;
-            rho0 = param.rho;
-            c0 = param.c0;
-            Z0 = param.Z0;
-            w = env.w;
-            k0 = w/c0;
-
-            % Si le nombre de Mach de l'écoulement n'est pas donné
-            if nargin < 4
-
-                % Cas sans écoulement
-                M = 0;
-                f = @(i, u) (u.^2 + (1/3).*u.^4 + (2/15).*u.^6) - 1j * rho0 * Lx * w(i) / Z(i);
-                u  = perso_fsolve(f, w);
-                kx = u / Lx; 
-
-                % % Debog : kx
-                % perso_figure('Debog - classelement - side_branch_transfer_matrix - Cas sans écoulement - kx')
-                % subplot(1, 2, 1)
-                % plot(env.w/(2*pi), real(kx))
-                % subplot(1, 2, 2)
-                % plot(env.w/(2*pi), imag(kx))
-                % % close()
-
-                kz_frwrd = sqrt((w/c0).^2 - kx'.^2);
-                kz_bckwrd = kz_frwrd;
-            
-            % Si il est donné    
-            else 
-
-                % Cas avec écoulement
-                fM_frwrd = @(i, y) (1j/(1+M)^2) ...
-                + ( 1j*M/( (k0(i)^2) * Lx^2 * (1+M) ) -  Z(i)/(rho0*w(i)*Lx) ) * y.^2 ...
-                + ( 1j*M/( 4*(k0(i)^4)*Lx^4 )       -  Z(i)/(3*rho0*w(i)*Lx) ) * y.^4 ...
-                + ( 1j*M*(1-M^2)/( 8*(k0(i)^6)*Lx^6 ) - 2*Z(i)/(15*rho0*w(i)*Lx) ) * y.^6;
-                % kx_frwrd = perso_fsolve(fM_frwrd, w)/Lx; % traitement d'un seul côté
-                kx_frwrd = 2 * perso_fsolve(fM_frwrd, w)/Lx; % traitement des deux côtés
-                kz_frwrd = (-M .* k0 + sqrt(k0.^2 - (1 - M.^2) .* kx_frwrd'.^2)) / (1 - M.^2);
-    
-                fM_bckwrd = @(i, z) (-1j/(1-M)^2) ...
-                + ( 1j*M/( (k0(i)^2)*Lx^2*(1-M) ) +  Z(i)/(rho0*w(i)*Lx) ) * z.^2 ...
-                + ( 1j*M/( 4*(k0(i)^4)*Lx^4 )      +  Z(i)/(3*rho0*w(i)*Lx) ) * z.^4 ...
-                + ( 1j*M*(1-M^2)/( 8*(k0(i)^6)*Lx^6 ) + 2*Z(i)/(15*rho0*w(i)*Lx) ) * z.^6;
-                % kx_bckwrd = perso_fsolve(fM_bckwrd, w)/Lx; % traitement d'un seul côté
-                kx_bckwrd = 2 * perso_fsolve(fM_bckwrd, w)/Lx; % traitement des deux côtés
-                kz_bckwrd = (M .* k0 + sqrt(k0.^2 - (1 - M.^2) .* kx_bckwrd'.^2)) ./ (1 - M.^2);
-            end 
-
-            % Calcul des éléments de la matrice
-            Y_frwrd = Z0 .* (k0 - M .* kz_frwrd) ./ kz_frwrd;
-            Y_bckwrd = Z0 .* (k0 + M .* kz_bckwrd) ./ kz_bckwrd;
-            exp_term = exp(1j .* (kz_frwrd - kz_bckwrd) .* Lz)./(Y_frwrd + Y_bckwrd);
-            TM_sb.T11 = exp_term.*(Y_bckwrd .* exp(-1j .* Lz .* kz_frwrd) + Y_frwrd .* exp(1j .* Lz .* kz_bckwrd));
-            TM_sb.T12 = exp_term.*(Y_frwrd .* Y_bckwrd .* (exp(1j .* Lz .* kz_bckwrd) - exp(-1j .* Lz .* kz_frwrd)));
-            TM_sb.T21 = exp_term.*(exp(1j .* Lz .* kz_bckwrd) - exp(-1j .* Lz .* kz_frwrd));
-            TM_sb.T22 = exp_term.*(Y_frwrd .* exp(-1j .* Lz .* kz_frwrd) + Y_bckwrd .* exp(1j .* Lz .* kz_bckwrd));
-        end
+      
+        % function TM_sb = side_branch_transfer_matrix(obj, env, Lx, M)
+        % 
+        %     opts = optimoptions('fsolve','Display','off','FunctionTolerance',1e-12,'StepTolerance',1e-12);
+        % 
+        %     TM_sb = struct();
+        % 
+        %     % perso_ouvrir_lien_Obsidian('obsidian://open?vault=Maitrise%20REAR&file=Notes%20atomiques%2FDescription%20du%20mod%C3%A8le%20approch%C3%A9%20utilis%C3%A9%20%C3%A0%20partir%20du%20nombre%20de%20Mach%20moyen')
+        %     % Z = obj.surface_impedance_iter(env);
+        %     Z = obj.surface_impedance(env);
+        %     Lz = obj.Configuration.ListOfSubelements{1}.Configuration.Width;
+        %     param = env.air.parameters;
+        %     rho0 = param.rho;
+        %     c0 = param.c0;
+        %     Z0 = param.Z0;
+        %     w = env.w;
+        %     k0 = w/c0;
+        % 
+        %     % Si le nombre de Mach de l'écoulement n'est pas donné
+        %     if nargin < 4
+        % 
+        %         % Cas sans écoulement
+        %         M = 0;
+        %         f = @(i, u) (u.^2 + (1/3).*u.^4 + (2/15).*u.^6) - 1j * rho0 * Lx * w(i) / Z(i);
+        %         u  = perso_fsolve(f, w);
+        %         kx = u / Lx; 
+        % 
+        %         % % Debog : kx
+        %         % perso_figure('Debog - classelement - side_branch_transfer_matrix - Cas sans écoulement - kx')
+        %         % subplot(1, 2, 1)
+        %         % plot(env.w/(2*pi), real(kx))
+        %         % subplot(1, 2, 2)
+        %         % plot(env.w/(2*pi), imag(kx))
+        %         % % close()
+        % 
+        %         kz_frwrd = sqrt((w/c0).^2 - kx'.^2);
+        %         kz_bckwrd = kz_frwrd;
+        % 
+        %     % Si il est donné    
+        %     else 
+        % 
+        %         % Cas avec écoulement
+        %         fM_frwrd = @(i, y) (1j/(1+M)^2) ...
+        %         + ( 1j*M/( (k0(i)^2) * Lx^2 * (1+M) ) -  Z(i)/(rho0*w(i)*Lx) ) * y.^2 ...
+        %         + ( 1j*M/( 4*(k0(i)^4)*Lx^4 )       -  Z(i)/(3*rho0*w(i)*Lx) ) * y.^4 ...
+        %         + ( 1j*M*(1-M^2)/( 8*(k0(i)^6)*Lx^6 ) - 2*Z(i)/(15*rho0*w(i)*Lx) ) * y.^6;
+        %         % kx_frwrd = perso_fsolve(fM_frwrd, w)/Lx; % traitement d'un seul côté
+        %         kx_frwrd = 2 * perso_fsolve(fM_frwrd, w)/Lx; % traitement des deux côtés
+        %         kz_frwrd = (-M .* k0 + sqrt(k0.^2 - (1 - M.^2) .* kx_frwrd'.^2)) / (1 - M.^2);
+        % 
+        %         fM_bckwrd = @(i, z) (-1j/(1-M)^2) ...
+        %         + ( 1j*M/( (k0(i)^2)*Lx^2*(1-M) ) +  Z(i)/(rho0*w(i)*Lx) ) * z.^2 ...
+        %         + ( 1j*M/( 4*(k0(i)^4)*Lx^4 )      +  Z(i)/(3*rho0*w(i)*Lx) ) * z.^4 ...
+        %         + ( 1j*M*(1-M^2)/( 8*(k0(i)^6)*Lx^6 ) + 2*Z(i)/(15*rho0*w(i)*Lx) ) * z.^6;
+        %         % kx_bckwrd = perso_fsolve(fM_bckwrd, w)/Lx; % traitement d'un seul côté
+        %         kx_bckwrd = 2 * perso_fsolve(fM_bckwrd, w)/Lx; % traitement des deux côtés
+        %         kz_bckwrd = (M .* k0 + sqrt(k0.^2 - (1 - M.^2) .* kx_bckwrd'.^2)) ./ (1 - M.^2);
+        %     end 
+        % 
+        %     % Calcul des éléments de la matrice
+        %     Y_frwrd = Z0 .* (k0 - M .* kz_frwrd) ./ kz_frwrd;
+        %     Y_bckwrd = Z0 .* (k0 + M .* kz_bckwrd) ./ kz_bckwrd;
+        %     exp_term = exp(1j .* (kz_frwrd - kz_bckwrd) .* Lz)./(Y_frwrd + Y_bckwrd);
+        %     TM_sb.T11 = exp_term.*(Y_bckwrd .* exp(-1j .* Lz .* kz_frwrd) + Y_frwrd .* exp(1j .* Lz .* kz_bckwrd));
+        %     TM_sb.T12 = exp_term.*(Y_frwrd .* Y_bckwrd .* (exp(1j .* Lz .* kz_bckwrd) - exp(-1j .* Lz .* kz_frwrd)));
+        %     TM_sb.T21 = exp_term.*(exp(1j .* Lz .* kz_bckwrd) - exp(-1j .* Lz .* kz_frwrd));
+        %     TM_sb.T22 = exp_term.*(Y_frwrd .* exp(-1j .* Lz .* kz_frwrd) + Y_bckwrd .* exp(1j .* Lz .* kz_bckwrd));
+        % end
 
         function Zs = surface_impedance(obj, env, varargin)
 
