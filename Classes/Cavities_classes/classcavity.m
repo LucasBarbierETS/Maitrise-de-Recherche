@@ -27,7 +27,7 @@ classdef classcavity < classsubelement
             obj@classsubelement(config);
         end
         
-        function T = transfer_matrix(obj, env)
+        function T = transfer_matrix(obj, env, ~, ~)
             
             S = obj.Configuration.Section;
             w = env.w;

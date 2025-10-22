@@ -2,10 +2,10 @@
 % clc
 
 % On ferme les instances d'applications ouvertes
-% close all
+close all
 
 % On ouvre tous les chemins vers les applications
-add_all_paths('E:\OneDrive - ETS\CRIAQ-REAR\Maitrise LB\MATLAB\Apps')
+% add_all_paths('E:\OneDrive - ETS\CRIAQ-REAR\Maitrise LB\MATLAB\Apps')
 
 % % On lance les application secondaires sans arguments
 % air_parameters_window = Air_Parameters_App();
@@ -18,7 +18,7 @@ add_all_paths('E:\OneDrive - ETS\CRIAQ-REAR\Maitrise LB\MATLAB\Apps')
 % Fermer toutes les instances précédentes de la classe MyApp
 % delete(findall(0, 'Type', 'figure'));
 
-Test_App(env);
+Environnement_App(env);
 
 
 

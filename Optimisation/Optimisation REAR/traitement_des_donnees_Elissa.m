@@ -1,7 +1,7 @@
 p0 = 20e-6;
 
 % Lis le fichier en ignorant les lignes qui commencent par '#'
-M = readmatrix([env.Root, '\Répertoire GitHub\Optimisation\Optimisation REAR\stator_spectrum_data.txt'], ...
+M = readmatrix([env.Root, '\Optimisation\Optimisation REAR\stator_spectrum_data.txt'], ...
                'CommentStyle', '#');
 
 f1 = M(:,1); 
@@ -40,9 +40,9 @@ hold on
 plot(fmean, DSP_dB, 'DisplayName', 'Densité spectrale de Puissance [dB re 4e-10 Pa^2/Hz]');
 plot(fmean, L_RMS_band, 'DisplayName', 'Niveau de pression RMS par bande [dB re 2e-5 Pa], Pas = 7.38 Hz');
 yline(OASPL5000, 'r--', 'DisplayName', 'Niveau RMS global 0-5000 Hz [dB re 2e-5 Pa]', ...
-    'Label', ['OASPL5000 = ', num2str(round(OASPL5000, 2)), ' dB'], 'LabelHorizontalAlignment', 'left', 'LabelVerticalAlignment', 'top');
+    'Label', ['OASPL5000 = ', num2str(round(OASPL5000, 2)), ' dB'], 'LabelHorizontalAlignment', 'left', 'LabelVerticalAlignment', 'top', 'HandleVisibility', 'off');
 yline(OASPL2500, 'b--', 'DisplayName', 'Niveau RMS global 0-2500 Hz [dB re 2e-5 Pa]', ...
-    'Label', ['OASPL2500 = ', num2str(round(OASPL2500, 2)), ' dB'], 'LabelHorizontalAlignment', 'right',  'LabelVerticalAlignment', 'bottom');
+    'Label', ['OASPL2500 = ', num2str(round(OASPL2500, 2)), ' dB'], 'LabelHorizontalAlignment', 'right',  'LabelVerticalAlignment', 'bottom', 'HandleVisibility', 'off');
 % yline(L_RMS_band_mean, 'k--', 'DisplayName', 'Niveau RMS moyen par bande [dB re 2e-5 Pa, Pas = 7.38 Hz]');
 % yline(DSP_dB_mean, 'c--', 'DisplayName', 'DSP moyenne [dB re 4e-10 Pa^2/Hz]');
 xlim([0 5000])

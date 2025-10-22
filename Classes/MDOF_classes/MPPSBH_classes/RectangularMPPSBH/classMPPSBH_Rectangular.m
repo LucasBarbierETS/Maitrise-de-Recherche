@@ -623,14 +623,14 @@ classdef classMPPSBH_Rectangular < classelement
             config.PlatesRealPorosity = plates_perforated_surface / (cw * cd);
 
             % Méthode de prise en compte des cavités latérales
-            if nargin > 8
+            if nargin > 9
                 config.CavitiesMethod = repmat(varargin(1), 1, N);
             else
                 config.CavitiesMethod = repmat({'Volume'}, 1, N);
             end
 
             % Dimension de l'élement à la sortie
-            if nargin > 9
+            if nargin > 10
                 config.ElementWidth = varargin{2};
             end
         end
@@ -640,7 +640,6 @@ classdef classMPPSBH_Rectangular < classelement
         
         function validate()
 
-            % close all 
             figure()
             hold on
             title('Validation Rectangular MPPSBH');
@@ -658,12 +657,13 @@ classdef classMPPSBH_Rectangular < classelement
             env = create_environnement(23, 100800, 22, 1, 5000, 5000, 140);
 
             %% Profil linéaire
-            config = classMPPSBH_Rectangular.create_config( ...
+            config = classMPPSBH_Rectangular.create_config(30e-3^2,  ...
                 N, R, R, {{R, rend, N+1, 1}}, {{R, rend, N+1, 1}}, ...
                 {d/2}, {phi}, {t}, {L/N - t});
             
             % calcul de la réponse des modèles analytiques
             alpha_model = classMPPSBH_Rectangular(config).alpha(env);
+            % classMPPSBH_Rectangular_iter2(config).alpha(env)
             alpha_model_HL = classMPPSBH_Rectangular_HL(config).alpha(env);
             alpha_model_HL_fp = classMPPSBH_Rectangular_HL_first_plate(config).alpha(env);
 

@@ -14,7 +14,7 @@ classdef classcavity_trapezoidal< classcavity
             obj@classcavity(config);
         end
 
-        function T = transfer_matrix(obj, env)
+        function T = transfer_matrix(obj, env, varargin)
 
             % dérivé de [1] eq. 7
 

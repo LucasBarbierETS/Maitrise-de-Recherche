@@ -18,10 +18,5 @@ classdef classMMPP_HL_first_plate < classMMPP
                 obj.Configuration.ListOfSubelements{1} = classMPP_Circular_HL(classMPP_Circular_HL.create_config(s, pt(1), phr(1), pp(1)));
             end
         end
-
-        function alpha = alpha(obj, env)
-
-            alpha = alpha@classMMPP(obj, env, 'iter');
-        end
     end
 end

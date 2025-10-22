@@ -86,8 +86,8 @@ classdef classMultiAnnular < classelement
 
             perso_figure('Validation classMultiAnnular')
           
-            subplot(2, 1, 1)
-            title('Profil constant (Dupont)')
+            % subplot(2, 1, 1)
+            title('Matériau multi-pancakes à profil constant')
             hold on
 
             % création de l'objet de classe
@@ -110,16 +110,16 @@ classdef classMultiAnnular < classelement
             data_mod = readmatrix('validation classMultiAnnular Dupont2018 fig5 blue.txt');
             [x_data_mod, y_data_mod] = perso_interpole_et_lisse(data_mod(:, 1), data_mod(:, 2), 1000, 0.05); 
 
-            plot(env.w/ (2*pi), alpha_model, 'Color', 'g', 'LineWidth', 1, 'DisplayName', 'Modèle');
-            plot(x_data_mes, y_data_mes, 'Color', 'k','LineWidth', 1, 'LineStyle', '--', 'DisplayName', 'Données de références - Mesure ');
-            plot(x_data_mod, y_data_mod, 'Color', 'b','LineWidth', 1, 'LineStyle', '--', 'DisplayName', 'Données de références - Modèle');
+            plot(env.w/ (2*pi), alpha_model, 'Color', 'g', 'LineWidth', 1, 'DisplayName', 'Prédiction du code analytique');
+            plot(x_data_mes, y_data_mes, 'Color', 'k','LineWidth', 1, 'LineStyle', '--', 'DisplayName', 'Résultat expérimental de référence');
+            % plot(x_data_mod, y_data_mod, 'Color', 'b','LineWidth', 1, 'LineStyle', '--', 'DisplayName', 'Données de références - Modèle');
             
             perso_configure_alpha_figure(4000);
 
             %% Validation profil décroissant
 
-            subplot(2, 1, 2)
-            title('Profil Décroissant (Bezançon)')
+            % subplot(2, 1, 2)
+            title('Matériau multi-pancakes à profil décroissant')
             hold on   
 
             %% Données de référence : A microstructure material design for low frequency sound absorption, fig.3
@@ -136,9 +136,9 @@ classdef classMultiAnnular < classelement
             data_mod = readmatrix('validation classMultiAnnular Bezançon2024 fig5b blue.txt');
             [x_data_mod, y_data_mod] = perso_interpole_et_lisse(data_mod(:, 1), data_mod(:, 2), 1000, 0.05);
 
-            plot(env.w/ (2*pi), alpha_model, 'Color', 'g', 'LineWidth', 1, 'DisplayName', 'Modèle');
-            plot(x_data_mes, y_data_mes, 'Color', 'k','LineWidth', 1, 'LineStyle', '--', 'DisplayName', 'Données de références - Mesure ');
-            plot(x_data_mod, y_data_mod, 'Color', 'b','LineWidth', 1, 'LineStyle', '--', 'DisplayName', 'Données de références - Modèle');
+            plot(env.w/ (2*pi), alpha_model, 'Color', 'g', 'LineWidth', 1, 'DisplayName', 'Prédiction du code analytique');
+            plot(x_data_mes, y_data_mes, 'Color', 'k','LineWidth', 1, 'LineStyle', '--', 'DisplayName', 'Résultat expérimental de référence');
+            % plot(x_data_mod, y_data_mod, 'Color', 'b','LineWidth', 1, 'LineStyle', '--', 'DisplayName', 'Données de références - Modèle');
 
             perso_configure_alpha_figure(4000);
         end

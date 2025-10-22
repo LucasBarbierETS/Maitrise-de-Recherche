@@ -1,10 +1,5 @@
 classdef classMPP_Circular_HL_flow < classMPP_Circular_HL
 
-% Description
-% Ce constructeur de classe permet de créer une plaque microperforée à perforations circulaires
-% Il se base sur le modèle de fluide équivalent (JCA) développé dans 'classJCA_Rigid'
-% En plus de cela, on intègre la résistivité et la tortuosité modifiée développée par Laly dans [5]
-
 % References
 %            [5] Zacharie Laly, Acoustical modeling of micro-perforated panel at high 
 %                sound pressure levels using equivalent fluid approach
@@ -14,70 +9,26 @@ classdef classMPP_Circular_HL_flow < classMPP_Circular_HL
 %                des traitements acoustiques des nacelles de turboréacteurs sous hauts 
 %                niveaux acoustiques
     methods
-
         function obj = classMPP_Circular_HL_flow(config)
             
             obj@classMPP_Circular_HL(config)
 
-            phi = config.Porosity;
-            pr = config.PerforationsRadius;
-            t = config.Thickness;        
+            obj.Configuration.AirFlowResistivity = @(env) classMPP_Circular_HL.air_flow_resistivity(env, config, 'M', env.M);
 
-            try
-                beta = config.Beta;
-                obj.Configuration.AirFlowResistivity = @(env) classMPP_Circular_HL_flow.air_flow_resistivity(env, phi, pr, t, beta);
-            catch
-                obj.Configuration.AirFlowResistivity = @(env) classMPP_Circular_HL_flow.air_flow_resistivity(env, phi, pr, t);
-            end
-
-            obj.Configuration.Toruosity = @(env) classMPP_Circular_HL_flow.tortuosity(env, phi, pr, t);
-            % obj.Configuration.Toruosity = @(env) classMPP_Circular_HL.tortuosity(env, phi, pr, t);
+            obj.Configuration.Tortuosity = @(env) classMPP_Circular_HL.tortuosity(env, config, 'M', env.M);
         end
     end
-
-     methods (Static, Access = public)
-
-         function sig = air_flow_resistivity(env, phi, pr, t, varargin)
-
-
-            if nargin > 4
-                beta = varargin{1};
-            else
-                beta = 1.6; % [5] p.8 % Validation laly sans écoulement
-                % beta = 1.2; Validation Laly avec écoulement
-            end
-
-            Cd = 0.76; % [5] p.8
-            q = 0.3; % voir modèle Laly écoulement
-
-            % Résistivité au passage de l'air ([5], p. 7, eq. 27)
-            sig = 8 * env.air.parameters.eta / (phi * pr^2) ...
-                + beta * env.air.parameters.Z0 / (pi * t * Cd^2) ...
-                * (-1/2 + classMPP_Circular_HL.f(env, phi)) ... % forts niveaux
-                + env.air.parameters.Z0 * (1 - phi^2) / (phi * t) * q * env.M; % écoulement
-         end
-
-         function tor = tortuosity(env, phi, pr, t)
-             
-            psi = 4/3; 
-            a = [1.0 -1.4092 0.0 0.33818 0.0 0.06793 -0.02287 0.003015 -0.01614];
-            sum_a = dot(a, sqrt(phi).^(0:length(a)-1));
-
-            % Tortuosité non linéaire ([5], p. 7, eq. 28) 
-            tor = 1 + 2 * psi / (1 + 305 * env.M^3) * 0.48 * sqrt(pi * pr^2) / t * sum_a ...
-                * (1 + 1 / (1 - phi^2) ...
-                * (-1/2 + classMPP_Circular_HL.f(env, phi)))^(-1);
-         end 
      
+     methods (Static, Access = public)
          function validate(handle_env)
 
             %% Validation avec écoulement (Thèse Laly)
 
             perso_figure('Validation avec écoulement (Thèse Laly)');
 
-            subplot(1, 2, 1)
+            % subplot(1, 2, 1)
             % title('Fig 5.1, M = 0.1 (V = 34 m/s)')
-            title('M = 0.1 (V = 34 m/s)')
+            title('MPP + cavité 3, SPL = 110 dB, M = 0.1 (V = 34 m/s)')
             hold on 
 
             data5_1 = load('Thèse_Laly_fig5.1_black.txt');
@@ -100,16 +51,16 @@ classdef classMPP_Circular_HL_flow < classMPP_Circular_HL
             E_HL_flow = classelement(classelement.create_config({plate_HL_flow, cavity}, 'closed', S));
     
             % Modèle non linéaire itératif
-            plot(env.w/(2*pi), E_HL.alpha(env, 'iter'), 'DisplayName', 'Modèle HL itératif sans écoulement');
-            plot(env.w/(2*pi), E_HL_flow.alpha(env, 'iter'), 'DisplayName', 'Modèle HL itératif avec écoulement');
-            plot(data5_1(:, 1), data5_1(:, 2), 'DisplayName', 'Données de référence');
+            plot(env.w/(2*pi), E_HL.alpha(env, 'iter'), 'DisplayName', 'Prédiction du code HL sans écoulement');
+            plot(env.w/(2*pi), E_HL_flow.alpha(env, 'iter'), 'DisplayName', 'Prédiction du code HL avec écoulement');
+            plot(data5_1(:, 1), data5_1(:, 2), 'DisplayName', 'Prédiction du modèle de référence');
             perso_configure_alpha_figure(5000);
    
             %%%
 
             subplot(1, 2, 2)
             % title('Fig 5.2, M = 0.15')
-            title('M = 0.15 (V = 51 m/s)')
+            title('MPP + cavité 4, SPL = 120 dB, M = 0.15 (V = 51 m/s)')
             hold on 
 
             data5_2 = load('Thèse_Laly_fig5.2_black.txt');
@@ -130,9 +81,9 @@ classdef classMPP_Circular_HL_flow < classMPP_Circular_HL
             E_HL_flow = classelement(classelement.create_config({plate_HL_flow, cavity}, 'closed', S));
     
             % Modèle non linéaire itératif
-            plot(env.w/(2*pi), E_HL.alpha(env, 'iter'), 'DisplayName', 'Modèle non-linéaire sans écoulement');
-            plot(env.w/(2*pi), E_HL_flow.alpha(env, 'iter'), 'DisplayName', 'Modèle non-linéaire avec écoulement');
-            plot(data5_2(:, 1), data5_2(:, 2), 'DisplayName', 'Données de référence');
+            plot(env.w/(2*pi), E_HL.alpha(env, 'iter'), 'DisplayName', 'Prédiction du code HL sans écoulement');
+            plot(env.w/(2*pi), E_HL_flow.alpha(env, 'iter'), 'DisplayName', 'Prédiction du code HL avec écoulement');
+            plot(data5_2(:, 1), data5_2(:, 2), 'DisplayName', 'Prédiction du modèle de référence');
             perso_configure_alpha_figure(4000);
     
             %%%

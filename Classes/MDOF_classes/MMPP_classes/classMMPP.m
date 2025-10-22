@@ -72,7 +72,7 @@ classdef classMMPP < classelement
             phi = {0.0629, 0.0465}; % porosité de la plaque
             d = {1e-3, 1e-3}; % épaisseur de la plaque
             r = {1.4e-3/2, 1.33e-3/2}; % diamètre des perforations
-            R = 1; % Rayon de plaque arbitraire
+            R = 30e-3; % Rayon de plaque arbitraire
             s = pi*R^2; % Surfaces
 
             D = {30e-3, 30e-3};
@@ -93,8 +93,8 @@ classdef classMMPP < classelement
 
             hold on
             % subtitle("Atalla2007 - fig. 3 - p. 9")
-            plot(env.w / (2*pi), MMPP.alpha(env), 'Color', 'g', 'LineWidth', 0.5, 'DisplayName', 'Modèle analytique linéaire');
-            plot(env.w / (2*pi), MMPP_HL_fp.alpha(env), 'Color', 'r', 'LineWidth', 0.5, 'DisplayName', 'Modèle analytique HL appliqué à la première plaque');
+            % plot(env.w / (2*pi), MMPP.alpha(env), 'Color', 'g', 'LineWidth', 0.5, 'DisplayName', 'Modèle analytique linéaire');
+            % plot(env.w / (2*pi), MMPP_HL_fp.alpha(env), 'Color', 'r', 'LineWidth', 0.5, 'DisplayName', 'Modèle analytique HL appliqué à la première plaque');
             plot(env.w / (2*pi), MMPP_HL.alpha(env), 'Color', 'm', 'LineWidth', 0.5, 'DisplayName', 'Modèle analytique HL');
             plot(x_data1, y_data1, 'Color', 'g','LineWidth', 1, 'LineStyle', '--', 'DisplayName', 'Données de références - Mesure');
             % plot(x_data2, y_data2, 'Color', 'g','LineWidth', 1, 'LineStyle', '--', 'DisplayName', 'Données de références - Ingard');

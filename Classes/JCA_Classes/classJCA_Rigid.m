@@ -67,13 +67,23 @@ classdef classJCA_Rigid < classsubelement
             if ~isnumeric(tor)
                 tor = tor(env);
             end
-            
+
+            % % Debog : Tortuosité
+            % perso_figure('Tortuosité dans classJCA_Rigid/equivalent_parameters')
+            % % clf;
+            % plot(env.w/(2*pi), tor); 
+
             sig = config.AirFlowResistivity; % proportionnel à 1/phi
 
             % On vérifie que la resistivité à été évaluée lorsque elle a été définie 
             if ~isnumeric(sig)
                 sig = sig(env);
             end
+
+            % % Debog : Résistivité
+            % perso_figure('Résistivité dans classJCA_Rigid/equivalent_parameters')
+            % clf;
+            % plot(env.w/(2*pi), sig); 
 
             vl = config.ViscousCaracteristicLength;
             tl = config.ThermalCaracteristicLength;
@@ -82,7 +92,7 @@ classdef classJCA_Rigid < classsubelement
             
             % densité effective (effets visqueux) 
             try 
-                H = phi^2 * vl^2 * sig.^2 ./ (4 * tor.^2 * rho .* eta); % fréquence caractéristique visqueuse
+                H = phi^2 * vl^2 * sig.*conj(sig) ./ (4 * tor.*conj(tor) * rho .* eta); % fréquence caractéristique visqueuse
             catch
                 sprintf('pause!');
             end
@@ -94,6 +104,7 @@ classdef classJCA_Rigid < classsubelement
             % close();
             % plot(H);
             % close();
+
             G = sqrt(1 + 1j .* w./H); 
             ep.rhoeff = rho .* tor .* (1 + (sig .* phi .* G) ./ (1j  .*  w .* rho .* tor));
 
@@ -121,7 +132,7 @@ classdef classJCA_Rigid < classsubelement
             ep.keq = w ./ ep.ceq; % nombre d'onde équivalent
         end 
 
-        function TM = transfer_matrix(obj, env)
+        function TM = transfer_matrix(obj, env, ~, ~)
             
             % On gère les cas ou les paramètres équivalents ont été définis/ modifiées de l'extérieur (voir classMTP_with_slit_cavities par ex.)
             if isempty(obj.EquivalentParameters)
@@ -141,6 +152,24 @@ classdef classJCA_Rigid < classsubelement
             % TM.T21 = 1j * S ./ (ep.Zeq * phi) .* sin(kd);
             TM.T21 = 1j * S ./ ep.Zeq .* sin(kd);
             TM.T22 = cos(kd);
+
+            % % Debog : Matrice de transfert inverse
+            % perso_figure('nombre d''onde d''un sous-élement dans classJCA_Rigid/transfer_matrix')
+            % clf;
+            % sgtitle(class(obj))
+            % plot(env.w/(2*pi), ep.keq) 
+
+            % % Debog : Matrice de transfert inverse
+            % perso_figure('Impédance caractéristique d''un sous-élement dans classJCA_Rigid/transfer_matrix')
+            % clf;
+            % sgtitle(class(obj))
+            % plot(env.w/(2*pi), ep.Zeq) 
+
+            % % Debog : Matrice de transfert inverse
+            % perso_figure('TM d''un sous-élement dans classJCA_Rigid/transfer_matrix')
+            % clf;
+            % sgtitle(class(obj))
+            % perso_plot_transfer_matrix(TM, env, 'TM'); 
         end   
     
         function output_model = set_COMSOL_2D_Model(obj, input_model, elem_index, sblm_index, env)

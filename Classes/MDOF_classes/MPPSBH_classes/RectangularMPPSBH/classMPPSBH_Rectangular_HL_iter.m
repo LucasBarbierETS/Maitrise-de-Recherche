@@ -38,7 +38,7 @@ classdef classMPPSBH_Rectangular_HL_iter < classMPPSBH_Rectangular
     
                     % Cavité cubique en parallèle
                     annular_cavity = classannularcavity_cubical(classannularcavity_cubical.create_config(wc, dc, cavw, cavd, ct(i)));
-                    obj.Configuration.ListOfSubelements{end+1} = classjunction(classjunction.create_config(annular_cavity, wc, dc));
+                    obj.Configuration.ListOfSubelements{end+1} = classjunction(classjunction.create_config(annular_cavity, wc * dc));
         
                     % Cavité cylindrique
                     % obj.Configuration.ListOfSubelements{end+1} = classcavity(classcavity.create_config(ct(i)/2, wc, dc));

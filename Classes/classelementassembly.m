@@ -228,9 +228,8 @@
 
             % Initialisation
             u_rms = zeros(1, length(env.w));
-            p_rms = env.p_rms;
+            pt_rms = env.pt_rms;
             Zs_iter = 0;
-            distance = 0;
 
             % % debog : Tracé de la pression acoustique RMS à l'entrée
             % perso_figure('p_rms');
@@ -242,7 +241,7 @@
             if nargin > 2
                 tol = varargin{1};
             else
-                tol = 1e-3; 
+                tol = 1e-5; 
             end
 
             max_iter = 500;  % Nombre maximum d'itérations
@@ -266,10 +265,11 @@
 
                 for i = 1:length(elem_list)
                     elem = elem_list{i};
-                    TM = elem.transfer_matrix_iter(env, p_rms, u_rms);
+                    TM = elem.transfer_matrix_iter(env, pt_rms, u_rms);
 
                     % % Debog : TM des élements
                     % perso_figure('TM des élements dans classelementassembly\surface_impedance_iter');
+                    % clf;
                     % perso_plot_transfer_matrix(TM, env, ['TM élement ', num2str(i)]);
                     
                     Ysum = Ysum + r(i) * TM.T21 ./ TM.T11 / elem.Configuration.Surface;
@@ -289,22 +289,22 @@
 
                 % % Debog : Tracé de l'impédance de surface
                 % perso_figure('Impédance de surface de l''assemblage dans classelementassembly\surface_impedance_iter');
-                % perso_plot_surface_impedance(Zs, env, ['Itération ', num2str(iter)]);
+                % perso_plot_surface_impedance(env.w/(2*pi), Zs, env, ['Itération ', num2str(iter)]);
 
                 % % Debog : Partie réelle négatve
                 % find(real(Zs) < 0);
 
-                new_u_rms = abs(p_rms) ./ abs(Zs) * obj.Configuration.Surface;
+                new_u_rms = abs(pt_rms) ./ abs(Zs) * obj.Configuration.Surface;
                 % new_u_rms = abs(p_rms) ./ abs(Zs);
 
                 % % Debog (suite)
-                % perso_figure('u_rms');
+                % perso_figure('u_rms dans classelementassembly\surface_impedance_iter');
                 % plot(new_u_rms);
                 
-                convergence_criterium = max(abs(new_u_rms - u_rms));
+                convergence_criterium = max(abs(u_rms - new_u_rms));
 
                 % % Debog : Critère de convergence
-                % perso_figure('Convergence');
+                % perso_figure('Convergence dans classelementassembly\surface_impedance_iter');
                 % scatter(iter, convergence_criterium, 'Color', 'b', 'HandleVisibility', 'off');
                 % % ylim([-1e-2 1e-2]);
 
@@ -313,7 +313,7 @@
                     Zs_iter = Zs;
                 else
                     u_rms = new_u_rms;
-                end
+                end   
             end
         end
         

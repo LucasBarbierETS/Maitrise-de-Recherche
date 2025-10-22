@@ -1,7 +1,7 @@
 % Explications 
 % perso_ouvrir_lien_Obsidian('obsidian://open?vault=Maitrise%20REAR&file=Notes%20atomiques%2FEtude%20de%20l''effet%20trou-noir%20acoustique')
 
-N_config = 10;
+N_config = 1;
 N_plates = 10;
 N_permutations = 50;
 
@@ -51,20 +51,20 @@ barycenter_criterium = @(list_pw) perso_barycenter_criterium(list_pw, pw_min, pw
 
 
 % Objet flottant construit à partir des variables d'une configuration
-list_pw_to_MPPSBH = @(list_pw) classMPPSBH_Rectangular(classMPPSBH_Rectangular.create_explicit_config(N_plates, cd, cw, ...
-                                                                                                {r}, {dw}, {pd}, ...
+list_pw_to_MPPSBH = @(list_pw) classMPPSBH_Rectangular(classMPPSBH_Rectangular.create_explicit_square_pattern_config(cd*cw, N_plates, cd, cw, ...
+                                                                                                {r}, {dw}, ...
                                                                                                 {list_pw'}, ... % nombre de perforations dans le sens de la largeur
                                                                                                 {t}, {round((D - trb - t * N_plates) / N_plates, 4)}));
 
-handle_alpha = @(list_pw) list_pw_to_MPPSBH(list_pw).alpha(env(100));
+handle_alpha = @(list_pw) list_pw_to_MPPSBH(list_pw).alpha(handle_env(100, 0));
 
 % Evaluations flottantes des configurations
-mean_alpha_bf = @(alpha) perso_alpha_mean(alpha, env(100), f_min_bf, f_max_bf);
-mean_alpha_mf = @(alpha) perso_alpha_mean(alpha, env(100), f_min_mf, f_max_mf);
-mean_alpha_hf = @(alpha) perso_alpha_mean(alpha, env(100), f_min_hf, f_max_hf);
-mean_alpha_bf_mf = @(alpha) perso_alpha_mean(alpha, env(100), f_min_bf, f_max_mf);
-mean_alpha_mf_hf = @(alpha) perso_alpha_mean(alpha, env(100), f_min_mf, f_max_hf);
-mean_alpha_bf_hf = @(alpha) perso_alpha_mean(alpha, env(100), f_min_bf, f_max_hf);
+mean_alpha_bf = @(alpha) perso_alpha_mean(alpha,handle_env(100, 0), f_min_bf, f_max_bf);
+mean_alpha_mf = @(alpha) perso_alpha_mean(alpha,handle_env(100, 0), f_min_mf, f_max_mf);
+mean_alpha_hf = @(alpha) perso_alpha_mean(alpha,handle_env(100, 0), f_min_hf, f_max_hf);
+mean_alpha_bf_mf = @(alpha) perso_alpha_mean(alpha,handle_env(100, 0), f_min_bf, f_max_mf);
+mean_alpha_mf_hf = @(alpha) perso_alpha_mean(alpha,handle_env(100, 0), f_min_mf, f_max_hf);
+mean_alpha_bf_hf = @(alpha) perso_alpha_mean(alpha,handle_env(100, 0), f_min_bf, f_max_hf);
 
 color_matrix = zeros(N_config, 3);
 

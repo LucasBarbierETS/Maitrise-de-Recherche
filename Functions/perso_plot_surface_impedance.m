@@ -9,15 +9,15 @@ function perso_plot_surface_impedance(f, Zs, env, name, varargin)
     if nargin > 4
         y_real_max = varargin{1};
     else
-        y_real_max = 30;
+        y_real_max = 10;
     end
 
     ylim([0 y_real_max])
 
-    % ReZs = real(Zs/env.air.parameters.Z0);
-    % ImZs = imag(Zs/env.air.parameters.Z0);
-    ReZs = real(Zs);
-    ImZs = imag(Zs);
+    ReZs = real(Zs/env.air.parameters.Z0);
+    ImZs = imag(Zs/env.air.parameters.Z0);
+    % ReZs = real(Zs);
+    % ImZs = imag(Zs);
 
     mask = ImZs(1:end-1) .* ImZs(2:end) < 0;
     % f0 = f(mask);
@@ -29,7 +29,7 @@ function perso_plot_surface_impedance(f, Zs, env, name, varargin)
     % end
 
     plot(f, ReZs, 'DisplayName', name);
-    yline(1, '--', 'HandleVisibility', 'off');
+    yline(1, '--k', 'HandleVisibility', 'off');
     legend('Location', 'best');
 
     % Partie imaginaire

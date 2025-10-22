@@ -23,7 +23,7 @@ classdef classjunction < classsubelement
             obj.HandleAppBuilder = @(app, class_jcn) AppJunction.class_to_app(app, class_jcn);
         end
         
-        function TM = transfer_matrix(obj, env)
+        function TM = transfer_matrix(obj, env, varargin)
             
             % [1] eq.11
             config = obj.Configuration;

@@ -29,6 +29,22 @@ classdef classannularcavity_cubical < classsubelement
                     % QWL_Slit = classQWL_Slit(classQWL_Slit.create_config(cw/2, ct, cd));
                     Zsde = 2 * QWL_Slit.surface_impedance(env);
 
+                case 'Plane Wave Corrected'
+
+                    mpw = config.MainPoreWidth;
+                    mpwi = config.MainPoreWidthIn;
+                    mpwo = config.MainPoreWidthOut;
+                    cw  = config.CavityWidth;
+                    cd = config.CavityDepth;
+                    ct = config.CavityThickness;
+                    
+                    % On corrige le modèle en considérant la longueur
+                    % réelle pour la reflexion des ondes transversales
+                    l_corr = sqrt(((cw - mpwi)/2)^2+(ct/2)^2) + sqrt(((cw - mpwo)/2)^2+(ct/2)^2);
+                    QWL_Slit = classQWL_Slit(classQWL_Slit.create_config(l_corr/2, ct, cd));
+                    % QWL_Slit = classQWL_Slit(classQWL_Slit.create_config(cw/2, ct, cd));
+                    Zsde = 2 * QWL_Slit.surface_impedance(env);
+
                 case 'Lumped Volume'
 
                     Ca = config.CurtainArea;

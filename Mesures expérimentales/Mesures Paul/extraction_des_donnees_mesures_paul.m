@@ -1,6 +1,6 @@
 %% Choix de l'échantillon étudié
 
-N = 2;
+N = 1;
 
 %% Récupération des données
 

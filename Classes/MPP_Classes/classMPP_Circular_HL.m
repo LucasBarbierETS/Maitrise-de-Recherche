@@ -1,10 +1,5 @@
 classdef classMPP_Circular_HL < classMPP_Circular
 
-% Description
-% Ce constructeur de classe permet de créer une plaque microperforée à perforations circulaires
-% Il se base sur le modèle de fluide équivalent (JCA) développé dans 'classJCA_Rigid'
-% En plus de cela, on intègre la résistivité et la tortuosité modifiée développée par Laly dans [5]
-
 % References : 
 %            [5] Zacharie Laly, Acoustical modeling of micro-perforated panel at high 
 %                sound pressure levels using equivalent fluid approach
@@ -19,25 +14,16 @@ classdef classMPP_Circular_HL < classMPP_Circular
         function obj = classMPP_Circular_HL(config)
             
             obj@classMPP_Circular(config)
+         
+            obj.Configuration.AirFlowResistivity = @(env) classMPP_Circular_HL.air_flow_resistivity(env, config);
 
-            phi = config.Porosity;
-            pr = config.PerforationsRadius;
-            t = config.Thickness;
-
-            try
-                beta = config.Beta;
-                obj.Configuration.AirFlowResistivity = @(env) classMPP_Circular_HL.air_flow_resistivity(env, phi, pr, t, beta);
-            catch
-                obj.Configuration.AirFlowResistivity = @(env) classMPP_Circular_HL.air_flow_resistivity(env, phi, pr, t);
-            end
-
-            obj.Configuration.Toruosity = @(env) classMPP_Circular_HL.tortuosity(env, phi, pr, t);
+            obj.Configuration.Tortuosity = @(env) classMPP_Circular_HL.tortuosity(env, config);
         end
     end
 
      methods (Static, Access = public)
 
-         function config = create_config(surface, thickness, perforations_radius, porosity, varargin)
+        function config = create_config(surface, thickness, perforations_radius, porosity, varargin)
             
             % Cette méthode permet de créer une configuration d'appel spéciale dans le cas ou les perforations de la MPP sont cylindriques
             
@@ -58,7 +44,7 @@ classdef classMPP_Circular_HL < classMPP_Circular
             end
          end
         
-         function f = f(env, phi)
+        function f = f(env, phi)
 
             % Fonction intermédiaire ([5] eq. 27, eq. 28)
             % Cette fonction provient d'une formulation de la résistivité au passage de l'air qui fait référence explicitement au
@@ -75,43 +61,105 @@ classdef classMPP_Circular_HL < classMPP_Circular
             % perso_figure('Debog - classMPP_Circular_HL - f - env.pi_rms')
             % plot(env.w/(2*pi), env.pi_rms)
             % % ylim([0 5e3]);
-         end
+        end
 
-         function sig = air_flow_resistivity(env, phi, pr, t, varargin)
+        function sig = air_flow_resistivity(env, config, options)
 
-            if nargin > 4
-                beta = varargin{1};
-            else
-                beta = 1.6; % [5] p.8
-                % beta = 1.2; 
+            arguments
+                env
+                config
+                options.v_rms double = []
+                options.M double = []
             end
 
-            Cd = 0.76; % [5] p.8
+            phi = config.RelativePorosity;
+            pr = config.PerforationsRadius;
+            t = config.Thickness;
 
-            % Résistivité au passage de l'air ([5], p. 7, eq. 27)
-            sig = 8 * env.air.parameters.eta / (phi * pr^2) ...
-                + beta * env.air.parameters.Z0 / (pi * t * Cd^2) ...
-                * (-1/2 + classMPP_Circular_HL.f(env, phi)); ... % forts niveaux
+            %% Paramètres optionnels
+            if isfield(config, 'Beta')
+                beta = config.Beta;
+            else
+                beta = 1.6; % [5] p.8
+            end
+
+            if isfield(config, 'Cd')
+                Cd = config.Cd;
+            else
+                Cd = 0.76; % [5] p.8
+            end
+
+            if isfield(config, 'q')
+                q = config.q;
+            else
+                q = 0.3; % voir modèle Laly écoulement
+            end
+
+            %% Calculs des composantes de la résistivité
+            % Composante associée aux forts niveaux
+            if isempty(options.v_rms)
+                sig_HL = 8 * env.air.parameters.eta / (phi * pr^2) ...
+                    + beta * env.air.parameters.Z0 / (pi * t * Cd^2) ...
+                    * (-1/2 + classMPP_Circular_HL.f(env, phi)); ... % forts niveaux ([5], p. 7, eq. 27)
+
+            else
+                % Résistivité au passage de l'air ([5], p. 7, eq. 20)
+                sig_HL = 8 * env.air.parameters.eta / (phi * pr^2) ... résistivité linéaire
+                + beta * env.air.parameters.rho * (1 - phi^2) / (pi * t * phi * Cd^2) * options.v_rms; ... 
+            end
+
+            % Composante associée à la présence d'un écoulement rasant
+            if isempty(options.M)
+                sig_M = 0;
+            else
+                sig_M = env.air.parameters.Z0 * (1 - phi^2) / (phi * t) * q * options.M;
+            end
+
+            sig = sig_HL + sig_M;
 
             % % debog : Tracé de la résistivité au passage de l'air en fonction de la fréquence
-            % perso_figure('Résistivité aupassage de l''air dans classMPP_Circular_HL')
+            % perso_figure('Résistivité au passage de l''air dans classMPP_Circular_HL')
             % plot(abs(sig))
-            % close();
+            % % close();
          end
 
-         function tor = tortuosity(env, phi, pr, t)
+         function tor = tortuosity(env, config, options)
+
+            arguments
+                env
+                config
+                options.v_rms double = []
+                options.M double = []
+            end
+
+            phi = config.RelativePorosity;
+            pr = config.PerforationsRadius;
+            t = config.Thickness;
              
             psi = 4/3; 
             a = [1.0 -1.4092 0.0 0.33818 0.0 0.06793 -0.02287 0.003015 -0.01614];
             sum_a = dot(a, sqrt(phi).^(0:length(a)-1));
 
-            % Tortuosité non linéaire ([5], p. 7, eq. 28)
-            tor = 1 + 2 * psi * 0.48 * sqrt(pi * pr^2) / t * sum_a ...    
-                * (1 + 1 / (1 - phi^2) ...
-                * (-1/2 + classMPP_Circular_HL.f(env, phi)))^(-1);
+            if isempty(options.v_rms)
+                % Tortuosité non linéaire ([5], p. 7, eq. 28)
+                torNL = 2 * psi * 0.48 * sqrt(pi * pr^2) / t * sum_a ...    
+                    * (1 + 1 / (1 - phi^2) ...
+                    * (-1/2 + classMPP_Circular_HL.f(env, phi))).^(-1);
+
+            else
+                % Tortuosité non linéaire ([5], p. 7, eq. 22, 23)
+                torNL = 2 * psi ./ (t * (1 + options.v_rms / (phi * env.air.parameters.c0))) ...
+                * 0.48 * sqrt(pi * pr^2) * sum_a;
+            end
+
+            if ~isempty(options.M)
+                torNL = torNL / (1 + 305 * options.M^3); % ([5], p. 7, eq. 28) 
+            end
+
+            tor = 1 + torNL;
          end
     
-         function validate(handle_env)
+        function validate(handle_env)
 
             close();
             
@@ -119,7 +167,7 @@ classdef classMPP_Circular_HL < classMPP_Circular
 
             perso_figure('Validation classMPP_Circular_HL - Thèse Laly - Models Comparison');
 
-            subplot(2, 2, 1)
+            % subplot(2, 2, 1)
             title('Fig 3.3 - SPL = 110 dB')
             hold on 
 
@@ -138,14 +186,15 @@ classdef classMPP_Circular_HL < classMPP_Circular
             plate_HL = classMPP_Circular_HL(classMPP_Circular_HL.create_config(S, t, r, phi)); 
             cavity = classcavity(classcavity.create_config(S, D));
             E_HL = classelement(classelement.create_config({plate_HL, cavity}, 'closed', S));
-            plot(env.w/(2*pi), E_HL.alpha(env), 'DisplayName', 'Modèle non-linéaire');
+            % plot(env.w/(2*pi), E_HL.alpha(env), 'DisplayName', 'Modèle non-linéaire');
             plot(env.w/(2*pi), E_HL.alpha(env, 'iter'), 'DisplayName', 'Modèle non-linéaire itératif');
-            plot(data3_3(:, 1), data3_3(:, 2), 'DisplayName', 'Données de référence - 125 dB');
+            plot(env.w/(2*pi), E_HL.alpha(env, 'iter Laly'), 'DisplayName', 'Modèle non-linéaire itératif Laly');
+            plot(data3_3(:, 1), data3_3(:, 2), 'DisplayName', 'Résultat expérimental de référence');
             perso_configure_alpha_figure(4000);
 
             %%%
 
-            subplot(2, 2, 2)
+            % subplot(2, 2, 2)
             title('Fig 3.4 - SPL = 135 dB')
             hold on 
 
@@ -160,12 +209,15 @@ classdef classMPP_Circular_HL < classMPP_Circular
             phi = 0.0417;
             D = 40e-3;
 
+            plate = classMPP_Circular_HL(classMPP_Circular.create_config(S, t, r, phi)); 
             plate_HL = classMPP_Circular_HL(classMPP_Circular_HL.create_config(S, t, r, phi)); 
             cavity = classcavity(classcavity.create_config(S, D));
+            E = classelement(classelement.create_config({plate, cavity}, 'closed', S));
             E_HL = classelement(classelement.create_config({plate_HL, cavity}, 'closed', S));
-            plot(env.w/(2*pi), E_HL.alpha(env), 'DisplayName', 'Modèle non-linéaire');
-            plot(env.w/(2*pi), E_HL.alpha(env, 'iter'), 'DisplayName', 'Modèle non-linéaire itératif');
-            plot(data3_4(:, 1), data3_4(:, 2), 'DisplayName', 'Données de référence');
+            plot(env.w/(2*pi), E.alpha(env), 'DisplayName', 'Prédiction du modèle linéaire');
+            % plot(env.w/(2*pi), E_HL.alpha(env), 'DisplayName', 'Modèle non-linéaire');
+            plot(env.w/(2*pi), E_HL.alpha(env, 'iter Laly'), 'DisplayName', 'Prédiction du modèle fort niveau');
+            plot(data3_4(:, 1), data3_4(:, 2), 'DisplayName', 'Résultat expérimental de référence');
             perso_configure_alpha_figure(4000);
 
             %%%
@@ -185,14 +237,17 @@ classdef classMPP_Circular_HL < classMPP_Circular
             phi = 0.0523;
             D = 28e-3;
 
+            plate = classMPP_Circular_HL(classMPP_Circular.create_config(S, t, r, phi)); 
             plate_HL = classMPP_Circular_HL(classMPP_Circular_HL.create_config(S, t, r, phi)); 
             cavity = classcavity(classcavity.create_config(S, D));
+            E = classelement(classelement.create_config({plate, cavity}, 'closed', S));
             E_HL = classelement(classelement.create_config({plate_HL, cavity}, 'closed', S));
-            plot(env.w/(2*pi), E_HL.alpha(env), 'DisplayName', 'Modèle non-linéaire');
-            plot(env.w/(2*pi), E_HL.alpha(env, 'iter'), 'DisplayName', 'Modèle non-linéaire itératif');
-            plot(data3_5(:, 1), data3_5(:, 2), 'DisplayName', 'Données de référence');
+            plot(env.w/(2*pi), E.alpha(env), 'DisplayName', 'Prédiction du modèle linéaire');
+            % plot(env.w/(2*pi), E_HL.alpha(env), 'DisplayName', 'Modèle non-linéaire');
+            plot(env.w/(2*pi), E_HL.alpha(env, 'iter Laly'), 'DisplayName', 'Prédiction du modèle fort niveau');
+            plot(data3_5(:, 1), data3_5(:, 2), 'DisplayName', 'Résultat expérimental de référence');
             perso_configure_alpha_figure(4000);
-
+s
             %%%
 
             subplot(2, 2, 4)
@@ -213,8 +268,8 @@ classdef classMPP_Circular_HL < classMPP_Circular
             plate_HL = classMPP_Circular_HL(classMPP_Circular_HL.create_config(S, t, r, phi)); 
             cavity = classcavity(classcavity.create_config(S, D));
             E_HL = classelement(classelement.create_config({plate_HL, cavity}, 'closed', S));
-            plot(env.w/(2*pi), E_HL.alpha(env), 'DisplayName', 'Modèle non-linéaire');
-            plot(env.w/(2*pi), E_HL.alpha(env, 'iter'), 'DisplayName', 'Modèle non-linéaire itératif');
+            % plot(env.w/(2*pi), E_HL.alpha(env), 'DisplayName', 'Modèle non-linéaire');
+            plot(env.w/(2*pi), E_HL.alpha(env, 'iter Laly'), 'DisplayName', 'Prédiction du modèle fort niveau');
             plot(data3_6(:, 1), data3_6(:, 2), 'DisplayName', 'Données de référence');
             perso_configure_alpha_figure(4000);
 
@@ -238,15 +293,18 @@ classdef classMPP_Circular_HL < classMPP_Circular
             D = 100e-3;
             S = 1; % Surface arbitraire
 
+            plate = classMPP_Circular_HL(classMPP_Circular.create_config(S, t, r, phi)); 
             plate_HL = classMPP_Circular_HL(classMPP_Circular_HL.create_config(S, t, r, phi)); 
             cavity = classcavity(classcavity.create_config(S, D));
+            E = classelement(classelement.create_config({plate, cavity}, 'closed', S));
             E_HL = classelement(classelement.create_config({plate_HL, cavity}, 'closed', S));
-            plot(env.w/(2*pi), E_HL.alpha(env), 'DisplayName', 'Modèle non-linéaire');
-            plot(env.w/(2*pi), E_HL.alpha(env, 'iter'), 'DisplayName', 'Modèle non-linéaire itératif');
-            plot(data3_8(:, 1), data3_8(:, 2), 'DisplayName', 'Données de référence');
+            plot(env.w/(2*pi), E.alpha(env), 'DisplayName', 'Prédiction du modèle linéaire');
+            % plot(env.w/(2*pi), E_HL.alpha(env), 'DisplayName', 'Modèle non-linéaire');
+            plot(env.w/(2*pi), E_HL.alpha(env, 'iter Laly'), 'DisplayName', 'Prédiction du modèle fort niveau');
+            plot(data3_8(:, 1), data3_8(:, 2), 'DisplayName', 'Résultat expérimental de référence');
             perso_configure_alpha_figure(4000);
             xlim([200 1400])
-            ylim([0.4 1])
+            ylim([0 1])
             
             %% Thèse Laly - Validation on own measurements
 

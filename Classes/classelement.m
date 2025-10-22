@@ -3,7 +3,7 @@ classdef classelement
     properties
         
         HandleAppBuilder = @(app, class_elm) AppElement.class_to_app(app, class_elm)
-        HandleAppConfig = @(class_config) struct('InputSection', class_config.InputSection)
+        HandleAppConfig = @(class_config) struct('Surface', class_config.Surface)
         Configuration
         % Contenu 
         % ListOfSubelements % (cell) la seul requête des subelements est d'avoir une méthode transfermatrix(env)
@@ -18,7 +18,7 @@ classdef classelement
             obj.Configuration = config;
         end
 
-        function TM = transfer_matrix(obj, env) % (p1, u1) = TM * (p2, u2)
+        function TM = transfer_matrix(obj, env, varargin) % (p1, u1) = TM * (p2, u2)
 
             % On vérifie que l'élement ne contient pas un sous-élement
             % importé. Sinon on calcule la matrice de transfert des blocs
@@ -137,15 +137,14 @@ classdef classelement
 
                 % % debog : Tracé des termes complexes de la matrice de transfert du sous-élement
                 % perso_figure('TM')
-                % perso_plot_transfer_matrix(sblm_TM, env);  
+                % perso_plot_transfer_matrix(sblm_TM, env, 'TM');  
                 % close()
             end 
 
             % % debog : Tracé des termes complexes de la matrice de transfert de l'élement
-            % perso_figure('TM')
+            % perso_figure('TM d''un élement dans classelement/transfer_matrix_iter')
             % clf
-            % perso_plot_transfer_matrix(TM, env);  
-
+            % perso_plot_transfer_matrix(TM, env, 'TM');  
         end
 
         function TM_inv = inverse_transfer_matrix(obj, env) % (p2, u2) = TM_inv * (p1, u1)
@@ -159,6 +158,13 @@ classdef classelement
                     TM_inv = matprod(TM_inv, config.ListOfSubelements{i}.inverse_transfer_matrix(env));
                 end
             end
+
+            % % Debog : Matrice de transfert
+            % perso_figure('TM directe et inverse d''un élement dans classelement/inverse_transfer_matrix')
+            % perso_plot_transfer_matrix(obj.transfer_matrix(env), env, 'TM');
+            % perso_plot_transfer_matrix(TM_inv, env, 'TM inv'); 
+
+
         end
       
         % function TM_sb = side_branch_transfer_matrix(obj, env, Lx, M)
@@ -248,105 +254,110 @@ classdef classelement
             end
         end
 
-        % function Zs_iter = surface_impedance_iter(obj, env, varargin)
-        % 
-        %     % Explications
-        %     % perso_ouvrir_lien_Obsidian('obsidian://open?vault=Maitrise%20REAR&file=Notes%20atomiques%2FProc%C3%A9dure%20it%C3%A9rative%20pour%20obtenir%20l''imp%C3%A9dance%20de%20surface%20non-lin%C3%A9aire%20d''une%20solution%20multi-plaques')
-        % 
-        %     % Algorithme
-        %     % Initialisation
-        %     % u_rms(1, :) = zeros(1, length(env.w)) (vecteur des débits RMS à l'entrée des sous-élements, lignes par lignes)
-        %     % p_rms(1, :) = P_rms_top (matrices des pression RMS à l'entrée des sous-élements, lignes par lignes)
-        %     %
-        %     % Pour le i_ème sous-élement : 
-        %     % - on regarde si c'est un handle, si oui on appelle l'objet avec le veteur u_rms(i, :) donné en argument
-        %     % - on ajoute la matrice de transfert à la liste en cours
-        %     % - on calcule la matrice inverse
-        %     % - on définit u_rms(i+1, :) et p_rms(i+1, :) à partir de la matrice inverse et de u_rms(i, :) et p_rms(i, :)
-        %     % 
-        %     % Evaluation itérative
-        %     % - on calcule la surface d'impedance obtenue à partir de la matrice de transfert composée
-        %     % - on calcule la nouvelle vitesse rms de surface new_u_rms à partir de p_rms(1, :) et de la surface d'impédance obtenue 
-        %     % - condition de convergence : max(u_rms(1, :) - new_u_rms) < seuil
-        % 
-        %     %% Initialisation de la procédure
-        % 
-        %     u_rms = zeros(1, length(env.w));
-        % 
-        %     try
-        %         pt_rms = repmat(env.pt_rms, 1, length(env.w));
-        %     catch
-        %         sprintf('Pression acoustique totale manquante')
-        %     end
-        % 
-        %     % Tolérance pour la convergence
-        %     if nargin > 2
-        %         tol = varargin{1};
-        %     else
-        %         tol = 1e-3; 
-        %     end
-        % 
-        %     max_iter = 500;  % Nombre maximum d'itérations
-        %     iter = 0;
-        %     converged = false;
-        % 
-        %     % % debog : Tracé des débits acoustiques RMS successives au cours de la procédure itérative
-        %     % perso_figure('u_rms');
-        %     % clf
-        %     % title('Débit acoustique RMS à l''entrée de l''élement')
-        %     % legend();
-        %     % plot(env.w/(2*pi), u_rms, 'DisplayName', 'Itération 0')
-        % 
-        %     %% Procédure itérative
-        % 
-        %     while ~converged && iter < max_iter
-        % 
-        %         %% Calcul de la nouvelle impédance de surface
-        % 
-        %         iter = iter + 1;
-        % 
-        %         TM = obj.transfer_matrix_iter(env, pt_rms, u_rms);
-        % 
-        %         % % debog : Matrice de transfert de l'élement
-        %         % perso_figure('TM')
-        %         % perso_plot_transfer_matrix(TM, env);
-        % 
-        %         % Vérification du critère de convergence
-        %         Zs = obj.surface_impedance(env, TM);
-        % 
-        %         % % Debog : Tracé de l'impédance de surface
-        %         % perso_figure('Zs');
-        %         % perso_plot_surface_impedance(Zs, env, ['itération ', num2str(iter)]);
-        % 
-        %         %% Calcul du nouveau débit RMS d'entrée
-        % 
-        %         % Formulation en Pression - Débit
-        %         new_u_rms = abs(pt_rms) ./ abs(Zs) * obj.Configuration.Surface;
-        %         % new_u_rms = abs(p_rms) ./ abs(Zs);
-        % 
-        %         % % Debog (suite)
-        %         % perso_figure('u_rms');
-        %         % plot(env.w/(2*pi), new_u_rms, 'DisplayName', ['Itération ', num2str(iter)])
-        % 
-        %         %% Vérification du critère de convergence
-        % 
-        %         convergence_criterium = max(abs(new_u_rms - u_rms));
-        % 
-        %         % % Debog : Critère de convergence
-        %         % perso_figure('Convergence');
-        %         % scatter(iter, convergence_criterium, 'Color', 'b', 'HandleVisibility', 'off');
-        %         % % ylim([-1e-2 1e-2]);
-        % 
-        %         if convergence_criterium < tol
-        %             converged = true;
-        %             Zs_iter = Zs;
-        %         else
-        %             u_rms = new_u_rms;
-        %         end
-        %     end
-        % end
-
         function Zs_iter = surface_impedance_iter(obj, env, varargin)
+
+            % Explications
+            % perso_ouvrir_lien_Obsidian('obsidian://open?vault=Maitrise%20REAR&file=Notes%20atomiques%2FProc%C3%A9dure%20it%C3%A9rative%20pour%20obtenir%20l''imp%C3%A9dance%20de%20surface%20non-lin%C3%A9aire%20d''une%20solution%20multi-plaques')
+
+            % Algorithme
+            % Initialisation
+            % u_rms(1, :) = zeros(1, length(env.w)) (vecteur des débits RMS à l'entrée des sous-élements, lignes par lignes)
+            % p_rms(1, :) = P_rms_top (matrices des pression RMS à l'entrée des sous-élements, lignes par lignes)
+            %
+            % Pour le i_ème sous-élement : 
+            % - on regarde si c'est un handle, si oui on appelle l'objet avec le veteur u_rms(i, :) donné en argument
+            % - on ajoute la matrice de transfert à la liste en cours
+            % - on calcule la matrice inverse
+            % - on définit u_rms(i+1, :) et p_rms(i+1, :) à partir de la matrice inverse et de u_rms(i, :) et p_rms(i, :)
+            % 
+            % Evaluation itérative
+            % - on calcule la surface d'impedance obtenue à partir de la matrice de transfert composée
+            % - on calcule la nouvelle vitesse rms de surface new_u_rms à partir de p_rms(1, :) et de la surface d'impédance obtenue 
+            % - condition de convergence : max(u_rms(1, :) - new_u_rms) < seuil
+
+            %% Initialisation de la procédure
+
+            u_rms = zeros(1, length(env.w));
+
+            try
+                pt_rms = env.pt_rms;
+            catch
+                sprintf('Pression acoustique totale manquante')
+            end
+
+            % Tolérance pour la convergence
+            if nargin > 2
+                tol = varargin{1};
+            else
+                tol = 1e-2; 
+            end
+
+            max_iter = 500;  % Nombre maximum d'itérations
+            iter = 0;
+            converged = false;
+
+            % % debog : Tracé des débits acoustiques RMS successives au cours de la procédure itérative
+            % perso_figure('u_rms');
+            % clf
+            % title('Débit acoustique RMS à l''entrée de l''élement')
+            % legend();
+            % plot(env.w/(2*pi), u_rms, 'DisplayName', 'Itération 0')
+
+            %% Procédure itérative
+
+            while ~converged && iter < max_iter
+
+                %% Calcul de la nouvelle impédance de surface
+
+                iter = iter + 1;
+
+                TM = obj.transfer_matrix_iter(env, pt_rms, u_rms);
+
+                % % debog : Matrice de transfert de l'élement
+                % perso_figure('TM')
+                % perso_plot_transfer_matrix(TM, env);
+
+                % Vérification du critère de convergence
+                Zs = obj.surface_impedance(env, TM);
+
+                % % Debog : Tracé de l'impédance de surface
+                % perso_figure('Zs');
+                % perso_plot_surface_impedance(env.w/(2*pi), Zs/env.air.parameters.Z0, env, ['itération ', num2str(iter)]);
+
+                % % Debog : Tracé de l'impédance de surface
+                % perso_figure('abs(Zs)');
+                % plot(env.w/(2*pi), abs(Zs/env.air.parameters.Z0));
+                % ylim([0 10])
+
+                %% Calcul du nouveau débit RMS d'entrée
+
+                % Formulation en Pression - Débit
+                new_u_rms = abs(pt_rms) ./ abs(Zs) * obj.Configuration.Surface;
+                % new_u_rms = abs(p_rms) ./ abs(Zs);
+
+                % % Debog
+                % perso_figure('u_rms');
+                % plot(env.w/(2*pi), new_u_rms, 'DisplayName', ['Itération ', num2str(iter)])
+
+                %% Vérification du critère de convergence
+
+                convergence_criterium = mean(abs(new_u_rms - u_rms));
+
+                % Debog : Critère de convergence
+                perso_figure('Convergence');
+                scatter(iter, convergence_criterium, 'Color', 'b', 'HandleVisibility', 'off');
+                % ylim([-1e-2 1e-2]);
+
+               if convergence_criterium < tol
+                    converged = true;
+                    Zs_iter = Zs;
+                else
+                    u_rms = new_u_rms;
+                end
+            end
+        end
+
+        function Zs_iter = surface_impedance_iter_Laly(obj, env, varargin)
 
             % Explications
             % perso_ouvrir_lien_Obsidian('obsidian://open?vault=Maitrise%20REAR&file=Notes%20atomiques%2FProc%C3%A9dure%20it%C3%A9rative%20pour%20obtenir%20l''imp%C3%A9dance%20de%20surface%20non-lin%C3%A9aire%20d''une%20solution%20multi-plaques')
@@ -446,13 +457,30 @@ classdef classelement
         function alpha = alpha(obj, env, varargin) % retourne le vecteur coefficient d'absorption
 
             if nargin > 2 && strcmp(varargin{1}, 'iter')
+                
                 if nargin > 3
-                    Zs = obj.surface_impedance_iter(env, varargin{2}); % tol
-                else   
-                    Zs = obj.surface_impedance_iter(env); 
+                    Zs = obj.surface_impedance_iter(env, varargin{2}); % seuil de tolérance
+                else
+                    try
+                        Zs = obj.surface_impedance_iter(env); 
+                    catch
+                        error('Impossible de calculer la surface d''impédance de l''élement');
+                    end
+                        
                 end
 
                 alpha = 1 - abs(obj.reflexion_coefficient(env, Zs)).^2;
+
+            elseif nargin > 2 && strcmp(varargin{1}, 'iter Laly')  
+                
+                if nargin > 3
+                    Zs = obj.surface_impedance_iter_Laly(env, varargin{2}); % seuil de tolérance
+                else   
+                    Zs = obj.surface_impedance_iter_Laly(env); 
+                end
+
+                alpha = 1 - abs(obj.reflexion_coefficient(env, Zs)).^2;
+
             else
                 alpha = 1 - abs(obj.reflexion_coefficient(env)).^2;
             end

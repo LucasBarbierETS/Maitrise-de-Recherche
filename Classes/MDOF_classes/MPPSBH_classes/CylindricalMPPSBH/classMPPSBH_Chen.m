@@ -73,7 +73,7 @@ classdef classMPPSBH_Chen < classelement
             L = 100e-3;
             N = 10;
             rend = 1e-3;
-            d = 0.25e-3;
+            d = 0.2e-3;
             t = 0.2e-3;
             phi = 0.04;
             
@@ -84,14 +84,14 @@ classdef classMPPSBH_Chen < classelement
 
             % Importation des données de références
             data = load('Chen2024_fig3a_black.txt');
-            plot(data(:, 1), data(:, 2), 'DisplayName', 'Données de références');
+            plot(data(:, 1), data(:, 2), 'DisplayName', 'Résultat numérique de référence');
             
             % Calcul de la réponse du modèle analytique
             config = classMPPSBH_Chen.create_config(pi*R^2, ...
                 N, {t}, {L/N - t}, R, {{R, rend, N+1, 1}}, ...
                 {d/2}, {phi});
             alpha_model_lin = classMPPSBH_Chen(config).alpha(env);
-            plot(env.w / (2*pi), alpha_model_lin, 'Color', 'g', 'LineWidth', 1, 'DisplayName', 'Modèle analytique');
+            plot(env.w / (2*pi), alpha_model_lin, 'Color', 'g', 'LineWidth', 1, 'DisplayName', 'Prédiction du code analytique');
             perso_configure_alpha_figure(3000);
 
             %% Profil quadratique
