@@ -1,0 +1,44 @@
+% --- Script : plot_txt_files.m
+% Permet de sélectionner plusieurs fichiers .txt et tracer colonne 1 / colonne 2
+% sans afficher le nom du fichier dans le titre
+
+clear; clc; close all;
+
+% --- Sélection des fichiers
+[filenames, filepath] = uigetfile('*.txt', ...
+    'Sélectionnez un ou plusieurs fichiers texte', ...
+    'MultiSelect', 'on');
+
+if isequal(filenames, 0)
+    disp('Aucun fichier sélectionné.');
+    return;
+end
+
+% S'assurer que filenames est une cellule
+if ischar(filenames)
+    filenames = {filenames};
+end
+
+figure; hold on; grid on;
+xlabel('PSD (dB)');
+ylabel('Fréquences (Hz)');
+title('PSD au microphone en incidence normale à 100dB sans poreux de flush à 3D');
+
+% --- Lecture et tracé de chaque fichier
+for i = 1:numel(filenames)
+    file = fullfile(filepath, filenames{i});
+    
+    % Lecture du fichier
+    data = readmatrix(file);
+
+    if size(data, 2) < 2
+        warning('Le fichier "%s" ne contient pas au moins deux colonnes.', filenames{i});
+        continue;
+    end
+    
+    % Tracé
+    plot(data(:,1), data(:,2), 'DisplayName', filenames{i}, 'LineWidth', 1.5);
+end
+
+legend('Location', 'best');
+hold off;

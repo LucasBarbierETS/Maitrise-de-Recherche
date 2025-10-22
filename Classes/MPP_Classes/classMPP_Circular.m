@@ -60,6 +60,7 @@ classdef classMPP_Circular < classJCA_Rigid
             
             % On créer la configuration 
             config = perso_transfer_fields(classJCA_Rigid.create_config(s, t, phi, tor, sig, rh, rh), config);
+            
 
             % On appelle le superconstructeur 
             obj@classJCA_Rigid(config);
