@@ -28,6 +28,13 @@ try
     perso_add_all_paths(root);
 catch
 end
+root_A = 'C:\Users\paulf\Documents\GitHub\Maitrise-de-Recherche';
+% root_B = 'C:\Users\lucas.barbier\Documents\Maitrise ETS';
+
+addpath([root_A, '\Functions'])
+% addpath([root_B, '\MATLAB\Functions'])
+perso_add_all_paths(root_A);
+% perso_add_all_paths([root_B, '\MATLAB']);
 
 %% Importation des mises à jour depuis GitHub
 % system('git pull');

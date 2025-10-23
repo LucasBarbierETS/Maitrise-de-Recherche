@@ -5,6 +5,9 @@ function perso_commit(message)
 
     % Définir le chemin du dépôt
     repo_path = 'C:\Users\lucas.barbier\Documents\Maitrise ETS\Répertoire GitHub';
+    % repo_path = 'C:\Users\lucas.barbier\Documents\Maitrise ETS\MATLAB';
+    repo_path = 'C:\Users\paulf\Documents\GitHub\Maitrise-de-Recherche';
+
 
     % Vérifier si le dossier existe
     if ~isfolder(repo_path)
