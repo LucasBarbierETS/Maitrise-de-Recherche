@@ -1,13 +1,10 @@
-classdef classsubelement_imported < classsubelement
-
-    properties
-        SurfaceImpedance
-    end
+classdef classelement_imported < classelement
 
     methods
-        function obj = classsubelement_imported(config)
+        function obj = classelement_imported(config)
             
-            obj@classsubelement(config)
+            obj@classelement(config)
+            obj.HandleAppBuilder = @(app, class_sblm) AppSubelement.class_to_app(app, class_sblm);
         end
   
         function [Zs, obj] = surface_impedance(obj, env, varargin)
@@ -21,16 +18,15 @@ classdef classsubelement_imported < classsubelement
             % - si le point du support est en dehors du support importé, 
             %   on attribue la valeur NaN à l'impédance de surface
         
-            if isempty(obj.SurfaceImpedance)
                 % Récupération du vecteur de fréquences de l'environnement
                 freq_env = env.w / (2 * pi);
-            
+          
                 % Récupération des données de la configuration
                 freq_support = obj.Configuration.FrequencySupport;
                 Zs_imported = obj.Configuration.SurfaceImpedance;
             
                 % Initialisation du vecteur d'impédance de surface
-                Zs = nan(size(freq_env));
+                Zs = complex(nan(size(freq_env)));
             
                 % Boucle sur chaque fréquence de l'environnement
                 for i = 1:length(freq_env)
@@ -43,10 +39,14 @@ classdef classsubelement_imported < classsubelement
                         Zs(i) = NaN;
                     end
                 end
-                obj.SurfaceImpedance = Zs;
-            else
-                Zs = obj.SurfaceImpedance;
             end
+    
+        function TM =  transfer_matrix(obj, env, varargin)
+            
+            TM.T11 = obj.surface_impedance(env, varargin) / obj.Configuration.Surface;
+            TM.T12 = zeros(1, length(env.w));
+            TM.T21 = ones(1, length(env.w));
+            TM.T22 = zeros(1, length(env.w));
         end
     end
 
@@ -68,6 +68,7 @@ classdef classsubelement_imported < classsubelement
             config.Width = options.Width;
             config.Depth = options.Depth;
             config.Surface = surface;
+            config.EndStatus = 'closed';
         end
 
         function validate(env)

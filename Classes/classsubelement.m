@@ -54,25 +54,19 @@ classdef classsubelement
             end
         end
 
-        function Zs = surface_impedance(obj, env)
+        function [TM, TM_inv] = inverse_transfer_matrix(obj, env, options)
 
-            % On suppose qu'il y a une terminaison rigide à l'extrémité du sous-élément
-            TM = obj.transfer_matrix(env);
-            S = obj.Configuration.Surface;
-
-            % Si TM est formulé avec la convention Pression - Vitesse
-            % Zs = TM.T11 ./ TM.T21; 
-
-            % Si TM est formulé avec la convention Pression - Débit
-            Zs = S * TM.T11 ./ TM.T21; 
-        end
-
-        function [TM, TM_inv] = inverse_transfer_matrix(obj, env, p_in, u_in)
-            % (p2, u2) = TM_inv * (p1, u1)
+            arguments
+                obj
+                env
+                options.pt_in = NaN
+                options.u_in = NaN
+            end
             
             try
                 % On récupère la matrice de transfert
-                TM = obj.transfer_matrix(env, u_in);
+                args = namedargs2cell(options);
+                TM = obj.transfer_matrix(env, args{:});
 
                 % % Debog : Matrice de transfert inverse
                 % perso_figure('TM d''un sous-élement dans classsubelement/inverse_transfer_matrix')
@@ -82,14 +76,15 @@ classdef classsubelement
             
                 % Calcul du déterminant
                 det_TM = TM.T11 .* TM.T22 - TM.T12 .* TM.T21;
-            
-                % Test de singularité ou de conditionnement
-                if any(abs(det_TM) < 1e-3 | isnan(det_TM) | isinf(det_TM))
-                    warning('Matrice de transfert quasi singulière : inversion instable. Application d''une régularisation.');
-                    
-                    % ⚙️ Régularisation : on ajoute un petit terme de stabilisation
-                    det_TM = det_TM + 1e-3;
-                end
+                
+                % Mise à NaN des valeurs hors de l'intervalle [1 - 1e-3, 1 + 1e-3]
+                mask_outside = abs(det_TM - 1) > 1e-3;
+                det_TM(mask_outside) = NaN;
+                
+                % % Optionnel : Avertissement si certaines valeurs sont NaN
+                % if any(mask_outside, 'all')
+                %     warning('Certaines valeurs du déterminant sont hors de l''intervalle [1 - 1e-3, 1 + 1e-3] et ont été remplacées par NaN.');
+                % end
 
                 % % Debog : Affichage du déterminant
                 % perso_figure('Déterminant de la matrice de transfert d''un sous-élement dans classsubelement/inverse_transfer_matrix')

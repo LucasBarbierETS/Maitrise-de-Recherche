@@ -12,156 +12,80 @@
     
     properties
 
+        HandleAppBuilder = @(app, class_element_assembly) AppElementAssembly.class_to_app(app, class_element_assembly)
         Configuration
     end
     
-    methods
+    methods % Constructeur
         function obj = classelementassembly(config)
 
             obj.Configuration = config;
         end
-        
-        function r = input_ratios(obj)
+    end
 
-            % On récupère la liste des ratios de surfaces
-            r = zeros(1, length(obj.Configuration.ListOfElements));
-            for i = 1:length(obj.Configuration.ListOfElements)
-                r(i) = obj.Configuration.ListOfElements{i}.Configuration.Surface;
+    methods % Matrices
+        function TM = transfer_matrix(obj, env, options)
+
+            arguments
+                obj
+                env
+                options.pt_in = NaN
+                options.u_in = NaN
+                options.IndexPosition = []
             end
+            
+            args = namedargs2cell(options);
+            opened_elements = obj.Configuration.OpenedElements;
+            closed_elements = obj.Configuration.ClosedElements;
 
-            r = r./obj.Configuration.Surface;
-        end
-        
-        function TM = transfer_matrix(obj, env, varargin)
+            % Somme des admittances
 
-            opened_elements = [];
-            closed_elements = [];
-            TM_list = cell(1, length(obj.Configuration.ListOfElements));
-            Y_list = cell(1, length(obj.Configuration.ListOfElements));
+            Yu = zeros(1, length(env.w));
 
-            r = input_ratios(obj);
-
-            for i = 1:length(obj.Configuration.ListOfElements)
-
-                % fprintf('\nclass(obj) : %s\n',class(obj))
-                % fprintf('\nclass(obj.ListOfElements) : %s\n',class(obj.ListOfElements))
-                % fprintf('\nclass(obj.ListOfElements{%d}) : %s\n', i, class(obj.ListOfElements{i}))
-
-                if strcmp(obj.Configuration.ListOfElements{i}.Configuration.EndStatus, 'opened')
-                    opened_elements = [opened_elements, i]; % list of the indexes of open elements
-                else
-                    closed_elements = [closed_elements, i]; % list of indexes of closed elements
+            if isempty(opened_elements)
+                
+                for k = 1:length(closed_elements)
+                    
+                    TM = closed_elements{k}.transfer_matrix(env, args{:});
+                    Yu = Yu + TM.T21 ./ TM.T11;
                 end
-
-                % Dans le code actuel, les matrices de transfert sont
-                % formulées en pression - débit. On fait la transformation
-                % inverse pour revenir en pression - vitesse.
-
-                if nargin > 2 && isstring(varargin{1}) && strcmp(varargin{1}, "iter")
-                    TM = obj.Configuration.ListOfElements{i}.transfer_matrix_iter(env);
-                else
-                    TM = obj.Configuration.ListOfElements{i}.transfer_matrix(env);
-                end
-
-                % % Debog
-                % figure();
-                % perso_plot_transfer_matrix(TM, env);
-
-                TM.T12 = TM.T12 * obj.Configuration.ListOfElements{i}.Configuration.Surface;
-                TM.T21 = TM.T21 / obj.Configuration.ListOfElements{i}.Configuration.Surface;
-                % TM.T12 = TM.T12 * obj.Configuration.ListOfElements{i}.Configuration.Section;
-                % TM.T21 = TM.T21 / obj.Configuration.ListOfElements{i}.Configuration.Section;
-                TM_list{i} = TM;
-                Y_list{i} = perso_TM_to_YM(TM_list{i}); % admittance ([2] eq. 5)
-
-                % % Debog
-                % figure();
-                % perso_plot_admittance_matrix(Y_list{i}, env);
-
+            
+                TM = struct();
+                TM.T11 = ones(1, length(env.w));
+                TM.T21 = Yu;
+                TM.T12 = zeros(1, length(env.w)); 
+                TM.T22 = zeros(1, length(env.w));
+                return
             end
+        
+            % P-TMM
 
-            % Calculate all the sums needed in the final matrix (because they are used several times) 
-            % i all the elements
-            % j open elements
-            % k closed elements
-
-            rjyj12 = 0;
-            rjyj21 = 0;
-            rjyj22 = 0;
-            riyi11 = 0;
-            bigsumk = 0;
-
-            % opened and closed cells
-
-            for i = 1:length(obj.Configuration.ListOfElements)
-                riyi11 = riyi11 + r(i) .* Y_list{i}.Y11;
-            end
-
-            % opened cells
-
+            A = 0; B = 0; C = 0; D = 0;
+       
+            % Éléments ouverts
             for j = 1:length(opened_elements)
-                rjyj21 = rjyj21 + r(opened_elements(j)) .* Y_list{opened_elements(j)}.Y21;
-                rjyj22 = rjyj22 + r(opened_elements(j)) .* Y_list{opened_elements(j)}.Y22;
-                rjyj12 = rjyj12 + r(opened_elements(j)) .* Y_list{opened_elements(j)}.Y12;
+                
+                YM = opened_elements{j}.admittance_matrix(env, args{:});
+                A = A + YM.Y22;
+                B = B + YM.Y21;
+                C = C + YM.Y12;
+                D = D + YM.Y11;
             end
-
-            % closed cells
-
+        
+            % Éléments fermés
             for k = 1:length(closed_elements)
-                bigsumk = bigsumk + r(closed_elements(k)) .* Y_list{closed_elements(k)}.Y12 .* Y_list{closed_elements(k)}.Y21 ./ Y_list{closed_elements(k)}.Y22;
+                
+                YM = closed_elements(k).admittance_matrix(env, args{:});
+                D = D + YM.Y11 - YM.Y12 .* YM.Y21 ./ YM.Y22;
             end
-
-            % Final matrix (opened and closed cells) ([2] eq. 3)
-
+        
+            % Matrice finale (équation [2] eq. 3)
             TM = struct();
-            TM.T11 = -rjyj22 ./ rjyj21;
-            TM.T12 =  1 ./ rjyj21;
-            TM.T21 = -1 ./ rjyj21 .* (rjyj22 .* (riyi11-bigsumk)-rjyj12 .* rjyj21);
-            TM.T22 = -1 ./ rjyj21 .* (bigsumk-riyi11);
-
-            % Debog
-            % figure();
-            % perso_plot_transfer_matrix(TM, env)
+            TM.T11 = -A ./ B;
+            TM.T12 =  1 ./ B;
+            TM.T21 = C - A .* D ./ B;
+            TM.T22 = D ./ B;
         end 
-
-        function [TM, p_in, u_in] =  transfer_matrix_iter(obj, env, p_in, u_in)
-
-            config = obj.Configuration;
-
-            % % debog : Tracé de la pression acoustique RMS au niveau de chaque sous-élement
-            % perso_figure('p_rms');
-            % plot(abs(p_in));
-
-            for i = 1:length(config.ListOfElements)
-                elem = config.ListOfElements{i};
-                if isa(elem, 'function_handle')
-                    elem = elem(abs(u_in));
-                end
-                
-                [sblm_TM, p_in, u_in] = elem.transfer_matrix_iter(env, p_in, u_in);
-                
-                % % debog (suite)
-                % perso_figure('p_rms');
-                % plot(abs(p_in));
-                
-                if exist('TM', 'var')
-                    TM = matprod(TM, sblm_TM);
-                else
-                    TM = sblm_TM;
-                end
-
-                % % debog : Tracé des termes complexes de la matrice de transfert du sous-élement
-                % perso_figure('TM')
-                % perso_plot_transfer_matrix(sblm_TM, env);  
-                % clf
-            end 
-
-            % % debog : Tracé des termes complexes de la matrice de transfert de l'élement
-            % perso_figure('TM')
-            % clf
-            % perso_plot_transfer_matrix(TM, env);  
-
-        end
         
         function TM_sb = side_branch_transfer_matrix(obj, env, Lx, M)
             
@@ -174,38 +98,32 @@
                 TM_sb = matprod(Tm_sb, config.ListOfSubelements{i}.side_branch_transfer_matrix(env, Lx, M));
             end
         end
-        
-        function Zs = surface_impedance(obj, env, varargin)
-                
-            Ysum = zeros(1, length(env.w));
-            r = obj.input_ratios();
-            elem_list = obj.Configuration.ListOfElements;
+    end
 
-            for i = 1:length(elem_list)
-                elem = elem_list{i};
-                TM = elem.transfer_matrix(env);
+    methods % Indicateurs acoustiques
+        function Zs = surface_impedance(obj, env, options)
 
-                % % Debog : Matrices de transfert des élements
-                % perso_figure('Matrices de transfert des élements dans classelementassembly\surface_impedance');
-                % perso_plot_transfer_matrix(TM, env, ['Element', num2str(i)]);
-
-                Ysum = Ysum + r(i) * TM.T21 ./ TM.T11 / elem.Configuration.Surface;
-
-                % % Debog : Contribution des admittances de surface
-                % perso_figure('Admittance de surface des élements dans classelementassembly\surface_impedance');
-                % perso_plot_surface_admittance(r(i) * TM.T21 ./ TM.T11 / elem.Configuration.Surface, env, ['Contribution de l''élement', num2str(i)]);
-                % % legend()
+            arguments
+                obj
+                env
+                options.pt_in = NaN
+                options.u_in = NaN
+                options.IndexPosition = []
             end
-
-            Zs = 1 ./ Ysum;
-
-            % else
-                % TM = obj.transfer_matrix(env);
-                % Zs = TM.T11 ./ TM.T21; % rigid wall
-            % end
+                
+            args = namedargs2cell(options);
+            TM = obj.transfer_matrix(env, args{:});
+            Zs = obj.Configuration.Surface * TM.T11 ./ TM.T21; % rigid wall
         end
 
-        function Zs_iter = surface_impedance_iter(obj, env, varargin)
+        function Zs_iter = surface_impedance_iter(obj, env, options)
+
+            arguments
+                obj
+                env
+                options.tolerance = 1e-3
+                options.max_iter = 500;
+            end
 
             % Explications
             % perso_ouvrir_lien_Obsidian('obsidian://open?vault=Maitrise%20REAR&file=Notes%20atomiques%2FProc%C3%A9dure%20it%C3%A9rative%20pour%20obtenir%20l''imp%C3%A9dance%20de%20surface%20non-lin%C3%A9aire%20d''une%20solution%20multi-plaques')
@@ -227,92 +145,41 @@
             % - condition de convergence : max(u_rms(1, :) - new_u_rms) < seuil
 
             % Initialisation
-            u_rms = zeros(1, length(env.w));
-            pt_rms = env.pt_rms;
+            u = zeros(1, length(env.w));
+            pt = env.pt;
             Zs_iter = 0;
-
-            % % debog : Tracé de la pression acoustique RMS à l'entrée
-            % perso_figure('p_rms');
-            % plot(env.p_rms)
-
-            % Paramètre de la procédure itérative
-            
-            % Tolérance pour la convergence
-            if nargin > 2
-                tol = varargin{1};
-            else
-                tol = 1e-5; 
-            end
-
-            max_iter = 500;  % Nombre maximum d'itérations
             iter = 0;
             converged = false;
 
-            % % debog : Tracé des débits acoustiques RMS successives au cours de la procédure itérative
-            % perso_figure('u_rms');
-            % clf
-            % title('Débit acoustique RMS à l''entrée de l''élement')
-            % legend();
-            % plot(env.w/(2*pi), u_rms, 'DisplayName', 'Itération 0')
-
-            r = obj.input_ratios();
-            elem_list = obj.Configuration.ListOfElements;
-
-            while ~converged && iter < max_iter
+            while ~converged && iter < options.max_iter
                 iter = iter + 1;
 
-                Ysum = zeros(1, length(env.w));
-
-                for i = 1:length(elem_list)
-                    elem = elem_list{i};
-                    TM = elem.transfer_matrix_iter(env, pt_rms, u_rms);
-
-                    % % Debog : TM des élements
-                    % perso_figure('TM des élements dans classelementassembly\surface_impedance_iter');
-                    % clf;
-                    % perso_plot_transfer_matrix(TM, env, ['TM élement ', num2str(i)]);
-                    
-                    Ysum = Ysum + r(i) * TM.T21 ./ TM.T11 / elem.Configuration.Surface;
-
-                    % % Debog : Contribution des admittances de surface
-                    % perso_figure('Admittance de surface des élements dans classelementassembly\surface_impedance_iter');
-                    % perso_plot_surface_admittance(r(i) * TM.T21 ./ TM.T11 / elem.Configuration.Surface, env, ['Contribution de l''élement', num2str(i)]);
-                    % % legend()
-                end
-
-                % % Debog : Contribution des admittances de surface
-                % perso_figure('Admittance de surface de l''assemblage dans classelementassembly\surface_impedance_iter');
-                % perso_plot_surface_admittance(Ysum, env, ['Itération ', num2str(iter)]);
-                % % legend()
-
-                Zs = 1 ./ Ysum;
+                Zs = obj.surface_impedance(env, 'pt_in', pt, 'u_in', u);
+                new_u = pt ./ Zs * obj.Configuration.Surface;
 
                 % % Debog : Tracé de l'impédance de surface
                 % perso_figure('Impédance de surface de l''assemblage dans classelementassembly\surface_impedance_iter');
                 % perso_plot_surface_impedance(env.w/(2*pi), Zs, env, ['Itération ', num2str(iter)]);
 
-                % % Debog : Partie réelle négatve
+                % % Debog : Partie réelle négative
                 % find(real(Zs) < 0);
 
-                new_u_rms = abs(pt_rms) ./ abs(Zs) * obj.Configuration.Surface;
-                % new_u_rms = abs(p_rms) ./ abs(Zs);
-
-                % % Debog (suite)
-                % perso_figure('u_rms dans classelementassembly\surface_impedance_iter');
-                % plot(new_u_rms);
+                % % Debog : Vitesse RMS à l'entrée de l'assemblage
+                % perso_figure('u dans classelementassembly\surface_impedance_iter');
+                % plot(env.w/(2*pi), new_u);
                 
-                convergence_criterium = max(abs(u_rms - new_u_rms));
+                convergence_criterium = max(abs(u - new_u));
 
                 % % Debog : Critère de convergence
                 % perso_figure('Convergence dans classelementassembly\surface_impedance_iter');
                 % scatter(iter, convergence_criterium, 'Color', 'b', 'HandleVisibility', 'off');
                 % % ylim([-1e-2 1e-2]);
 
-                if convergence_criterium < tol
+                if convergence_criterium < options.tolerance
                     converged = true;
                     Zs_iter = Zs;
                 else
-                    u_rms = new_u_rms;
+                    u = new_u;
                 end   
             end
         end
@@ -321,7 +188,7 @@
 
             if nargin > 2 && strcmp(varargin{1}, "iter")
                 if nargin > 3
-                    Zs = obj.surface_impedance_iter(env, varargin{2}); % tol
+                    Zs = obj.surface_impedance_iter(env, varargin{2});
                 else   
                     Zs = obj.surface_impedance_iter(env);
                 end
@@ -377,51 +244,35 @@
         end
     end 
 
-    methods (Static, Access = public)
+    methods (Static, Access = public) % Configurations
 
         function config = create_config(list_of_elements)
 
             config = struct();
             config.ListOfElements = list_of_elements;
-
-            % Parcours la liste des élements. Si l'un d'entre eux est
-            % ouvert, on ferme les autres. Si aucun n'est ouvert on ouvre
-            % le premier
-
-            have_opened = 0;
-            for i = 1:length(config.ListOfElements)
-                % Si l'élement est ouvert et que c'est le premier
-                try  
-                    end_status = config.ListOfElements{i}.Configuration.EndStatus;
-                catch ME
-                    warning(ME.identifier, "Erreur capturée: %s", ME.message);
-                    pause; % stoppe l’exécution jusqu’à une touche
-                end
-
-                if (strcmp(config.ListOfElements{i}.Configuration.EndStatus, 'opened'))
-                    if (have_opened == 0)
-                       have_opened = 1;
-                    else
-                        config.ListOfElements{i}.Configuration.EndStatus = 'closed';
-                    end
-                end
-            end
-
-            if have_opened == 0
-                config.ListOfElements{i}.Configuration.EndStatus = 'opened';
-            
-            end
-
-            % On récupère la liste des ratios de surfaces
+            config.EndStatus = 'closed';
             sum_surface = 0;
-            % r = zeros(1, length(config.ListOfElements));
-            
+
             for i = 1:length(config.ListOfElements)
                 sum_surface = sum_surface + config.ListOfElements{i}.Configuration.Surface;
+                if strcmp(config.ListOfElements{i}.Configuration, 'opened')
+                    config.EndStatus = 'opened';
+                end
             end
 
+            config.OpenedElements = cell({});
+            config.ClosedElements = cell({});
+
+            for i = 1:length(config.ListOfElements)
+        
+                if strcmp(config.ListOfElements{i}.Configuration.EndStatus, 'opened')
+                    config.OpenedElements{end+1} = config.ListOfElements{i};
+                else
+                    config.ClosedElements{end+1} = config.ListOfElements{i};
+                end
+            end
+        
             config.Surface = sum_surface;
         end
     end
-end
-
+ end
