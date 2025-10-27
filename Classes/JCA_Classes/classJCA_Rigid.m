@@ -187,6 +187,7 @@ classdef classJCA_Rigid < classsubelement
             end
 
                 config.Section = section;
+                config.Surface = section;
                 config.Thickness = thickness;
                 config.Porosity = porosity;
                 config.Tortuosity = tortuosity;
@@ -294,10 +295,6 @@ classdef classJCA_Rigid < classsubelement
             % ylim([0 1])
             % % xlim([0 2000])
             % subtitle("Validation JCA -  Verdière2013 - figure 4 - tracé E")
-        
-        
-
-        
         end
     end
 end

@@ -193,22 +193,19 @@ classdef classelement
     end
 
     methods
-        function Zs = surface_impedance(obj, env, varargin)
+        function Zs = surface_impedance(obj, env, options)
 
-            if nargin > 2
-                TM = varargin{1};
-            else
-                TM = obj.transfer_matrix(env);
+            arguments
+                obj
+                env
+                options.pt_in = NaN
+                options.u_in = NaN
+                options.IndexPosition = []
             end
-
-            S = obj.Configuration.Surface;
-           
-            try
-                % On revient en convention pression - vitesse
-                Zs = S * TM.T11 ./ TM.T21; % rigid wall
-            catch
-                return
-            end
+                
+            args = namedargs2cell(options);
+            TM = obj.transfer_matrix(env, args{:});
+            Zs = obj.Configuration.Surface * TM.T11 ./ TM.T21;
         end
 
         function Zs_iter = surface_impedance_iter(obj, env, varargin)

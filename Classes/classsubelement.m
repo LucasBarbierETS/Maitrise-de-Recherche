@@ -127,6 +127,21 @@ classdef classsubelement
             u2 = TM_inv.T21 .* p1 + TM_inv.T22 .* u1;
         end
 
+        function Zs = surface_impedance(obj, env, options)
+
+            arguments
+                obj
+                env
+                options.pt_in = NaN
+                options.u_in = NaN
+                options.IndexPosition = []
+            end
+                
+            args = namedargs2cell(options);
+            TM = obj.transfer_matrix(env, args{:});
+            Zs = obj.Configuration.Surface * TM.T11 ./ TM.T21;
+        end
+        
         function alpha = alpha(obj, env) 
 
             Zs = obj.surface_impedance(env);

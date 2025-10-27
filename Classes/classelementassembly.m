@@ -101,6 +101,7 @@
     end
 
     methods % Indicateurs acoustiques
+        
         function Zs = surface_impedance(obj, env, options)
 
             arguments
@@ -113,7 +114,7 @@
                 
             args = namedargs2cell(options);
             TM = obj.transfer_matrix(env, args{:});
-            Zs = obj.Configuration.Surface * TM.T11 ./ TM.T21; % rigid wall
+            Zs = obj.Configuration.Surface * TM.T11 ./ TM.T21;
         end
 
         function Zs_iter = surface_impedance_iter(obj, env, options)
