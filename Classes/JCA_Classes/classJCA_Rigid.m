@@ -220,10 +220,10 @@ classdef classJCA_Rigid < classsubelement
             t = 50e-3;
 
             % création de l'environnement
-            env = create_environnement(23, 100800, 22, 1, 2000, 200, 145);
+            env = create_environnement(23, 100800, 22, 1, 2000, 200,'SPL',145);
 
             % création de l'objet de classe
-            E = classJCA_Rigid(classJCA_Rigid.create_config(s, t, phi, tor, sig, vl, tl, w, d));
+            E = classJCA_Rigid(classJCA_Rigid.create_config(s, t, phi, tor, sig, vl, tl,'width', w, 'depth', d));
             alpha_model = E.alpha(env);
 
             % importation des données de références
@@ -263,11 +263,11 @@ classdef classJCA_Rigid < classsubelement
             t = 17.5e-3;
 
             % création de l'environnement
-            env = create_environnement(23, 100800, 22, 1, 3000, 200, 100);
+            env = create_environnement(23, 100800, 22, 1, 3000, 200, 'SPL', 100);
 
             % création de l'objet de classe
             E = classelement(classelement.create_config(...
-                {classJCA_Rigid(classJCA_Rigid.create_config(w * d, t, phi, tor, sig, vl, tl, w, d))}, 'closed', w * d));
+                {classJCA_Rigid(classJCA_Rigid.create_config(w * d, t, phi, tor, sig, vl, tl, 'width', w,'width', d))}, 'closed', w * d));
 
             TM_sb = E.side_branch_transfer_matrix(env, Lx);
 
