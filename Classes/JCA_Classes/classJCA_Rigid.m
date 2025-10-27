@@ -103,7 +103,7 @@ classdef classJCA_Rigid < classsubelement
             % module d'incompressibilité (effets thermiques)
             Hp = 16 * eta / (Pr * tl^2 .* rho); % fréquence caractéristique thermique ([5] tableau p. 24)
             Gp = sqrt(1 + 1j.* w ./ Hp);            
-            ep.Keff = gam.* P./(gam - (gam-1)./(1 - 1j .* Hp .* Gp./(2 .* w) ));
+            ep.Keff = gam.* P./(gam - (gam-1)./(1 - 1j .* Hp .* Gp./(2 .* w)));
 
             % Propriétés de la couche de fluide équivalent normalisée
             

@@ -35,13 +35,13 @@ hum = 50; % Humidité relative
 % Support fréquentiel
 fmin = 1;
 fmax = 4000;
-points = 4000;
+points = 200;
 % points = 100;
 
 % Niveau sonore
 env = create_environnement(t, sp, hum, fmin, fmax, points, 'Root', root);
-handle_env = @(SPL, M) create_environnement(root, t, sp, hum, fmin, fmax, points, SPL, M);
-handle_env_FEM = @(points) create_environnement(root, t, sp, hum, fmin, fmax, points, 100);
+handle_env = @(SPL, M) create_environnement(t, sp, hum, fmin, fmax, points, 'Root', root, 'SPL', SPL, 'M', M);
+handle_env_FEM = @(points) create_environnement(t, sp, hum, fmin, fmax, points, 'Root', root);
 
 %% Fermeture du serveur COMSOL (si besoin)
 % ModelUtil.disconnect

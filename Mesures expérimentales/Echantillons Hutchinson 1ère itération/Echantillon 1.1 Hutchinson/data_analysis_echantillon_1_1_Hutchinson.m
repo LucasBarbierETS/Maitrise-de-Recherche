@@ -2,7 +2,7 @@
 
 %%  Gestion des adresses et des répértoires
 folder_path = [env.Root, '\Mesures expérimentales\Echantillons Hutchinson 1ère itération\Echantillon 1.1 Hutchinson'];
-configurations = load([env.Root, '\Mesures expérimentales\Echantillons Hutchinson 1ère itération\configurations.mat']);
+% configurations = load([env.Root, '\Mesures expérimentales\Echantillons Hutchinson 1ère itération\configurations.mat']);
 
 %% Importation des données
 
@@ -58,7 +58,7 @@ plot(env.w/(2*pi), alpha_model_frustum, 'DisplayName', 'Modèle analytique');
 % plot(env.w/(2*pi), alpha_model_sbdv, 'DisplayName', 'Modèle analytiques subdiv');
 
 %% Validation numérique 2D
-%
+
 % points_FEM = 100;
 % env_FEM = handle_env_FEM(points_FEM);
 % 
@@ -71,23 +71,18 @@ plot(env.w/(2*pi), alpha_model_frustum, 'DisplayName', 'Modèle analytique');
 %% Validation numérique 3D
 
 % Si c'est la première fois
-%
-% points_FEM = 500;
-% env_FEM = handle_env_FEM(points_FEM);
-% 
-% Tube3D_ap = ImpedanceTube3D(ImpedanceTube3D.create_config({MPPSBH}));
-% Tube3D_ap = Tube3D_ap.launch_tube_measurement_ap(env_FEM);
-% mphsave(Tube3D_ap.Configuration.ComsolModel, [folderpath, '\modèle numérique 3D-AP']);
-% Tube3D_ap.plot_alpha('Modélisation numérique 3D - AP');
-%
-% Tube3D = ImpedanceTube3D(ImpedanceTube3D.create_config({MPPSBH}));
-% Tube3D.launch_tube_measurement_ap(env_FEM);
-% mphsave(Tube3D_ap.Configuration.ComsolModel, [folder_path, '\modèle numérique 3D-TV'])
-% Tube3D_ap.plot_alpha('Modélisation numérique 3D - TV')
 
-Tube3D_ap = ImpedanceTube3D(ImpedanceTube3D.create_config({}));
-Tube3D_ap = Tube3D_ap.load_model(mphload([folder_path, '\modèle numérique 3D-AP.mph']));
+points_FEM = 500;
+env_FEM = handle_env_FEM(points_FEM);
+
+Tube3D_ap = ImpedanceTube3D(ImpedanceTube3D.create_config({MPPSBH}));
+Tube3D_ap = Tube3D_ap.launch_tube_measurement_ap(env_FEM);
+mphsave(Tube3D_ap.Configuration.ComsolModel, [folderpath, '\modèle numérique 3D-AP']);
 Tube3D_ap.plot_alpha('Modélisation numérique 3D - AP');
+
+% Tube3D_ap = ImpedanceTube3D(ImpedanceTube3D.create_config({}));
+% Tube3D_ap = Tube3D_ap.load_model(mphload([folder_path, '\modèle numérique 3D-AP.mph']));
+% Tube3D_ap.plot_alpha('Modélisation numérique 3D - AP');
 
 xlim([f_min, f_max])
 legend('Location','best')
