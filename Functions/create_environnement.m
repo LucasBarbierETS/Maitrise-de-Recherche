@@ -8,6 +8,7 @@ function env = create_environnement(temperature, static_pressure, relative_humid
     f = fmin : step : fmax;
     w = 2 * pi * f;
     env.w = w;
+    env.f = f;
 
     % Pression de référence pour l'échelle des niveau de pression
     env.p_ref = 20e-6; 

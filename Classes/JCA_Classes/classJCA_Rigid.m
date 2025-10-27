@@ -258,15 +258,44 @@ classdef classJCA_Rigid < classsubelement
 
             perso_figure('Validation classJCA_Rigid - TM sans écoulement')
 
+            % %% Validation classJCA_Rigid - TM sans écoulement       
+            % perso_figure('Validation classJCA_Rigid - TM sans écoulement')
+            % % Figures de réference 
+            % % perso_ouvrir_lien_Zotero('zotero://open-pdf/library/items/CMZQ7B9B?page=257&annotation=DN9BHR8G')
+            % 
+            % Lx = 50.8e-3;
+            % Lz = 254e-3;
+            % w = Lz; % longueur de la zone traité
+            % d = Lx; % tube carré (résultat indépendant de la profondeur)
+            % phi = 0.98;
+            % tor = 1.07;
+            % sig = 31255;
+            % vl = 135e-6;
+            % tl = 280e-6;
+            % t = 17.5e-3;
+            % 
+            % % création de l'environnement
+            % env = create_environnement(23, 100800, 22, 1, 3000, 200, 'SPL', 100);
+            % 
+            % % création de l'objet de classe
+            % E = classelement(classelement.create_config(...
+            %     {classJCA_Rigid(classJCA_Rigid.create_config(w * d, t, phi, tor, sig, vl, tl, 'width', w,'width', d))}, 'closed', w * d));
+            % 
+            % TM_sb = E.side_branch_transfer_matrix(env, Lx);
+            % 
+            % perso_plot_transfer_matrix(TM_sb, env, 'test', 3000);
+            % 
+            % perso_figure('Validation classJCA_Rigid - TM sans écoulement')
+            %
             % % importation des données de références
             % data = csvread('Verdière2013_fig4_E.txt');
             % [x_data, y_data] = perso_interpole_et_lisse(data(:, 1), data(:, 2), 1000, 0.05);
-
+            %
             % JCAelement = classelement(classelement.create_config({E}, 'closed', s));
             % Tube_JCA = ImpedanceTube2D(ImpedanceTube2D.create_config({JCAelement}));
             % Tube_JCA = Tube_JCA.lauch_tube_measurement(env);
             % Tube_JCA.plot_alpha(env, 'Modèle numérique');
-
+            %
             % % affichage des résultats
             % subplot(1, 1, 1)
             % hold on 
