@@ -46,41 +46,40 @@ classdef classMPP_Circular < classJCA_Rigid
             end
 
             % Coefficients géométriques de base
-            k0 = 2;   % [4]
             rh = pr;  % rayon hydraulique
-            sig = @(env) 4 * k0 * env.air.parameters.eta / (phi * rh^2);
-            tor = 1 + 2 * tc / t;
+            sig = @(env, varargin) classMPP_Circular.compute_resistivity(env, config, varargin{:});
+            tor = @(env, varargin) classMPP_Circular.compute_tortuosity(env, config, varargin{:});
 
             % Fusion configuration JCA rigide
             config = perso_transfer_fields(classJCA_Rigid.create_config(s, t, phi, tor, sig, rh, rh), config);
 
             % Appel du constructeur parent
             obj@classJCA_Rigid(config);
-            obj.Configuration.Surface = S;
-
-            % Fonctions dynamiques pour les corrections HL / écoulement
-            obj.Configuration.AirFlowResistivity = ...
-                @(env, varargin) obj.compute_resistivity(env, config, varargin{:});
-            obj.Configuration.Tortuosity = ...
-                @(env, varargin) obj.compute_tortuosity(env, config, varargin{:});
         end
 
 
         %% ======== Matrice de transfert ========
-        function TM = transfer_matrix(obj, env, varargin)
-            
-            % Si un u_in est fourni, on bascule automatiquement en mode itératif
-            if ~isempty(varargin)
-                u_in = varargin{1};
-                s = obj.Configuration.Section;
-                obj.Configuration.AirFlowResistivity = ...
-                    @(henv) obj.compute_resistivity(henv, obj.Configuration, ...
-                        "v_rms", abs(u_in/(s*sqrt(2))), "M", henv.M);
-                obj.Configuration.Tortuosity = ...
-                    @(henv) obj.compute_tortuosity(henv, obj.Configuration, ...
-                        "v_rms", abs(u_in/(s*sqrt(2))), "M", henv.M);
-            end
+        function TM = transfer_matrix(obj, env, options)
 
+            arguments
+                obj
+                env
+                options.pt_in = NaN
+                options.u_in = NaN
+                options.IndexPosition = [];
+            end
+            
+            u_in = options.u_in;
+            s = obj.Configuration.Section;
+            sig = obj.Configuration.AirFlowResistivity;
+            obj.Configuration.AirFlowResistivity = ...
+                @(env) obj.compute_resistivity(env, obj.Configuration, ...
+                    "v_rms", abs(u_in/(s*sqrt(2))), "M", env.M, 'IndexPosition', options.IndexPosition);
+
+            obj.Configuration.Tortuosity = ...
+                @(env) obj.compute_tortuosity(env, obj.Configuration, ...
+                    "v_rms", abs(u_in/(s*sqrt(2))), "M", env.M, 'IndexPosition', options.IndexPosition);
+            
             TM = transfer_matrix@classJCA_Rigid(obj, env);
         end
     end
@@ -100,73 +99,54 @@ classdef classMPP_Circular < classJCA_Rigid
             arguments
                 env
                 config
-                options.v_rms double = []
-                options.M double = []
+                options.v_rms = 0
+                options.M = 0
+                options.IndexPosition = []
             end
 
             phi = config.RelativePorosity;
-            % pr  = config.PerforationsRadius;
+            pr  = config.PerforationsRadius;
             t   = config.Thickness;
-            sig = config.AirFlowResistivity;
 
             beta = config.Beta;
             Cd = config.Cd;
             q = config.q;
-            
-            sig_HL = 0;
-            sig_M = 0;
+ 
+            sig = 8 * env.air.parameters.eta / (phi * pr^2) ...
+                + beta * env.air.parameters.rho * (1 - phi^2) ...
+                / (pi * t * phi * Cd^2) * options.v_rms;
 
-            % --- Composante forts niveaux (Laly)
-            if isempty(options.v_rms)
-                % sig_HL = 8 * env.air.parameters.eta / (phi * pr^2) ...
-                %     + beta * env.air.parameters.Z0 / (pi * t * Cd^2) ...
-                %     * (-1/2 + classMPP_Circular.f(env, phi));
-            else
-                sig_HL = beta * env.air.parameters.rho * (1 - phi^2) / ...
-                    (pi * t * phi * Cd^2) * options.v_rms;
+            if all(options.IndexPosition == 1) % si la plaque est en surface
+                sig = sig + env.air.parameters.Z0 * (1 - phi^2) / (phi * t) * q * options.M;
             end
-
-            % --- Composante liée à l’écoulement rasant
-            
-            if ~isempty(options.M) && options.M ~= 0
-                sig_M = env.air.parameters.Z0 * (1 - phi^2) / (phi * t) * q * options.M;
-            end
-
-            sig = sig(env) + sig_HL + sig_M;
         end
 
 
         %% ----- Tortuosité non-linéaire -----
         function tor = compute_tortuosity(env, config, options)
+            
             arguments
                 env
                 config
-                options.v_rms double = []
-                options.M double = []
+                options.v_rms = 0
+                options.M = 0
+                options.IndexPosition = []
             end
 
             phi = config.RelativePorosity;
             pr = config.PerforationsRadius;
             t = config.Thickness;
-            torNL = 0;
 
             psi = 4/3;
             a = [1.0 -1.4092 0.0 0.33818 0.0 0.06793 -0.02287 0.003015 -0.01614];
             sum_a = dot(a, sqrt(phi).^(0:length(a)-1));
 
-            if isempty(options.v_rms)
-                % torNL = 2 * psi * 0.48 * sqrt(pi * pr^2) / t * sum_a ...
-                %     * (1 + 1/(1 - phi^2) * (-1/2 + classMPP_Circular.f(env, phi))).^(-1);
-            else
-                torNL = 2 * psi ./ (t * (1 + options.v_rms / (phi * env.air.parameters.c0))) ...
-                    * 0.48 * sqrt(pi * pr^2) * sum_a;
+            tor =  1 + 2 * psi ./ (t * (1 + options.v_rms / (phi * env.air.parameters.c0))) ...
+                * 0.48 * sqrt(pi * pr^2) * sum_a;
+            
+            if all(options.IndexPosition == 1) % si la plaque est en surface
+                tor = tor / (1 + 305 * options.M^3);
             end
-
-            if ~isempty(options.M) && options.M ~= 0
-                torNL = torNL / (1 + 305 * options.M^3);
-            end
-
-            tor = 1 + torNL;
         end
     end
 

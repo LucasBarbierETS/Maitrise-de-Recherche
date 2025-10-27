@@ -24,9 +24,13 @@ classdef AppSubelement < AppObject
 
         % On remplace les champs de la configuration d'application
         % correspondant à des variables muettes
-        class_config = app.Types.(obj.TypeName).HandleClassConfig( ...
-        replace_fields(obj.AppConfig, app.HandleVariables));
-        class_obj = app.Types.(obj.TypeName).HandleClassObject(class_config);
+        try
+            class_config = app.Types.(obj.TypeName).HandleClassConfig( ...
+            replace_fields(obj.AppConfig, app.HandleVariables));
+            class_obj = app.Types.(obj.TypeName).HandleClassObject(class_config);
+        catch
+            error('Erreur dans AppSubelement\app_to_class')
+        end
         end
     end
 

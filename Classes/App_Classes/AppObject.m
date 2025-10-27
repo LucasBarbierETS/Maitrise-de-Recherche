@@ -63,14 +63,18 @@ classdef AppObject < handle
                 obj.Container.Container.show(app)
             
             % dans le cas contraire, on affiche si ils existent, le contenu
-            % dans la vue du bas et le contenu du contenant dans la vue du
+            % dans la vue du bas et le contenant dans la vue du
             % haut
             else   
                 cla(app.Graph.Components.SubelementsGraph.UIObject)
                 cla(app.Graph.Components.ElementsGraph.UIObject)
-                
+                % cla(app.Graph.Components.Navigator.UIObject)
+
                 if isprop(obj, 'Container') && ~isempty(obj.Container)
                     obj.Container.scatter_with_call(app, app.Graph.Components.ElementsGraph);
+                    % if isprop(obj.Container, 'Container') && ~isempty(obj.Container.Container)
+                    %     obj.Container.Container.Container.scatter_with_call(app, app.Graph.Components.Navigator);
+                    % end
                 end
 
                 if isprop(obj, 'Content') && ~isempty(obj.Content)
@@ -78,7 +82,7 @@ classdef AppObject < handle
                 end       
             end  
 
-            cla(app.Graph.Components.Navigator.UIObject)
+            % cla(app.Graph.Components.Navigator.UIObject)
             obj.get_path(app)
             obj.Path.scatter(app);
         end
@@ -96,11 +100,12 @@ classdef AppObject < handle
                 % A la sortie de la boucle, on ajoute le contenant de
                 % l'objet au chemin, si celui n'est pas affiché
                 obj.Path = obj.Container.Container.Path;
-                
-                if ~((isprop(obj.Container, 'Container') && ~isempty(obj.Container.Container)) && ...
-                    (isvalid(obj.Container.Container.Scatter) && (strcmp(obj.Container.Container.Scatter.Visible, 'on'))))
-                    obj.Path.add_to_path(obj.Container.Container);
-                end
+            end
+
+
+            if isprop(obj, 'Scatter') && ~isvalid(obj.Scatter)
+                % obj.Path.add_to_path(obj.Container.Container);
+                obj.Path.add_to_path(obj)
             end
         end
         
@@ -151,6 +156,12 @@ classdef AppObject < handle
                (isvalid(obj.Container.Container.Scatter) && (strcmp(obj.Container.Container.Scatter.Visible, 'on')))
                 obj.Container.Container.Scatter.MarkerEdgeColor = 'r';
             end
+
+            % % Si le contenant du contenant est également affiché, on l'affiche en rouge également
+            % if (isprop(obj.Container.Container, 'Container') && ~isempty(obj.Container.Container.Container)) && ...
+            %    (isvalid(obj.Container.Container.Scatter) && (strcmp(obj.Container.Container.Scatter.Visible, 'on')))
+            %     obj.Container.Container.Scatter.MarkerEdgeColor = 'r';
+            % end
         
             %% Gestion des objets graphiques
 

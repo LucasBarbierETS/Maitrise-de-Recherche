@@ -96,14 +96,6 @@ classdef classJCA_Rigid < classsubelement
             catch
                 sprintf('pause!');
             end
-            
-            % % debog
-            % plot(phi^2 * vl^2 * sig.^2)
-            % close();
-            % plot(4 * tor.^2 * rho .* eta)
-            % close();
-            % plot(H);
-            % close();
 
             G = sqrt(1 + 1j .* w./H); 
             ep.rhoeff = rho .* tor .* (1 + (sig .* phi .* G) ./ (1j  .*  w .* rho .* tor));
@@ -132,7 +124,7 @@ classdef classJCA_Rigid < classsubelement
             ep.keq = w ./ ep.ceq; % nombre d'onde équivalent
         end 
 
-        function TM = transfer_matrix(obj, env, ~, ~)
+        function TM = transfer_matrix(obj, env, varargin)
             
             % On gère les cas ou les paramètres équivalents ont été définis/ modifiées de l'extérieur (voir classMTP_with_slit_cavities par ex.)
             if isempty(obj.EquivalentParameters)
@@ -179,35 +171,30 @@ classdef classJCA_Rigid < classsubelement
 
     methods (Static, Access = public)
 
-        function config = create_config(surface, thickness, porosity, tortuosity, air_flow_resistivity, ...
-        viscous_caractersitic_length, thermal_caracteristic_length, varargin)
-            
-            config = struct();
-            config.Section = NaN;
-            config.Surface = NaN;
-            config.Thickness = NaN;
-            config.Porosity = NaN;
-            config.Tortuosity = NaN;
-            config.AirFlowResistivity = NaN;
-            config.ViscousCaracteristicLength = NaN;
-            config.ThermalCaracteristicLength = NaN;
+        function config = create_config(section, thickness, porosity, tortuosity, air_flow_resistivity, ...
+        viscous_caractersitic_length, thermal_caracteristic_length, options)
 
-            if nargin > 0
-                config.Section = surface;
+            arguments
+                section
+                thickness
+                porosity
+                tortuosity
+                air_flow_resistivity
+                viscous_caractersitic_length
+                thermal_caracteristic_length
+                options.Width = NaN
+                options.Depth = NaN
+            end
+
+                config.Section = section;
                 config.Thickness = thickness;
                 config.Porosity = porosity;
-                % config.Section = surface * porosity;
-                config.Surface = surface;
                 config.Tortuosity = tortuosity;
                 config.AirFlowResistivity = air_flow_resistivity;
                 config.ViscousCaracteristicLength = viscous_caractersitic_length;
                 config.ThermalCaracteristicLength = thermal_caracteristic_length;
-            end
-
-            if nargin > 7
-                config.Width = varargin{1};
-                config.Depth = varargin{2};
-            end
+                config.Width = options.Width;
+                config.Depth = options.Depth;
         end
    
         function validate()

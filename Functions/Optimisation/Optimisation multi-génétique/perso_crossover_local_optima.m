@@ -9,7 +9,7 @@ function [childs, crossover_possible] = perso_crossover_local_optima(parents, N,
     % On définit la matrice des distances entre les parents
     
     distance_matrix = perso_distance_metric(parents, lb, ub);
-    50compatible_parents = distance_matrix < crossover_threshold;
+    % 50compatible_parents = distance_matrix < crossover_threshold;
     
     % On récupère
 

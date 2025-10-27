@@ -27,15 +27,13 @@ classdef classcavity < classsubelement
             obj@classsubelement(config);
         end
         
-        function T = transfer_matrix(obj, env, ~, ~)
+        function T = transfer_matrix(obj, env, varargin)
             
             S = obj.Configuration.Section;
             w = env.w;
             air = env.air;
             param = air.parameters;
             c0 = param.c0;
-            % c0 = air.parameters.c0 * (1+0.05*1j); % perso_ouvrir_lien_Zotero('zotero://open-pdf/library/items/233HZ8GN?page=7&annotation=QLW3FP87')
-            % c0 = air.parameters.c0 * (1+0.01*1j); % perso_ouvrir_lien_Zotero('zotero://open-pdf/library/items/233HZ8GN?page=7&annotation=QLW3FP87')
             k0 = w ./ c0;
             Z0 = c0 * param.rho;
             H = obj.Configuration.Thickness;
@@ -45,21 +43,14 @@ classdef classcavity < classsubelement
             T.T21 = 1j * S / Z0 * sin(k0 * H);
             T.T22 = cos(k0 * H);
         end
-
-        function Zs = surface_impedance(obj, env)
-
-            S = obj.Configuration.Surface;
-            T = obj.transfer_matrix(env);
-            Zs = S * T.T11 ./ T.T21;
-        end
     end
 
     methods (Static, Access = public)
     
-        function config = create_config(surface, thickness)
+        function config = create_config(section, thickness)
 
             config = struct();
-            [config.Section, config.Surface] = deal(surface);
+            config.Section = section;
             config.Thickness = thickness; 
         end
     end

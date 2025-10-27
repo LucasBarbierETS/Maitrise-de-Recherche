@@ -18,7 +18,11 @@ function S_out = recursiveReplace(S_in, params)
     S_out = S_in;
 
     % Obtenir les noms des champs de la structure d'entrée
-    fields = fieldnames(S_in);
+    try
+        fields = fieldnames(S_in);
+    catch
+        error('Erreur dans replace_fields')
+    end
 
     % Parcourir tous les champs de la structure
     for i = 1:numel(fields)

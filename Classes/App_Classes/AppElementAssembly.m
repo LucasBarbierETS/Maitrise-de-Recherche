@@ -1,8 +1,4 @@
-classdef AppElement < AppObject
-% Les élements sont à l'interface entre un contenant et un contenu.
-% Comment les sous-élements on peut les afficher en tant que sous-élement,
-% mais on peut aussi les sélectionner pour afficher à la fois leur
-% contenant et leur contenu.
+classdef AppElementAssembly < AppObject
 
     properties
 
@@ -10,7 +6,7 @@ classdef AppElement < AppObject
     end
 
     methods
-        function obj = AppElement(app, varargin)
+        function obj = AppElementAssembly(app, varargin)
             
             % varargin = {content, type, app_config, ...
 
@@ -47,16 +43,14 @@ classdef AppElement < AppObject
             for i = 1:length(obj.Content.Content)
                 list{end+1} = obj.Content.Content{i}.app_to_class(app);
             end
-        
-        class_config = app.Types.(obj.TypeName).HandleClassConfig( ...
-        replace_fields(obj.AppConfig, app.HandleVariables));
-        class_obj = app.Types.(obj.TypeName).HandleClassObject(list, class_config);
+
+        class_obj = app.Types.(obj.TypeName).HandleClassObject(list);
         end
     end
 
     methods (Static)
 
-        function app_elm = class_to_app(app, class_elm)
+        function app_element_assembly = class_to_app(app, class_element_assembly)
         % Cette méthode permet de construire un élement d'application 
         % à partir d'un objet de classe. Si l'élement contient des
         % jonctions ou des élements, la méthode pourra être récursive
@@ -64,20 +58,18 @@ classdef AppElement < AppObject
             content = {};
             % On parcourt la liste des sous-élements et on construit les
             % sous-élements d'applications
-            class_config_elm = class_elm.Configuration;
-            try
-                for i = 1:length(class_config_elm.ListOfSubelements)
-                    
-                    class_sblm = class_config_elm.ListOfSubelements{i};
-                    content{i} = class_sblm.HandleAppBuilder(app, class_sblm);
-                end
-            catch
-                error('Erreur dans AppElement\class_to_app')
+            class_config_element_assembly = class_element_assembly.Configuration;
+            for i = 1:length(class_config_element_assembly.ListOfElements)
+                
+                class_element = class_config_element_assembly.ListOfElements{i};
+                content{i} = class_element.HandleAppBuilder(app, class_element);
             end
             
-            % On construit l'élement
-            app_config_elm = app.Types.classelement.HandleAppConfig(class_config_elm);
-            app_elm = AppElement(app, AppContainer(content), 'classelement', app_config_elm);         
-        end     
+            % On construit l'assemblage d'élements
+            % app_config_element_assembly = app.Types.classelementassembly.HandleAppConfig(class_config_element_assembly);
+            app_element_assembly = AppElementAssembly(app, AppContainer(content), 'classelementassembly');         
+        end
+
+        
     end
 end
