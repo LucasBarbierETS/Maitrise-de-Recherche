@@ -5,8 +5,3 @@
 *.mph.backup
 ~model*.mph
 
-# MATLAB
-
-*.fig
-*.xlsx
-*.asv
