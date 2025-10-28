@@ -1,18 +1,57 @@
-classdef classsubelement
-   
+classdef classobject
+    
     properties
 
         HandleAppBuilder = @(app, class_sblm) AppSubelement.class_to_app(app, class_sblm)
         HandleAppConfig
         Configuration   
     end
-
+    
     methods
 
-        function obj = classsubelement(config)
+        function obj = classobject(config)
 
-             if nargin > 0
+            if nargin > 0
                 obj.Configuration = config;
+            end
+        end
+        
+        function disp_parameters_table(obj, env)
+            config = obj.Configuration;
+            
+            % Évaluer la configuration en cas de pointeurs de fonction
+            config = eval_config(config, env);
+            
+            % Préparer les variables de la table
+            VariableNames = {'Parameter', 'Value', 'Unit'};
+            Parameters = {};
+            Values = {};
+            Units = {};
+            
+            % Appeler la fonction récursive pour remplir les paramètres, valeurs et unités
+            [Parameters, Values, Units] = parse_structure(config, class(obj), Parameters, Values, Units, env);
+            
+            % Afficher l'en-tête de la table
+            fprintf('\n\n%-35s %-15s %-10s\n', VariableNames{:});
+            fprintf('%s\n', repmat('-', 1, 65)); % Ligne de séparation
+            
+            % Afficher chaque ligne de la table
+            for i = 1:length(Parameters)
+                param = Parameters{i};
+                value = Values{i};
+                unit = Units{i};
+        
+                % Remplacer les NaN par une chaîne vide
+                if isnan(value)
+                    valueStr = '';  % Chaine vide pour NaN
+                elseif ischar(value)
+                    valueStr = value;
+                else
+                    valueStr = sprintf('%.4f', value);
+                end
+        
+                % Affichage formaté sans crochets, guillemets ni accolades
+                fprintf('%-35s %-15s %-10s\n', param, valueStr, unit);
             end
         end
 
@@ -94,12 +133,8 @@ classdef classsubelement
                 options.IndexPosition = []
             end
                 
-            args = perso_namedargs(options);
+            args = namedargs2cell(options);
             TM = obj.transfer_matrix(env, args{:});
-            if ~any(~cellfun(@(x) all(isnan(real(x(:))) & isnan(imag(x(:)))), struct2cell(TM)))
-                error('Matrice NaN dans classsublement/surface_impedance')
-            end
-
             Zs = obj.Configuration.Surface * TM.T11 ./ TM.T21;
         end
         
@@ -119,47 +154,5 @@ classdef classsubelement
             plot(f, alpha, 'DisplayName', name);
             perso_configure_alpha_figure(f(end));
         end
-        
-        function disp_parameters_table(obj, env)
-            config = obj.Configuration;
-            
-            % Évaluer la configuration en cas de pointeurs de fonction
-            config = eval_config(config, env);
-            
-            % Préparer les variables de la table
-            VariableNames = {'Parameter', 'Value', 'Unit'};
-            Parameters = {};
-            Values = {};
-            Units = {};
-            
-            % Appeler la fonction récursive pour remplir les paramètres, valeurs et unités
-            [Parameters, Values, Units] = parse_structure(config, class(obj), Parameters, Values, Units, env);
-            
-            % Afficher l'en-tête de la table
-            fprintf('\n\n%-35s %-15s %-10s\n', VariableNames{:});
-            fprintf('%s\n', repmat('-', 1, 65)); % Ligne de séparation
-            
-            % Afficher chaque ligne de la table
-            for i = 1:length(Parameters)
-                param = Parameters{i};
-                value = Values{i};
-                unit = Units{i};
-        
-                % Remplacer les NaN par une chaîne vide
-                if isnan(value)
-                    valueStr = '';  % Chaine vide pour NaN
-                elseif ischar(value)
-                    valueStr = value;
-                else
-                    valueStr = sprintf('%.4f', value);
-                end
-        
-                % Affichage formaté sans crochets, guillemets ni accolades
-                fprintf('%-35s %-15s %-10s\n', param, valueStr, unit);
-            end
-        end
     end
 end
-
-
-

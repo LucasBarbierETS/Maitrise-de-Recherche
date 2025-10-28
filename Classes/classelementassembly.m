@@ -1,4 +1,4 @@
- classdef classelementassembly
+ classdef classelementassembly < classsubelement
 
     % References :
     
@@ -10,16 +10,11 @@
     % Par besoin de formulation d'une condition de fin, les éléments ouverts d'un objet de classe classelementassembly débouchent tous sur un même plan
     % dans la direction de propagation de l'onde
     
-    properties
-
-        HandleAppBuilder = @(app, class_element_assembly) AppElementAssembly.class_to_app(app, class_element_assembly)
-        Configuration
-    end
-    
     methods % Constructeur
         function obj = classelementassembly(config)
 
-            obj.Configuration = config;
+            obj@classsubelement(config)
+            obj.HandleAppBuilder = @(app, class_element_assembly) AppElementAssembly.class_to_app(app, class_element_assembly);
         end
     end
 
@@ -101,21 +96,6 @@
     end
 
     methods % Indicateurs acoustiques
-        
-        function Zs = surface_impedance(obj, env, options)
-
-            arguments
-                obj
-                env
-                options.pt_in = NaN
-                options.u_in = NaN
-                options.IndexPosition = []
-            end
-                
-            args = namedargs2cell(options);
-            TM = obj.transfer_matrix(env, args{:});
-            Zs = obj.Configuration.Surface * TM.T11 ./ TM.T21;
-        end
 
         function Zs_iter = surface_impedance_iter(obj, env, options)
 

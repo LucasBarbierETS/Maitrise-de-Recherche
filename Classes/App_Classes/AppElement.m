@@ -45,7 +45,11 @@ classdef AppElement < AppObject
 
         list = {};
             for i = 1:length(obj.Content.Content)
-                list{end+1} = obj.Content.Content{i}.app_to_class(app);
+                try
+                    list{end+1} = obj.Content.Content{i}.app_to_class(app);
+                catch ME
+                    error('Erreur dans AppElement');
+                end
             end
         
         class_config = app.Types.(obj.TypeName).HandleClassConfig( ...

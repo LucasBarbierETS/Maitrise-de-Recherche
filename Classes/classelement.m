@@ -1,21 +1,11 @@
-classdef classelement
-    
-    properties
-        
-        HandleAppBuilder = @(app, class_elm) AppElement.class_to_app(app, class_elm)
-        HandleAppConfig = @(class_config) struct('Surface', class_config.Surface)
-        Configuration
-        % Contenu 
-        % ListOfSubelements % (cell) la seul requête des subelements est d'avoir une méthode transfermatrix(env)
-        % EndStatus % (string) 'opened' (default mode) or 'closed'
-        % InputSection % (double) uitle seulement pour la méthode surface_impedance(env)
-        % ...
-    end
+classdef classelement < classsubelement
     
     methods
         function obj = classelement(config)
             
-            obj.Configuration = config;
+            obj@classsubelement(config)
+            obj.HandleAppBuilder = @(app, class_elm) AppElement.class_to_app(app, class_elm);
+            obj.HandleAppConfig = @(class_config) struct('Surface', class_config.Surface);
         end
     end
 
@@ -40,18 +30,12 @@ classdef classelement
                 sblm = config.ListOfSubelements{i};
                 options.IndexPosition = [idp, i];
                 args = namedargs2cell(options);
-                
-                % On vérifie que l'élement ne contient pas un sous-élement
-                % fermé dont on ne peux pas obtenir la matrice de
-                % transfert. Si c'est le cas, on arrête le calcul de la
-                % matrice de transfert de l'élement à niveau du sous-élement
-                % fermé.
-             
-                try
-                    TM = matprod(TM, sblm.transfer_matrix(env, args{:}));
-                catch
-                    error(['Erreur dans classelement/transfer_matrix. Impossible de calculer la matrice de transfert du ', num2str(i), 'ème sous-élement']);
+                sblm_TM = sblm.transfer_matrix(env, args{:});
+                if ~(all(isnan(options.pt_in)) && all(isnan(options.u_in)))
+                    [~, options.pt_in, options.u_in] = sblm.inverse_transfer_matrix(env, args{:}, 'TM', sblm_TM);
                 end
+
+                TM = matprod(TM, sblm_TM);
 
                 % % Debog : Tracé de la matrice de transfert incrémentée
                 % perso_figure('Tracé de la matrice de transfert incrémentée dans classelement/transfer_matrix');
@@ -71,7 +55,6 @@ classdef classelement
                 end
             end
         end
-
         
         function YM = admittance_matrix(env, options)
 
@@ -81,46 +64,51 @@ classdef classelement
             YM.Y12 = 1 ./ TM.T12 .* (TM.T21 .* TM.T12 - TM.T22 .* TM.T11);
             YM.Y21 = 1 ./ TM.T12;
             YM.Y22 = -1 ./ TM.T12 .* (TM.T11);
-        end
+        end       
         
-        
-        function TM_inv = inverse_transfer_matrix(obj, env, options) 
-
+        function [TM_inv, pt_out, u_out] = inverse_transfer_matrix(obj, env, options) 
+      
             arguments
                 obj
                 env
-                options.p_in = NaN
+                options.pt_in = NaN
                 options.u_in = NaN
+                options.TM = NaN
                 options.IndexPosition = []
             end
 
             config = obj.Configuration;
             TM_inv = perso_empty_TM(env.w);
             idp = options.IndexPosition;
-            
+
             for i = 1:length(config.ListOfSubelements)
                 
                 sblm = config.ListOfSubelements{i};
-                options.IndexPosition = [idp, i];
-
-                % On vérifie que l'élement ne contient pas un sous-élement
-                % fermé dont on ne peux pas obtenir la matrice de
-                % transfert. Si c'est le cas, on arrête le calcul.
-                if isa(sblm, 'classsubelement_imported') ...
-                    || (isa(sblm, 'classelementassembly') && strcmp(sblm.Configuration.Endstatus, 'closed')) ...
-                    || isa(sblm, 'classvolume')
-                    sprintf('L''élement contient un sous-élement fermé')
-                    return
-                elseif isa(sblm, 'function_handle')
-                    TM_inv = matprod(sblm(env).inverse_transfer_matrix(env, options), TM_inv);
-                else
-                    try
-                        TM_inv = matprod(sblm.transfer_matrix(env, options), TM_inv);
-                    catch
-                        error(['Erreur dans classelement/transfer_matrix. Impossible de calculer la matrice de transfert inverse du ', num2str(i), 'ème sous-élement']);
-                    end
+                if isprop(sblm.Configuration, 'EndStatus') && strcmp(sblm.Configuration.EndStatus, 'closed')
+                    break
                 end
+                
+                options.IndexPosition = [idp, i];
+                args = namedargs2cell(options);
+                [sblm_TM_inv, options.pt_in, options.u_in] = sblm.inverse_transfer_matrix(env, args{:});
+                TM_inv = matprod(sblm_TM_inv, TM_inv);
+
+                % % Debog : Tracé de la matrice de transfert incrémentée
+                % perso_figure('Tracé de la matrice de transfert incrémentée dans classelement/transfer_matrix');
+                % if i == 1
+                %     clf;
+                % end
+                % 
+                % if all(structfun(@(x) all(isnan(x), 'all'), TM))
+                %     error('Matrice de transfert vide dans classelementassembly/transfer_matrix')
+                % end
+                %
+                % sgtitle(class(sblm))
+                % perso_plot_transfer_matrix(TM, env, 'TM');
             end
+
+            pt_out = options.pt_in;
+            u_out = options.u_in;
         end
       
         % function TM_sb = side_branch_transfer_matrix(obj, env, Lx, M)
@@ -193,21 +181,7 @@ classdef classelement
     end
 
     methods
-        function Zs = surface_impedance(obj, env, options)
-
-            arguments
-                obj
-                env
-                options.pt_in = NaN
-                options.u_in = NaN
-                options.IndexPosition = []
-            end
-                
-            args = namedargs2cell(options);
-            TM = obj.transfer_matrix(env, args{:});
-            Zs = obj.Configuration.Surface * TM.T11 ./ TM.T21;
-        end
-
+        
         function Zs_iter = surface_impedance_iter(obj, env, varargin)
 
             % Explications
