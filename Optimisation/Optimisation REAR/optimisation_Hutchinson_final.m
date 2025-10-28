@@ -110,7 +110,7 @@ tor = 1;
 sig = 12340;
 vl = 0.000105;
 tl = 0.000316;
-JCAmat = classJCA_Rigid(classJCA_Rigid.create_config(total_width*total_depth, JCAmat_thickness, phi, tor, sig, vl, tl, total_width, total_depth));
+JCAmat = classJCA_Rigid(classJCA_Rigid.create_config(total_width*total_depth, JCAmat_thickness, phi, tor, sig, vl, tl, 'width', total_width, 'depth', total_depth));
 
 % % Debog : Comportement du poreux seul
 % figure()
@@ -125,7 +125,7 @@ JCAmat = classJCA_Rigid(classJCA_Rigid.create_config(total_width*total_depth, JC
 
 %% Création dynamique de la plaque couvrante
 
-porosity = @(x) pi * (radius(x(1)))^2 / x(2);
+porosity = @(x) pi * (radius_mm(x(1))*1e-3)^2 / x(2)^2;
 
 % Plaque supérieure (optimisée)
 % top_plate = @(x) classMPP_Circular(classMPP_Circular.create_explicit_rectangular_plate_config( ...
@@ -182,9 +182,6 @@ rng; % For reproducibility"
 tic;
 [xopti, fval, eflag, output, population, scores] = gamultiobj(objective, numel(x0(1, :)), [], [], [], [], lb, ub, handle_Hutchinson_nonlconf, intcon, options);
 timeGa = toc;
-
-
-
 
 %% Conditionnement des solutions optimisées
 

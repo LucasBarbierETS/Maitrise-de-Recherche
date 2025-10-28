@@ -21,16 +21,16 @@ classdef AppSubelement < AppObject
         function class_obj = app_to_class(obj, app)
         % Cette méthode retourne l'objet de classe associé
         % au sous-élement d'application
-
-        % On remplace les champs de la configuration d'application
-        % correspondant à des variables muettes
-        try
-            class_config = app.Types.(obj.TypeName).HandleClassConfig( ...
-            replace_fields(obj.AppConfig, app.HandleVariables));
-            class_obj = app.Types.(obj.TypeName).HandleClassObject(class_config);
-        catch
-            error('Erreur dans AppSubelement\app_to_class')
-        end
+    
+            % On remplace les champs de la configuration d'application
+            % correspondant à des variables muettes
+            try
+                class_config = app.Types.(obj.TypeName).HandleClassConfig( ...
+                replace_fields(obj.AppConfig, app.HandleVariables));
+                class_obj = app.Types.(obj.TypeName).HandleClassObject(class_config);
+            catch
+                error('Erreur dans AppSubelement\app_to_class')
+            end
         end
     end
 
