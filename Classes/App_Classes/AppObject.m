@@ -193,7 +193,7 @@ classdef AppObject < handle
             app.TypeDropDown.Value = obj.TypeName;
 
             % On réactualise l'affichage de l'arbre
-            perso_visualizeContentTree(app.Elements, app.Tree);
+            % perso_visualizeContentTree(app.Elements, app.Tree);
         end
 
         function type_name_changed(obj, app)
