@@ -1,0 +1,34 @@
+% Exploitation des données expérimentales en tube à incidence normale
+% Echantillon Poly
+
+dataPoly = perso_load_mecanum_files('C:\Users\lucas.barbier\Documents\Maitrise dossier secondaire\Mesures expérimentales\Echantillon Poly Hutchinson\Export_Data');
+
+% Coefficient d'absorption
+alphaPoly = dataPoly.AbsorptionCoefficientOnCavity;
+f = alphaPoly.Sample1_Frequency_Hz_;
+alphaPoly_100 = alphaPoly.AbsorptionCoefficientOnCavity;
+alphaPoly_110 = alphaPoly.AbsorptionCoefficientOnCavity_1;
+alphaPoly_120 = alphaPoly.AbsorptionCoefficientOnCavity_2;
+alphaPoly_130 = alphaPoly.AbsorptionCoefficientOnCavity_3;
+
+data = load('C:\Users\lucas.barbier\Documents\Maitrise dossier secondaire\Mesures expérimentales\Echantillon Poly Hutchinson\25.05.27- Niloofar solution - numercial evaluation - Surface impedance.txt');
+frequency_support = data(:, 1);
+surface_impedance = data(:, 2) + 1i * data(:, 3);
+subelm = classsubelement_imported(classsubelement_imported.create_config(frequency_support, surface_impedance, 30e-3^2));
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%% 100 dB %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+figure()
+hold on
+
+
+% Résultats expérimental
+plot(f, alphaPoly_100, 'DisplayName', 'Résultat expérimental')
+
+% Résultat numérique
+plot(frequency_support, subelm.alpha(env(100)) , 'DisplayName', 'Résultat numérique')
+legend()
+
+
+
+
