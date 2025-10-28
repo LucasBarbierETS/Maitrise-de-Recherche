@@ -1,0 +1,11 @@
+# Live scripts
+
+- live script pour subelement
+-live script pour element
+- live script pour elementassembly
+
+# Fonctionnalité du code
+- optimisation
+- étude paramétrique
+
+
