@@ -1,11 +1,16 @@
 # Live scripts
 
 - live script pour subelement
--live script pour element
+- live script pour element
 - live script pour elementassembly
+- live script pour element_imported
 
-# Fonctionnalité du code
+# Fonctionnalités du code
+
 - optimisation
 - étude paramétrique
+- ajouter classannularcavity dans l'appli
+- ajouter les configurations de validation dans l'appli
+- retirer temporairement l'arborescence à gauche 
 
 
