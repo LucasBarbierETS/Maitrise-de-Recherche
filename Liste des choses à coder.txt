@@ -13,4 +13,11 @@
 - ajouter les configurations de validation dans l'appli
 - retirer temporairement l'arborescence à gauche 
 
+# Petites tâches pour l'appli
+
+- enregistrer les types de l'application qq part
+- déplacer les fonction dans les application vers des répertoires de fonction
+- créer les types d'application associées aux classes : classQWL_Circle, classannularcavity_cylindrical
+
+
 
