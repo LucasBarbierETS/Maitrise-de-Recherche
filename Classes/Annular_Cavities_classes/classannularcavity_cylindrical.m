@@ -109,6 +109,3 @@ classdef classannularcavity_cylindrical < classsubelement
         end
     end
 end
-
-
-
