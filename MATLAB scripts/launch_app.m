@@ -18,7 +18,7 @@ close all
 % Fermer toutes les instances précédentes de la classe MyApp
 % delete(findall(0, 'Type', 'figure'));
 
-Environnement_App(env);
+app = Environnement_App_classe(env);
 
 
 
