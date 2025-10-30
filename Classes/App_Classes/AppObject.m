@@ -45,9 +45,13 @@ classdef AppObject < handle
         % Cette méthode consiste à afficher le marqueur de l'objet courant
         % dans le composant graphique donné en argument
 
-            % On affiche le marqueur dans le composant graphique, à sa place attitrée
-            obj.Scatter = scatter(component.UIObject, obj.Index, 1, "Marker", app.Types.(obj.TypeName).Marker, ...
-                                                                    "MarkerEdgeColor", app.Types.(obj.TypeName).Color);
+            % % On affiche le marqueur dans le composant graphique, à sa place attitrée
+            % obj.Scatter = scatter(component.UIObject, obj.Index, 1, "Marker", app.Types.(obj.TypeName).Marker, ...
+            %                                                         "MarkerEdgeColor", app.Types.(obj.TypeName).Color);
+
+            obj.Scatter = app.Types.(obj.TypeName).HandleDrawFunction(component.UIObject, ...
+                                                              obj.Index, 1, ...
+                                                              app.Types.(obj.TypeName).Color);
     
             % On crée un Callback qui s'active lorsque le marqueur est cliqué
             % dans l'interface graphique
