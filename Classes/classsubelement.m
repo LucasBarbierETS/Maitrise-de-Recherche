@@ -91,9 +91,10 @@ classdef classsubelement
                 env
                 options.pt_in = NaN
                 options.u_in = NaN
+                options.TM = NaN
                 options.IndexPosition = []
             end
-                
+               
             args = perso_namedargs(options);
             TM = obj.transfer_matrix(env, args{:});
             if ~any(~cellfun(@(x) all(isnan(real(x(:))) & isnan(imag(x(:)))), struct2cell(TM)))
