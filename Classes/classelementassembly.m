@@ -24,12 +24,12 @@
             arguments
                 obj
                 env
-                options.pt_in = NaN
-                options.u_in = NaN
+                options.pt_in = 0
+                options.u_in = 0
                 options.IndexPosition = []
             end
             
-            args = namedargs2cell(options);
+            args = perso_namedargs(options);
             opened_elements = obj.Configuration.OpenedElements;
             closed_elements = obj.Configuration.ClosedElements;
 
@@ -219,6 +219,7 @@
         end
     
         function mean_alpha = alpha_mean(obj, env, f_min, f_max)
+            
             mask = @(env) (env.w / (2*pi) > f_min & env.w / (2*pi) < f_max);
             alpha = obj.alpha(env);
             mean_alpha = mean(alpha(mask(env)));

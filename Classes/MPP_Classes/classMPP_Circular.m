@@ -64,8 +64,8 @@ classdef classMPP_Circular < classJCA_Rigid
             arguments
                 obj
                 env
-                options.pt_in = NaN
-                options.u_in = NaN
+                options.pt_in = 0
+                options.u_in = 0
                 options.IndexPosition = [];
             end
             

@@ -44,6 +44,7 @@ classdef Main_App_classe < matlab.apps.AppBase
     properties (Access = public)
         
         EnvApp
+        ParametricStudyApp
         Graph 
         ParametersView
         Elements 
@@ -224,8 +225,12 @@ classdef Main_App_classe < matlab.apps.AppBase
         function ParametricStudyButtonPushed(app, event)
         % Cette méthode est appelée lorsque l'utilisateur.ice clique sur le 
         % bouton Parametric Study.
-            
-            Parametric_Study_App(app);
+
+            if isempty(app.ParametricStudyApp)
+                app.ParametricStudyApp = Parametric_Study_App(app);
+            else
+                app.ParametricStudyApp.UIFigure.Visible = 'on';
+            end
         end
 
         % Menu selected function: SaveMenu
