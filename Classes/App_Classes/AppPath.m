@@ -36,7 +36,7 @@ classdef AppPath < handle
             
             % On affiche les marqueurs un par un 
             for i = 1:length(obj.Content)
-                sct = app.Types.(obj.Content{i}.TypeName).HandleDrawFunction(navigator.UIObject, i, 1);     
+                sct = app.Types.(obj.Content{i}.TypeName).HandleDrawFunction(obj, navigator.UIObject, {'X', i, 'Y', 1});     
                 sct.ButtonDownFcn = @(~, ~) obj.Content{i}.object_selected(app);
             end
 

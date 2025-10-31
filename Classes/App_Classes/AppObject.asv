@@ -48,8 +48,9 @@ classdef AppObject < handle
             % % On affiche le marqueur dans le composant graphique, à sa place attitrée
             % obj.Scatter = scatter(component.UIObject, obj.Index, 1, "Marker", app.Types.(obj.TypeName).Marker, ...
             %                                                         "MarkerEdgeColor", app.Types.(obj.TypeName).Color);
-            
-            obj.Scatter = app.Types.(obj.TypeName).HandleDrawFunction(obj, component.UIObject, {'X', obj.Index, 'Y', 1});
+
+            obj.Scatter = app.Types.(obj.TypeName).HandleDrawFunction(component.UIObject, ...
+                                                              obj.Index, 1);
     
             % On crée un Callback qui s'active lorsque le marqueur est cliqué
             % dans l'interface graphique
@@ -80,12 +81,6 @@ classdef AppObject < handle
 
                     % Ajouter affichage de la flèche en fonction du type du
                     % contenant de l'objet courant
-                    % si le contenant de l'objet n'a pas de contenant
-                    % (origine de la structure) ou si le contenant est un
-                    % élement de classe AppElementAssembly on affiche en
-                    % vertical, sinon horizontal
-
-                    % draw_wave_arraw(app, obj.Container.Container)
                 end
 
                 if isprop(obj, 'Content') && ~isempty(obj.Content)
