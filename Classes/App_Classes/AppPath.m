@@ -36,13 +36,12 @@ classdef AppPath < handle
             
             % On affiche les marqueurs un par un 
             for i = 1:length(obj.Content)
-                sct = scatter(navigator.UIObject, i, 1, 'Marker', app.Types.(obj.Content{i}.TypeName).Marker, ...
-                                                       'MarkerEdgeColor', app.Types.(obj.Content{i}.TypeName).Color);  
-                
+                sct = app.Types.(obj.Content{i}.TypeName).HandleDrawFunction(navigator.UIObject, i, 1);     
                 sct.ButtonDownFcn = @(~, ~) obj.Content{i}.object_selected(app);
             end
 
             navigator.resize();
+            navigator.adjust_pictogram_sizes();
         end
     end
 end

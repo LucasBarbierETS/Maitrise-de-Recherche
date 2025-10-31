@@ -129,6 +129,7 @@ classdef AppContainer < handle
             call_scatter.Scatter.ButtonDownFcn = @(~, ~) obj.undefined_object_created(app);    
         
             component.resize()  
+            component.adjust_pictogram_sizes();
         end
         
         function scatter(obj, app, component)

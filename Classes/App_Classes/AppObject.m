@@ -50,8 +50,7 @@ classdef AppObject < handle
             %                                                         "MarkerEdgeColor", app.Types.(obj.TypeName).Color);
 
             obj.Scatter = app.Types.(obj.TypeName).HandleDrawFunction(component.UIObject, ...
-                                                              obj.Index, 1, ...
-                                                              app.Types.(obj.TypeName).Color);
+                                                              obj.Index, 1);
     
             % On crée un Callback qui s'active lorsque le marqueur est cliqué
             % dans l'interface graphique
@@ -153,12 +152,12 @@ classdef AppObject < handle
             %% Gestion de l'affichage
             obj.show(app); 
 
-            obj.Scatter.MarkerEdgeColor = 'r';
+            obj.Scatter.UserData.Border.EdgeColor = 'r';
 
             % Si le contenant existe et est affiché, on l'affiche en rouge également
             if (isprop(obj.Container, 'Container') && ~isempty(obj.Container.Container)) && ...
                (isvalid(obj.Container.Container.Scatter) && (strcmp(obj.Container.Container.Scatter.Visible, 'on')))
-                obj.Container.Container.Scatter.MarkerEdgeColor = 'r';
+                obj.Container.Container.Scatter.UserData.Border.EdgeColor = 'r';
             end
 
             % % Si le contenant du contenant est également affiché, on l'affiche en rouge également
