@@ -6,6 +6,6 @@ function app = perso_compute(app, name)
     end
 
     % Crée l'assemblage et affiche le résultat
-    assembly = classelementassembly(list_of_elements);
-    assembly.plot_alpha(app.Env, name);     
+    assembly = classelementassembly(classelementassembly.create_config(list_of_elements));
+    assembly.plot_alpha(app.EnvApp, name);     
 end
