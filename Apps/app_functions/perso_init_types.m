@@ -10,9 +10,9 @@ function app = perso_init_types(app)
 
             if ~isfield(app.Types, 'None')
                 app.Types.None.TypeName = 'None';
-                app.Types.None.Color = 'k';
-                app.Types.None.Marker = '+';
-
+                % app.Types.None.Color = 'k';
+                % app.Types.None.Marker = '+';
+                app.Types.None.HandleDrawFunction = @(ax, x, y, color) draw_none(ax, x, y);
                 dropdown.Items{end + 1} = char();
                 dropdown.ItemsData{end + 1} = 'None';
             end
@@ -21,8 +21,9 @@ function app = perso_init_types(app)
 
             if ~isfield(app.Types, 'Undefined')
                 app.Types.Undefined.TypeName = 'Undefined';
-                app.Types.Undefined.Color = 'k';
-                app.Types.Undefined.Marker = 'diamond';
+                % app.Types.Undefined.Color = 'k';
+                % app.Types.Undefined.Marker = 'diamond';
+                app.Types.Undefined.HandleDrawFunction = @(ax, x, y, color) draw_undefined(ax, x, y);
                 app.Types.Undefined.ParametersPanelStruct = ...
                     add_parameters_subpanel_structure(app, 'Undefined', {}, {});
 
@@ -36,8 +37,9 @@ function app = perso_init_types(app)
 
             % if ~isfield(app.Types, 'classelement_imported')
                 app.Types.classelement_imported.TypeName = 'classelement_imported';
-                app.Types.classelement_imported.Color = 'k';
-                app.Types.classelement_imported.Marker = 'diamond';
+                % app.Types.classelement_imported.Color = 'k';
+                % app.Types.classelement_imported.Marker = 'diamond';
+                app.Types.classelement_imported.HandleDrawFunction = @(ax, x, y, color) draw_classelement_imported(ax, x, y);
                 app.Types.classelement_imported.ParametersPanelStruct = ...
                 add_parameters_subpanel_structure(app, 'classelement_imported', {}, {});
 
@@ -71,9 +73,9 @@ function app = perso_init_types(app)
                 (app, 'classelement', {'Surface'}, {'m^2'});
 
                 app.Types.classelement.TypeName = 'classelement';
-                app.Types.classelement.Color = 'k';
-                app.Types.classelement.Marker = 's';
-
+                % app.Types.classelement.Color = 'k';
+                % app.Types.classelement.Marker = 's';
+                app.Types.classelement.HandleDrawFunction = @(ax, x, y, color) draw_classelement(ax, x, y);
                 app.Types.classelement.HandleAppObject = @(app) AppElement(app);
 
                 app.Types.classelement.HandleClassObject = @(list_of_subelements, app_config_double) ...
@@ -98,9 +100,9 @@ function app = perso_init_types(app)
                 (app, 'classelementassembly', {}, {});
 
                 app.Types.classelementassembly.TypeName = 'classelementassembly';
-                app.Types.classelementassembly.Color = 'k';
-                app.Types.classelementassembly.Marker = 's';
-
+                % app.Types.classelementassembly.Color = 'k';
+                % app.Types.classelementassembly.Marker = 's';
+                app.Types.classelementassembly.HandleDrawFunction = @(ax, x, y, color) draw_classelementassembly(ax, x, y);
                 app.Types.classelementassembly.HandleAppObject = @(app) AppElementAssembly(app);
 
                 app.Types.classelementassembly.HandleAppConfig = @(class_config_double) ...
@@ -122,8 +124,9 @@ function app = perso_init_types(app)
 
             % if~isfield(app.Types, 'Periodic')
                 app.Types.Periodic.TypeName = 'Periodic';
-                app.Types.Periodic.Color = 'k';
-                app.Types.Periodic.Marker = 'hexagon';
+                % app.Types.Periodic.Color = 'k';
+                % app.Types.Periodic.Marker = 'hexagon';
+                app.Types.Periodic.HandleDrawFunction = @(ax, x, y, color) draw_periodic(ax, x, y);
                 app.Types.Periodic.ParametersPanelStruct = ...
                 add_parameters_subpanel_structure(app, 'Periodic', {}, {});
 
@@ -139,9 +142,9 @@ function app = perso_init_types(app)
                 (app, 'classjunction', {'Junction Element Type', 'Section'}, {'', 'm'});
 
                 app.Types.classjunction.TypeName = 'classjunction';
-                app.Types.classjunction.Color = '#30D5C8';
-                app.Types.classjunction.Marker = 'diamond';
-
+                % app.Types.classjunction.Color = '#30D5C8';
+                % app.Types.classjunction.Marker = 'diamond';
+                app.Types.classjunction.HandleDrawFunction = @(ax, x, y, color) draw_classjunction(ax, x, y);
                 app.Types.classjunction.HandleAppObject = @(app) AppJunction(app);
 
                 app.Types.classjunction.HandleClassObject = @(jcn_element, app_config_double) ...
@@ -170,9 +173,9 @@ function app = perso_init_types(app)
                 {'m', 'm^2', '[0-1]', 'Pa.s/m2', '(no unit)', 'm', 'm'});
     
                 app.Types.classJCA_Rigid.TypeName = 'classJCA_Rigid';
-                app.Types.classJCA_Rigid.Color = '#548FAB';
-                app.Types.classJCA_Rigid.Marker = 'diamond';
-
+                % app.Types.classJCA_Rigid.Color = '#548FAB';
+                % app.Types.classJCA_Rigid.Marker = 'diamond';
+                app.Types.classJCA_Rigid.HandleDrawFunction = @(ax, x, y, color) draw_classJCA_rigid(ax, x, y);
                 app.Types.classJCA_Rigid.HandleAppObject = @(app) AppSubelement(app);
 
                 app.Types.classJCA_Rigid.HandleAppConfig = @(class_config_double) ...
@@ -217,9 +220,9 @@ function app = perso_init_types(app)
                 {'[0-1]', 'm', 'm', 'm^2', 'm'});
     
                 app.Types.classMPP_Circular.TypeName = 'classMPP_Circular';
-                app.Types.classMPP_Circular.Color = '#094F29';
-                app.Types.classMPP_Circular.Marker = 'o';
-
+                % app.Types.classMPP_Circular.Color = '#094F29';
+                % app.Types.classMPP_Circular.Marker = 'o';
+                app.Types.classMPP_Circular.HandleDrawFunction = @(ax, x, y, color) draw_classMPP_Circular(ax, x, y);
                 app.Types.classMPP_Circular.HandleAppObject = @(app) AppSubelement(app);
                 
                 % Permet de créer l'objet de classe à partir de la configuration d'application
@@ -371,9 +374,9 @@ function app = perso_init_types(app)
                 {'Length', 'Width', 'Depth'}, {'m', 'm', 'm'});
 
                 app.Types.classQWL_Slit.TypeName = 'classQWL_Slit';
-                app.Types.classQWL_Slit.Color = '#C0428A';
-                app.Types.classQWL_Slit.Marker = '_';
-
+                % app.Types.classQWL_Slit.Color = '#C0428A';
+                % app.Types.classQWL_Slit.Marker = '_';
+                app.Types.classQWL_Slit.HandleDrawFunction = @(ax, x, y, color) draw_classQWL_Slit(ax, x, y);
                 app.Types.classQWL_Slit.HandleAppObject = @(app) AppSubelement(app);
 
                 % Permet de créer l'objet de classe à partir de la configuration d'application
@@ -405,9 +408,9 @@ function app = perso_init_types(app)
                 {'Length', 'Radius'}, {'m', 'm'});
 
                 app.Types.classQWL_Circle.TypeName = 'classQWL_Circle';
-                app.Types.classQWL_Circle.Color = '#C8A2C8';
-                app.Types.classQWL_Circle.Marker = '_';
-
+                % app.Types.classQWL_Circle.Color = '#C8A2C8';
+                % app.Types.classQWL_Circle.Marker = '_';
+                app.Types.classQWL_Circle.HandleDrawFunction = @(ax, x, y, color) draw_classQWL_Circle(ax, x, y);
                 app.Types.classQWL_Circle.HandleAppObject = @(app) AppSubelement(app);
 
                 % Permet de créer l'objet de classe à partir de la configuration d'application
@@ -438,9 +441,9 @@ function app = perso_init_types(app)
                 {'Thickness', 'Section'}, {'m', 'm^2'});
     
                 app.Types.classcavity.TypeName = 'classcavity';
-                app.Types.classcavity.Color = '#30D5C8';
-                app.Types.classcavity.Marker = '_';
-
+                % app.Types.classcavity.Color = '#30D5C8';
+                % app.Types.classcavity.Marker = '_';
+                app.Types.classcavity.HandleDrawFunction = @(ax, x, y, color) draw_classcavity(ax, x, y);
                 app.Types.classcavity.HandleAppObject = @(app) AppSubelement(app);
 
                 app.Types.classcavity.HandleClassObject = @(app_config_double) ...
@@ -470,9 +473,9 @@ function app = perso_init_types(app)
                 {{}, {}, {}, {'Hankel', 'Volume'}});
 
                 app.Types.classannularcavity_cylindrical.TypeName = 'classannularcavity_cylindrical';
-                app.Types.classannularcavity_cylindrical.Color = '#FFA500';
-                app.Types.classannularcavity_cylindrical.Marker = '_';
-
+                % app.Types.classannularcavity_cylindrical.Color = '#FFA500';
+                % app.Types.classannularcavity_cylindrical.Marker = '_';
+                app.Types.classannularcavity_cylindrical.HandleDrawFunction = @(ax, x, y, color) draw_annularcavitycylindrical(ax, x, y);
                 app.Types.classannularcavity_cylindrical.HandleAppObject = @(app) AppSubelement(app);
 
                 app.Types.classannularcavity_cylindrical.HandleClassObject = @(app_config_double) ...
@@ -502,9 +505,9 @@ function app = perso_init_types(app)
                 'Cavity Width', 'Cavity Depth', 'Cavity Thickness'}, {'m', 'm', 'm', 'm', 'm'});
 
                 app.Types.classannularcavity_cubical.TypeName = 'classannularcavity_cubical';
-                app.Types.classannularcavity_cubical.Color = '#A3F25C';
-                app.Types.classannularcavity_cubical.Marker = '_';
-
+                % app.Types.classannularcavity_cubical.Color = '#A3F25C';
+                % app.Types.classannularcavity_cubical.Marker = '_';
+                app.Types.classannularcavity_cubical.HandleDrawFunction = @(ax, x, y, color) draw_classannularcavitycubical(ax, x, y);
                 app.Types.classannularcavity_cubical.HandleAppObject = @(app) AppSubelement(app);
 
                 app.Types.classannularcavity_cubical.HandleClassObject = @(app_config_double) ...
@@ -534,9 +537,9 @@ function app = perso_init_types(app)
                 'Cavity Width', 'Cavity Depth', 'Cavity Thickness'}, {'m', 'm', 'm', 'm', 'm'});
 
                 app.Types.classannularcavity_trapezoidal.TypeName = 'classannularcavity_rectangular';
-                app.Types.classannularcavity_trapezoidal.Color = '#7B3FE1';
-                app.Types.classannularcavity_trapezoidal.Marker = '_';
-
+                % app.Types.classannularcavity_trapezoidal.Color = '#7B3FE1';
+                % app.Types.classannularcavity_trapezoidal.Marker = '_';
+                app.Types.classannularcavity_trapezoidal.HandleDrawFunction = @(ax, x, y, color) draw_classannularcavitytrapezoidal(ax, x, y);
                 app.Types.classannularcavity_trapezoidal.HandleAppObject = @(app) AppSubelement(app);
 
                 app.Types.classannularcavity_trapezoidal.HandleClassObject = @(app_config_double) ...

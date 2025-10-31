@@ -101,6 +101,9 @@ end
             app.EnvApp = env;
 
             % On initialise le graphe
+            set(app.ElementsGraph, 'YDir', 'normal');
+            set(app.SubelementsGraph, 'YDir', 'normal');
+            set(app.Navigator, 'YDir', 'normal');
             app.Graph = AppComponentContainer(app.GraphPanel, 'GlobalGraph');
             app.Graph.add_component(AppAxes(app.ElementsGraph, 'ElementsGraph'));
             app.Graph.add_component(AppAxes(app.SubelementsGraph, 'SubelementsGraph'));
@@ -126,6 +129,7 @@ end
 
             app.Elements = AppContainer();
             app.Elements.scatter_with_call(app, app.Graph.Components.ElementsGraph);
+            app.Graph.Components.ElementsGraph.adjust_pictogram_sizes();
         end
 
         % Button pushed function: addvariableButton

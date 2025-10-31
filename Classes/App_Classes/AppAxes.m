@@ -221,5 +221,69 @@ classdef AppAxes < AppComponent
             ylim(ax, [ymin ymax]);
         end
 
+        function adjust_pictogram_sizes(obj)
+        % Ajuste les proportions des pictogrammes pour qu'ils restent carrés visuellement,
+        % quelle que soit la taille ou le rapport d’aspect du UIAxes.
+        
+            ax = obj.UIObject;
+            if ~isvalid(ax) || ~isa(ax, 'matlab.ui.control.UIAxes')
+                return;
+            end
+        
+            % === 1. Récupère les limites des axes (coordonnées réelles) ===
+            xlimVals = xlim(ax);
+            ylimVals = ylim(ax);
+        
+            % === 2. Taille en pixels du UIAxes ===
+            pixelPos = getpixelposition(ax);
+            width_px  = pixelPos(3);
+            height_px = pixelPos(4);
+        
+            % === 3. Rapport d’échelle entre les unités X/Y et les pixels ===
+            % aspectRatio > 1 → X étiré → il faut compenser
+            x_units_per_px = diff(xlimVals) / width_px;
+            y_units_per_px = diff(ylimVals) / height_px;
+            aspectRatio = x_units_per_px / y_units_per_px;
+        
+            % === 4. Recherche tous les pictogrammes ===
+            pictos = findobj(ax, 'Type', 'hggroup');
+            if isempty(pictos)
+                return;
+            end
+        
+            % === 5. Ajustement de chaque pictogramme ===
+            for i = 1:numel(pictos)
+                h = pictos(i);
+                if ~isfield(h.UserData, 'BaseSize') || isempty(h.UserData.BaseSize)
+                    continue; % ignore si taille non définie
+                end
+                s = h.UserData.BaseSize;
+        
+                % --- Ajuste la bordure ---
+                if isfield(h.UserData, 'Border') && isgraphics(h.UserData.Border)
+                    border = h.UserData.Border;
+                    pos = get(border, 'Position');
+                    cx = pos(1) + pos(3)/2;
+                    cy = pos(2) + pos(4)/2;
+        
+                    newW = s * aspectRatio;
+                    newH = s;
+        
+                    set(border, 'Position', [cx - newW/2, cy - newH/2, newW, newH]);
+                end
+        
+                % --- Ajuste l’image PNG ---
+                if isfield(h.UserData, 'Image') && isgraphics(h.UserData.Image)
+                    img = h.UserData.Image;
+                    xCenter = mean(get(img, 'XData'));
+                    yCenter = mean(get(img, 'YData'));
+                    xWidth = s * aspectRatio;
+                    yHeight = s;
+        
+                    set(img, 'XData', [xCenter - xWidth/2, xCenter + xWidth/2], ...
+                             'YData', [yCenter - yHeight/2, yCenter + yHeight/2]);
+                end
+            end
+        end
     end
 end

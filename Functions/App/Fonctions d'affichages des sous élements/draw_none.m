@@ -1,29 +1,4 @@
-function h = draw_none(ax, x, y, color)
-% DESSINE UN ÉLÉMENT TYPE "None"
-% carré noir avec un "+" noir au centre
-
-    hold(ax, 'on');
-
-    % Taille du carré
-    s = 0.4;
-
-    % === 1. Carré noir plein ===
-    rect = rectangle(ax, ...
-        'Position', [x - s/2, y - s/2, s, s], ...
-        'FaceColor', color, ...
-        'EdgeColor', 'k', ...
-        'LineWidth', 1.2);
-
-    % === 2. Symbole "+" noir au centre ===
-    txt = text(ax, x, y, '+', ...
-        'HorizontalAlignment', 'center', ...
-        'VerticalAlignment', 'middle', ...
-        'Color', 'w', ...      % lisibilité : blanc sur fond noir
-        'FontWeight', 'bold', ...
-        'FontSize', 12, ...
-        'HitTest', 'off');    % pour que le clic passe au carré
-
-    % === 3. Groupe graphique unique ===
-    h = hggroup(ax);
-    set([rect txt], 'Parent', h);
+function h = draw_none(ax, x, y)
+    imgPath = fullfile('C:\Users\lucas.barbier\Documents\Maitrise ETS\Répertoire GitHub\Functions\App\Fonctions d''affichages des sous élements\Pictogrammes\None.png');
+    h = draw_png_with_border(ax, x, y, imgPath, 'picto_none');
 end
