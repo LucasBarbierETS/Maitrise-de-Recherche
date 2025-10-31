@@ -144,7 +144,6 @@ classdef classJCA_Rigid < classsubelement
             % TM.T21 = 1j * S ./ (ep.Zeq * phi) .* sin(kd);
             TM.T21 = 1j * S ./ ep.Zeq .* sin(kd);
             TM.T22 = cos(kd);
-
             % % Debog : Matrice de transfert inverse
             % perso_figure('nombre d''onde d''un sous-élement dans classJCA_Rigid/transfer_matrix')
             % clf;

@@ -1,4 +1,4 @@
-function h = draw_classcavity(obj, ax, varargin)
-    imgPath = fullfile('C:\Users\lucas.barbier\Documents\Maitrise ETS\Répertoire GitHub\Functions\App\Fonctions d''affichages des sous élements\Pictogrammes\Cavity.png');
+function h = draw_classcavity(env, obj, ax, varargin)
+    imgPath = fullfile([env.root, '\Functions\App\Fonctions d''affichages des sous élements\Pictogrammes\Cavity.png']);
     h = draw_png_with_border(obj, ax, imgPath, varargin{:});
 end
