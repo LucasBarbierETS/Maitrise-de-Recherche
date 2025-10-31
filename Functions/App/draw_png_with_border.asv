@@ -63,8 +63,7 @@ function h = draw_png_with_border(obj, ax, imgPath, options)
 
     % === Lecture du PNG (flip vertical pour uiaxes) == 
     img = flipud(imread(imgPath));
-    if isprop(obj, 'Container') && ~isempty(obj.Container) &&  isprop(obj.Container, 'Container') && ~isempty(obj.Container.Container) && isa(obj.Container.Container, 'AppElement') ...
-        && strcmp(obj.TypeName, 'classcavity')
+    if isfield(obj, 'Container') && ~isempty(obj.Container) &&  isfield(obj.Container, 'Container') && ~isempty(obj.Container.Container) && isa(obj.Container.Container, 'AppElement')
         img = rot90(img);
     end
 

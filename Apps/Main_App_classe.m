@@ -11,7 +11,7 @@ classdef Main_App_classe < matlab.apps.AppBase
         fonctiontemporaireinit_typesMenu  matlab.ui.container.Menu
         ConfigurationMenu          matlab.ui.container.Menu
         NewElementMenu             matlab.ui.container.Menu
-        DeleteElementMenu          matlab.ui.container.Menu
+        DeleteFirstElementMenu     matlab.ui.container.Menu
         ImportElementMenu          matlab.ui.container.Menu
         GridLayout                 matlab.ui.container.GridLayout
         ParametersPanel            matlab.ui.container.Panel
@@ -56,24 +56,24 @@ classdef Main_App_classe < matlab.apps.AppBase
     end
     
     
-methods (Access = public)
-
-    function init_types(app)
-        app = perso_init_types(app);
+    methods (Access = public)
+    
+        function init_types(app)
+            app = perso_init_types(app);
+        end
+    
+        function subelement_type_dropdown_value_changed(app, ~, ~)
+            app = perso_subelement_type_dropdown_value_changed(app);
+        end
+    
+        function import_element(app)
+            app = perso_import_element_file(app);  % appelle la fonction externe
+        end
+    
+        function compute(app, name)
+            app = perso_compute(app, name);  % appelle la fonction externe
+        end
     end
-
-    function subelement_type_dropdown_value_changed(app, ~, ~)
-        app = perso_subelement_type_dropdown_value_changed(app);
-    end
-
-    function import_element(app)
-        app = perso_import_element_file(app);  % appelle la fonction externe
-    end
-
-    function compute(app, name)
-        app = perso_compute(app, name);  % appelle la fonction externe
-    end
-end
 
     methods (Access = private)
         function display_handle_variables(app)
@@ -81,7 +81,6 @@ end
         end
     end
 
-    
     methods (Access = private) % Callbacks 
 
         % Code that executes after component creation
@@ -151,8 +150,10 @@ end
         end
 
         % Menu selected function : DeleteElementenu
-        function DeleteElementMenuSelected(app, event)
-            app.Element
+        function DeleteFirstElementMenuSelected(app, event)
+            % if length(app.Elements.Content) > 1
+            %     app.Elements.Content = app.Elements.Content{2:end};
+            % end
         end
 
         % Menu selected function: ImportElementMenu
@@ -340,10 +341,10 @@ end
             app.NewElementMenu = uimenu(app.ConfigurationMenu);
             app.NewElementMenu.Text = 'New Element';
 
-            % Create DeleteElementMenu
-            app.DeleteElementMenu = uimenu(app.ConfigurationMenu);
-            app.DeleteElementMenu.MenuSelectedFcn = createCallbackFcn(app, @DeleteElementMenuSelected, true);
-            app.DeleteElementMenu.Text = 'Delete Element';
+            % Create DeleteFirstElementMenu
+            app.DeleteFirstElementMenu = uimenu(app.ConfigurationMenu);
+            app.DeleteFirstElementMenu.MenuSelectedFcn = createCallbackFcn(app, @DeleteFirstElementMenuSelected, true);
+            app.DeleteFirstElementMenu.Text = 'Delete First Element';
 
             % Create ImportElementMenu
             app.ImportElementMenu = uimenu(app.ConfigurationMenu);

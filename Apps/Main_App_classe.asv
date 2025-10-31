@@ -11,6 +11,7 @@ classdef Main_App_classe < matlab.apps.AppBase
         fonctiontemporaireinit_typesMenu  matlab.ui.container.Menu
         ConfigurationMenu          matlab.ui.container.Menu
         NewElementMenu             matlab.ui.container.Menu
+        DeleteElementMenu          matlab.ui.container.Menu
         ImportElementMenu          matlab.ui.container.Menu
         GridLayout                 matlab.ui.container.GridLayout
         ParametersPanel            matlab.ui.container.Panel
@@ -101,6 +102,9 @@ end
             app.EnvApp = env;
 
             % On initialise le graphe
+            set(app.ElementsGraph, 'YDir', 'normal');
+            set(app.SubelementsGraph, 'YDir', 'normal');
+            set(app.Navigator, 'YDir', 'normal');
             app.Graph = AppComponentContainer(app.GraphPanel, 'GlobalGraph');
             app.Graph.add_component(AppAxes(app.ElementsGraph, 'ElementsGraph'));
             app.Graph.add_component(AppAxes(app.SubelementsGraph, 'SubelementsGraph'));
@@ -126,6 +130,7 @@ end
 
             app.Elements = AppContainer();
             app.Elements.scatter_with_call(app, app.Graph.Components.ElementsGraph);
+            app.Graph.Components.ElementsGraph.adjust_pictogram_sizes();
         end
 
         % Button pushed function: addvariableButton
@@ -143,6 +148,11 @@ end
 
             len_table = length(app.HandleVariablesTable.Data{:, 1}); 
             app.HandleVariablesTable.Data(len_table, :) = []; 
+        end
+
+        % Menu selected function : DeleteElementenu
+        function DeleteFirstElementMenuSelected(app, event)
+            app.Elements.Content = app.Elements.Content{2:end};
         end
 
         % Menu selected function: ImportElementMenu
@@ -266,8 +276,9 @@ end
             app.init_types()
         end
 
-        function reinit_app_typesMenuSelected(app, event)
-            startupFcn
+        function app = reinit_app_typesMenuSelected(app, event)
+
+            app.startupFcn(app.EnvApp, event)
         end
 
         % Menu selected function: ModifyenvironnementparametersMenu
@@ -328,6 +339,11 @@ end
             % Create NewElementMenu
             app.NewElementMenu = uimenu(app.ConfigurationMenu);
             app.NewElementMenu.Text = 'New Element';
+
+            % Create DeleteFirstElementMenu
+            app.DeleteFirstElementMenu = uimenu(app.ConfigurationMenu);
+            app.DeleteFirstElementMenu.MenuSelectedFcn = createCallbackFcn(app, @DeleteElementMenuSelected, true);
+            app.DeleteElementMenu.Text = 'Delete Element';
 
             % Create ImportElementMenu
             app.ImportElementMenu = uimenu(app.ConfigurationMenu);
