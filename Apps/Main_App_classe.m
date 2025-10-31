@@ -11,6 +11,7 @@ classdef Main_App_classe < matlab.apps.AppBase
         fonctiontemporaireinit_typesMenu  matlab.ui.container.Menu
         ConfigurationMenu          matlab.ui.container.Menu
         NewElementMenu             matlab.ui.container.Menu
+        DeleteElementMenu          matlab.ui.container.Menu
         ImportElementMenu          matlab.ui.container.Menu
         GridLayout                 matlab.ui.container.GridLayout
         ParametersPanel            matlab.ui.container.Panel
@@ -147,6 +148,11 @@ end
 
             len_table = length(app.HandleVariablesTable.Data{:, 1}); 
             app.HandleVariablesTable.Data(len_table, :) = []; 
+        end
+
+        % Menu selected function : DeleteElementenu
+        function DeleteElementMenuSelected(app, event)
+            app.Element
         end
 
         % Menu selected function: ImportElementMenu
@@ -333,6 +339,11 @@ end
             % Create NewElementMenu
             app.NewElementMenu = uimenu(app.ConfigurationMenu);
             app.NewElementMenu.Text = 'New Element';
+
+            % Create DeleteElementMenu
+            app.DeleteElementMenu = uimenu(app.ConfigurationMenu);
+            app.DeleteElementMenu.MenuSelectedFcn = createCallbackFcn(app, @DeleteElementMenuSelected, true);
+            app.DeleteElementMenu.Text = 'Delete Element';
 
             % Create ImportElementMenu
             app.ImportElementMenu = uimenu(app.ConfigurationMenu);

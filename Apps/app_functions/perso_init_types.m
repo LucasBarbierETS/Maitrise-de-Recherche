@@ -35,7 +35,7 @@ function app = perso_init_types(app)
 
             %% Imported Element
 
-            % if ~isfield(app.Types, 'classelement_imported')
+            if ~isfield(app.Types, 'classelement_imported')
                 app.Types.classelement_imported.TypeName = 'classelement_imported';
                 % app.Types.classelement_imported.Color = 'k';
                 % app.Types.classelement_imported.Marker = 'diamond';
@@ -64,11 +64,11 @@ function app = perso_init_types(app)
 
                 dropdown.Items{end + 1} = 'Subelement with Imported Data';
                 dropdown.ItemsData{end + 1} = 'classelement_imported';
-            % end
+            end
 
             %% Element
 
-            % if~isfield(app.Types, 'classelement')
+            if~isfield(app.Types, 'classelement')
                 app.Types.classelement.ParametersPanelStruct = add_parameters_subpanel_structure ...
                 (app, 'classelement', {'Surface'}, {'m^2'});
 
@@ -91,11 +91,11 @@ function app = perso_init_types(app)
 
                 dropdown.Items{end + 1} = 'Element';
                 dropdown.ItemsData{end + 1} = 'classelement';
-            % end 
+            end 
 
             %% Element Assembly
 
-            % if~isfield(app.Types, 'classelementassembly')
+            if~isfield(app.Types, 'classelementassembly')
                 app.Types.classelementassembly.ParametersPanelStruct = add_parameters_subpanel_structure ...
                 (app, 'classelementassembly', {}, {});
 
@@ -118,11 +118,11 @@ function app = perso_init_types(app)
 
                 dropdown.Items{end + 1} = 'Element Assembly';
                 dropdown.ItemsData{end + 1} = 'classelementassembly';
-            % end 
+            end 
 
             %% Periodic
 
-            % if~isfield(app.Types, 'Periodic')
+            if ~isfield(app.Types, 'Periodic')
                 app.Types.Periodic.TypeName = 'Periodic';
                 % app.Types.Periodic.Color = 'k';
                 % app.Types.Periodic.Marker = 'hexagon';
@@ -132,11 +132,11 @@ function app = perso_init_types(app)
 
                 dropdown.Items{end + 1} = 'Periodic';
                 dropdown.ItemsData{end + 1} = 'Periodic';
-            % end 
+            end 
 
             %% Junction
 
-            % if ~isfield(app.Types, 'Junction')
+            if ~isfield(app.Types, 'Junction')
 
                 app.Types.classjunction.ParametersPanelStruct = add_parameters_subpanel_structure ...
                 (app, 'classjunction', {'Junction Element Type', 'Section'}, {'', 'm'});
@@ -160,11 +160,11 @@ function app = perso_init_types(app)
                 
                 dropdown.Items{end + 1} = 'Junction';
                 dropdown.ItemsData{end + 1} = 'classjunction';
-            % end
+            end
 
             %% Porous Material (Rigid)
 
-            % if ~isfield(app.Types, 'classJCA_Rigid')
+            if ~isfield(app.Types, 'classJCA_Rigid')
 
                 app.Types.classJCA_Rigid .ParametersPanelStruct = ...
                 add_parameters_subpanel_structure(app,  'classJCA_Rigid', ...
@@ -209,11 +209,11 @@ function app = perso_init_types(app)
  
                 dropdown.Items{end + 1} = 'JCA MAterial';
                 dropdown.ItemsData{end + 1} = 'classJCA_Rigid';
-            % end
+            end
         
             %% Perforated Plate (Circular)
 
-            % if ~isfield(app.Types, 'classMPP_Circular')
+            if ~isfield(app.Types, 'classMPP_Circular')
                 app.Types.classMPP_Circular.ParametersPanelStruct = ...
                 add_parameters_subpanel_structure(app, 'classMPP_Circular', ...
                 {'Relative Porosity', 'Thickness', 'Perforations Radius' 'Perforated Area Surface' 'Thickness Correction'}, ...
@@ -250,7 +250,7 @@ function app = perso_init_types(app)
 
                 dropdown.Items{end + 1} = 'Perforated plate with circular perforations';
                 dropdown.ItemsData{end + 1} = 'classMPP_Circular';
-            % end
+            end
 
             % %% Perforated Plate (Slit)
             % if ~isfield(app.SubelementsTypes, 'SlitMPP')
@@ -367,7 +367,7 @@ function app = perso_init_types(app)
 
             %% Quarter Wavelength Resonator (Slit)
 
-            % if ~isfield(app.Types, 'classQWL_Slit')
+            if ~isfield(app.Types, 'classQWL_Slit')
 
                 app.Types.classQWL_Slit.ParametersPanelStruct = ...
                 add_parameters_subpanel_structure(app,  'classQWL_Slit', ...
@@ -396,12 +396,12 @@ function app = perso_init_types(app)
     
                 dropdown.Items{end + 1} = 'Quarter Wavelength Resonator - slit';
                 dropdown.ItemsData{end + 1} = 'classQWL_Slit';
-            % end 
+            end 
 
 
             %% Quarter Wavelength Resonator (Circle)
 
-            % if ~isfield(app.Types, 'classQWL_Circle')
+            if ~isfield(app.Types, 'classQWL_Circle')
 
                 app.Types.classQWL_Circle.ParametersPanelStruct = ...
                 add_parameters_subpanel_structure(app,  'classQWL_Circle', ...
@@ -430,11 +430,11 @@ function app = perso_init_types(app)
     
                 dropdown.Items{end + 1} = 'Quarter Wavelength Resonator - circular';
                 dropdown.ItemsData{end + 1} = 'classQWL_Circle';
-            % end 
+            end 
 
             %% Cavity
 
-            % if ~isfield(app.Types, 'classcavity')
+            if ~isfield(app.Types, 'classcavity')
 
                 app.Types.classcavity.ParametersPanelStruct = ...
                 add_parameters_subpanel_structure(app, 'classcavity', ...
@@ -459,12 +459,12 @@ function app = perso_init_types(app)
 
                 dropdown.Items{end + 1} = 'Cavity';
                 dropdown.ItemsData{end + 1} = 'classcavity';
-            % end
+            end
 
 
             %% Annular cavity cylindrical
 
-             % if ~isfield(app.Types, 'classannularcavity_cylindrical')
+             if ~isfield(app.Types, 'classannularcavity_cylindrical')
 
                 app.Types.classannularcavity_cylindrical.ParametersPanelStruct = ...
                 add_parameters_subpanel_structure(app, 'classannularcavity_cylindrical', ...
@@ -494,11 +494,11 @@ function app = perso_init_types(app)
 
                 dropdown.Items{end + 1} = 'Annular cavity (cylindrical-shaped)';
                 dropdown.ItemsData{end + 1} = 'classannularcavity_cylindrical';
-            % end 
+            end 
 
             %% Annular cavity Cubical
 
-            % if ~isfield(app.Types, 'classannularcavity_cubical')
+            if ~isfield(app.Types, 'classannularcavity_cubical')
 
                 app.Types.classannularcavity_cubical.ParametersPanelStruct = add_parameters_subpanel_structure ...
                 (app, 'classannularcavity_cubical', {'Main pore width', 'Main pore depth', ...
@@ -526,11 +526,11 @@ function app = perso_init_types(app)
                 
                 dropdown.Items{end + 1} = 'Annular cavity (cubic-shaped)';
                 dropdown.ItemsData{end + 1} = 'classannularcavity_cubical';
-            % end 
+            end 
 
             %% Annular cavity Trapezoidal
 
-            % if ~isfield(app.Types, 'classannularcavity_trapezoidal')
+            if ~isfield(app.Types, 'classannularcavity_trapezoidal')
 
                 app.Types.classannularcavity_trapezoidal.ParametersPanelStruct = add_parameters_subpanel_structure ...
                 (app, 'classannularcavity_trapezoidal', {'Main Pore Width In', 'Main Pore Width Out', ...
@@ -558,7 +558,5 @@ function app = perso_init_types(app)
                 
                 dropdown.Items{end + 1} = 'Annular cavity (trapezoic-shaped)';
                 dropdown.ItemsData{end + 1} = 'classannularcavity_trapezoidal';
-            % end 
-
-        
+            end 
         end
