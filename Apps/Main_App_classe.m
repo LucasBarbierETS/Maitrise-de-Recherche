@@ -25,7 +25,6 @@ classdef Main_App_classe < matlab.apps.AppBase
         TypeDropDown               matlab.ui.control.DropDown
         TypeDropDownLabel          matlab.ui.control.Label
         ParametersSubPanel         matlab.ui.container.Panel
-        UpdateConfigurationButton  matlab.ui.control.Button
         ViewGrid                   matlab.ui.container.GridLayout
         VariablesGrid              matlab.ui.container.GridLayout
         VariablesButtonsGrid       matlab.ui.container.GridLayout
@@ -465,11 +464,6 @@ classdef Main_App_classe < matlab.apps.AppBase
             app.ParametersViewPanel.Title = 'Parameters View';
             app.ParametersViewPanel.Layout.Row = 1;
             app.ParametersViewPanel.Layout.Column = 1;
-
-            % Create UpdateConfigurationButton
-            app.UpdateConfigurationButton = uibutton(app.ParametersViewPanel, 'push');
-            app.UpdateConfigurationButton.Position = [102 14 128 22];
-            app.UpdateConfigurationButton.Text = 'Update Configuration';
 
             % Create ParametersSubPanel
             app.ParametersSubPanel = uipanel(app.ParametersViewPanel);

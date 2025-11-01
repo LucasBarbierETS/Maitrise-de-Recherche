@@ -20,4 +20,5 @@
 - créer les types d'application associées aux classes : classQWL_Circle, classannularcavity_cylindrical
 
 
-
+# Mise en forme de l'app
+-aggrandir ParametersSubView dans ParametersViews

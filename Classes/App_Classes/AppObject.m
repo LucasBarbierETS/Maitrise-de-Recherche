@@ -190,8 +190,10 @@ classdef AppObject < handle
             % On affiche la configuration
             obj.disp_app_config(app);
             
-            % On redirige le callback du bouton Update Configuration vers l'objet actuel
-            app.UpdateConfigurationButton.ButtonPushedFcn = @(~, ~) obj.update_app_config(app);
+            perso_assign_callbacks_to_childrens( ...
+                app.Types.(obj.TypeName).ParametersPanelStruct.Panel, ...
+                @(~, ~) obj.update_app_config(app));
+            
 
             % On redirige le callback du menu déroulant Type vers l'objet
             % actuel. En changeant le type on déclenche par la suite la
