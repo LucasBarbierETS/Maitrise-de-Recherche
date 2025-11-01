@@ -45,6 +45,7 @@ classdef Main_App_classe < matlab.apps.AppBase
         
         EnvApp
         ParametricStudyApp
+        OptimisationApp
         Graph 
         ParametersView
         Elements 
@@ -85,18 +86,10 @@ classdef Main_App_classe < matlab.apps.AppBase
     methods (Access = private) % Callbacks 
 
         % Code that executes after component creation
-        function startupFcn(app, env, event)
+        function startupFcn(app, env)
             
-            % Récupère la taille de l'écran
-            screenSize = get(0, 'ScreenSize');  % [x y width height]
-            
-            % Taille de la fenêtre de l'app
-            appWidth = app.UIFigure.Position(3);
-            appHeight = app.UIFigure.Position(4);
-            
-            % Calcul des coordonnées centrées
-            app.UIFigure.Position(1) = (screenSize(3) - appWidth) / 2;
-            app.UIFigure.Position(2) = (screenSize(4) - appHeight) / 2;
+            % Affichage centré sur l'écran
+            disp_centered_app(app);
             
             % On créer l'environnement
             app.EnvApp = env;
@@ -130,6 +123,7 @@ classdef Main_App_classe < matlab.apps.AppBase
 
             app.Elements = AppContainer();
             app.Elements.scatter_with_call(app, app.Graph.Components.ElementsGraph);
+            drawnow;
             app.Graph.Components.ElementsGraph.adjust_pictogram_sizes();
         end
 
@@ -139,7 +133,7 @@ classdef Main_App_classe < matlab.apps.AppBase
 
             len_table = length(app.HandleVariablesTable.Data{:, 1}); 
             app.HandleVariablesTable.Data(len_table + 1, :) = {'' '' ''}; 
-        end
+        end 
 
         % Button pushed function: deletevariableButton
         function deletevariableButtonPushed(app, event)
@@ -226,7 +220,7 @@ classdef Main_App_classe < matlab.apps.AppBase
         % Cette méthode est appelée lorsque l'utilisateur.ice clique sur le 
         % bouton Parametric Study.
 
-            if isempty(app.ParametricStudyApp)
+            if isempty(app.ParametricStudyApp) || ~isvalid(app.ParametricStudyApp)
                 app.ParametricStudyApp = Parametric_Study_App(app);
             else
                 app.ParametricStudyApp.UIFigure.Visible = 'on';
@@ -272,9 +266,13 @@ classdef Main_App_classe < matlab.apps.AppBase
                 % perso_visualizeContentTree(app.Elements, app.Tree);
         end
 
-        % Button pushed function: OptimiseButton
-        function OptimiseButtonPushed(app, event)
-            Optimisation_App(app);
+        function OptimiseButtonPushed(app, ~)
+            if isempty(app.OptimisationApp) || ~isvalid(app.OptimisationApp)
+               app.OptimisationApp = Optimisation_App(app);
+            else
+                app.OptimisationApp.update_handle_variables_table();
+                app.OptimisationApp.UIFigure.Visible = 'on';
+            end
         end
 
         % Menu selected function: fonctiontemporaireinit_typesMenu
@@ -530,28 +528,55 @@ classdef Main_App_classe < matlab.apps.AppBase
     % App creation and deletion
     methods (Access = public)
 
-        % Construct app
         function app = Main_App_classe(varargin)
 
-            % Create UIFigure and components
-            createComponents(app)
+            % Toujours commencer par créer l’objet (appel obligatoire du parent)
+            app = app@matlab.apps.AppBase;
 
-            % Register the app with App Designer
-            registerApp(app, app.UIFigure)
+            % Identifiant unique pour singleton
+            appID = 'MainAppSingleton';
 
-            % Execute the startup function
-            runStartupFcn(app, @(app)startupFcn(app, varargin{:}))
+            % Tester si une instance existe déjà
+            runningApp = getappdata(0, appID);
 
+            if isempty(runningApp) || ~isvalid(runningApp)
+
+                % Création complète de l'app
+                createComponents(app);
+                registerApp(app, app.UIFigure);
+
+                % Enregistrement du singleton
+                setappdata(0, appID, app);
+
+                % Lancement de la startup function
+                runStartupFcn(app, @(app)startupFcn(app, varargin{:}));
+
+                % Définition de la fermeture propre
+                app.UIFigure.CloseRequestFcn = @(src, event) closeSingletonApp(app, appID);
+
+            else
+                % Instance existante => focus et retour
+                figure(runningApp.UIFigure);
+                app = runningApp;
+                return;  % pas besoin de recréer l'app
+            end
+
+            % Effacer la variable locale si pas capturée par l'appelant
             if nargout == 0
-                clear app
+                clear app;
             end
         end
 
-        % Code that executes before app deletion
-        function delete(app)
+        function closeSingletonApp(app, appID)
+            % Supprimer la référence globale
+            rmappdata(0, appID);
 
-            % Delete UIFigure when app is deleted
-            delete(app.UIFigure)
+            % Appeler delete pour cleanup UI
+            delete(app);
+        end
+
+        function delete(app)
+            delete(app.UIFigure);
         end
     end
 end
