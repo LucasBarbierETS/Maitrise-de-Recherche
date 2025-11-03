@@ -82,8 +82,75 @@ classdef Main_App_classe < matlab.apps.AppBase
         end
     end
 
-    methods (Access = private) % Callbacks 
+    methods (Access = public) % Callbacks 
 
+         function env = perso_init_environment(app)
+            % === Ajout des chemins d'accès
+            if isfolder('C:\Users\paulf\Documents\GitHub\Maitrise-de-Recherche\Functions')
+                addpath('C:\Users\paulf\Documents\GitHub\Maitrise-de-Recherche\Functions');
+                root = 'C:\Users\paulf\Documents\GitHub\Maitrise-de-Recherche';
+            elseif isfolder('C:\Users\lucas.barbier\Documents\Maitrise ETS\Répertoire GitHub')
+                addpath('C:\Users\lucas.barbier\Documents\Maitrise ETS\Répertoire GitHub\Functions');
+                root = 'C:\Users\lucas.barbier\Documents\Maitrise ETS\Répertoire GitHub';
+            else
+                error('Chemin projet introuvable : ajuste les dossiers racine.');
+            end
+        
+            % Ajout récursif des sous-dossiers du projet
+            perso_add_all_paths(root);
+        
+            % === Création de l'environnement
+            t = 23;        % Température (°C)
+            sp = 100800;   % Pression atmosphérique (Pa)
+            hum = 50;      % Humidité relative (%)
+        
+            fmin = 1;
+            fmax = 4000;
+            points = 200;
+        
+            env = create_environnement(t, sp, hum, fmin, fmax, points, 'Root', root);
+        
+            % (Optionnel) si tu veux garder root accessible ailleurs :
+            % env.Root = root;
+        end
+
+        function open_environment_editor(app)
+            % Crée une fenêtre modale pour modifier les paramètres de l'environnement
+            d = uifigure('Name', 'Environment Editor', 'Modal', true);
+            d.Position(3:4) = [300 300];
+        
+            gl = uigridlayout(d, [7, 2]);
+            gl.RowHeight = {30, 30, 30, 30, 30, 30, 30};
+            gl.ColumnWidth = {120, '1x'};
+        
+            % Champs de paramètres actuels de l'environnement :
+            uilabel(gl, 'Text', 'Temperature (°C)');
+            tempField = uieditfield(gl, 'numeric', 'Value', app.EnvApp.air.Temperature);
+        
+            uilabel(gl, 'Text', 'Static pressure (Pa)');
+            pField = uieditfield(gl, 'numeric', 'Value', app.EnvApp.air.StaticPressure);
+        
+            uilabel(gl, 'Text', 'Relative humidity (%)');
+            rhField = uieditfield(gl, 'numeric', 'Value', app.EnvApp.air.RelativeHumidity);
+        
+            uilabel(gl, 'Text', 'SPL (dB)');
+            splField = uieditfield(gl, 'numeric', 'Value', app.EnvApp.SPL);
+        
+            uilabel(gl, 'Text', 'Mach number');
+            mField = uieditfield(gl, 'numeric', 'Value', app.EnvApp.M);
+        
+            uibutton(gl, 'Text', 'Apply', 'ButtonPushedFcn', @(~,~) apply_changes(), ...
+                'Layout', struct('Row', 7, 'Column', [1 2]));
+        
+            function apply_changes()
+                app.EnvApp = create_environnement( ...
+                    tempField.Value, pField.Value, rhField.Value, ...
+                    app.EnvApp.fmin, app.EnvApp.fmax, app.EnvApp.points, ...
+                    'Root', app.EnvApp.Root, ...
+                    'SPL', splField.Value, 'M', mField.Value);
+                close(d);
+            end
+        end
         % Code that executes after component creation
         function startupFcn(app, env, event)
             
@@ -99,7 +166,7 @@ classdef Main_App_classe < matlab.apps.AppBase
             app.UIFigure.Position(2) = (screenSize(4) - appHeight) / 2;
             
             % On créer l'environnement
-            app.EnvApp = env;
+            app.EnvApp = app.perso_init_environment();
 
             % On initialise le graphe
             set(app.ElementsGraph, 'YDir', 'normal');
@@ -288,9 +355,9 @@ classdef Main_App_classe < matlab.apps.AppBase
         end
 
         % Menu selected function: ModifyenvironnementparametersMenu
-        function ModifyenvironnementparametersMenuSelected(app, event)
-            app.EnvApp.UIFigure.Visible = "on";
-        end
+        % function ModifyenvironnementparametersMenuSelected(app, event)
+        %     app.EnvApp.UIFigure.Visible = "on";
+        % end
     end
 
     % Component initialization
@@ -325,7 +392,7 @@ classdef Main_App_classe < matlab.apps.AppBase
 
             % Create ModifyenvironnementparametersMenu
             app.ModifyenvironnementparametersMenu = uimenu(app.FileMenu);
-            app.ModifyenvironnementparametersMenu.MenuSelectedFcn = createCallbackFcn(app, @ModifyenvironnementparametersMenuSelected, true);
+            app.ModifyenvironnementparametersMenu.MenuSelectedFcn = createCallbackFcn(app, @(~,~) open_environment_editor(app), true);
             app.ModifyenvironnementparametersMenu.Text = 'Modify environnement parameters';
 
             % Create fonctiontemporaireinit_typesMenu
