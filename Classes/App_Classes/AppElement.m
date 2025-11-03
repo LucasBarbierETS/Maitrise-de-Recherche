@@ -37,7 +37,7 @@ classdef AppElement < AppObject
             end                 
         end 
     
-        function class_obj = app_to_class(obj, app)
+        function class_obj = app_to_class(obj, main_app, variables_struct)
         % Cette méthode permet de convertir le contenu d'un object
         % AppElement en un object classelement.
         % Le contenu peut se situer à différent niveau (AppElement,
@@ -46,15 +46,15 @@ classdef AppElement < AppObject
         list = {};
             for i = 1:length(obj.Content.Content)
                 try
-                    list{end+1} = obj.Content.Content{i}.app_to_class(app);
+                    list{end+1} = obj.Content.Content{i}.app_to_class(main_app, variables_struct);
                 catch ME
                     error('Erreur dans AppElement');
                 end
             end
         
-        class_config = app.Types.(obj.TypeName).HandleClassConfig( ...
-        replace_fields(obj.AppConfig, app.HandleVariables));
-        class_obj = app.Types.(obj.TypeName).HandleClassObject(list, class_config);
+        class_config = main_app.Types.(obj.TypeName).HandleClassConfig( ...
+        replace_fields(obj.AppConfig, variables_struct));
+        class_obj = main_app.Types.(obj.TypeName).HandleClassObject(list, class_config);
         end
     end
 

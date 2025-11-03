@@ -30,7 +30,7 @@ classdef Main_App_classe < matlab.apps.AppBase
         VariablesButtonsGrid       matlab.ui.container.GridLayout
         deletevariableButton       matlab.ui.control.Button
         addvariableButton          matlab.ui.control.Button
-        HandleVariablesTable       matlab.ui.control.Table
+        VariablesTable       matlab.ui.control.Table
         GraphPanel                 matlab.ui.container.Panel
         GraphGrid                  matlab.ui.container.GridLayout
         GridView                   matlab.ui.container.GridLayout
@@ -49,7 +49,7 @@ classdef Main_App_classe < matlab.apps.AppBase
         ParametersView
         Elements 
         Types
-        HandleVariables
+        Variables
     end
 
     events
@@ -60,25 +60,34 @@ classdef Main_App_classe < matlab.apps.AppBase
     methods (Access = public)
     
         function init_types(app)
-            app = perso_init_types(app);
+            perso_init_types(app);
         end
     
         function subelement_type_dropdown_value_changed(app, ~, ~)
-            app = perso_subelement_type_dropdown_value_changed(app);
+            perso_subelement_type_dropdown_value_changed(app);
         end
     
         function import_element(app)
-            app = perso_import_element_file(app);  % appelle la fonction externe
+            perso_import_element_file(app);  % appelle la fonction externe
         end
     
-        function compute(app, name)
-            app = perso_compute(app, name);  % appelle la fonction externe
+        function alpha = compute_alpha(app, varargin)
+            
+            % Construit la liste des éléments de l'application
+            list_of_elements = {};
+            for i = 1:length(app.Elements.Content)
+                list_of_elements{end+1} = app.Elements.Content{i}.app_to_class(app, app.Variables);
+            end
+        
+            % Crée l'assemblage et affiche le résultat
+            assembly = classelementassembly(classelementassembly.create_config(list_of_elements));
+            alpha = assembly.alpha(app.EnvApp, varargin{:});  
         end
     end
 
     methods (Access = private)
         function display_handle_variables(app)
-            app = perso_display_handle_variables(app); % appelle la fonction externe
+            perso_display_handle_variables(app); 
         end
     end
 
@@ -110,10 +119,10 @@ classdef Main_App_classe < matlab.apps.AppBase
             app.init_types();
 
             % On initialise la table des variables muettes
-            app.HandleVariablesTable.Data = (table({}, {}, {}, 'VariableNames', {'Name', 'Value', 'Description'}));
-            app.HandleVariablesTable.ColumnName = {'Name', 'Value', 'Description'};
+            app.VariablesTable.Data = (table({}, {}, {}, 'VariableNames', {'Name', 'Value', 'Description'}));
+            app.VariablesTable.ColumnName = {'Name', 'Value', 'Description'};
 
-            app.HandleVariables = struct();
+            app.Variables = struct();
 
             % On crée un objet de classe AppContainer représentant la
             % collection d'élements gérés par l'application. On le
@@ -127,42 +136,42 @@ classdef Main_App_classe < matlab.apps.AppBase
         end
 
         % Button pushed function: addvariableButton
-        function addvariableButtonPushed(app, event)
+        function addvariableButtonPushed(app, ~)
             % Ajoute une ligne dans le tableau des variables muettes
 
-            len_table = length(app.HandleVariablesTable.Data{:, 1}); 
-            app.HandleVariablesTable.Data(len_table + 1, :) = {'' '' ''}; 
+            len_table = length(app.VariablesTable.Data{:, 1}); 
+            app.VariablesTable.Data(len_table + 1, :) = {'' '' ''}; 
         end 
 
         % Button pushed function: deletevariableButton
-        function deletevariableButtonPushed(app, event)
+        function deletevariableButtonPushed(app, ~)
             % Supprime la dernière ligne dans le tableau des variables
             % muettes
 
-            len_table = length(app.HandleVariablesTable.Data{:, 1}); 
-            app.HandleVariablesTable.Data(len_table, :) = []; 
+            len_table = length(app.VariablesTable.Data{:, 1}); 
+            app.VariablesTable.Data(len_table, :) = []; 
         end
 
-        % Menu selected function : DeleteElementenu
-        function DeleteFirstElementMenuSelected(app, event)
-            % if length(app.Elements.Content) > 1
-            %     app.Elements.Content = app.Elements.Content{2:end};
-            % end
-        end
+        % % Menu selected function : DeleteElementenu
+        % function DeleteFirstElementMenuSelected(app, ~)
+        %     % if length(app.Elements.Content) > 1
+        %     %     app.Elements.Content = app.Elements.Content{2:end};
+        %     % end
+        % end
 
         % Menu selected function: ImportElementMenu
-        function ImportElementMenuSelected(app, event)
+        function ImportElementMenuSelected(app, ~)
             import_element(app)
         end
 
         % Menu selected function: ClearMenu
-        function ClearMenuSelected(app, event)
+        function ClearMenuSelected(app, ~)
             cla(app.Graph.Components.SubelementsGraph.UIObject);
             cla(app.Graph.Components.ElementsGraph.UIObject);
             cla(app.Graph.Components.Navigator.UIObject);
 
             % On supprime les variables muettes stockées
-            app.HandleVariables = struct();
+            app.Variables = struct();
             display_handle_variables(app);
 
             % On cache tous les panneaux de paramètres
@@ -175,39 +184,78 @@ classdef Main_App_classe < matlab.apps.AppBase
             % perso_visualizeContentTree(app.Elements, app.Tree);
         end
 
-        % Display data changed function: HandleVariablesTable
-        function HandleVariablesTableDisplayDataChanged(app, event)
-        % Cette méthode est appelée lorsque la table des variables muettes
-        % est éditéés
-            
-            % On recherche le nombre de variables muettes déclarées
-            n = length(app.HandleVariablesTable.Data{:, 1});
-            for i = 1:n
-                % On vérifie que la ligne n'est pas vide
-                var_name = app.HandleVariablesTable.Data{i, 1}{1};
-                if not(var_name == "")
-                    app.HandleVariables.(var_name).Value = app.HandleVariablesTable.Data{i, 2}{1};
-                    app.HandleVariables.(var_name).Description = app.HandleVariablesTable.Data{i, 3}{1};
-                end
+        % Display data changed function: VariablesTable
+        function VariablesTableCellEdited(app, event)
+            % Cette méthode est appelée lorsqu'une cellule du tableau est modifiée
+        
+            % Récupération de l'indice de la cellule modifiée
+            row = event.Indices(1);
+            col = event.Indices(2);
+        
+            % On ne traite que la deuxième colonne (Valeurs numériques)
+            if col ~= 2
+                return;
             end
+        
+            % On récupère le nom de la variable sur la même ligne
+            var_name = app.VariablesTable.Data{row, 1}{1};
+        
+            % Si la variable est vide ou non définie, on ne fait rien
+            if isempty(var_name) || var_name == ""
+                return;
+            end
+        
+            % Donnée brute entrée par l'utilisateur
+            raw_value = event.NewData;
+        
+            % 🧠 Étape 1 : conversion du texte brut -> valeur numérique
+            if ischar(raw_value) || isstring(raw_value)
+                numbers = str2num(char(raw_value));
+                if isempty(numbers)
+                    % Entrée non reconnue comme numérique
+                    numeric_value = NaN;
+                else
+                    numeric_value = numbers(1);
+                end
+
+            elseif isnumeric(raw_value)
+                % Si c'est déjà une valeur numérique
+                numeric_value = raw_value;
+            else
+                % Tout autre format est indésirable
+                numeric_value = NaN;
+                uialert(app.UIFigure, sprintf(...
+                    'Format incompatible à la ligne %d. Une valeur numérique est attendue.', row), ...
+                    'Erreur');
+            end
+        
+            % 🧠 Étape 2 : Mettre à jour le tableau pour afficher la valeur formatée
+            app.VariablesTable.Data{row, col} = {num2str(numeric_value)};
+        
+            % 🧠 Étape 3 : Mettre à jour ta structure interne Variables
+            app.Variables.(var_name).Value = numeric_value;
+            app.Variables.(var_name).Description = app.VariablesTable.Data{row, 3}{1};
         end
 
         % Button pushed function: ComputeButton
-        function ComputeButtonPushed(app, event)
+        function ComputeButtonPushed(app, ~)
+
         % Cette méthode est appelée lorsque l'utilisateur.ice clique sur le
         % bouton Compute. Elle permet de reconstruire l'objet de classe à
         % partir des paramètres renseignés dans l'interface
+        
+        % % 1. On extrait les paramètres de l’app vers une structure
+        % paramsStruct = app.exportConfiguration();
+        % 
+        % % 2. On évalue ces paramètres dans un objet de calcul (modèle)
+        % model = app.ModelEvaluator.evaluateFromStruct(paramsStruct);
+        % 
+        % % 3. L’affichage est volontairement séparé
+        % app.DisplayManager.displayResults(model, app.EnvApp);
 
-        list_of_elements = {};
 
-        % On parcours les élements de l'application
-        for i = 1:length(app.Elements.Content)
-            list_of_elements{end+1} = app.Elements.Content{i}.app_to_class(app);
-        end
 
-        % Une fois les élements construits, on va pouvoir creér un objet de
-        % classe classelementassembly
-        assembly = classelementassembly(classelementassembly.create_config(list_of_elements));
+        alpha = compute_alpha(app);
 
         % Pour l'instant on affiche le tracé dans une figure à part
         assembly.plot_alpha(app.EnvApp, 'assembly', 'iter');
@@ -215,7 +263,7 @@ classdef Main_App_classe < matlab.apps.AppBase
         end
 
         % Button pushed function: ParametricStudyButton
-        function ParametricStudyButtonPushed(app, event)
+        function ParametricStudyButtonPushed(app, ~)
         % Cette méthode est appelée lorsque l'utilisateur.ice clique sur le 
         % bouton Parametric Study.
 
@@ -227,7 +275,7 @@ classdef Main_App_classe < matlab.apps.AppBase
         end
 
         % Menu selected function: SaveMenu
-        function SaveMenuSelected(app, event)
+        function SaveMenuSelected(app, ~)
         % Cette méthode est appelée lorsque l'utilisateur.ice enregistre la
         % configuration de l'application
 
@@ -236,7 +284,7 @@ classdef Main_App_classe < matlab.apps.AppBase
             filename = fullfile(path, file); % Construit le chemin complet du fichier
             
     
-            datas = {app.Env, app.Elements, app.HandleVariables};
+            datas = {app.Env, app.Elements, app.Variables};
 
 
             % Sauvegarde les données dans un fichier .config
@@ -244,20 +292,19 @@ classdef Main_App_classe < matlab.apps.AppBase
         end
 
         % Menu selected function: OpenMenu
-        function OpenMenuSelected(app, event)
+        function OpenMenuSelected(app, ~)
             % Cette méthode est appelée lorsque l'utilisateur.ice enregistre la
             % configuration de l'application
 
                 % Ouvre une boîte de dialogue pour sauvegarder un fichier avec extension .config
                 defaultFolder = 'C:\Users\lucas.barbier\Documents\Maitrise ETS\Répertoire GitHub\Apps\Configurations';
-                [file, path] = uigetfile({'*.config'},'Sélectionne un fichier', defaultFolder);
-                filename = fullfile(path, file); % Construit le chemin complet du fichier
+                [file, ~] = uigetfile({'*.config'},'Sélectionne un fichier', defaultFolder);
                 datas = importdata(file);
 
                 % On redéfinit les variables d'application
                 app.Env = datas{1};
                 app.Elements = datas{2};
-                app.HandleVariables = datas{3};
+                app.Variables = datas{3};
                 app.Elements.Content{1}.show(app);
 
                 % On affiche la configuration d'interface importée
@@ -269,23 +316,23 @@ classdef Main_App_classe < matlab.apps.AppBase
             if isempty(app.OptimisationApp) || ~isvalid(app.OptimisationApp)
                app.OptimisationApp = Optimisation_App(app);
             else
-                app.OptimisationApp.update_handle_variables_table();
+                app.OptimisationApp.update_optimised_variables_table();
                 app.OptimisationApp.UIFigure.Visible = 'on';
             end
         end
 
         % Menu selected function: fonctiontemporaireinit_typesMenu
-        function fonctiontemporaireinit_typesMenuSelected(app, event)
+        function fonctiontemporaireinit_typesMenuSelected(app, ~)
             app.init_types()
         end
 
-        function app = reinit_app_typesMenuSelected(app, event)
+        function app = reinit_app_typesMenuSelected(app, ~)
 
-            app.startupFcn(app.EnvApp, event)
+            app.startupFcn(app.EnvApp)
         end
 
         % Menu selected function: ModifyenvironnementparametersMenu
-        function ModifyenvironnementparametersMenuSelected(app, event)
+        function ModifyenvironnementparametersMenuSelected(app, ~)
             app.EnvApp.UIFigure.Visible = "on";
         end
     end
@@ -418,15 +465,15 @@ classdef Main_App_classe < matlab.apps.AppBase
             app.VariablesGrid.Layout.Row = 1;
             app.VariablesGrid.Layout.Column = 1;
 
-            % Create HandleVariablesTable
-            app.HandleVariablesTable = uitable(app.VariablesGrid);
-            app.HandleVariablesTable.ColumnName = '';
-            app.HandleVariablesTable.RowName = {};
-            app.HandleVariablesTable.SelectionType = 'row';
-            app.HandleVariablesTable.ColumnEditable = true;
-            app.HandleVariablesTable.DisplayDataChangedFcn = createCallbackFcn(app, @HandleVariablesTableDisplayDataChanged, true);
-            app.HandleVariablesTable.Layout.Row = 1;
-            app.HandleVariablesTable.Layout.Column = 1;
+            % Create VariablesTable
+            app.VariablesTable = uitable(app.VariablesGrid);
+            app.VariablesTable.ColumnName = '';
+            app.VariablesTable.RowName = {};
+            app.VariablesTable.SelectionType = 'row';
+            app.VariablesTable.ColumnEditable = true;
+            app.VariablesTable.CellEditCallback = createCallbackFcn(app, @VariablesTableCellEdited, true);
+            app.VariablesTable.Layout.Row = 1;
+            app.VariablesTable.Layout.Column = 1;
 
             % Create VariablesButtonsGrid
             app.VariablesButtonsGrid = uigridlayout(app.VariablesGrid);

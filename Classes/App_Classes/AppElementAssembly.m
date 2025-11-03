@@ -33,7 +33,7 @@ classdef AppElementAssembly < AppObject
             end                 
         end 
     
-        function class_obj = app_to_class(obj, app)
+        function class_obj = app_to_class(obj, main_app, variables_struct)
         % Cette méthode permet de convertir le contenu d'un object
         % AppElement en un object classelement.
         % Le contenu peut se situer à différent niveau (AppElement,
@@ -41,10 +41,10 @@ classdef AppElementAssembly < AppObject
 
         list = {};
             for i = 1:length(obj.Content.Content)
-                list{end+1} = obj.Content.Content{i}.app_to_class(app);
+                list{end+1} = obj.Content.Content{i}.app_to_class(main_app, variables_struct);
             end
 
-        class_obj = app.Types.(obj.TypeName).HandleClassObject(list);
+        class_obj = main_app.Types.(obj.TypeName).HandleClassObject(list);
         end
     end
 
