@@ -2,7 +2,7 @@ function h = draw_wave_arrow(app, ax, direction)
     % Affiche une flèche PNG dans un UIAxes
     % direction : 'vertical' ou 'horizontal'
 
-    % === 1. Limites actuelles de l'axes ===
+    % === 1. Limites actuelles de l'axe ===
     xlimOrig = ax.XLim;
     ylimOrig = ax.YLim;
     width  = diff(xlimOrig);
@@ -31,69 +31,89 @@ function h = draw_wave_arrow(app, ax, direction)
             % inchangé
     end
 
-    % === 5. Proportions de l'image ===
+    % === 5. Dimensions de l'image ===
     [imgH, imgW, ~] = size(img);
     aspect = imgH / imgW;
 
-    % === 6. Placement automatique à l'intérieur de l'UIAxes ===
+    % === 6. Recherche des groupes existants ===
+    allChildren = ax.Children;
+    groups = allChildren(strcmp({allChildren.Type}, 'hggroup'));
+
+    % Filtrer les groupes selon leur Tag
+    validGroups = groups(~contains({groups.Tag}, 'picto_None'));
+
     hold(ax, 'on');
 
-    % Détecter les pictogrammes existants pour placer la flèche juste à côté
-    pictos = findobj(ax, 'Type', 'hggroup');
-    if ~isempty(pictos)
-        % prendre les XData/YData des images déjà tracées
-        xMaxPic = -Inf; xMinPic = Inf;
-        yMaxPic = -Inf; yMinPic = Inf;
-        for i = 1:numel(pictos)
-            if isfield(pictos(i).UserData, 'Image') && isgraphics(pictos(i).UserData.Image)
-                imgData = pictos(i).UserData.Image;
-                xMaxPic = max([xMaxPic, max(imgData.XData)]);
-                xMinPic = min([xMinPic, min(imgData.XData)]);
-                yMaxPic = max([yMaxPic, max(imgData.YData)]);
-                yMinPic = min([yMinPic, min(imgData.YData)]);
-            end
-        end
-    else
-        xMinPic = xlimOrig(1);
-        xMaxPic = xlimOrig(2);
-        yMinPic = ylimOrig(1);
-        yMaxPic = ylimOrig(2);
-    end
-
     switch lower(direction)
-        case 'vertical'
-            % flèche au-dessus des pictos existants
-            xCenter = mean(xlimOrig);
-            w = width/5;
-            h = w * aspect;
-            yBottom = min(yMaxPic + 0.01*height, ylimOrig(2) - h); % toujours visible
-            xRange = [xCenter - w/2, xCenter + w/2];
-            yRange = [yBottom, yBottom + h];
-
         case 'horizontal'
-            % flèche à gauche des pictos existants
-            yCenter = mean(ylimOrig);
-            h = height/5;
-            w = h / aspect;
-            xRight = max(xMinPic - 0.01*width, xlimOrig(1)); % toujours visible
-            xRange = [xRight - w, xRight];
-            yRange = [yCenter - h/2, yCenter + h/2];
+            % Flèche à gauche basée sur le premier groupe
+            if isempty(validGroups)
+                % Aucun groupe existant, position par défaut
+                yCenter = mean(ylimOrig);
+                h = height / 5;
+                w = h / aspect;
+                xRight = xlimOrig(1) + w;  % À gauche
+                xRange = [xRight - w, xRight];
+                yRange = [yCenter - h/2, yCenter + h/2];
+            else
+                firstGroup = validGroups(end); % En haut de la pile
+                grpChildren = firstGroup.Children;
+                refGraphic = grpChildren(1); % Premier graphique du groupe
+                xData = refGraphic.XData;
+                yData = refGraphic.YData;
+                w_ref = diff(xData);
+                h_ref = diff(yData);
+
+                % Taille de la flèche = largeur du premier graphique
+                w = w_ref;
+                h = w * aspect;
+
+                % Position = à gauche du premier graphique
+                xRight = xData(1) - 2 * w_ref;  % 1× la taille du graphique + 1× la taille de la flèche
+                yCenter = mean(yData);
+                xRange = [xRight, xRight + w];
+                yRange = [yCenter - h/2, yCenter + h/2];
+            end
+
+            % Affichage
+            hImg = image(ax, 'CData', img, 'AlphaData', alpha, ...
+                'XData', xRange, 'YData', yRange, 'HitTest', 'off');
+            h = hggroup('Parent', ax, 'Tag', 'wave_arrow_horizontal');
+            set(hImg, 'Parent', h);
+            h.UserData.Image = hImg;
+
+        case 'vertical'
+            % Flèche au-dessus de chaque groupe
+            h = gobjects(numel(validGroups), 1);
+            for k = 1:numel(validGroups)
+                grp = validGroups(k);
+                grpChildren = grp.Children;
+                refGraphic = grpChildren(1);
+                xData = refGraphic.XData;
+                yData = refGraphic.YData;
+                w_ref = diff(xData);
+                h_ref = diff(yData);
+
+                % Taille de la flèche = hauteur du premier graphique
+                hArrow = h_ref;
+                wArrow = hArrow / aspect;
+
+                % Position = au-dessus du graphique
+                xCenter = mean(xData);
+                yTop = max(yData) + h_ref; % distance = hauteur du graphique
+                xRange = [xCenter - wArrow/2, xCenter + wArrow/2];
+                yRange = [yTop, yTop + hArrow];
+
+                % Affichage
+                hImg = image(ax, 'CData', img, 'AlphaData', alpha, ...
+                    'XData', xRange, 'YData', yRange, 'HitTest', 'off');
+                h(k) = hggroup('Parent', ax, 'Tag', ['wave_arrow_vertical_' num2str(k)]);
+                set(hImg, 'Parent', h(k));
+                h(k).UserData.Image = hImg;
+            end
     end
 
-    % === 7. Affichage avec transparence ===
-    hImg = image(ax, ...
-        'CData', img, ...
-        'AlphaData', alpha, ...
-        'XData', xRange, ...
-        'YData', yRange, ...
-        'HitTest', 'off');
-
-    % === 8. Groupe hggroup pour facilité de manipulation ===
-    h = hggroup('Parent', ax, 'Tag', ['wave_arrow_' direction]);
-    set(hImg, 'Parent', h);
-    h.UserData.Image = hImg;
-
-    % === 9. Orientation Y correcte ===
+    % === 7. Orientation Y correcte ===
     if isprop(ax, 'YDir') && ~strcmpi(ax.YDir, 'normal')
         ax.YDir = 'normal';
     end

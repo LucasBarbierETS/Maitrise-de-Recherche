@@ -256,7 +256,7 @@ classdef Main_App_classe < matlab.apps.AppBase
             % configuration de l'application
 
                 % Ouvre une boîte de dialogue pour sauvegarder un fichier avec extension .config
-                defaultFolder = 'C:\Users\lucas.barbier\Documents\Maitrise ETS\Répertoire GitHub\Apps\Configurations';
+                defaultFolder = [app.EnvApp.Root, '\Apps\Configurations'];
                 [file, path] = uigetfile({'*.config'},'Sélectionne un fichier', defaultFolder);
                 filename = fullfile(path, file); % Construit le chemin complet du fichier
                 datas = importdata(file);
