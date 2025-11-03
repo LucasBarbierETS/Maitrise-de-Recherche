@@ -1,1 +1,0 @@
-function draw_wave 

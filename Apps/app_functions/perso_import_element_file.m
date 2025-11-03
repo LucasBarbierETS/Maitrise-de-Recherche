@@ -1,6 +1,6 @@
 function app = perso_import_element_file(app)
     % Ouvre une boîte de dialogue pour récupérer l'élément
-    default_folder = 'C:\Users\lucas.barbier\Documents\Maitrise ETS\Répertoire GitHub\Apps\Elements';
+    default_folder = [app.EnvApp.Root, '\Apps\Elements'];
     [file, path] = uigetfile('', 'Sélectionner un fichier', default_folder); 
     if isequal(file,0)
         return; % L'utilisateur a annulé

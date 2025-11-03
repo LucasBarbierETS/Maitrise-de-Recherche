@@ -74,22 +74,27 @@ classdef AppObject < handle
 
                 if isprop(obj, 'Container') && ~isempty(obj.Container)
                     obj.Container.scatter_with_call(app, app.Graph.Components.ElementsGraph);
-                    % if isprop(obj.Container, 'Container') && ~isempty(obj.Container.Container)
-                    %     obj.Container.Container.Container.scatter_with_call(app, app.Graph.Components.Navigator);
-                    % end
+                    
+                    if isprop(obj.Container, 'Container') && ...
+                        (isempty(obj.Container.Container) ||  isa(obj.Container.Container, 'AppElementAssembly'))
+                        direction = 'vertical';
+                    else
+                        direction = 'horizontal';
+                    end
 
-                    % Ajouter affichage de la flèche en fonction du type du
-                    % contenant de l'objet courant
-                    % si le contenant de l'objet n'a pas de contenant
-                    % (origine de la structure) ou si le contenant est un
-                    % élement de classe AppElementAssembly on affiche en
-                    % vertical, sinon horizontal
-
-                    % draw_wave_arraw(app, obj.Container.Container)
+                    draw_wave_arrow(app, app.Graph.Components.ElementsGraph.UIObject, direction)
                 end
 
                 if isprop(obj, 'Content') && ~isempty(obj.Content)
                     obj.Content.scatter_with_call(app, app.Graph.Components.SubelementsGraph);
+
+                    if isa(obj, 'AppElementAssembly')
+                        direction = 'vertical';
+                    else
+                        direction = 'horizontal';
+                    end
+
+                    draw_wave_arrow(app, app.Graph.Components.SubelementsGraph.UIObject, direction)
                 end       
             end  
 
