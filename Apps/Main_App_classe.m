@@ -85,7 +85,7 @@ classdef Main_App_classe < matlab.apps.AppBase
     methods (Access = private) % Callbacks 
 
         % Code that executes after component creation
-        function startupFcn(app, env, event)
+        function startupFcn(app, ~, ~)
             
             % Récupère la taille de l'écran
             screenSize = get(0, 'ScreenSize');  % [x y width height]
@@ -99,7 +99,9 @@ classdef Main_App_classe < matlab.apps.AppBase
             app.UIFigure.Position(2) = (screenSize(4) - appHeight) / 2;
             
             % On créer l'environnement
-            app.EnvApp = env;
+            launch_environnement;
+            app.EnvApp = Environnement_App(app, env);
+            app.EnvApp.UIFigure.Visible = 'off';
 
             % On initialise le graphe
             set(app.ElementsGraph, 'YDir', 'normal');
@@ -130,6 +132,7 @@ classdef Main_App_classe < matlab.apps.AppBase
 
             app.Elements = AppContainer();
             app.Elements.scatter_with_call(app, app.Graph.Components.ElementsGraph);
+            drawnow;
             app.Graph.Components.ElementsGraph.adjust_pictogram_sizes();
         end
 
@@ -183,7 +186,7 @@ classdef Main_App_classe < matlab.apps.AppBase
         end
 
         % Display data changed function: HandleVariablesTable
-        function HandleVariablesTableDisplayDataChanged(app, event)
+        function HandleVariablesTableDisplayDataChanged(app, ~)
         % Cette méthode est appelée lorsque la table des variables muettes
         % est éditéés
             

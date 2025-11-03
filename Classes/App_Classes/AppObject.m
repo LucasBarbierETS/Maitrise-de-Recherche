@@ -82,7 +82,7 @@ classdef AppObject < handle
                         direction = 'horizontal';
                     end
 
-                    draw_wave_arrow(app, app.Graph.Components.ElementsGraph.UIObject, direction)
+                    draw_wave_arrow(app, app.Graph.Components.ElementsGraph.UIObject, direction);
                 end
 
                 if isprop(obj, 'Content') && ~isempty(obj.Content)
