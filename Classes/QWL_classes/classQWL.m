@@ -8,12 +8,6 @@ classdef classQWL < classJCA_Rigid
     % [2] Modeling of perforated plates and screens using rigid frame porous models
     %     Noureddine Atallaa, Franck Sgard
     %     doi:10.1016/j.jsv.2007.01.012
-
-    properties
-
-    % Configuration
-
-    end
    
     methods
         function obj = classQWL(config)

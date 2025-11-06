@@ -1,10 +1,10 @@
-classdef classannularcavity_cubical < classsubelement
+classdef classannularcavity_cubical < classobject
 
     methods
 
         function obj = classannularcavity_cubical(config)
 
-            obj@classsubelement(config);
+            obj@classobject(config);
         end
         
         function Zsde = surface_impedance(obj, env)

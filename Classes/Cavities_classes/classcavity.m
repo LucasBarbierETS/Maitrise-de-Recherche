@@ -1,35 +1,15 @@
-classdef classcavity < classsubelement
-
-% REFERENCE : 
-
-%%%%%%%%%%%%%%%%%%%%%%%%% PUBLIC PROPRIETIES %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%                          INPUT PARAMETERS
-% - L : depth of the cavity (m)
-%
-%%%%%%%%%%%%%%%%%%%%%%%%%%% PUBLIC METHODS %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%                          OUTPUT PARAMETERS
-% - obj.transfer_matrix(w) : coefficients of the equivalent fluid's transfer matrix
-%                                 obj.transfermatrix(Air, w).Tij (where (i, j)∈{1, 2}²)
-% - obj.Zs(w)              : surface impedence of the equivalent fluid
-
-    properties
-
-        % Configuration (Héritée)
-        %              .Thickness % (double) épaisseur de la cavité
-        %              .InputSection
-
-    end
-    
+classdef classcavity < classobject
+   
     methods 
 
         function obj = classcavity(config) 
             
-            obj@classsubelement(config);
+            obj@classobject(config);
         end
         
-        function T = transfer_matrix(obj, env, varargin)
+        function [TM, options] = transfer_matrix(obj, env, options)
             
-            S = obj.Configuration.Section;
+            s = obj.Configuration.Section;
             w = env.w;
             air = env.air;
             param = air.parameters;
@@ -38,10 +18,12 @@ classdef classcavity < classsubelement
             Z0 = c0 * param.rho;
             H = obj.Configuration.Thickness;
 
-            T.T11 = cos(k0 * H);
-            T.T12 = 1j * Z0 / S * sin(k0 * H);
-            T.T21 = 1j * S / Z0 * sin(k0 * H);
-            T.T22 = cos(k0 * H);
+            TM.T11 = cos(k0 * H);
+            TM.T12 = 1j * Z0 / s * sin(k0 * H);
+            TM.T21 = 1j * s / Z0 * sin(k0 * H);
+            TM.T22 = cos(k0 * H);
+
+            options = perso_propagate(TM, options);
         end
     end
 
