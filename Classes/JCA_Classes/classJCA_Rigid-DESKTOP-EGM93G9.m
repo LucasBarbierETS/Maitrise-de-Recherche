@@ -163,7 +163,7 @@ classdef classJCA_Rigid < classsubelement
             close all
             figure()
  
-            %% Poreux (Verdière2013)
+            %% Poreux (Verdiere2013)
             % Réference : Transfer matrix method applied to the parallel assembly 
             % of sound absorbing materials, fig 4.a, p. 5
 
@@ -185,7 +185,7 @@ classdef classJCA_Rigid < classsubelement
             alpha_model = E.alpha(env);
 
             % importation des données de références
-            data = csvread('Verdière2013_fig4_E.txt');
+            data = csvread('Verdiere2013_fig4_E.txt');
             [x_data, y_data] = interpole_et_lisse(data(:, 1), data(:, 2), 1000, 0.05);
 
             % affichage des résultats
@@ -198,7 +198,7 @@ classdef classJCA_Rigid < classsubelement
             ylabel("Coefficient d'Absorption")
             ylim([0 1])
             xlim([0 2000])
-            subtitle("Validation JCA -  Verdière2013 - figure 4 - tracé E")
+            subtitle("Validation JCA -  Verdiere2013 - figure 4 - tracé E")
             
         end
     end
