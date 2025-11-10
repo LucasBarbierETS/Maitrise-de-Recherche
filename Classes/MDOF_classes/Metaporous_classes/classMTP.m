@@ -75,7 +75,7 @@ classdef classMTP < classelement
 
             % On crée la configuration d'appel et on renomme les variables
             config = struct();
-            config.ListOfSubelements = {};
+            config.ListOfObjects = {};
             config.EndStatus = 'closed';
             config.InputSection = input_section;
             

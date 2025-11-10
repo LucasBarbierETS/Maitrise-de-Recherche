@@ -19,28 +19,28 @@ classdef classMPPSBH_Rectangular_frustum < classelement
                 pt = config.PlatesThickness;
                 ct = config.CavitiesThickness;
 
-                % On ajoute péridiquement la cellule plaque + cavité
+                % On ajoute périodiquement la cellule plaque + cavité
                 for i = 1:length(pp)
 
                     % Plaque perforée
-                    obj.Configuration.ListOfSubelements{end+1} = classMPP_Circular(classMPP_Circular.create_config(mpw(i)*mpd(i), pt(i), phr(i), pp(i), mpw(i), mpd(i)));
+                    obj.Configuration.ListOfObjects{end+1} = classMPP_Circular(classMPP_Circular.create_config(mpw(i)*mpd(i), pt(i), phr(i), pp(i), mpw(i), mpd(i)));
         
                     % Cavité trapezoidale
                     wc = (mpw(i) + mpw(i+1))/2;
                     dc = (mpd(i) + mpd(i+1))/2;
 
                     % Cavité trapezoidale
-                    % obj.Configuration.ListOfSubelements{end+1} = classcavity_rectangular(classcavity_rectangular.create_config(ct(i)/2, mpw(i), mpd(i)));
-                    obj.Configuration.ListOfSubelements{end+1} = classcavity_trapezoidal_subdiv(classcavity_trapezoidal_subdiv.create_config(ct(i)/2, mpw(i), mpd(i), wc, dc));
+                    % obj.Configuration.ListOfObjects{end+1} = classcavity_rectangular(classcavity_rectangular.create_config(ct(i)/2, mpw(i), mpd(i)));
+                    obj.Configuration.ListOfObjects{end+1} = classcavity_trapezoidal_subdiv(classcavity_trapezoidal_subdiv.create_config(ct(i)/2, mpw(i), mpd(i), wc, dc));
     
                     % Cavité cubique en parallèle
                     annular_cavity = classannularcavity_rectangular_frustum(classannularcavity_rectangular_frustum.create_config(mpw(i), mpd(i), mpw(i+1), mpd(i+1), cavw, cavd, ct(i)));
                     % annular_cavisty = classannularcavity_cubical(classannularcavity_cubical.create_config(wc, dc, cavw, cavd, ct(i), 'Plane Wave'));
-                    obj.Configuration.ListOfSubelements{end+1} = classjunction(classjunction.create_config(annular_cavity, wc * dc));
+                    obj.Configuration.ListOfObjects{end+1} = classjunction(classjunction.create_config(annular_cavity, wc * dc));
         
                     % Cavité trapezoidale
-                    % obj.Configuration.ListOfSubelements{end+1} = classcavity_rectangular(classcavity_rectangular.create_config(ct(i)/2, wc,dc));
-                    obj.Configuration.ListOfSubelements{end+1} = classcavity_trapezoidal_subdiv(classcavity_trapezoidal_subdiv.create_config(ct(i)/2, wc, dc, mpw(i+1), mpd(i+1)));
+                    % obj.Configuration.ListOfObjects{end+1} = classcavity_rectangular(classcavity_rectangular.create_config(ct(i)/2, wc,dc));
+                    obj.Configuration.ListOfObjects{end+1} = classcavity_trapezoidal_subdiv(classcavity_trapezoidal_subdiv.create_config(ct(i)/2, wc, dc, mpw(i+1), mpd(i+1)));
                 end 
             end
         end
@@ -160,7 +160,7 @@ classdef classMPPSBH_Rectangular_frustum < classelement
             end
         
             % === 6. Ouverture automatique du dossier ===
-            fprintf('[📂] Ouverture du dossier dans l’explorateur...\n');
+            fprintf('[] Ouverture du dossier dans l’explorateur...\n');
             system(sprintf('explorer "%s"', output_dir));
         end
     

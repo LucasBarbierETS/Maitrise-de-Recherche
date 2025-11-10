@@ -11,7 +11,7 @@ pt = config.PlatesThickness;
 cavw = config.CavitiesWidth;
 ct = config.CavitiesThickness;
 sw = config.MainPoresWidth;
-los = config.ListOfSubelements;
+los = config.ListOfObjects;
 N = length(pt); % number of cells (slit backed by a cavity)
 
 %% Création des variables et paramètres du modèle 

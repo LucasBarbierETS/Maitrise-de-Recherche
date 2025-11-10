@@ -60,7 +60,7 @@ function model = Cartouche_ETS_numerical_2D_validation(Cartouche_ETS, env, varar
 
     %% Géométrie
 
-    tp_config = MPPSBH_element.Configuration.ListOfSubelements{1}.Configuration;
+    tp_config = MPPSBH_element.Configuration.ListOfObjects{1}.Configuration;
     model.param.set('tpw', num2str(tp_config.Width), 'Largeur de la plaque couvrante');
     model.param.set('tpt', num2str(tp_config.Thickness), 'Epaisseur de la plaque couvrante');
 
@@ -81,14 +81,14 @@ function model = Cartouche_ETS_numerical_2D_validation(Cartouche_ETS, env, varar
     tp.set('size', {'tpw', 'tpt'});
 
     % Air gap
-    ag_config = MPPSBH_element.Configuration.ListOfSubelements{2}.Configuration;
+    ag_config = MPPSBH_element.Configuration.ListOfObjects{2}.Configuration;
     model.param.set('agt', num2str(ag_config.Length), 'Epaisseur de la plaque couvrante');
     ag = model.component('component').geom('geometry').create('ag', 'Rectangle');
     ag.set('pos', {'0' '-tpt -agt'});
     ag.set('size', {'tpw', 'tpt'});
 
     % Cavité
-    cavity_config = MPPSBH_element.Configuration.ListOfSubelements{3}.Configuration.ListOfSubelements{1}.Configuration;
+    cavity_config = MPPSBH_element.Configuration.ListOfObjects{3}.Configuration.ListOfObjects{1}.Configuration;
     model.param.set('cavt', num2str(cavity_config.Length), 'Epaisseur de la première cavité');
     cav = model.component('component').geom('geometry').create('cavity', 'Rectangle');
     cav.set('pos', {'0' '-tpt -agt -cavt'});
@@ -96,7 +96,7 @@ function model = Cartouche_ETS_numerical_2D_validation(Cartouche_ETS, env, varar
 
     % MPPSBH
     model.param.set('sol1_ytlc', '-tpt-agt-cavt', 'Ligne d''accotement vertical de l''élement testé');
-    MPPSBH = MPPSBH_element.Configuration.ListOfSubelements{3}.Configuration.ListOfSubelements{2};
+    MPPSBH = MPPSBH_element.Configuration.ListOfObjects{3}.Configuration.ListOfObjects{2};
     MPPSBH.set_COMSOL_2D_Model(model, 1, '0', 'sol1_ytlc', env);
 
     model.component('component').geom('geometry').run('fin');

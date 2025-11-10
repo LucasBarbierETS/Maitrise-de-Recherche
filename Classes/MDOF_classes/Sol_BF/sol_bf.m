@@ -28,16 +28,16 @@ classdef sol_bf < classelement
                 % perforée
                 if length(sw) > 1
                     
-                    obj.Configuration.ListOfSubelements{end+1} = CellMPP(CellMPP.create_config(tpp, tphr, pt(1), ...
+                    obj.Configuration.ListOfObjects{end+1} = CellMPP(CellMPP.create_config(tpp, tphr, pt(1), ...
                     ct(1), cd, cw, sw(1), sw(2), hl));
                     
                     % On ajoute péridiquement les cellules contenant des fentes
                     for i = 1:length(sw) - 1
-                        obj.Configuration.ListOfSubelements{end+1} = CellSlit(CellSlit.create_config(pt(i), ct(i), cd, cw, sw(i), sw(i+1)));
+                        obj.Configuration.ListOfObjects{end+1} = CellSlit(CellSlit.create_config(pt(i), ct(i), cd, cw, sw(i), sw(i+1)));
                     end
                 else
                     
-                    obj.Configuration.ListOfSubelements{end+1} = CellMPP(CellMPP.create_config(tpp, tphr, pt(1), ...
+                    obj.Configuration.ListOfObjects{end+1} = CellMPP(CellMPP.create_config(tpp, tphr, pt(1), ...
                     ct(1), cd, cw, sw(1), sw(1), hl));
                 end 
             end

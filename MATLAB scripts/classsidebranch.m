@@ -15,13 +15,13 @@ classdef classsidebranch < classelement
             l = config.DuctLength;
             
             % Demi-tranche de conduite
-            obj.Configuration.ListOfSubelements{end+1} = classcavity(classcavity.create_config(s, l/2));
+            obj.Configuration.ListOfObjects{end+1} = classcavity(classcavity.create_config(s, l/2));
 
             % Jonction
-            obj.Configuration.ListOfSubelements{end+1} = classjunction(classjunction.create_config(J_elem, s));
+            obj.Configuration.ListOfObjects{end+1} = classjunction(classjunction.create_config(J_elem, s));
 
             % Demi-tranche de conduite
-            obj.Configuration.ListOfSubelements{end+1} = classcavity(classcavity.create_config(s, l/2));
+            obj.Configuration.ListOfObjects{end+1} = classcavity(classcavity.create_config(s, l/2));
         end 
     end
 

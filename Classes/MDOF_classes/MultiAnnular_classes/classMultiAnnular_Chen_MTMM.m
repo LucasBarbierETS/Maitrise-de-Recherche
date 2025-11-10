@@ -22,20 +22,20 @@ classdef classMultiAnnular_Chen_MTMM < classMultiAnnular_Chen
                 for i = 1:config.CellNumber
 
                     % Cavité cylindrique avec pertes
-                    obj.Configuration.ListOfSubelements{end+1} = classcavity_cylindrical(classcavity_cylindrical.create_config(tmp, rmp(i)));
+                    obj.Configuration.ListOfObjects{end+1} = classcavity_cylindrical(classcavity_cylindrical.create_config(tmp, rmp(i)));
         
                     % Cavité conique
                     hc = (rmp(i) + rmp(i+1))/2;
-                    % obj.Configuration.ListOfSubelements{end+1} = classcavity_cylindrical(classcavity_cylindrical.create_config(hde/2, rmp(i)));
-                    obj.Configuration.ListOfSubelements{end+1} = classcavity_conical(classcavity_conical.create_config(hde/2, rmp(i), hc));
+                    % obj.Configuration.ListOfObjects{end+1} = classcavity_cylindrical(classcavity_cylindrical.create_config(hde/2, rmp(i)));
+                    obj.Configuration.ListOfObjects{end+1} = classcavity_conical(classcavity_conical.create_config(hde/2, rmp(i), hc));
         
                     % Cavité annnulaire toroidale
                     annular_cavity = classannularcavity_toroidal(classannularcavity_toroidal.create_config(rmp(i), rmp(i+1), rde, hde, 'Hankel_Chen'));
-                    obj.Configuration.ListOfSubelements{end+1} = classjunction_cylindrical(classjunction_cylindrical.create_config(annular_cavity, hc, hde));
+                    obj.Configuration.ListOfObjects{end+1} = classjunction_cylindrical(classjunction_cylindrical.create_config(annular_cavity, hc, hde));
 
                     % Cavité conique
-                    obj.Configuration.ListOfSubelements{end+1} = classcavity_conical(classcavity_conical.create_config(hde/2, hc, rmp(i+1)));
-                    % obj.Configuration.ListOfSubelements{end+1} = classcavity_cylindrical(classcavity_cylindrical.create_config(hde/2, hc));
+                    obj.Configuration.ListOfObjects{end+1} = classcavity_conical(classcavity_conical.create_config(hde/2, hc, rmp(i+1)));
+                    % obj.Configuration.ListOfObjects{end+1} = classcavity_cylindrical(classcavity_cylindrical.create_config(hde/2, hc));
                 end
             end
         end

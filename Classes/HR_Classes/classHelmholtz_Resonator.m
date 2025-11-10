@@ -24,8 +24,8 @@ classdef classHelmholtz_Resonator < classelement
             % On ajoute le col du résonateur
             phi = ns/cs;
             
-            obj.Configuration.ListOfSubelements{end+1} = classMPP_Circular(classMPP_Circular.create_config(cs, nl, nr, phi));
-            obj.Configuration.ListOfSubelements{end+1} = classcavity(classcavity_cylindrical.create_config(cl, cr));
+            obj.Configuration.ListOfObjects{end+1} = classMPP_Circular(classMPP_Circular.create_config(cs, nl, nr, phi));
+            obj.Configuration.ListOfObjects{end+1} = classcavity(classcavity_cylindrical.create_config(cl, cr));
 
 
         end    

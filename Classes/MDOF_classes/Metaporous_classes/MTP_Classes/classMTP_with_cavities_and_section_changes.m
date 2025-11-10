@@ -18,7 +18,7 @@ classdef classMTP_with_cavities_and_section_changes < classMTP
 
          function obj = classMTP_with_cavities_and_section_changes(config)
             
-            % On appelle le superconstructueur. 'obj' hérite des propriétés .ListOfSubelements et .EndStatus
+            % On appelle le superconstructueur. 'obj' hérite des propriétés .ListOfObjects et .EndStatus
             obj@classMTP(config);
             
             obj.Configuration = config; 
@@ -27,35 +27,35 @@ classdef classMTP_with_cavities_and_section_changes < classMTP
             % largeur dans la correction de la compressibilité pour les couches de plaques
 
             % 1ère couche
-            obj.ListOfSubelements{end + 1} = config.PorousMaterial(config.LayersThickness(1));
+            obj.ListOfObjects{end + 1} = config.PorousMaterial(config.LayersThickness(1));
 
             % On parcourt les plaques successives
             for i = 1:length(config.PlatesLength) - 1
 
                 % On crée un changement de section de la couche prédente (poreux i-1) à la couche courante (partie libre dans la couche plaque i)
-                obj.ListOfSubelements{end + 1} = classsectionchange(config.Width, config.Width - config.PlatesLength(i));
+                obj.ListOfObjects{end + 1} = classsectionchange(config.Width, config.Width - config.PlatesLength(i));
 
                 % On crée une couche de poreux de l'épaisseur de la couche plaque + cavité courante 
-                obj.ListOfSubelements{end + 1} = config.PorousMaterial(config.LayersThickness(2*i) + config.LayersThickness(2*i + 1));
+                obj.ListOfObjects{end + 1} = config.PorousMaterial(config.LayersThickness(2*i) + config.LayersThickness(2*i + 1));
 
                 % On rajoute une cavité de type "fente" en parallèle 
                 PSCi = classQWL(config.Width - config.PlatesLength(i), 'rectangle', [config.LayersThickness(2*i), config.Width]); % A modifier : variables implémentées au hasard
-                obj.ListOfSubelements{end + 1} = classjunction_rectangular(PSCi, config.Width - PSCi.Length, ...
+                obj.ListOfObjects{end + 1} = classjunction_rectangular(PSCi, config.Width - PSCi.Length, ...
                     config.Width, config.Width - PSCi.Length, config.Width, ...
                     config.LayersThickness(2*i));
 
                 % On crée un changement de section du pore commun (partie libre de la couche plaque i) vers la vavité suivante (partie libre de la couche plaque i + 1) 
-                obj.ListOfSubelements{end + 1} = classsectionchange(config.Width - config.PlatesLength(i), config.Width - config.PlatesLength(i+1));
+                obj.ListOfObjects{end + 1} = classsectionchange(config.Width - config.PlatesLength(i), config.Width - config.PlatesLength(i+1));
             end
 
             % Dernière plaque
 
             % On crée un pore commun de l'épaisseur de la dernière couche de plaque + poreux
-             obj.ListOfSubelements{end + 1} = config.PorousMaterial(config.LayersThickness(end-1) + config.LayersThickness(end));
+             obj.ListOfObjects{end + 1} = config.PorousMaterial(config.LayersThickness(end-1) + config.LayersThickness(end));
 
             % On créer un cavité en parallèle de l'épaiseur de la dernière couche de poreux (on aurait pu aussi rajouter un quart d'onde à la fin)
             PSCi = classQWL(config.Width - config.PlatesLength(end), 'rectangle', [config.LayersThickness(end) config.Width]); % A modifier : variables implémentées au hasard
-            obj.ListOfSubelements{end + 1} = classjunction_rectangular(PSCi, config.Width - PSCi.Length, ...
+            obj.ListOfObjects{end + 1} = classjunction_rectangular(PSCi, config.Width - PSCi.Length, ...
                 config.Width, config.Width - PSCi.Length, config.Width, ...
                 config.LayersThickness(end));
 

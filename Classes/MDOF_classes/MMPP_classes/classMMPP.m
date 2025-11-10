@@ -22,10 +22,10 @@ classdef classMMPP < classelement
                 for i = 1:N
 
                     % Plaque perforée
-                    obj.Configuration.ListOfSubelements{end+1} = classMPP_Circular(classMPP_Circular.create_config(s, pt(i), phr(i), pp(i)));
+                    obj.Configuration.ListOfObjects{end+1} = classMPP_Circular(classMPP_Circular.create_config(s, pt(i), phr(i), pp(i)));
         
                     % Cavité 
-                    obj.Configuration.ListOfSubelements{end+1} = classcavity(classcavity.create_config(s, ct(i)));
+                    obj.Configuration.ListOfObjects{end+1} = classcavity(classcavity.create_config(s, ct(i)));
                 end 
             end
         end

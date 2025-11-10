@@ -8,7 +8,7 @@ model = input_model;
 pt = config.PlateThickness;
 cavw = config.CavityWidth;
 ct = config.CavityThickness;
-los = config.ListOfSubelements;
+los = config.ListOfObjects;
 
 %% Création des variables et paramètres du modèle 
 

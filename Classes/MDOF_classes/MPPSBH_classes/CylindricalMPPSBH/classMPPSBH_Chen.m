@@ -24,19 +24,19 @@ classdef classMPPSBH_Chen < classelement
                 for i = 1:length(pp)
 
                     % Plaque perforée (Modèle de Maa)
-                    obj.Configuration.ListOfSubelements{end+1} = classMPP_Maa(classMPP_Maa.create_config(pi*mpr(i)^2, pt(i), phr(i), pp(i)));
+                    obj.Configuration.ListOfObjects{end+1} = classMPP_Maa(classMPP_Maa.create_config(pi*mpr(i)^2, pt(i), phr(i), pp(i)));
         
                     % Cavité cylindrique
                     hc = (mpr(i) + mpr(i+1))/2;
-                    obj.Configuration.ListOfSubelements{end+1} = classcavity_cylindrical(classcavity_cylindrical.create_config(ct(i)/2, hc));
-                    % obj.Configuration.ListOfSubelements{end+1} = classcavity_conical(classcavity_conical.create_config(ct(i)/2, mpr(i), hc));
+                    obj.Configuration.ListOfObjects{end+1} = classcavity_cylindrical(classcavity_cylindrical.create_config(ct(i)/2, hc));
+                    % obj.Configuration.ListOfObjects{end+1} = classcavity_conical(classcavity_conical.create_config(ct(i)/2, mpr(i), hc));
         
                     % Cavité annnulaire cylindrique
                     annular_cavity = classannularcavity_cylindrical(classannularcavity_cylindrical.create_config(hc, cavr, ct(i), 'Volume'));
-                    obj.Configuration.ListOfSubelements{end+1} = classjunction_cylindrical(classjunction_cylindrical.create_config(annular_cavity, hc, ct(i)));
+                    obj.Configuration.ListOfObjects{end+1} = classjunction_cylindrical(classjunction_cylindrical.create_config(annular_cavity, hc, ct(i)));
 
-                    obj.Configuration.ListOfSubelements{end+1} = classcavity_cylindrical(classcavity_cylindrical.create_config(ct(i)/2, hc));
-                    % obj.Configuration.ListOfSubelements{end+1} = classcavity_conical(classcavity_conical.create_config(ct(i)/2, hc, mpr(i+1)));
+                    obj.Configuration.ListOfObjects{end+1} = classcavity_cylindrical(classcavity_cylindrical.create_config(ct(i)/2, hc));
+                    % obj.Configuration.ListOfObjects{end+1} = classcavity_conical(classcavity_conical.create_config(ct(i)/2, hc, mpr(i+1)));
                 end
             end
         end

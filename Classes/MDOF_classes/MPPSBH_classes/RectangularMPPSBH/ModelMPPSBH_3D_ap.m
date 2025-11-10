@@ -12,7 +12,7 @@ cavd = config.CavitiesDepth;
 ct   = config.CavitiesThickness;
 mpw  = config.MainPoresWidth;
 mpd  = config.MainPoresDepth;
-los  = config.ListOfSubelements;
+los  = config.ListOfObjects;
 N    = length(pt);
 
 %% Paramètres

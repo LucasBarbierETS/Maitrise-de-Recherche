@@ -42,9 +42,9 @@ classdef classMLBSBH < classelement
                 obj.Configuration.InputSection = SBHw^2;
                 
                 % Plaque perforée centrale (première MPP circulaire)
-                % obj.Configuration.ListOfSubelements{end+1} = classMPP_Circular(classMPP_Circular.create_config(pp(1), hr(1), pt(1), cavw*sw(1), ptc(1)));
-                % obj.Configuration.ListOfSubelements{end+1} = classMPP_Circular(classMPP_Circular.create_config(pp(1), hr(1), pt(1), cavw*sw(1)));
-                obj.Configuration.ListOfSubelements{end+1} = classQWL_Slit(classQWL_Slit.create_config(pt(1), sw(1), cavw*sw(1)));
+                % obj.Configuration.ListOfObjects{end+1} = classMPP_Circular(classMPP_Circular.create_config(pp(1), hr(1), pt(1), cavw*sw(1), ptc(1)));
+                % obj.Configuration.ListOfObjects{end+1} = classMPP_Circular(classMPP_Circular.create_config(pp(1), hr(1), pt(1), cavw*sw(1)));
+                obj.Configuration.ListOfObjects{end+1} = classQWL_Slit(classQWL_Slit.create_config(pt(1), sw(1), cavw*sw(1)));
                 
                 % Boucle sur les cavités et plaques
                 for i = 1:length(ct) - 1
@@ -54,26 +54,26 @@ classdef classMLBSBH < classelement
                     % Cavité parallèle
     
                     % Demi pore principal
-                    obj.Configuration.ListOfSubelements{end+1} = classQWL_Slit(classQWL_Slit.create_config(ct(i)/2, sw(i+1), cavw*sw(i+1)));
+                    obj.Configuration.ListOfObjects{end+1} = classQWL_Slit(classQWL_Slit.create_config(ct(i)/2, sw(i+1), cavw*sw(i+1)));
     
                     % Jonction
                     QWLSlit = classQWL_Slit(classQWL_Slit.create_config((cavw-mpw)/ 2, ct(i), 1)); % section d'entrée unitaire (arbitraire)
-                    obj.Configuration.ListOfSubelements{end+1} = classjunction_rectangular(classjunction_rectangular.create_config(QWLSlit, cavw, ct(i)));
+                    obj.Configuration.ListOfObjects{end+1} = classjunction_rectangular(classjunction_rectangular.create_config(QWLSlit, cavw, ct(i)));
     
                     % Demi pore principal
-                    obj.Configuration.ListOfSubelements{end+1} = classQWL_Slit(classQWL_Slit.create_config(ct(i)/2, mpw, cavw*mpw));
+                    obj.Configuration.ListOfObjects{end+1} = classQWL_Slit(classQWL_Slit.create_config(ct(i)/2, mpw, cavw*mpw));
     
                     % % Cavité annulaire ou jonction cylindrique
-                    % obj.Configuration.ListOfSubelements{end+1} = classannularcell(classannularcell.create_config(ppar(i), ppar(i+1), cavr, ct(i), cm));
+                    % obj.Configuration.ListOfObjects{end+1} = classannularcell(classannularcell.create_config(ppar(i), ppar(i+1), cavr, ct(i), cm));
  
                     % MPP suivante
-                    % obj.Configuration.ListOfSubelements{end+1} = classMPP_Circular(classMPP_Circular.create_config(pp(i+1), hr(i+1), pt(i+1), pi*ppar(i+1)^2, ptc(i+1)));
-                    % obj.Configuration.ListOfSubelements{end+1} = classMPP_Circular(classMPP_Circular.create_config(pp(i+1), hr(i+1), pt(i+1), cavw*sw(i+1)));
-                    obj.Configuration.ListOfSubelements{end+1} = classQWL_Slit(classQWL_Slit.create_config(pt(i+1), sw(i+1), cavw*sw(i+1)));
+                    % obj.Configuration.ListOfObjects{end+1} = classMPP_Circular(classMPP_Circular.create_config(pp(i+1), hr(i+1), pt(i+1), pi*ppar(i+1)^2, ptc(i+1)));
+                    % obj.Configuration.ListOfObjects{end+1} = classMPP_Circular(classMPP_Circular.create_config(pp(i+1), hr(i+1), pt(i+1), cavw*sw(i+1)));
+                    obj.Configuration.ListOfObjects{end+1} = classQWL_Slit(classQWL_Slit.create_config(pt(i+1), sw(i+1), cavw*sw(i+1)));
                 end
                 
                 % Traitement de la dernière cavité
-                obj.Configuration.ListOfSubelements{end+1} = classcavity(classcavity.create_config(ct(end), cavw^2)); 
+                obj.Configuration.ListOfObjects{end+1} = classcavity(classcavity.create_config(ct(end), cavw^2)); 
             end 
         end
    

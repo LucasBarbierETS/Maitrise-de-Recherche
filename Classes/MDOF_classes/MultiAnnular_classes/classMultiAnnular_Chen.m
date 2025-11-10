@@ -22,18 +22,18 @@ classdef classMultiAnnular_Chen < classelement
                 for i = 1:config.CellNumber
 
                     % Cavité cylindrique avec pertes
-                    obj.Configuration.ListOfSubelements{end+1} = classcavity_cylindrical(classcavity_cylindrical.create_config(tmp, rmp(i)));
+                    obj.Configuration.ListOfObjects{end+1} = classcavity_cylindrical(classcavity_cylindrical.create_config(tmp, rmp(i)));
         
                     % Cavité cylindrique
                     hc = (rmp(i) + rmp(i+1))/2;
-                    obj.Configuration.ListOfSubelements{end+1} = classcavity_cylindrical(classcavity_cylindrical.create_config(hde/2, rmp(i)));
+                    obj.Configuration.ListOfObjects{end+1} = classcavity_cylindrical(classcavity_cylindrical.create_config(hde/2, rmp(i)));
         
                     % Cavité annulaire torique
                     annular_cavity = classannularcavity_cylindrical (classannularcavity_cylindrical.create_config(hc, rde, hde, 'Hankel_Chen'));
-                    obj.Configuration.ListOfSubelements{end+1} = classjunction_cylindrical(classjunction_cylindrical.create_config(annular_cavity, hc, hde));
+                    obj.Configuration.ListOfObjects{end+1} = classjunction_cylindrical(classjunction_cylindrical.create_config(annular_cavity, hc, hde));
 
                     % Cavité cylindrique
-                    obj.Configuration.ListOfSubelements{end+1} = classcavity_cylindrical(classcavity_cylindrical.create_config(hde/2, hc));
+                    obj.Configuration.ListOfObjects{end+1} = classcavity_cylindrical(classcavity_cylindrical.create_config(hde/2, hc));
                 end
             end
         end

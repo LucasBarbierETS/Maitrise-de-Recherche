@@ -58,7 +58,7 @@ function model = Cartouche_Poly_numerical_2D_validation(Cartouche_Poly, solN, en
 
     %% Géométrie
 
-    tp_config = Cartouche_Poly.Configuration.ListOfSubelements{1}.Configuration;
+    tp_config = Cartouche_Poly.Configuration.ListOfObjects{1}.Configuration;
     model.param.set('tpw', num2str(tp_config.Width), 'Largeur de la plaque couvrante');
     model.param.set('tpt', num2str(tp_config.Thickness), 'Epaisseur de la plaque couvrante');
     model.param.set('bndt', '1e-3', 'Epaisseur des parois verticales des composants');
@@ -80,7 +80,7 @@ function model = Cartouche_Poly_numerical_2D_validation(Cartouche_Poly, solN, en
     tp.set('size', {'tpw', 'tpt'});
 
     % Air gap
-    ag_config = Cartouche_Poly.Configuration.ListOfSubelements{2}.Configuration;
+    ag_config = Cartouche_Poly.Configuration.ListOfObjects{2}.Configuration;
     model.param.set('agt', num2str(ag_config.Length), 'Epaisseur de la plaque couvrante');
     ag = model.component('component').geom('geometry').create('ag', 'Rectangle');
     ag.set('pos', {'0' '-tpt-agt'});
@@ -90,9 +90,9 @@ function model = Cartouche_Poly_numerical_2D_validation(Cartouche_Poly, solN, en
     % est 2D et que la cartouche est uniforme en profondeur, on ne
     % construit que deux solutions Poly et un HR au centre
 
-    assembly_config = Cartouche_Poly.Configuration.ListOfSubelements{3}.Configuration;
-    Poly = assembly_config.ListOfElements{1}.Configuration.ListOfSubelements{1};
-    HR = assembly_config.ListOfElements{9}.Configuration.ListOfSubelements{1};
+    assembly_config = Cartouche_Poly.Configuration.ListOfObjects{3}.Configuration;
+    Poly = assembly_config.ListOfElements{1}.Configuration.ListOfObjects{1};
+    HR = assembly_config.ListOfElements{9}.Configuration.ListOfObjects{1};
 
     % Construction des solutions
     model = solN.set_COMSOL_2D_Model(model, 1, 'bndt', '-tpt-agt', env);

@@ -28,8 +28,8 @@ classdef classcavity_trapezoidal_subdiv < classelement
                 d = linspace(di, do, N);
 
                 for i = 1:N
-                    % obj.Configuration.ListOfSubelements{end+1} = classlossycavity(classcavity_rectangular.create_config(ct/N, w(i), d(i)));
-                    obj.Configuration.ListOfSubelements{end+1} = classcavity(classcavity_rectangular.create_config(ct/N, w(i), d(i)));
+                    % obj.Configuration.ListOfObjects{end+1} = classlossycavity(classcavity_rectangular.create_config(ct/N, w(i), d(i)));
+                    obj.Configuration.ListOfObjects{end+1} = classcavity(classcavity_rectangular.create_config(ct/N, w(i), d(i)));
                 end
             end
         end

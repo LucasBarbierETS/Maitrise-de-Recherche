@@ -65,8 +65,8 @@ function MPPSBH_permuted = perso_permute_MPPSBH(MPPSBH_base, order)
     % ==========================
     % Sous-éléments éventuels
     % ==========================
-    if isfield(config, 'ListOfSubelements') && numel(config.ListOfSubelements) >= Np
-        new_config.ListOfSubelements(1:Np) = config.ListOfSubelements(order);
+    if isfield(config, 'ListOfObjects') && numel(config.ListOfObjects) >= Np
+        new_config.ListOfObjects(1:Np) = config.ListOfObjects(order);
     end
 
     % ==========================
