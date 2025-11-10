@@ -16,7 +16,7 @@ else
 end
 
 %% --- Création de l'environnement avec le fichier principal ---
-env = create_environnement_2(root, t, sp, hum, f_main, PSD_main);
+env = create_environnement_2(t, sp, hum, f_main, 'Root', root, 'SPL', PSD_main);
 
 %% --- Propriétés du matériau ---
 porosity = 0.971; %Littérature marlene sciard
