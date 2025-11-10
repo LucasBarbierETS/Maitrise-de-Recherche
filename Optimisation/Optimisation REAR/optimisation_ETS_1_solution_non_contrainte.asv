@@ -67,7 +67,7 @@ depth_holes_distance = ETS_cavities_depth / (depth_holes_number + 1);
 
 %% Structure des variables optimisées
 
-NS = 1; % Nombre de MPPSBH optimisés
+NS = 4; % Nombre de MPPSBH optimisés
 NV = 4;
 % NV = 3; % Nombre de variables pour chaque solution (rayon des perforations, nombre de perfs en largeur, espacement des perfs en largeur)
 N = 6; % Nombre de plaques optimisées indépendantes pour chaque solution
@@ -138,7 +138,7 @@ x0 = horzcat(r_init, dw_init, pw_init, theta_init);
 % figure();
 % hold on
 % phi_init_app = (pi * (repmat(radius(r_init), 1, NS)).^2 * depth_holes_number .* pw_init) / (ETS_cavities_width * ETS_cavities_depth);
-% phi_init = (pi * (repmat(radius_mm(r_init), 1, NS)).^2 * depth_holes_number .* pw_init) ./ (sw_init * ETS_cavities_depth);
+% phi_init = (pi * (repmat(radius(r_init), 1, NS)).^2 * depth_holes_number .* pw_init) ./ (sw_init * ETS_cavities_depth);
 % histogram(phi_init_app, 20, 'DisplayName', 'Porosité apparente de la plaque');
 % histogram(phi_init, 20, 'DisplayName', 'Porosité effective de la zone perforée');
 % title('Porosités des plaques dans les MPPSBHs');
@@ -237,9 +237,9 @@ options.PlotFcn = {@gaplotpareto, ... % Pour deux objectifs ou plus
 
 rng; % For reproducibility"
 tic;
-% profile on
+profile on
 [xopti, fval, eflag, ~, population, scores] = gamultiobj(objective, numel(x0(1, :)), [], [], [], [], lb, ub, handle_nonlconf, intcon, options);
-% profile viewer
+profile viewer
 timeGa = toc;
 
 %% Conditionnement du vecteur d'optimisation
