@@ -49,14 +49,14 @@ classdef classannularcell_QWL < classelement
             tde = obj.Configuration.DeadEndThickness;
             
             % Demi-pore d'entrée  
-            obj.Configuration.ListOfSubelements{end+1} = classQWL_Circle(classQWL_Circle.create_config(tde/2, rmpi));
+            obj.Configuration.ListOfObjects{end+1} = classQWL_Circle(classQWL_Circle.create_config(tde/2, rmpi));
 
             % Cavité annulaire
             annular_cavity = classannularcavity_cylindrical(classannularcavity_cylindrical.create_config(rmp, rde, tde, 'Hankel'));
-            obj.Configuration.ListOfSubelements{end+1} = classjunction_cylindrical(classjunction_cylindrical.create_config(annular_cavity, rmp, tde));
+            obj.Configuration.ListOfObjects{end+1} = classjunction_cylindrical(classjunction_cylindrical.create_config(annular_cavity, rmp, tde));
 
             % Demi-pore de sortie 
-            obj.Configuration.ListOfSubelements{end+1} = classQWL_Circle(classQWL_Circle.create_config(tde/2, rmpi));
+            obj.Configuration.ListOfObjects{end+1} = classQWL_Circle(classQWL_Circle.create_config(tde/2, rmpi));
         end 
     end
 

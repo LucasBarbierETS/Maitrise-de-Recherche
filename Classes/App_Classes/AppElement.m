@@ -70,9 +70,9 @@ classdef AppElement < AppObject
             % sous-élements d'applications
             class_config_elm = class_elm.Configuration;
             try
-                for i = 1:length(class_config_elm.ListOfSubelements)
+                for i = 1:length(class_config_elm.ListOfObjects)
                     
-                    class_sblm = class_config_elm.ListOfSubelements{i};
+                    class_sblm = class_config_elm.ListOfObjects{i};
                     content{i} = class_sblm.HandleAppBuilder(app, class_sblm);
                 end
             catch

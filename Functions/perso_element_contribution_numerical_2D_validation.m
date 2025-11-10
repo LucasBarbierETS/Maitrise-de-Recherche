@@ -63,7 +63,7 @@ function model = perso_element_contribution_numerical_2D_validation(element_cont
 
     %% Géométrie
 
-    tp_config = element_contribution.Configuration.ListOfSubelements{1}.Configuration;
+    tp_config = element_contribution.Configuration.ListOfObjects{1}.Configuration;
     model.param.set('tpw', num2str(tp_config.Width), 'Largeur de la plaque couvrante');
     model.param.set('tpt', num2str(tp_config.Thickness), 'Epaisseur de la plaque couvrante');
 
@@ -84,14 +84,14 @@ function model = perso_element_contribution_numerical_2D_validation(element_cont
     tp.set('size', {'tpw', 'tpt'});
 
     % Air gap
-    ag_config = element_contribution.Configuration.ListOfSubelements{2}.Configuration;
+    ag_config = element_contribution.Configuration.ListOfObjects{2}.Configuration;
     model.param.set('agt', num2str(ag_config.Length), 'Epaisseur de la plaque couvrante');
     ag = model.component('component').geom('geometry').create('ag', 'Rectangle');
     ag.set('pos', {'0' '-tpt -agt'});
     ag.set('size', {'tpw', 'tpt'});
 
     % Sous-élement testé
-    tested_element = element_contribution.Configuration.ListOfSubelements{3};
+    tested_element = element_contribution.Configuration.ListOfObjects{3};
     model = tested_element.set_COMSOL_2D_Model(model, 1, env, '0', '-tpt -agt');
 
     model.component('component').geom('geometry').run('fin');

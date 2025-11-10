@@ -19,7 +19,7 @@ classdef classMTP_with_section_changes < classMTP
 
          function obj = classMTP_with_section_changes(config)
             
-            % On appelle le superconstructueur. 'obj' hérite des propriétés .ListOfSubelements et .EndStatus
+            % On appelle le superconstructueur. 'obj' hérite des propriétés .ListOfObjects et .EndStatus
             obj@classMTP(config);
             
             obj.Configuration = config; 
@@ -28,22 +28,22 @@ classdef classMTP_with_section_changes < classMTP
             % largeur dans la correction de la compressobilité pour les couches de plaques
 
             % 1ère couche
-            obj.ListOfSubelements{end + 1} = config.PorousMaterial(config.LayersThickness(1));
+            obj.ListOfObjects{end + 1} = config.PorousMaterial(config.LayersThickness(1));
 
             % On parcourt les plaques successives
             for i = 1:length(config.PlatesLength)
 
                 % On crée un changement de section de la couche prédente (poreux i-1) à la couche courante (plaque i)
-                obj.ListOfSubelements{end + 1} = classsectionchange(config.Width, config.Width - config.PlatesLength(i));
+                obj.ListOfObjects{end + 1} = classsectionchange(config.Width, config.Width - config.PlatesLength(i));
 
                 % On crée une couche de poreux de l'épaisseur de la plaque courante
-                obj.ListOfSubelements{end + 1} = config.PorousMaterial(config.LayersThickness(2*i));
+                obj.ListOfObjects{end + 1} = config.PorousMaterial(config.LayersThickness(2*i));
 
                 % On crée un changement de section de la couche courante (plaque i) à la couche suivante (poreux i)
-                obj.ListOfSubelements{end + 1} = classsectionchange(config.Width - config.PlatesLength(i), config.Width);
+                obj.ListOfObjects{end + 1} = classsectionchange(config.Width - config.PlatesLength(i), config.Width);
 
                 % On crée une couche de poreux de l'épaisseur de la couche poreux courante
-                obj.ListOfSubelements{end + 1} = config.PorousMaterial(config.LayersThickness(2*i + 1));
+                obj.ListOfObjects{end + 1} = config.PorousMaterial(config.LayersThickness(2*i + 1));
 
             end
         end

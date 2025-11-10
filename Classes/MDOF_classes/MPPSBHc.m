@@ -23,7 +23,7 @@ classdef MPPSBHc < classelement
                 % On ajoute péridiquement la cellule plaque + cavité
                 for i = 1:length(pp)
 
-                    obj.Configuration.ListOfSubelements{end+1} = Cell_MPPSBHc(Cell_MPPSBHc.create_config(pp(i), phr(i), pt(i), ...
+                    obj.Configuration.ListOfObjects{end+1} = Cell_MPPSBHc(Cell_MPPSBHc.create_config(pp(i), phr(i), pt(i), ...
                     ct(i), cavr, pppr(i), pppr(i+1)));
                 end
             end 

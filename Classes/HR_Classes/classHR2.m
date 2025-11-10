@@ -35,10 +35,10 @@ classdef classHelmholtz_Resonator < classelement
             tc = 0.48 * sqrt(ns) * (1 - 1.14 * sqrt(phi)); % perso_ouvrir_lien_Zotero('zotero://open-pdf/library/items/UF5M6PI2?page=357&annotation=69ALD78C')
             sig = @(env) 8 * env.air.parameters.eta / (phi * nr^2); % perso_ouvrir_lien_Zotero('zotero://open-pdf/library/items/UF5M6PI2?page=357&annotation=6CBI54J6')
             tor = 1 + (2*tc/nl); % perso_ouvrir_lien_Zotero('zotero://open-pdf/library/items/UF5M6PI2?page=357&annotation=4QIE2UDU')
-            obj.ListOfSubelements{end} = classJCA_Rigid(classJCA_Rigid.create_config(phi, tor, sig, nr, nr, nl, ns));
+            obj.ListOfObjects{end} = classJCA_Rigid(classJCA_Rigid.create_config(phi, tor, sig, nr, nr, nl, ns));
 
             % On ajoute la cavité
-            obj.ListOfSubelements{end} = classcavity(classcavity.create_config(cl, cs));
+            obj.ListOfObjects{end} = classcavity(classcavity.create_config(cl, cs));
         end
         
     end

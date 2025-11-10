@@ -28,8 +28,8 @@ Cartouche_ETS, Cartouche_Poly, Cartouche_globale, env, NS)
 
     % % Debog : Tracé des impédances de surface des premières et deuxièmes plaques
     % figure(); 
-    % perso_plot_surface_impedance(env.w/(2*pi), ETS_yellow_cavities_contribution(x).Configuration.ListOfSubelements{1}.surface_impedance(env), env);
-    % perso_plot_surface_impedance(env.w/(2*pi), Poly_yellow_cavities_contribution(x).Configuration.ListOfSubelements{1}.surface_impedance(env), env);
+    % perso_plot_surface_impedance(env.w/(2*pi), ETS_yellow_cavities_contribution(x).Configuration.ListOfObjects{1}.surface_impedance(env), env);
+    % perso_plot_surface_impedance(env.w/(2*pi), Poly_yellow_cavities_contribution(x).Configuration.ListOfObjects{1}.surface_impedance(env), env);
     % sgtitle('Tracé des impédances de surface des première et deuxième plaques')
 
     % % Debog : Tracé des impédances de surface des contributions avec chacune des plaques

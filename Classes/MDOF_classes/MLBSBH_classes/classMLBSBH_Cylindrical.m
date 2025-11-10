@@ -40,16 +40,16 @@ classdef classMLBSBH_Cylindrical < classMLPSBH_Cylindrical
             for i = 1:length(ct) - 1
             
                 % Cavité annulaire ou jonction cylindrique
-                obj.Configuration.ListOfSubelements{end+1} = classannularcell(classannularcell.create_config(ppar(i), ppar(i+1), cavr, ct(i), cm));
+                obj.Configuration.ListOfObjects{end+1} = classannularcell(classannularcell.create_config(ppar(i), ppar(i+1), cavr, ct(i), cm));
             
             end
             
             % Traitement de la dernière cavité
-            obj.Configuration.ListOfSubelements{end+1} = classcavity(classcavity.create_config(ct(end), ppar(end), 0));
+            obj.Configuration.ListOfObjects{end+1} = classcavity(classcavity.create_config(ct(end), ppar(end), 0));
             
             % Mise à jour de section d'entrée et de sortie
-            obj.Configuration.InputSection = obj.Configuration.ListOfSubelements{1}.Configuration.InputSection;
-            obj.Configuration.OutputSection = obj.Configuration.ListOfSubelements{end}.Configuration.OutputSection;
+            obj.Configuration.InputSection = obj.Configuration.ListOfObjects{1}.Configuration.InputSection;
+            obj.Configuration.OutputSection = obj.Configuration.ListOfObjects{end}.Configuration.OutputSection;
         end
     end
 end

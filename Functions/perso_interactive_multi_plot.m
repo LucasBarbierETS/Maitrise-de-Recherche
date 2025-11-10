@@ -24,6 +24,7 @@ function perso_interactive_multi_plot(x, alpha, Zs, f_max, Frequences)
     s_alpha = subplot(1,1,1,'Parent',figAlpha);
     hold(s_alpha,'on'); box(s_alpha,'on');
 
+    disp(class(alpha));
     yA = alpha{currentIndex}; % [2 x numel(x)]
     hAlpha1 = plot(s_alpha, x, yA(1,:), 'DisplayName', 'Cartouche globale');
     hAlpha2 = plot(s_alpha, x, yA(2,:), 'DisplayName', 'Cartouche globale HL fp');

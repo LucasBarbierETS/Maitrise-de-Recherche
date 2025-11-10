@@ -15,14 +15,14 @@ classdef classMTP2 < classMTP
 
          function obj = classMTP2(config)
             
-            % On appelle le superconstructueur. 'obj' hérite des propriétés .ListOfSubelements et .EndStatus
+            % On appelle le superconstructueur. 'obj' hérite des propriétés .ListOfObjects et .EndStatus
             obj@classMTP(config);
             
             % Dans cette méthode on implémente indépendement les couches cavités et plaques en considérant un ratio de 
             % largeur dans la correction de la compressobilité pour les couches de plaques
 
             % 1ère couche
-            obj.ListOfSubelements{end + 1} = config.PorousMaterial(config.LayersThickness(1));
+            obj.ListOfObjects{end + 1} = config.PorousMaterial(config.LayersThickness(1));
 
             % On crée une fonction temporaire qui permet d'appeler et modifier la méthode .equivalentparameters des couches de plaque
             function  ep = modifiedequivalentparameters(obj, nui, env)
@@ -40,10 +40,10 @@ classdef classMTP2 < classMTP
 
                 % On redéfinie manuellement les paramètres équivalents de la couche pour qu'ils soient utilisés dans la méthode transfermatrix
                 porous_layer.EquivalentParameters = @(obj, env) modifiedequivalentparameters(obj, nui, env);
-                obj.ListOfSubelements{end + 1} = porous_layer;
+                obj.ListOfObjects{end + 1} = porous_layer;
 
                 % On rajoute ensuite la couche cavité derrière la plaque
-                obj.ListOfSubelements{end + 1} = config.PorousMaterial(config.LayersThickness(2*i + 1));
+                obj.ListOfObjects{end + 1} = config.PorousMaterial(config.LayersThickness(2*i + 1));
             end
 
          end

@@ -74,7 +74,7 @@ N = 6; % Nombre de plaques optimisées indépendantes pour chaque solution
 
 cavities_total_thickness = ETS_total_thickness - N * ETS_plates_thickness;
 
-NP = 50; % Nombre de points de départ
+NP = 5; % Nombre de points de départ
 % NP = 100;
 % NP = 50;
 % NP = 10;
@@ -161,7 +161,7 @@ Objets.MPPSBH_i = @(config, i) classMPPSBH_Rectangular( ...
         {ETS_cavities_depth/depth_holes_number}, ... % distance entre perforations (depth)
         {depth_holes_number}, ... % nombre de perforations en profondeur
         {config(i, :, 3)}, ... % nombre de perforations en largeur
-        {plates_thickness}, ... % épaisseur des plaques (supérieure + internes)
+        {ETS_plates_thickness}, ... % épaisseur des plaques (supérieure + internes)
         {perso_simplex_map(config(i, :, 4), cavities_total_thickness)})); %;  % épaisseur de cavité
 
 % Debog (OK)
@@ -177,30 +177,8 @@ Objets.MPPSBH_HL_fp_i = @(config, i) classMPPSBH_Rectangular_HL_first_plate( ...
         {ETS_cavities_depth/depth_holes_number}, ... % distance entre perforations (depth)
         {depth_holes_number}, ... % nombre de perforations en profondeur
         {config(i, :, 3)}, ... % nombre de perforations en largeur
-        {plates_thickness}, ... % épaisseur des plaques (supérieure + internes)
+        {ETS_plates_thickness}, ... % épaisseur des plaques (supérieure + internes)
         {perso_simplex_map(config(i, :, 4), cavities_total_thickness)})); %;  % épaisseur de cavité 
-
-Objets.MPPSBH_HL_i = @(config, i) classMPPSBH_Rectangular_HL( ...
-    classMPPSBH_Rectangular.create_explicit_rectangular_pattern_config( ...
-        ETS_input_surface, N, ETS_cavities_depth, ETS_cavities_width, ...
-        {config(i, :, 1)}, ... % rayon des perforations
-        {config(i, :, 2)}, ... % distance entre perforations (width)
-        {ETS_cavities_depth/depth_holes_number}, ... % distance entre perforations (depth)
-        {depth_holes_number}, ... % nombre de perforations en profondeur
-        {config(i, :, 3)}, ... % nombre de perforations en largeur
-        {plates_thickness}, ... % épaisseur des plaques (supérieure + internes)
-        {perso_simplex_map(config(i, :, 4), cavities_total_thickness)})); %;  % épaisseur de cavité 
-
-Objets.MPPSBH_HL_iter_i = @(config, i) classMPPSBH_Rectangular_HL_iter( ...
-    classMPPSBH_Rectangular.create_explicit_rectangular_pattern_config( ...
-        ETS_input_surface, N, ETS_cavities_depth, ETS_cavities_width, ...
-        {config(i, :, 1)}, ... % rayon des perforations
-        {config(i, :, 2)}, ... % distance entre perforations (width)
-        {ETS_cavities_depth/depth_holes_number}, ... % distance entre perforations (depth)
-        {depth_holes_number}, ... % nombre de perforations en profondeur
-        {config(i, :, 3)}, ... % nombre de perforations en largeur
-        {plates_thickness}, ... % épaisseur des plaques (supérieure + internes)
-        {perso_simplex_map(config(i, :, 4), cavities_total_thickness)})); %;  % épaisseur de cavité
 
 % % Debog : Approche itérative (OK)
 % Objets.MPPSBH_HL_iter_i(x_ETS(x0(1, :)), radius(x_radius(x0(1, :))), 1).plot_alpha(env, 'HL, dB spec', 'iter');
@@ -235,7 +213,7 @@ handle_nonlconf = @(x) perso_nonlconf_1_solution(config(x), depth_holes_number, 
 %% Fonctions coût
 
 % Définition de la cartouche sur laquelle l'optimisation à lieu
-handle_alpha = @(x, env, g_obj) subsref(Objets.MPPSBH_HL_iter_i(config(x), 1).alpha(env, 'iter'), substruct('()', {g_obj(env)}));
+handle_alpha = @(x, env, g_obj) subsref(Objets.MPPSBH_i(config(x), 1).absorption_coefficient(env, struct('HL_method', 'linear')), substruct('()', {g_obj(env)}));
 handle_cost_function = @(x, env, g_obj) mean(1 - handle_alpha(x, env, g_obj));
 handle_objective = @(x, env, g_obj_cell) arrayfun(@(i) handle_cost_function(x, env, g_obj_cell{i}), 1:length(g_obj_cell) ,'UniformOutput', false);
 
@@ -276,27 +254,16 @@ timeGa = toc;
 
 %% Conditionnement du vecteur d'optimisation
 
-xopti_to_cell_array_of_alpha = @(x, env) arrayfun(@(i) vertcat(Cartouches.cartouche_globale(x(i, :)).alpha(env), ...
-                                                               Cartouches.cartouche_globale_HL_fp(x(i, :)).alpha(env), ...
-                                                               Cartouches.cartouche_globale_HL(x(i, :)).alpha(env), ...
-                                                               Cartouches.cartouche_globale_HL_iter(x(i, :)).alpha(env, 'iter')), ...
-                                                       1:size(x, 1), 'UniformOutput', false);
-
-
-xopti_to_cell_array_of_Zs = @(x, env) arrayfun(@(i) vertcat(Cartouches.cartouche_globale(x(i, :)).surface_impedance(env)/env.air.parameters.Z0, ...
-                                                            Cartouches.cartouche_globale_HL_fp(x(i, :)).surface_impedance(env)/env.air.parameters.Z0, ...
-                                                            Cartouches.cartouche_globale_HL(x(i, :)).surface_impedance(env)/env.air.parameters.Z0, ...
-                                                            Cartouches.cartouche_globale_HL_iter(x(i, :)).surface_impedance_iter(env)/env.air.parameters.Z0), ...
-                                                    1:size(x, 1), 'UniformOutput', false);
+xopti_to_cell_array_of_alpha = @(x, env, options) cell2mat ( arrayfun(@(i) Objets.MPPSBH_i(config(x(i, :)), 1).absorption_coefficient(env, options), ...
+                                                       1:size(x, 1), 'UniformOutput', false));
 
 % On récupère les vecteurs d'absorption des meilleures configurations
 [sorted_scores_opti, sorted_index_opti] = sort(fval);
 sorted_xopti = xopti(sorted_index_opti(:, 1), :);
-filtered_alpha = xopti_to_cell_array_of_alpha(sorted_xopti, env);
-filtered_Zs = xopti_to_cell_array_of_Zs(sorted_xopti, env);
+filtered_alpha = xopti_to_cell_array_of_alpha(sorted_xopti, env, options);
 
 % Tracé interractif des meilleurs résultats de l'optimisation multi objectif
-perso_interactive_multi_plot(env.w/(2*pi), filtered_alpha, filtered_Zs, 2000, Frequences);
+perso_interactive_multi_plot(env.w/(2*pi), filtered_alpha, [], 2000, Frequences);
 
 % On rajoute des barres pour représenter les bandes d'optimisation
 perso_plot_targetted_frequencies(Frequences, 1)

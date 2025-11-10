@@ -15,7 +15,7 @@ classdef classMMPP_HL_first_plate < classMMPP
                 pp = config.PlatesPorosity;
                 phr = config.PlatesHolesRadius;
                 pt = config.PlatesThickness;
-                obj.Configuration.ListOfSubelements{1} = classMPP_Circular_HL(classMPP_Circular_HL.create_config(s, pt(1), phr(1), pp(1)));
+                obj.Configuration.ListOfObjects{1} = classMPP_Circular_HL(classMPP_Circular_HL.create_config(s, pt(1), phr(1), pp(1)));
             end
         end
     end

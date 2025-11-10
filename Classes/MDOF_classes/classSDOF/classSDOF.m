@@ -18,14 +18,14 @@ classdef classSDOF < classelement
 
             % On choisit le modèle linéaire ou non
             if strcmp(config.HighLevel, 'false')
-                obj.Configuration.ListOfSubelements{end+1} = classMPP_Circular( ...
+                obj.Configuration.ListOfObjects{end+1} = classMPP_Circular( ...
                     classMPP_Circular.create_config(pp, phr, pt, cd * cw));
             elseif strcmp(config.HighLevel, 'true')
-                obj.Configuration.ListOfSubelements{end+1} = classMPP_Circular_HL( ...
+                obj.Configuration.ListOfObjects{end+1} = classMPP_Circular_HL( ...
                     classMPP_Circular_HL.create_config(pp, phr, pt, cd*cw));
             end
 
-            obj.Configuration.ListOfSubelements{end+1} = classcavity(classcavity.create_config(ct, cw, cd));
+            obj.Configuration.ListOfObjects{end+1} = classcavity(classcavity.create_config(ct, cw, cd));
         end
     
         function output_model = set_COMSOL_2D_Model(obj, input_model, index, env)

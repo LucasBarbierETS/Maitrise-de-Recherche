@@ -32,19 +32,19 @@ classdef Cell_MPPSBHr_HL < classelement
             pmd = (cid + cod)/2; % pore mean depth
 
             % Plaque perforée (Modèle de Maa)
-            obj.Configuration.ListOfSubelements{end+1} = classMPP_Circular_HL(classMPP_Circular.create_config(pp, phr, pt, ciw*cid));
+            obj.Configuration.ListOfObjects{end+1} = classMPP_Circular_HL(classMPP_Circular.create_config(pp, phr, pt, ciw*cid));
 
             % Cavité cylindrique
-            obj.Configuration.ListOfSubelements{end+1} = classcavity(classcavity.create_config(ct/2, ciw, cid));
+            obj.Configuration.ListOfObjects{end+1} = classcavity(classcavity.create_config(ct/2, ciw, cid));
 
             if strcmp(cm, 'volume')
                 % Cavité cubique en parallèle
                 cc = classcubicalcavity(classcubicalcavity.create_config(pmw, pmd, cw, cd, ct));
-                obj.Configuration.ListOfSubelements{end+1} = classjunction(classjunction.create_config(cc, pmw, pmd));
+                obj.Configuration.ListOfObjects{end+1} = classjunction(classjunction.create_config(cc, pmw, pmd));
             end
 
             % Cavité cylindrique
-            obj.Configuration.ListOfSubelements{end+1} = classcavity(classcavity.create_config(ct/2, pmw, pmd));
+            obj.Configuration.ListOfObjects{end+1} = classcavity(classcavity.create_config(ct/2, pmw, pmd));
         end
     end
 end

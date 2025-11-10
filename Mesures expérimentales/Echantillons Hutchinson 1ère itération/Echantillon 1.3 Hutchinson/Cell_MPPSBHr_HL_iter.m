@@ -33,14 +33,14 @@ classdef Cell_MPPSBHr_HL_iter < classelement
             Scav = pmw * pmd;
 
             % Plaque perforée (Modèle de Maa)
-            obj.Configuration.ListOfSubelements{end+1} = @(u_rms) classMPP_Circular_HL_iter(classMPP_Circular.create_config(pp, phr, pt, SMPP), u_rms);
+            obj.Configuration.ListOfObjects{end+1} = @(u_rms) classMPP_Circular_HL_iter(classMPP_Circular.create_config(pp, phr, pt, SMPP), u_rms);
 
             % Cavité cylindrique
-            obj.Configuration.ListOfSubelements{end+1} = classcavity(classcavity.create_config(ct, Scav));
+            obj.Configuration.ListOfObjects{end+1} = classcavity(classcavity.create_config(ct, Scav));
 
             % Cavité cubique en parallèle
             cc = classcubicalcavity(classcubicalcavity.create_config(pmw, pmd, cw, cd, ct));
-            obj.Configuration.ListOfSubelements{end+1} = classjunction(classjunction.create_config(Scav, cc));
+            obj.Configuration.ListOfObjects{end+1} = classjunction(classjunction.create_config(Scav, cc));
         end
     end
 

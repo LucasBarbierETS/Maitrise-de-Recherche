@@ -35,19 +35,19 @@ classdef Cell_MPPSBHr < classelement
             cm = config.CavityMethod;
 
             % Plaque perforée
-            obj.Configuration.ListOfSubelements{end+1} = classMPP_Circular(classMPP_Circular.create_config(p, phr, t, ciw*cid));
+            obj.Configuration.ListOfObjects{end+1} = classMPP_Circular(classMPP_Circular.create_config(p, phr, t, ciw*cid));
 
             % Cavité cylindrique
-            obj.Configuration.ListOfSubelements{end+1} = classcavity(classcavity.create_config(ct/2, ciw, cid));
+            obj.Configuration.ListOfObjects{end+1} = classcavity(classcavity.create_config(ct/2, ciw, cid));
 
             if strcmp(cm, 'volume')
                 % Cavité cubique en parallèle
                 cc = classcubicalcavity(classcubicalcavity.create_config(pmw, pmd, cw, cd, ct));
-                obj.Configuration.ListOfSubelements{end+1} = classjunction(classjunction.create_config(cc, pmw, pmd));
+                obj.Configuration.ListOfObjects{end+1} = classjunction(classjunction.create_config(cc, pmw, pmd));
             end
 
             % Cavité cylindrique
-            obj.Configuration.ListOfSubelements{end+1} = classcavity(classcavity.create_config(ct/2, pmw, pmd));
+            obj.Configuration.ListOfObjects{end+1} = classcavity(classcavity.create_config(ct/2, pmw, pmd));
         end
     end
 
