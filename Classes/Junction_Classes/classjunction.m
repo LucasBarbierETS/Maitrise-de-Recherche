@@ -1,4 +1,4 @@
-classdef classjunction < classsubelement
+classdef classjunction < classobject
 
 % References: 
 
@@ -19,11 +19,11 @@ classdef classjunction < classsubelement
 
         function obj = classjunction(config)  
                 
-            obj@classsubelement(config);
+            obj@classobject(config);
             obj.HandleAppBuilder = @(app, class_jcn) AppJunction.class_to_app(app, class_jcn);
         end
         
-        function TM = transfer_matrix(obj, env, varargin)
+        function [TM, options] = transfer_matrix(obj, env, options)
             
             % [1] eq.11
             config = obj.Configuration;

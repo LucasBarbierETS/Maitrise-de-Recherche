@@ -57,7 +57,7 @@ classdef classMPP_Circular < classJCA_Rigid
             obj@classJCA_Rigid(config);
         end
 
-        function [TM, options] = transfer_matrix(obj, env, options)
+        function TM = transfer_matrix(obj, env, options)
             
             obj.Configuration.AirFlowResistivity = ...
                 @(env, options) obj.compute_resistivity(env, obj.Configuration, options);
@@ -65,7 +65,7 @@ classdef classMPP_Circular < classJCA_Rigid
             obj.Configuration.Tortuosity = ...
                 @(env, options) obj.compute_tortuosity(env, obj.Configuration, options);
             
-            [TM, options] = transfer_matrix@classJCA_Rigid(obj, env, options);
+            TM = transfer_matrix@classJCA_Rigid(obj, env, options);
         end
     end
 
@@ -102,17 +102,17 @@ classdef classMPP_Circular < classJCA_Rigid
 
 
             % Vitesse RMS
-            if strcmp(options.HL_method, 'all')
+            if strcmp(options.HL, 'all')
                 v_rms = abs(options.u_ext/(s*sqrt(2)));
             
-            elseif strcmp(options.HL_method, 'retropropagation') || (strcmp(options.HL_method, 'first') && perso_isones(options.Id))
+            elseif strcmp(options.HL, 'retropropagation') || (strcmp(options.HL, 'first') && perso_isones(options.Id))
                 v_rms = abs(options.u_in/(s*sqrt(2)));
             else
                 v_rms = 0;
             end
 
             % Nombre de Mach
-            if strcmp(options.Flow_method, 'with') && perso_isones(options.Id)
+            if strcmp(options.Flow_Method, 'with') && perso_isones(options.Id)
                 M = options.M;
             else
                 M = 0;
@@ -123,6 +123,8 @@ classdef classMPP_Circular < classJCA_Rigid
             + env.air.parameters.Z0 * (1 - phi^2) / (phi * t) * q * M;
         end
 
+
+        %% ----- Tortuosité non-linéaire -----
         function tor = compute_tortuosity(env, config, options)
             
             % Gestion des options
@@ -140,31 +142,34 @@ classdef classMPP_Circular < classJCA_Rigid
             phi = config.RelativePorosity;
             pr = config.PerforationsRadius;
             t = config.Thickness;
-            s = config.Section;
 
             psi = 4/3;
             a = [1.0 -1.4092 0.0 0.33818 0.0 0.06793 -0.02287 0.003015 -0.01614];
             sum_a = dot(a, sqrt(phi).^(0:length(a)-1));
 
             % Vitesse RMS
-            if strcmp(options.HL_method, 'all')
+            if strcmp(options.HL, 'all')
                 v_rms = abs(options.u_ext/(s*sqrt(2)));
             
-            elseif strcmp(options.HL_method, 'retropropagation') || (strcmp(options.HL_method, 'first') && perso_isones(options.Id))
+            elseif strcmp(options.HL, 'retropropagation') || (strcmp(options.HL, 'first') && perso_isones(options.Id))
                 v_rms = abs(options.u_in/(s*sqrt(2)));
             else
                 v_rms = 0;
             end
 
             % Nombre de Mach
-            if strcmp(options.Flow_method, 'with') && perso_isones(options.Id)
+            if strcmp(options.Flow_Method, 'with') && perso_isones(options.Id)
                 M = options.M;
             else
                 M = 0;
             end
 
             tor =  1 + 2 * psi ./ (t * (1 + v_rms / (phi * env.air.parameters.c0))) ...
-                * 0.48 * sqrt(pi * pr^2) * sum_a / (1 + 305 * M^3);
+                * 0.48 * sqrt(pi * pr^2) * sum_a;
+            
+            if options.Flow == true
+                tor = tor / (1 + 305 * options.M^3);
+            end
         end
     end
 
@@ -174,7 +179,7 @@ classdef classMPP_Circular < classJCA_Rigid
         end
     end
 
-    methods (Static, Access = public) % Création des configurations
+    methods (Static, Access = public) %  Configurations
 
         function config = create_config(perforated_area_surface, thickness, perforations_radius, relative_porosity, options)
             
@@ -248,7 +253,6 @@ classdef classMPP_Circular < classJCA_Rigid
     end
 
     methods (Static, Access = public) % Validation
-        
         function validate(handle_env)
 
             % close all 

@@ -189,9 +189,8 @@ classdef classelement < classobject
                              'HL_method', "linear", ...
                              'Flow_method', "without", ...
                              'Id', 1, ...
-                             'u_ext', zeros(1, length(env.w)), ...
-                             'u_in', zeros(1, length(env.w)), ...
-                             'pt_in', env.pt);
+                             'u_ext', zeros(1, length(env.w), ...
+                             'u_in', zeros(1, length(env.w))
         
             valid = struct('HL_method', ["linear", "all", "first", "retropropagation"], ...
                            'Flow_method', ["with", "without"]);
@@ -199,6 +198,8 @@ classdef classelement < classobject
             options = parse_options(options, default, valid);
 
             % Initialisation de l'algorithme itératif
+            options.u_ext = zeros(1, length(env.w));
+            options.u_in = zeros(1, length(env.w));
             iter = 0;
             converged = false;
             S = obj.Configuration.Surface;
@@ -206,9 +207,9 @@ classdef classelement < classobject
             while ~converged && iter < options.max_iter
                 iter = iter + 1;
 
-                [TM, options] = obj.transfer_matrix(env, options);
-                Zs = S * TM.T11 ./ TM.T21;
-                u_ext = env.pt ./ Zs * S;
+                TM = obj.transfer_matrix(env, options);
+                Zs = S * TM.T11 ./ TM.T12;
+                u_ext = env.pt_ext ./ Zs * S;
 
                 % % Debog : Tracé de l'impédance de surface
                 % perso_figure('Impédance de surface dans classsubelement/surface_impedance');

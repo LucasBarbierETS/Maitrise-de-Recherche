@@ -83,6 +83,9 @@ classdef AppObject < handle
                     end
 
                     draw_wave_arrow(app, app.Graph.Components.ElementsGraph.UIObject, direction);
+                    app.Graph.Components.ElementsGraph.resize();
+                    app.Graph.Components.ElementsGraph.adjust_pictogram_sizes()
+
                 end
 
                 if isprop(obj, 'Content') && ~isempty(obj.Content)
@@ -94,7 +97,9 @@ classdef AppObject < handle
                         direction = 'horizontal';
                     end
 
-                    draw_wave_arrow(app, app.Graph.Components.SubelementsGraph.UIObject, direction)
+                    draw_wave_arrow(app, app.Graph.Components.SubelementsGraph.UIObject, direction);
+                    app.Graph.Components.SubelementsGraph.resize();
+                    app.Graph.Components.SubelementsGraph.adjust_pictogram_sizes()
                 end       
             end  
 
