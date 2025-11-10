@@ -58,8 +58,8 @@ classdef classQWL_Inlet < classJCA_Rigid
 
             E_inlet = classelement(classelement.create_config({Inlet, Cavity_inlet}, 'closed', A_uc));
             E = classelement(classelement.create_config({Cavity}, 'closed', A_uc));
-            alpha_model_inlet = E_inlet.alpha(env);
-            alpha_model = E.alpha(env);
+            alpha_model_inlet = E_inlet.absorption_coefficient(env);
+            alpha_model = E.absorption_coefficient(env);
 
             % Debog : Impédance de surface
             perso_figure('classQWL_Inlet - validate - Impédance de surface');

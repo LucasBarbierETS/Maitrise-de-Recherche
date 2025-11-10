@@ -11,7 +11,7 @@ my_plot = perso_plot_with_gradient('r', 'b', length(r));
 for i = 1:length(r)
     config = classSDOF.create_config(phi, r(i), pt, L, 30e-3, 30e-3, 'false');
     current_sol = classSDOF(config);
-    my_plot(i, env.w/(2*pi), current_sol.alpha(env), 'DisplayName', ['r = ', num2str(r(i)*1000), 'mm']);
+    my_plot(i, env.w/(2*pi), current_sol.absorption_coefficient(env), 'DisplayName', ['r = ', num2str(r(i)*1000), 'mm']);
 end
 
 title({'Etude paramétrique d''une solution SDOF';['phi = ', num2str(phi*100), '% - pt = ', num2str(pt*1000), 'mm - L = ', num2str(L*1000), 'mm']});
@@ -29,7 +29,7 @@ my_plot = perso_plot_with_gradient('g', 'y', length(phi));
 for i = 1:length(phi)
     config = classSDOF.create_config(phi(i), r, pt, L, 30e-3, 30e-3, 'false');
     current_sol = classSDOF(config);
-    my_plot(i, env.w/(2*pi), current_sol.alpha(env), 'DisplayName', ['phi = ', num2str(phi(i)*100), '%']);
+    my_plot(i, env.w/(2*pi), current_sol.absorption_coefficient(env), 'DisplayName', ['phi = ', num2str(phi(i)*100), '%']);
 end
 
 title({'Etude paramétrique d''une solution SDOF';['r = ', num2str(r*1000), 'mm - pt = ', num2str(pt*1000), 'mm - L = ', num2str(L*1000), 'mm']});

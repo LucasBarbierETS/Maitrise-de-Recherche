@@ -56,7 +56,7 @@ classdef classscreen
             env = create_environnement(23, 100800, 22, 1, 10000, 5000);
          
             % Création de l'élement 
-            alpha_model = classelement(classelement.create_config({screen, cavity}, 'closed', s)).alpha(env);
+            alpha_model = classelement(classelement.create_config({screen, cavity}, 'closed', s)).absorption_coefficient(env);
 
             % % importation des données de références
             % data = csvread('Verdière2013_fig4_E.txt');

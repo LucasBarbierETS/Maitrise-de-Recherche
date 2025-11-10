@@ -32,7 +32,7 @@ new_config = @(params) feval(@(var) classHelmholtz_Resonator.create_config(var.n
                                        x0_to_variables(params, var));
 
 buildHR = @(params) classHelmholtz_Resonator(new_config(params));
-cost_function = @(params, env) sum(((buildHR(params).alpha(env) - g(env)) .* (g(env) > 0.1)).^2);
+cost_function = @(params, env) sum(((buildHR(params).absorption_coefficient(env) - g(env)) .* (g(env) > 0.1)).^2);
 objective = @(params) cost_function(params, env);
 
 %% Fonction handle pour les contraintes
@@ -95,5 +95,5 @@ hr_opti_config = new_config(xopti);
 hr_opti = classHelmholtz_Resonator(hr_opti_config);
 
 figure()
-plot(env.w/(2*pi), g(env) ,"--", env.w/(2*pi), hr_opti.alpha(env));
+plot(env.w/(2*pi), g(env) ,"--", env.w/(2*pi), hr_opti.absorption_coefficient(env));
 xlim([0 2000]);

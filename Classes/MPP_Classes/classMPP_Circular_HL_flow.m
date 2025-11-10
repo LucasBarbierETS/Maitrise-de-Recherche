@@ -51,8 +51,8 @@ classdef classMPP_Circular_HL_flow < classMPP_Circular_HL
             E_HL_flow = classelement(classelement.create_config({plate_HL_flow, cavity}, 'closed', S));
     
             % Modèle non linéaire itératif
-            plot(env.w/(2*pi), E_HL.alpha(env, 'iter'), 'DisplayName', 'Prédiction du code HL sans écoulement');
-            plot(env.w/(2*pi), E_HL_flow.alpha(env, 'iter'), 'DisplayName', 'Prédiction du code HL avec écoulement');
+            plot(env.w/(2*pi), E_HL.absorption_coefficient(env, 'iter'), 'DisplayName', 'Prédiction du code HL sans écoulement');
+            plot(env.w/(2*pi), E_HL_flow.absorption_coefficient(env, 'iter'), 'DisplayName', 'Prédiction du code HL avec écoulement');
             plot(data5_1(:, 1), data5_1(:, 2), 'DisplayName', 'Prédiction du modèle de référence');
             perso_configure_alpha_figure(5000);
    
@@ -81,8 +81,8 @@ classdef classMPP_Circular_HL_flow < classMPP_Circular_HL
             E_HL_flow = classelement(classelement.create_config({plate_HL_flow, cavity}, 'closed', S));
     
             % Modèle non linéaire itératif
-            plot(env.w/(2*pi), E_HL.alpha(env, 'iter'), 'DisplayName', 'Prédiction du code HL sans écoulement');
-            plot(env.w/(2*pi), E_HL_flow.alpha(env, 'iter'), 'DisplayName', 'Prédiction du code HL avec écoulement');
+            plot(env.w/(2*pi), E_HL.absorption_coefficient(env, 'iter'), 'DisplayName', 'Prédiction du code HL sans écoulement');
+            plot(env.w/(2*pi), E_HL_flow.absorption_coefficient(env, 'iter'), 'DisplayName', 'Prédiction du code HL avec écoulement');
             plot(data5_2(:, 1), data5_2(:, 2), 'DisplayName', 'Prédiction du modèle de référence');
             perso_configure_alpha_figure(4000);
     
@@ -110,8 +110,8 @@ classdef classMPP_Circular_HL_flow < classMPP_Circular_HL
             % E_HL_flow = classelement(classelement.create_config({plate_HL_flow, cavity}, 'closed', S));
             % 
             % % Modèle non linéaire itératif
-            % plot(env.w/(2*pi), E_HL.alpha(env), 'DisplayName', 'Modèle non-linéaire sans écoulement');
-            % plot(env.w/(2*pi), E_HL_flow.alpha(env), 'DisplayName', 'Modèle non-linéaire avec écoulement');
+            % plot(env.w/(2*pi), E_HL.absorption_coefficient(env), 'DisplayName', 'Modèle non-linéaire sans écoulement');
+            % plot(env.w/(2*pi), E_HL_flow.absorption_coefficient(env), 'DisplayName', 'Modèle non-linéaire avec écoulement');
             % plot(data5_4(:, 1), data5_4(:, 2), 'DisplayName', 'Données de référence');
             % perso_configure_alpha_figure(5000);
             % 
@@ -140,8 +140,8 @@ classdef classMPP_Circular_HL_flow < classMPP_Circular_HL
             % E_HL_flow = classelement(classelement.create_config({plate_HL_flow, cavity}, 'closed', S));
             % 
             % % Modèle non linéaire itératif
-            % plot(env.w/(2*pi), E_HL.alpha(env), 'DisplayName', 'Modèle non-linéaire sans écoulement');
-            % plot(env.w/(2*pi), E_HL_flow.alpha(env), 'DisplayName', 'Modèle non-linéaire avec écoulement');
+            % plot(env.w/(2*pi), E_HL.absorption_coefficient(env), 'DisplayName', 'Modèle non-linéaire sans écoulement');
+            % plot(env.w/(2*pi), E_HL_flow.absorption_coefficient(env), 'DisplayName', 'Modèle non-linéaire avec écoulement');
             % plot(data5_5(:, 1), data5_5(:, 2), 'DisplayName', 'Données de référence');
             % perso_configure_alpha_figure(5000);
 

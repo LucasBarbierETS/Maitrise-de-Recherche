@@ -27,8 +27,8 @@ phi = 0.1;
 % MPPSBH_pd = classMPPSBH_Rectangular_pore_droit(config);
 % 
 % % calcul de la réponse des modèles analytiques
-% alpha_model = MPPSBH.alpha(env);
-% alpha_model_pd = MPPSBH_pd.alpha(env);
+% alpha_model = MPPSBH.absorption_coefficient(env);
+% alpha_model_pd = MPPSBH_pd.absorption_coefficient(env);
 % 
 % plot(env.w / (2*pi), alpha_model_pd, 'Color', 'b', 'LineWidth', 1, 'DisplayName', 'Modèle linéaire - Pore droit');
 % plot(env.w / (2*pi), alpha_model, 'Color', 'g', 'LineWidth', 1, 'DisplayName', 'Modèle linéaire - Pore trapézoidal discrétisé');
@@ -61,8 +61,8 @@ phi = 0.1;
 % MPPSBH_pd = classMPPSBH_Rectangular_pore_droit(config);
 % 
 % % calcul de la réponse des modèles analytiques
-% alpha_model = MPPSBH.alpha(env);
-% alpha_model_pd = MPPSBH_pd.alpha(env);
+% alpha_model = MPPSBH.absorption_coefficient(env);
+% alpha_model_pd = MPPSBH_pd.absorption_coefficient(env);
 % 
 % plot(env.w / (2*pi), alpha_model_pd, 'Color', 'b', 'LineWidth', 1, 'DisplayName', 'Modèle linéaire - Pore droit');
 % plot(env.w / (2*pi), alpha_model, 'Color', 'g', 'LineWidth', 1, 'DisplayName', 'Modèle linéaire - Pore trapézoidal discrétisé');
@@ -110,10 +110,10 @@ phi = 0.1;
 % % MPPSBH_Slit = classMPPSBH_Rectangular(config_Slit);
 % 
 % % calcul de la réponse des modèles analytiques
-% % alpha_model_MMPP = MMPP.alpha(env);
-% alpha_model_MPPSBH_MMPP = MPPSBH_MMPP.alpha(env);
-% alpha_model_MPPSBH_square = MPPSBH_Square.alpha(env);
-% % alpha_model_MPPSBH_slit = MPPSBH_Slit.alpha(env);
+% % alpha_model_MMPP = MMPP.absorption_coefficient(env);
+% alpha_model_MPPSBH_MMPP = MPPSBH_MMPP.absorption_coefficient(env);
+% alpha_model_MPPSBH_square = MPPSBH_Square.absorption_coefficient(env);
+% % alpha_model_MPPSBH_slit = MPPSBH_Slit.absorption_coefficient(env);
 % 
 % % plot(env.w / (2*pi), alpha_model_MMPP, 'Color', 'b', 'LineWidth', 1, 'DisplayName', 'Modèle linéaire - classMMPP');
 % plot(env.w / (2*pi), alpha_model_MPPSBH_MMPP, 'Color', 'b', 'LineWidth', 1, 'DisplayName', 'Modèle linéaire - répartition uniforme');
@@ -164,10 +164,10 @@ phi = 0.1;
 % MPPSBH_Slit = classMPPSBH_Rectangular(config_Slit);
 % 
 % % calcul de la réponse des modèles analytiques
-% % alpha_model_MMPP = MMPP.alpha(env);
-% alpha_model_MPPSBH_MMPP = MPPSBH_MMPP.alpha(env);
-% alpha_model_MPPSBH_square = MPPSBH_Square.alpha(env);
-% alpha_model_MPPSBH_slit = MPPSBH_Slit.alpha(env);
+% % alpha_model_MMPP = MMPP.absorption_coefficient(env);
+% alpha_model_MPPSBH_MMPP = MPPSBH_MMPP.absorption_coefficient(env);
+% alpha_model_MPPSBH_square = MPPSBH_Square.absorption_coefficient(env);
+% alpha_model_MPPSBH_slit = MPPSBH_Slit.absorption_coefficient(env);
 % 
 % % plot(env.w / (2*pi), alpha_model_MMPP, 'Color', 'b', 'LineWidth', 1, 'DisplayName', 'Modèle linéaire - classMMPP');
 % plot(env.w / (2*pi), alpha_model_MPPSBH_MMPP, 'Color', 'b', 'LineWidth', 1, 'DisplayName', 'Modèle linéaire - uniforme');
@@ -207,7 +207,7 @@ N_var = [2, 4, 8, 16, 32];
 for i= 1:length(N_var)
 
     MPPSBH = classMPPSBH_Rectangular(config(N_var(i)));
-    alpha_model = MPPSBH.alpha(env);
+    alpha_model = MPPSBH.absorption_coefficient(env);
     plot(env.w / (2*pi), alpha_model, 'LineWidth', 1, 'DisplayName', ['Modèle linéaire - ', num2str(N_var(i)), ' plaques']);
 
 end
@@ -225,7 +225,7 @@ config = @(N) classMPPSBH_Rectangular.create_config(W^2, N,...
 for i= 1:length(N_var)
 
     MPPSBH = classMPPSBH_Rectangular(config(N_var(i)));
-    alpha_model = MPPSBH.alpha(env);
+    alpha_model = MPPSBH.absorption_coefficient(env);
     plot(env.w / (2*pi), alpha_model, 'LineWidth', 1, 'DisplayName', ['Modèle linéaire - ', num2str(N_var(i)), ' plaques']);
 
 end
@@ -265,11 +265,11 @@ MPPSBH_Alt = classMPPSBH_Rectangular(config_Alt);
 MPPSBH_Inv_Alt = classMPPSBH_Rectangular(config_Inv_Alt);
 MPPSBH_Autre = classMPPSBH_Rectangular(config_Autre);
 
-alpha_model = MPPSBH.alpha(env);
-alpha_model_Inv = MPPSBH_Inv.alpha(env);
-alpha_model_Alt = MPPSBH_Alt.alpha(env);
-alpha_model_Inv_Alt = MPPSBH_Inv_Alt.alpha(env);
-alpha_model_Autre = MPPSBH_Autre.alpha(env);
+alpha_model = MPPSBH.absorption_coefficient(env);
+alpha_model_Inv = MPPSBH_Inv.absorption_coefficient(env);
+alpha_model_Alt = MPPSBH_Alt.absorption_coefficient(env);
+alpha_model_Inv_Alt = MPPSBH_Inv_Alt.absorption_coefficient(env);
+alpha_model_Autre = MPPSBH_Autre.absorption_coefficient(env);
 
 plot(env.w / (2*pi), alpha_model, 'Color', 'k', 'LineWidth', 1, 'DisplayName', 'Modèle linéaire');
 plot(env.w / (2*pi), alpha_model_Inv, 'Color', 'b', 'LineWidth', 1, 'DisplayName', 'Modèle linéaire - disposition inversé');

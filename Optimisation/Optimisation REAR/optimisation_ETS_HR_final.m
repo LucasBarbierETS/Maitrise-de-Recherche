@@ -389,10 +389,10 @@ Cartouches.cartouche_globale = @(x) classelementassembly(classelementassembly.cr
 %% Fonctions coût
 
 % Evaluation du coût sur la cartouche globale
-cost_function_obj0 = @(x, env) sum(((Cartouches.cartouche_globale(x).alpha(env) - g_obj0(env)) .* (g_obj0(env) > 0.1)).^2, 'omitnan');
-cost_function_obj1 = @(x, env) sum(((Cartouches.cartouche_globale(x).alpha(env) - g_obj1(env)) .* (g_obj1(env) > 0.1)).^2, 'omitnan');
-cost_function_obj2 = @(x, env) sum(((Cartouches.cartouche_globale(x).alpha(env) - g_obj2(env)) .* (g_obj2(env) > 0.1)).^2, 'omitnan');
-cost_function_obj3 = @(x, env) sum(((Cartouches.cartouche_globale(x).alpha(env) - g_obj3(env)) .* (g_obj3(env) > 0.1)).^2, 'omitnan');
+cost_function_obj0 = @(x, env) sum(((Cartouches.cartouche_globale(x).absorption_coefficient(env) - g_obj0(env)) .* (g_obj0(env) > 0.1)).^2, 'omitnan');
+cost_function_obj1 = @(x, env) sum(((Cartouches.cartouche_globale(x).absorption_coefficient(env) - g_obj1(env)) .* (g_obj1(env) > 0.1)).^2, 'omitnan');
+cost_function_obj2 = @(x, env) sum(((Cartouches.cartouche_globale(x).absorption_coefficient(env) - g_obj2(env)) .* (g_obj2(env) > 0.1)).^2, 'omitnan');
+cost_function_obj3 = @(x, env) sum(((Cartouches.cartouche_globale(x).absorption_coefficient(env) - g_obj3(env)) .* (g_obj3(env) > 0.1)).^2, 'omitnan');
 
 % objective = @(x) [cost_function_Poly_obj0(x, env(dB)), cost_function_obj1(x, env(dB))];
 % objective = @(x) [cost_function_obj1(x, env(dB)), cost_function_obj2(x, env(dB))];
@@ -451,8 +451,8 @@ timeGa = toc;
 
 %% Conditionnement du vecteur d'optimisation
 
-xopti_to_cell_array_of_global_assembly_alpha = @(x, env) arrayfun(@(i) Cartouches.cartouche_globale(x(i, :)).alpha(env), 1:size(x, 1), 'UniformOutput', false);
-% xopti_to_cell_array_of_global_assembly_alpha = @(x, env) arrayfun(@(i) Cartouches.cartouche_ETS(x(i, :)).alpha(env), 1:size(x, 1), 'UniformOutput', false);
+xopti_to_cell_array_of_global_assembly_alpha = @(x, env) arrayfun(@(i) Cartouches.cartouche_globale(x(i, :)).absorption_coefficient(env), 1:size(x, 1), 'UniformOutput', false);
+% xopti_to_cell_array_of_global_assembly_alpha = @(x, env) arrayfun(@(i) Cartouches.cartouche_ETS(x(i, :)).absorption_coefficient(env), 1:size(x, 1), 'UniformOutput', false);
 
 cell_of_MPPSBH_assembly_alpha_to_mean_alpha = @(alpha_cell_array, gabarit) arrayfun(@(i) mean(alpha_cell_array{i}(gabarit)), 1:size(alpha_cell_array, 2), 'UniformOutput', false);
 

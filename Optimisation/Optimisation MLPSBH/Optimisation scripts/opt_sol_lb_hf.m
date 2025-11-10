@@ -50,7 +50,7 @@ new_config = @(params) feval(@(var) classMPPSBH_Rectangular.create_config(var.N(
                                        x0_to_variables(params, var));
 
 buildMPPSBH = @(params) classMPPSBH_Rectangular(new_config(params));
-cost_function = @(params, env) sum(((buildMPPSBH(params).alpha(env) - g(env)) .* (g(env) > 0.1)).^2);
+cost_function = @(params, env) sum(((buildMPPSBH(params).absorption_coefficient(env) - g(env)) .* (g(env) > 0.1)).^2);
 objective = @(params) cost_function(params, env);
 
 
@@ -104,6 +104,6 @@ sol_lb_mf_opti = classMPPSBH_Rectangular(sol_lb_mf_opti_config);
 
 
 figure()
-plot(env.w/(2*pi), g(env) ,"--", env.w/ (2*pi), sol_lb_mf_opti.alpha(env));
+plot(env.w/(2*pi), g(env) ,"--", env.w/ (2*pi), sol_lb_mf_opti.absorption_coefficient(env));
 xlim([0 2000]);
 

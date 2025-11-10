@@ -60,7 +60,7 @@ x0_to_list_of_MPPSBH = @(x0, NS) arrayfun(@(i) x0_to_MPPSBH_i(x0, i), 1:NS, 'Uni
 
 params_to_MPPSBH_assembly = @(x0) classelementassembly(classelementassembly.create_config(x0_to_list_of_MPPSBH(x0, NS)));
 
-cost_function = @(x0, env) sum(((params_to_MPPSBH_assembly(x0).alpha(env) - g_lb_hf(env)) .* (g_lb_hf(env) > 0.1)).^2);
+cost_function = @(x0, env) sum(((params_to_MPPSBH_assembly(x0).absorption_coefficient(env) - g_lb_hf(env)) .* (g_lb_hf(env) > 0.1)).^2);
 
 objective = @(x0) cost_function(reshape(x0, N, NV, NS), env);
 
@@ -106,7 +106,7 @@ MPPSBH_lb_hf_4_config = MPPSBH_lb_hf_4.Configuration;
 
 % Affichage graphique
 figure()
-plot(env.w/(2*pi), g_lb_hf(env) ,"--", env.w/ (2*pi), assembly_lb_hf_opti.alpha(env));
+plot(env.w/(2*pi), g_lb_hf(env) ,"--", env.w/ (2*pi), assembly_lb_hf_opti.absorption_coefficient(env));
 xlim([0 2000]);
 
 % % Validation numérique

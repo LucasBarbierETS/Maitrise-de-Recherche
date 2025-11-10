@@ -131,5 +131,5 @@ Tube3D_ap.plot_alpha('Modélisation numérique 3D - AP')
 % MPPSBH_LV = classMPPSBH_Rectangular_iter2(eval(['config_1_', num2str(N), '_LV']));
 % 
 % subplot(2, 2, 1); hold on 
-% plot(env.w/(2*pi), MPPSBH_PW.alpha(env), 'DisplayName', 'Modèle analytique linéaire - PW');
-% plot(env.w/(2*pi), MPPSBH_LV.alpha(env), 'DisplayName', 'Modèle analytique linéaire - LV');
+% plot(env.w/(2*pi), MPPSBH_PW.absorption_coefficient(env), 'DisplayName', 'Modèle analytique linéaire - PW');
+% plot(env.w/(2*pi), MPPSBH_LV.absorption_coefficient(env), 'DisplayName', 'Modèle analytique linéaire - LV');

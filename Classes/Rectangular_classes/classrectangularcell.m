@@ -59,20 +59,20 @@ classdef classrectangularcell < classelement
             cm = obj.Configuration.CavityModel;
 
             % Demi-pore d'entrée
-            obj.ListOfSubelements{end+1} = classcavity(ct/2);
+            obj.ListOfObjects{end+1} = classcavity(ct/2);
 
             % Changement de section d'entrée
-            obj.ListOfSubelements{end+1} = classsectionchange(mpli * mpwi, mpl * mpw);
+            obj.ListOfObjects{end+1} = classsectionchange(mpli * mpwi, mpl * mpw);
 
             % Cavité annulaire
             annular_cavity = classrectangularcavity(mpl, mpw, cl, cw, ct, cm);
-            obj.ListOfSubelements{end+1} = classjunction_rectangular(annular_cavity, mpli, mpwi, mplo, mpwo, ct);
+            obj.ListOfObjects{end+1} = classjunction_rectangular(annular_cavity, mpli, mpwi, mplo, mpwo, ct);
 
             % Changement de section de sortie
-            obj.ListOfSubelements{end+1} = classsectionchange(mpl * mpw, mplo * mpwo);
+            obj.ListOfObjects{end+1} = classsectionchange(mpl * mpw, mplo * mpwo);
 
             % Demi-pore de sortie
-            obj.ListOfSubelements{end+1} = classcavity(ct/2);
+            obj.ListOfObjects{end+1} = classcavity(ct/2);
 
         end
     end

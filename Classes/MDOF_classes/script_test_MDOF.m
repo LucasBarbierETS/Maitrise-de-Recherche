@@ -50,7 +50,7 @@ MDOF = classMDOF(config);
 % Calculer les matrices de transfert et l'impédance de surface
 TM = MDOF.transfermatrix(air, w);
 Zs = MDOF.surfaceImpedance(air, w);
-alpha = MDOF.alpha(air, w);
+alpha = MDOF.absorption_coefficient(air, w);
 fpeak = MDOF.alpha_peak(air, w);
 
 % Afffielicher les paramètres de la configuration

@@ -101,7 +101,7 @@ config.plates_perforations_dimensions = {'r1', 'r2', 'r3', 'r4'};
 
 new_config = @(params) replace_fields(config, x0_to_variables(params, variables));
 build_MDOF = @(params) classMDOF(new_config(params));
-cost_function = @(params, air, w) sum(build_MDOF(params).alpha(air, w) - alpha_g(w).^2);
+cost_function = @(params, air, w) sum(build_MDOF(params).absorption_coefficient(air, w) - alpha_g(w).^2);
 objective = @(params) cost_function(params, air, w);
 
 % Options d'optimisation
@@ -156,11 +156,11 @@ Ms_sol = build_MDOF(xoptiMs);
 % Tracé des solutions obtenus
 
 % figure()
-% plot(f, alpha_g(w) ,"--", f, Ms_sol.alpha(air, w));
+% plot(f, alpha_g(w) ,"--", f, Ms_sol.absorption_coefficient(air, w));
 % legend('gabarit', 'MultiStart');
 
 % figure()
-% plot(f, alpha_g(w) ,"--", f, Ms_sol.alpha(air, w), f, Gs_sol.alpha(air, w), f, Ga_sol.alpha(air, w));
+% plot(f, alpha_g(w) ,"--", f, Ms_sol.absorption_coefficient(air, w), f, Gs_sol.absorption_coefficient(air, w), f, Ga_sol.absorption_coefficient(air, w));
 % legend('gabarit', 'MultiStart', 'GlobalSearch', 'Genetic algorythm');
 
 

@@ -63,7 +63,7 @@ function model = ImpedanceTube2DModel(list_of_solutions, env)
 
     % Mise en place des solutions
     for i = 1:length(list_of_solutions)
-        list_of_subelements = list_of_solutions{i}.Configuration.ListOfSubelements;
+        list_of_subelements = list_of_solutions{i}.Configuration.ListOfObjects;
         for j = 1:length(list_of_subelements)
             model = list_of_subelements{j}.set_COMSOL_2D_Model(model, i, j, env);
         end

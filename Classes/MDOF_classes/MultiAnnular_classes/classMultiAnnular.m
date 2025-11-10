@@ -49,21 +49,21 @@ classdef classMultiAnnular < classelement
                 end_effect = @(i) classQWL_Circle(classQWL_Circle.create_config(hend(i), rmp(i)));
                 % end_effect = @(i) classJCA_Rigid(classJCA_Rigid.create_config(Smp(i), hend(i), 1, 1, sig_mp, rmp(i), rmp(i)));
 
-                obj.Configuration.ListOfSubelements{end+1} = end_effect(1);
-                % obj.Configuration.ListOfSubelements{end+1} = half_main_pore(1);
+                obj.Configuration.ListOfObjects{end+1} = end_effect(1);
+                % obj.Configuration.ListOfObjects{end+1} = half_main_pore(1);
 
                 % Boucle sur les cavités et plaques
                 for i = 1:N - 1
 
-                    obj.Configuration.ListOfSubelements{end+1} = half_main_pore(i);
-                    % obj.Configuration.ListOfSubelements{end+1} = end_effect(i);
-                    obj.Configuration.ListOfSubelements{end+1} = annular_cell(i); 
-                    obj.Configuration.ListOfSubelements{end+1} = half_main_pore(i+1);
+                    obj.Configuration.ListOfObjects{end+1} = half_main_pore(i);
+                    % obj.Configuration.ListOfObjects{end+1} = end_effect(i);
+                    obj.Configuration.ListOfObjects{end+1} = annular_cell(i); 
+                    obj.Configuration.ListOfObjects{end+1} = half_main_pore(i+1);
                 end
                 
-                obj.Configuration.ListOfSubelements{end+1} = half_main_pore(end);
-                obj.Configuration.ListOfSubelements{end+1} = annular_cell(end);
-                obj.Configuration.ListOfSubelements{end+1} = end_effect(end);
+                obj.Configuration.ListOfObjects{end+1} = half_main_pore(end);
+                obj.Configuration.ListOfObjects{end+1} = annular_cell(end);
+                obj.Configuration.ListOfObjects{end+1} = end_effect(end);
             end 
         end
     end
@@ -96,12 +96,12 @@ classdef classMultiAnnular < classelement
 
             % % Debog : Comparaison entre les admittances de surface des cavités annulaires avec Hankel et avec l'approximation volumique
             % perso_figure('Debog - classannularcavity_cylindrical dans classMultiAnnular/validation - Zs_Hankel / Zs_Volume');
-            % annular_cavity = MultiAnnular.Configuration.ListOfSubelements{3}.Configuration.ListOfSubelements{2}.Configuration.JunctionElement;
+            % annular_cavity = MultiAnnular.Configuration.ListOfObjects{3}.Configuration.ListOfObjects{2}.Configuration.JunctionElement;
             % perso_plot_surface_impedance(annular_cavity.surface_impedance(env), env, 'Hankel');
             % annular_cavity.Configuration.CavityModel = 'Volume';
             % perso_plot_surface_impedance(annular_cavity.surface_impedance(env), env, 'Volume');
 
-            alpha_model = MultiAnnular_QWL.alpha(env);
+            alpha_model = MultiAnnular_QWL.absorption_coefficient(env);
             
             % importation des données de références
             data_mes = readmatrix('validation classMultiAnnular Dupont2018 fig5 black.txt');
@@ -127,7 +127,7 @@ classdef classMultiAnnular < classelement
             % création de l'objet de classe
             N = 15;
             MultiAnnular_QWL = classMultiAnnular_QWL(classMultiAnnular.create_config(22.2e-3, perso_interp_config({{4e-3, 0.5e-3, 15, 1}}, 15), 1e-3, 21e-3, 1e-3, N));
-            alpha_model = MultiAnnular_QWL.alpha(env);
+            alpha_model = MultiAnnular_QWL.absorption_coefficient(env);
 
             % importation des données de références
             data_mes = readmatrix('validation classMultiAnnular Bezançon2024 fig5b black.txt');

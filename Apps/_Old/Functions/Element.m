@@ -4,7 +4,7 @@ classdef Element
     
     properties
         SurfaceRatio
-        ListOfSubelements
+        ListOfObjects
         ElementThickness
         EndStatus = 'opened' % 'opened'(default mode) or 'closed'
     end
@@ -13,7 +13,7 @@ classdef Element
         function obj = Element(surface_ratio,list_of_subelements,end_status)
             %SUBELEMENT Construct an instance of this class
             %   Detailed explanation goes here
-            obj.ListOfSubelements = list_of_subelements;
+            obj.ListOfObjects = list_of_subelements;
             obj.EndStatus = end_status;
             obj.SurfaceRatio = surface_ratio;
             element_thickness = 0;
@@ -26,10 +26,10 @@ classdef Element
         function TM = transferMatrix(obj,Air,w)
             %METHOD1 Summary of this method goes here
             %   Detailed explanation goes here
-            tm = obj.ListOfSubelements{1}.transferMatrix(Air,w);
-            if length(obj.ListOfSubelements)>1
-                for i = 2:length(obj.ListOfSubelements)
-                    tm = matrixProduct(tm,obj.ListOfSubelements{i}.transferMatrix(Air,w));
+            tm = obj.ListOfObjects{1}.transferMatrix(Air,w);
+            if length(obj.ListOfObjects)>1
+                for i = 2:length(obj.ListOfObjects)
+                    tm = matrixProduct(tm,obj.ListOfObjects{i}.transferMatrix(Air,w));
                 end
             end
             TM = tm;
@@ -45,7 +45,7 @@ end
 %     
 %     properties
 %         SurfaceRatio
-%         ListOfSubelements
+%         ListOfObjects
 %         EndStatus % 'opened' or 'closed'
 %     end
 %     
@@ -53,7 +53,7 @@ end
 %         function obj = Element(surface_ratio,list_of_subelements,end_status)
 %             %SUBELEMENT Construct an instance of this class
 %             %   Detailed explanation goes here
-%             obj.ListOfSubelements = list_of_subelements;
+%             obj.ListOfObjects = list_of_subelements;
 %             obj.EndStatus = end_status;
 %             obj.SurfaceRatio = surface_ratio;
 %         end
@@ -61,10 +61,10 @@ end
 %         function TM = transferMatrix(obj,Air,w)
 %             %METHOD1 Summary of this method goes here
 %             %   Detailed explanation goes here
-%             tm = obj.ListOfSubelements(1).transferMatrix(Air,w);
-%             if length(obj.ListOfSubelements)>1
-%                 for i = 2:length(obj.ListOfSubelements)
-%                     tm = matrixProduct(tm,obj.ListOfSubelements(i).transferMatrix(Air,w));
+%             tm = obj.ListOfObjects(1).transferMatrix(Air,w);
+%             if length(obj.ListOfObjects)>1
+%                 for i = 2:length(obj.ListOfObjects)
+%                     tm = matrixProduct(tm,obj.ListOfObjects(i).transferMatrix(Air,w));
 %                 end
 %             end
 %             TM = tm;

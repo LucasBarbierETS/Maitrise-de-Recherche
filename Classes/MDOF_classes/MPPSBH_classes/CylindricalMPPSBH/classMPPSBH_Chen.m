@@ -24,19 +24,19 @@ classdef classMPPSBH_Chen < classelement
                 for i = 1:length(pp)
 
                     % Plaque perforée (Modèle de Maa)
-                    obj.Configuration.ListOfSubelements{end+1} = classMPP_Maa(classMPP_Maa.create_config(pi*mpr(i)^2, pt(i), phr(i), pp(i)));
+                    obj.Configuration.ListOfObjects{end+1} = classMPP_Maa(classMPP_Maa.create_config(pi*mpr(i)^2, pt(i), phr(i), pp(i)));
         
                     % Cavité cylindrique
                     hc = (mpr(i) + mpr(i+1))/2;
-                    obj.Configuration.ListOfSubelements{end+1} = classcavity_cylindrical(classcavity_cylindrical.create_config(ct(i)/2, hc));
-                    % obj.Configuration.ListOfSubelements{end+1} = classcavity_conical(classcavity_conical.create_config(ct(i)/2, mpr(i), hc));
+                    obj.Configuration.ListOfObjects{end+1} = classcavity_cylindrical(classcavity_cylindrical.create_config(ct(i)/2, hc));
+                    % obj.Configuration.ListOfObjects{end+1} = classcavity_conical(classcavity_conical.create_config(ct(i)/2, mpr(i), hc));
         
                     % Cavité annnulaire cylindrique
                     annular_cavity = classannularcavity_cylindrical(classannularcavity_cylindrical.create_config(hc, cavr, ct(i), 'Volume'));
-                    obj.Configuration.ListOfSubelements{end+1} = classjunction_cylindrical(classjunction_cylindrical.create_config(annular_cavity, hc, ct(i)));
+                    obj.Configuration.ListOfObjects{end+1} = classjunction_cylindrical(classjunction_cylindrical.create_config(annular_cavity, hc, ct(i)));
 
-                    obj.Configuration.ListOfSubelements{end+1} = classcavity_cylindrical(classcavity_cylindrical.create_config(ct(i)/2, hc));
-                    % obj.Configuration.ListOfSubelements{end+1} = classcavity_conical(classcavity_conical.create_config(ct(i)/2, hc, mpr(i+1)));
+                    obj.Configuration.ListOfObjects{end+1} = classcavity_cylindrical(classcavity_cylindrical.create_config(ct(i)/2, hc));
+                    % obj.Configuration.ListOfObjects{end+1} = classcavity_conical(classcavity_conical.create_config(ct(i)/2, hc, mpr(i+1)));
                 end
             end
         end
@@ -90,7 +90,7 @@ classdef classMPPSBH_Chen < classelement
             config = classMPPSBH_Chen.create_config(pi*R^2, ...
                 N, {t}, {L/N - t}, R, {{R, rend, N+1, 1}}, ...
                 {d/2}, {phi});
-            alpha_model_lin = classMPPSBH_Chen(config).alpha(env);
+            alpha_model_lin = classMPPSBH_Chen(config).absorption_coefficient(env);
             plot(env.w / (2*pi), alpha_model_lin, 'Color', 'g', 'LineWidth', 1, 'DisplayName', 'Prédiction du code analytique');
             perso_configure_alpha_figure(3000);
 
@@ -107,7 +107,7 @@ classdef classMPPSBH_Chen < classelement
             config = classMPPSBH_Chen.create_config(pi*R^2, ...
                 N, {t}, {L/N - t}, R, {{R, rend, N+1, 1/2}}, ...
                 {d/2}, {phi});
-            alpha_model_quad = classMPPSBH_Chen(config).alpha(env);
+            alpha_model_quad = classMPPSBH_Chen(config).absorption_coefficient(env);
             plot(env.w / (2*pi), alpha_model_quad, 'Color', 'g', 'LineWidth', 1, 'DisplayName', 'Modèle analytique');
             perso_configure_alpha_figure(3000);
 

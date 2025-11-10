@@ -25,7 +25,7 @@ classdef classcavity_conical_subdiv < classelement
                 r = linspace(ri, ro, N);
 
                 for i = 1:N
-                    obj.Configuration.ListOfSubelements{end+1} = classcavity_cylindrical(classcavity_cylindrical.create_config(ct/N, r(i)));
+                    obj.Configuration.ListOfObjects{end+1} = classcavity_cylindrical(classcavity_cylindrical.create_config(ct/N, r(i)));
                 end
             end
         end

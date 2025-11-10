@@ -220,7 +220,7 @@ classdef classMPP_Circular_HL_bis < classJCA_Rigid
 
             for i = 1:length(dB)
                 env.p = db2rms(dB(i));
-                alpha_model_HL = E_HL.alpha(env);
+                alpha_model_HL = E_HL.absorption_coefficient(env);
                 color = rand(1, 3);
 
                 % importation des données de références
@@ -271,7 +271,7 @@ classdef classMPP_Circular_HL_bis < classJCA_Rigid
 
             for i = 1:length(dB)
                 env.p = db2rms(dB(i));
-                alpha_model_HL = E_HL.alpha(env);
+                alpha_model_HL = E_HL.absorption_coefficient(env);
                 color = rand(1, 3);
 
                 % importation des données de références
@@ -320,7 +320,7 @@ classdef classMPP_Circular_HL_bis < classJCA_Rigid
 
             for i = 1:length(dB)
                 env.p = db2rms(dB(i));
-                alpha_model_HL = E_HL.alpha(env);
+                alpha_model_HL = E_HL.absorption_coefficient(env);
                 color = rand(1, 3);
 
                 % importation des données de références

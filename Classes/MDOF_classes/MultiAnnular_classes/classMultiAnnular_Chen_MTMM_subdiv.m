@@ -22,18 +22,18 @@ classdef classMultiAnnular_Chen_MTMM_subdiv < classMultiAnnular_Chen_MTMM
                 for i = 1:config.CellNumber
 
                     % Cavité cylindrique avec pertes
-                    obj.Configuration.ListOfSubelements{end+1} = classcavity_cylindrical(classcavity_cylindrical.create_config(tmp, rmp(i)));
+                    obj.Configuration.ListOfObjects{end+1} = classcavity_cylindrical(classcavity_cylindrical.create_config(tmp, rmp(i)));
         
                     % Cavité conique
                     hc = (rmp(i) + rmp(i+1))/2;
-                    obj.Configuration.ListOfSubelements{end+1} = classcavity_conical_subdiv(classcavity_conical_subdiv.create_config(hde/2, rmp(i), hc, 10));
+                    obj.Configuration.ListOfObjects{end+1} = classcavity_conical_subdiv(classcavity_conical_subdiv.create_config(hde/2, rmp(i), hc, 10));
         
                     % Cavité annnulaire toroidale
                     annular_cavity = classannularcavity_toroidal(classannularcavity_toroidal.create_config(rmp(i), rmp(i+1), rde, hde, 'Hankel_Chen'));
-                    obj.Configuration.ListOfSubelements{end+1} = classjunction_cylindrical(classjunction_cylindrical.create_config(annular_cavity, hc, hde));
+                    obj.Configuration.ListOfObjects{end+1} = classjunction_cylindrical(classjunction_cylindrical.create_config(annular_cavity, hc, hde));
 
                     % Cavité conique
-                    obj.Configuration.ListOfSubelements{end+1} = classcavity_conical_subdiv(classcavity_conical_subdiv.create_config(hde/2, hc, rmp(i+1), 10));
+                    obj.Configuration.ListOfObjects{end+1} = classcavity_conical_subdiv(classcavity_conical_subdiv.create_config(hde/2, hc, rmp(i+1), 10));
                 end
             end
         end

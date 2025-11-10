@@ -74,9 +74,9 @@ N = 6; % Nombre de plaques optimisées indépendantes pour chaque solution
 
 cavities_total_thickness = ETS_total_thickness - N * ETS_plates_thickness;
 
-NP = 3; % Nombre de points de départ
+% NP = 3; % Nombre de points de départ
 % NP = 100;
-% NP = 50;
+NP = 50;
 % NP = 10;
 % NP = 5;
 % NP = 2;
@@ -201,7 +201,7 @@ handle_nonlconf = @(x) perso_nonlconf_1_solution(config(x), depth_holes_number, 
 %% Fonctions coût
 
 % Définition de la cartouche sur laquelle l'optimisation à lieu
-handle_alpha = @(x, env, g_obj) subsref(Objects.assembly_of_MPPSBH(x).alpha(env), substruct('()', {g_obj(env)}));
+handle_alpha = @(x, env, g_obj) subsref(Objects.assembly_of_MPPSBH(x).absorption_coefficient(env, struct('HL_method', 'linear')), substruct('()', {g_obj(env)}));
 handle_cost_function = @(x, env, g_obj) mean(1 - handle_alpha(x, env, g_obj));
 handle_objective = @(x, env, g_obj_cell) arrayfun(@(i) handle_cost_function(x, env, g_obj_cell{i}), 1:length(g_obj_cell) ,'UniformOutput', false);
 
@@ -244,7 +244,7 @@ timeGa = toc;
 
 %% Conditionnement du vecteur d'optimisation
 
-xopti_to_cell_array_of_alpha = @(x, env) arrayfun(@(i) vertcat(Objects.assembly_of_MPPSBH(xopti).alpha(env)), ...
+xopti_to_cell_array_of_alpha = @(x, env) arrayfun(@(i) vertcat(Objects.assembly_of_MPPSBH(xopti).absorption_coefficient(env)), ...
                                                        1:size(x, 1), 'UniformOutput', false);
 
 

@@ -19,13 +19,13 @@ classdef classMTP1_with_slit_cavities < classMTP
 
          function obj = classMTP1_with_slit_cavities(config)
             
-            % On appelle le superconstructueur. 'obj' hérite des propriétés .ListOfSubelements et .EndStatus
+            % On appelle le superconstructueur. 'obj' hérite des propriétés .ListOfObjects et .EndStatus
             obj@classMTP(config);
             
             obj.Configuration = config; 
 
             % 1ère couche
-            obj.ListOfSubelements{end + 1} = config.PorousMaterial(config.LayersThickness(1));
+            obj.ListOfObjects{end + 1} = config.PorousMaterial(config.LayersThickness(1));
             
             % On crée une fonction temporaire qui permet d'appeler et modifier la méthode .equivalentparameters des couches de plaque
             function  ep = modifiedequivalentparameters(obj, nui, env)
@@ -52,12 +52,12 @@ classdef classMTP1_with_slit_cavities < classMTP
                 % On redéfinit manuellement les paramètres équivalents de la couche pour qu'ils soient utilisés dans la méthode transfermatrix
                 nui = 1 - plate_relative_volume;
                 porous_layer.EquivalentParameters = @(obj, env) modifiedequivalentparameters(obj, nui, env);
-                obj.ListOfSubelements{end + 1} = porous_layer;
+                obj.ListOfObjects{end + 1} = porous_layer;
             
 
                 % On rajoute une cavité de type "fente" en parallèle 
                 PSCi = classQWL(config.PlatesLength(i), 'square', config.LayersThickness(2*i)); % A modifier : variables implémentées au hasard
-                obj.ListOfSubelements{end + 1} = classjunction_rectangular(PSCi, obj.Configuration.Width - PSCi.Length, ...
+                obj.ListOfObjects{end + 1} = classjunction_rectangular(PSCi, obj.Configuration.Width - PSCi.Length, ...
                     obj.Configuration.Width, obj.Configuration.Width - PSCi.Length, obj.Configuration.Width, ...
                     config.LayersThickness(2*i));
             end

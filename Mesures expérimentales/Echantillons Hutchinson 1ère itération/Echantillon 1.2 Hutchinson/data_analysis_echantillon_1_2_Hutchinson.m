@@ -105,7 +105,7 @@ plot(f, alpha2_100, 'DisplayName', 'Mesure expérimentale');
 
 % Modèle linéaire
 MPPSBH = classMPPSBH_Rectangular_frustum(config2);
-alpha_model = MPPSBH.alpha(handle_env(100, 0));
+alpha_model = MPPSBH.absorption_coefficient(handle_env(100, 0));
 plot(env.w/(2*pi), alpha_model, 'DisplayName', 'Modèle analytique régime linéaire');
 perso_configure_alpha_figure(f_max)
 xlim([f_min, f_max])
@@ -143,22 +143,22 @@ legend('Location','best')
 % plot(f, alpha2_145, 'DisplayName', 'Mesures expérimentales');
 % 
 % % % Modèle linéaire
-% % alpha_model = classMPPSBH_Rectangular(config2).alpha(env(145));
+% % alpha_model = classMPPSBH_Rectangular(config2).absorption_coefficient(env(145));
 % % plot(env(145).w/(2*pi), alpha_model, 'DisplayName', 'Modèle analytique linéaire');
 % % legend()
 % 
 % % Modèle non-linéaire appliqué à toutes les plaques 
-% alpha_model_HL = classMPPSBH_Rectangular_HL(config2).alpha(env(145));
+% alpha_model_HL = classMPPSBH_Rectangular_HL(config2).absorption_coefficient(env(145));
 % plot(env(145).w/(2*pi), alpha_model_HL, 'DisplayName', 'Modèle analytique non-linéaire (toutes les plaques)');
 % legend()
 % 
 % % Modèle non-linéaire itératif
 % % SPL2_145_interpolated = interp1(f, SPL2_145, env([]).w / (2*pi));
-% % alpha_model_HL_first_plate = classMPPSBH_Rectangular_HL_iter(config2).alpha(env(SPL2_145_interpolated), 'iter');
-% alpha_model_HL_iter = classMPPSBH_Rectangular_HL_iter(config2).alpha(env(145), 'iter', 1e-8);
+% % alpha_model_HL_first_plate = classMPPSBH_Rectangular_HL_iter(config2).absorption_coefficient(env(SPL2_145_interpolated), 'iter');
+% alpha_model_HL_iter = classMPPSBH_Rectangular_HL_iter(config2).absorption_coefficient(env(145), 'iter', 1e-8);
 % plot(env(145).w/(2*pi), alpha_model_HL_iter, 'DisplayName', 'Modèle analytique non-linéaire (itératif)');
 % 
 % % % Modèle non-linéaire avec seulement la première plaque concernée
-% % alpha_model_HL_first_plate = classMPPSBH_Rectangular_HL_first_plate(config2).alpha(env(145));
+% % alpha_model_HL_first_plate = classMPPSBH_Rectangular_HL_first_plate(config2).absorption_coefficient(env(145));
 % % plot(env(145).w/(2*pi), alpha_model_HL_first_plate, 'DisplayName', 'Modèle analytique non-linéaire première plaque');
 % legend()

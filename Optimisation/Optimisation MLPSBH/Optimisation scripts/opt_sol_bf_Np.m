@@ -61,14 +61,14 @@ x0_to_list_of_MPPSBH = @(x0, NS) arrayfun(@(i) x0_to_MPPSBH_i(x0, i), 1:NS, 'Uni
 
 params_to_MPPSBH_assembly = @(x0) classelementassembly(x0_to_list_of_MPPSBH(x0, NS));
 
-cost_function = @(x0, env) sum(((params_to_MPPSBH_assembly(x0).alpha(env) - g_bf(env)) .* (g_bf(env) > 0.1)).^2);
+cost_function = @(x0, env) sum(((params_to_MPPSBH_assembly(x0).absorption_coefficient(env) - g_bf(env)) .* (g_bf(env) > 0.1)).^2);
 
 objective = @(x0) cost_function(reshape(x0, N, NV, NS), env);
 
 %% Fonction cout pondéree
 % cost_function = @(x0, env, weighting) ...
 %     sum( ...
-%         ((params_to_MPPSBH_assembly(x0).alpha(env) - g_bf(env)) ... % calcul des écart à l'absorption idéale
+%         ((params_to_MPPSBH_assembly(x0).absorption_coefficient(env) - g_bf(env)) ... % calcul des écart à l'absorption idéale
 %         .* (g_bf(env) > 0.1)) ... % fenétrage
 %         .^2 ...
 %         .* weighting / sum(weighting(g_bf(env)))); % pondération 
@@ -106,7 +106,7 @@ MPPSBH_bf_1_config = MPPSBH_bf_1.Configuration;
 
 % Affichage graphique
 figure()
-plot(env.w/(2*pi), g_bf(env) ,"--", env.w/ (2*pi), assembly_bf_opti.alpha(env));
+plot(env.w/(2*pi), g_bf(env) ,"--", env.w/ (2*pi), assembly_bf_opti.absorption_coefficient(env));
 xlim([0 2000]);
 
 % % Validation numérique

@@ -24,7 +24,7 @@ function perf = multiQWL_cost_function(X_actual, Y_pred, air, w)
             
             % fprintf_struct(config);
 
-            X_computed(k, :) = classmultiQWL(config).alpha(air, w);
+            X_computed(k, :) = classmultiQWL(config).absorption_coefficient(air, w);
         else
             % Si ce n'est pas le cas on ajoute une pénalité
             penality = penality + 10;

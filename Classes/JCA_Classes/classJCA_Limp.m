@@ -160,7 +160,7 @@ classdef classJCA_Limp
         end
 
         function fpeak = alpha_peak(obj, Air, w) % retourne la frequence et l'amplitude du pic d'absorption
-            a = obj.alpha(Air, w);
+            a = obj.absorption_coefficient(Air, w);
             maxFunction = @max;
             m = a == maxFunction(a);
             fpeak = w(m)/(2 * pi);

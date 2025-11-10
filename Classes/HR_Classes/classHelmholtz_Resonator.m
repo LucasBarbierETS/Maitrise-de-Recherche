@@ -24,8 +24,8 @@ classdef classHelmholtz_Resonator < classelement
             % On ajoute le col du résonateur
             phi = ns/cs;
             
-            obj.Configuration.ListOfSubelements{end+1} = classMPP_Circular(classMPP_Circular.create_config(cs, nl, nr, phi));
-            obj.Configuration.ListOfSubelements{end+1} = classcavity(classcavity_cylindrical.create_config(cl, cr));
+            obj.Configuration.ListOfObjects{end+1} = classMPP_Circular(classMPP_Circular.create_config(cs, nl, nr, phi));
+            obj.Configuration.ListOfObjects{end+1} = classcavity(classcavity_cylindrical.create_config(cl, cr));
 
 
         end    
@@ -71,7 +71,7 @@ classdef classHelmholtz_Resonator < classelement
             % création de l'environnement
             env = create_environnement(23, 100800, 22, 1, 1000, 1000);
 
-            alpha_model = classHelmholtz_Resonator(classHelmholtz_Resonator.create_config(nr, nl, cr, cl)).alpha(env);
+            alpha_model = classHelmholtz_Resonator(classHelmholtz_Resonator.create_config(nr, nl, cr, cl)).absorption_coefficient(env);
 
             % importation des données de références
             data = csvread('Mahesh, fig.4, p.6, blue.txt');

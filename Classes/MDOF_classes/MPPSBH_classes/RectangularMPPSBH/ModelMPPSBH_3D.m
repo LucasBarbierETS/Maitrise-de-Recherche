@@ -12,7 +12,7 @@ cavd = config.CavitiesDepth;
 ct = config.CavitiesThickness;
 mpw = config.MainPoresWidth;
 mpd = config.MainPoresDepth;
-los = config.ListOfSubelements;
+los = config.ListOfObjects;
 N = length(pt); % number of cells (slit backed by a cavity)
 
 %% Création des variables et paramètres du modèle 

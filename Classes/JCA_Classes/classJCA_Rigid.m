@@ -221,7 +221,7 @@ classdef classJCA_Rigid < classobject
 
             % création de l'objet de classe
             E = classJCA_Rigid(classJCA_Rigid.create_config(s, t, phi, tor, sig, vl, tl,'width', w, 'depth', d));
-            alpha_model = E.alpha(env);
+            alpha_model = E.absorption_coefficient(env);
 
             % importation des données de références
             data = csvread('Verdière2013_fig4_E.txt');

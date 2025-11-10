@@ -49,21 +49,21 @@ classdef classMultiAnnular_QWL < classelement
                 end_effect = @(i) classQWL_Circle(classQWL_Circle.create_config(hend(i), rmp(i)));
                 % end_effect = @(i) classJCA_Rigid(classJCA_Rigid.create_config(Smp(i), hend(i), 1, 1, sig_mp, rmp(i), rmp(i)));
 
-                obj.Configuration.ListOfSubelements{end+1} = end_effect(1);
-                % obj.Configuration.ListOfSubelements{end+1} = half_main_pore(1);
+                obj.Configuration.ListOfObjects{end+1} = end_effect(1);
+                % obj.Configuration.ListOfObjects{end+1} = half_main_pore(1);
 
                 % Boucle sur les cavités et plaques
                 for i = 1:N - 1
 
-                    obj.Configuration.ListOfSubelements{end+1} = half_main_pore(i);
-                    % obj.Configuration.ListOfSubelements{end+1} = end_effect(i);
-                    obj.Configuration.ListOfSubelements{end+1} = annular_cell(i); 
-                    obj.Configuration.ListOfSubelements{end+1} = half_main_pore(i+1);
+                    obj.Configuration.ListOfObjects{end+1} = half_main_pore(i);
+                    % obj.Configuration.ListOfObjects{end+1} = end_effect(i);
+                    obj.Configuration.ListOfObjects{end+1} = annular_cell(i); 
+                    obj.Configuration.ListOfObjects{end+1} = half_main_pore(i+1);
                 end
                 
-                obj.Configuration.ListOfSubelements{end+1} = half_main_pore(end);
-                obj.Configuration.ListOfSubelements{end+1} = annular_cell(end);
-                obj.Configuration.ListOfSubelements{end+1} = end_effect(end);
+                obj.Configuration.ListOfObjects{end+1} = half_main_pore(end);
+                obj.Configuration.ListOfObjects{end+1} = annular_cell(end);
+                obj.Configuration.ListOfObjects{end+1} = end_effect(end);
             end 
         end
     end

@@ -77,7 +77,7 @@ side_to_MPPSBH = @(side_list) classMPPSBH_Rectangular( ...
         {d/2}, {phi}, {t}, ...
         {round((L - t * N_plates) / N_plates, 4)}));
 
-handle_alpha = @(list_pw) side_to_MPPSBH(list_pw).alpha(handle_env(100, 0));
+handle_alpha = @(list_pw) side_to_MPPSBH(list_pw).absorption_coefficient(handle_env(100, 0));
 
 % Fonctions d’évaluation acoustique (moyennes par bandes)
 mean_alpha_bf    = @(alpha) perso_alpha_mean(alpha, handle_env(100, 0), f_min_bf, f_max_bf);

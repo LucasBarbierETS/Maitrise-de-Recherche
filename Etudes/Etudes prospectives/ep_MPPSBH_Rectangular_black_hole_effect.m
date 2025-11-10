@@ -56,7 +56,7 @@ list_pw_to_MPPSBH = @(list_pw) classMPPSBH_Rectangular(classMPPSBH_Rectangular.c
                                                                                                 {list_pw'}, ... % nombre de perforations dans le sens de la largeur
                                                                                                 {t}, {round((D - trb - t * N_plates) / N_plates, 4)}));
 
-handle_alpha = @(list_pw) list_pw_to_MPPSBH(list_pw).alpha(handle_env(100, 0));
+handle_alpha = @(list_pw) list_pw_to_MPPSBH(list_pw).absorption_coefficient(handle_env(100, 0));
 
 % Evaluations flottantes des configurations
 mean_alpha_bf = @(alpha) perso_alpha_mean(alpha,handle_env(100, 0), f_min_bf, f_max_bf);

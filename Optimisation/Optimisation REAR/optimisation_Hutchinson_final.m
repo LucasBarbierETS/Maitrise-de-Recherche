@@ -142,13 +142,13 @@ handle_Hutchinson_nonlconf = @(x) perso_top_plate_nonlconf(top_plate(x), tp_phi_
 %% Fonctions coût
 
 % Evaluation du coût sur la cartouche globale
-cost_function_obj0 = @(x, env) sum(((Cartouche.Hutchinson(x).alpha(env) - g_obj0(env)) .* (g_obj0(env) > 0.1)).^2, 'omitnan');
-cost_function_obj1 = @(x, env) sum(((Cartouche_Hutchinson(x).alpha(env) - g_obj1(env)) .* (g_obj1(env) > 0.1)).^2, 'omitnan');
-cost_function_obj2 = @(x, env) sum(((Cartouche_Hutchinson(x).alpha(env) - g_obj2(env)) .* (g_obj2(env) > 0.1)).^2, 'omitnan');
-cost_function_obj3 = @(x, env) sum(((Cartouche_Hutchinson(x).alpha(env) - g_obj3(env)) .* (g_obj3(env) > 0.1)).^2, 'omitnan');
+cost_function_obj0 = @(x, env) sum(((Cartouche.Hutchinson(x).absorption_coefficient(env) - g_obj0(env)) .* (g_obj0(env) > 0.1)).^2, 'omitnan');
+cost_function_obj1 = @(x, env) sum(((Cartouche_Hutchinson(x).absorption_coefficient(env) - g_obj1(env)) .* (g_obj1(env) > 0.1)).^2, 'omitnan');
+cost_function_obj2 = @(x, env) sum(((Cartouche_Hutchinson(x).absorption_coefficient(env) - g_obj2(env)) .* (g_obj2(env) > 0.1)).^2, 'omitnan');
+cost_function_obj3 = @(x, env) sum(((Cartouche_Hutchinson(x).absorption_coefficient(env) - g_obj3(env)) .* (g_obj3(env) > 0.1)).^2, 'omitnan');
 
 % Evaluation du coût sur la cartouche globale
-cost_function_tp_screen = @(x, env) sum(((Cartouche_Hutchinson(x).alpha(env) - JCAmat.alpha(env))).^2, 'omitnan');
+cost_function_tp_screen = @(x, env) sum(((Cartouche_Hutchinson(x).absorption_coefficient(env) - JCAmat.absorption_coefficient(env))).^2, 'omitnan');
 
 objective = @(x) [cost_function_tp_screen(x, env)];
 % objective = @(x) [cost_function_obj1(x, env), cost_function_obj1(x, env), cost_function_obj2(x, env), cost_function_obj2(x, env)];
@@ -185,8 +185,8 @@ timeGa = toc;
 
 %% Conditionnement des solutions optimisées
 
-xopti_to_cell_array_of_Hutchinson_element_alpha = @(x, env) arrayfun(@(i) Cartouche_Hutchinson(x(i, :)).alpha(env), 1:size(x, 1), 'UniformOutput', false);
-% xopti_to_cell_array_of_global_assembly_alpha = @(x, env) arrayfun(@(i) Cartouches.Cartouche_ETS(x(i, :)).alpha(env), 1:size(x, 1), 'UniformOutput', false);
+xopti_to_cell_array_of_Hutchinson_element_alpha = @(x, env) arrayfun(@(i) Cartouche_Hutchinson(x(i, :)).absorption_coefficient(env), 1:size(x, 1), 'UniformOutput', false);
+% xopti_to_cell_array_of_global_assembly_alpha = @(x, env) arrayfun(@(i) Cartouches.Cartouche_ETS(x(i, :)).absorption_coefficient(env), 1:size(x, 1), 'UniformOutput', false);
 
 cell_of_Hutchinson_element_alpha_to_mean_alpha = @(alpha_cell_array, gabarit) arrayfun(@(i) mean(alpha_cell_array{i}(gabarit)), 1:size(alpha_cell_array, 2), 'UniformOutput', false);
 

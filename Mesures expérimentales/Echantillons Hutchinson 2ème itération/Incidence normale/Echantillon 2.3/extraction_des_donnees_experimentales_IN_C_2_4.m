@@ -26,8 +26,8 @@ MPPSBH_PW = classMPPSBH_Rectangular_iter2(config_2_4_PW);
 MPPSBH_LV = classMPPSBH_Rectangular_iter2(config_2_4_LV);
 
 perso_figure('Validation expérimentale - C2.4 - 100 dB'); hold on 
-plot(env.w/(2*pi), MPPSBH_PW.alpha(env), 'DisplayName', 'Modèle analytique linéaire - PW');
-plot(env.w/(2*pi), MPPSBH_LV.alpha(env), 'DisplayName', 'Modèle analytique linéaire - LV');
+plot(env.w/(2*pi), MPPSBH_PW.absorption_coefficient(env), 'DisplayName', 'Modèle analytique linéaire - PW');
+plot(env.w/(2*pi), MPPSBH_LV.absorption_coefficient(env), 'DisplayName', 'Modèle analytique linéaire - LV');
 
 %% Modèle 2D-TV
 

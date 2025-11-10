@@ -25,7 +25,7 @@ config = classMPPSBH_Rectangular.create_config(W^2, N,...
     {d/2}, {phi}, {t}, {L/N - t});
 
 % calcul de la réponse des modèles analytiques
-alpha_model = classMPPSBH_Rectangular(config).alpha(env);
+alpha_model = classMPPSBH_Rectangular(config).absorption_coefficient(env);
 
 plot(env.w / (2*pi), alpha_model, 'Color', 'g', 'LineWidth', 1, 'DisplayName', 'Modèle linéaire');
 
@@ -44,7 +44,7 @@ Tube3D_ap.plot_alpha('Modèle numérique 3D - AP')
 %% Profil quadratique
 
 % % calcul de la réponse du modèle analytique
-% alpha_model = classMPPSBH_Rectangular(classMPPSBH_Rectangular.create_config(N, R, R, {{R, rend, N+1, 0.5}}, {phi}, {d/2}, {t}, {L/N - t})).alpha(env);
+% alpha_model = classMPPSBH_Rectangular(classMPPSBH_Rectangular.create_config(N, R, R, {{R, rend, N+1, 0.5}}, {phi}, {d/2}, {t}, {L/N - t})).absorption_coefficient(env);
 % 
 % plot(env.w / (2*pi), alpha_model, 'Color', 'b', 'LineWidth', 1, 'DisplayName', 'Profil quadratique - Modèle');
 % 

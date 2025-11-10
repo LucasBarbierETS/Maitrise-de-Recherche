@@ -195,7 +195,7 @@ x0_to_global_assembly = @(x0) ...
 % 
 % % % --- Extraction de la plaque supérieure (le premier sous-élément) de chaque MPPSBH ---
 % % cell_of_MPPSBH_to_cell_of_top_plates = @(cell_of_MPPSBH) ...
-% %     arrayfun(@(i) cell_of_MPPSBH{i}.Configuration.ListOfSubelements{1}.Configuration.ListOfSubelements{1}, ...
+% %     arrayfun(@(i) cell_of_MPPSBH{i}.Configuration.ListOfObjects{1}.Configuration.ListOfObjects{1}, ...
 % %              1:size(cell_of_MPPSBH, 2), 'UniformOutput', false);
 % 
 % % % --- Assemblage global : objets MPPSBH + élements combinés
@@ -206,12 +206,12 @@ x0_to_global_assembly = @(x0) ...
 % %             cell_of_MPPSBH_to_cell_of_top_plates(x0_to_cell_of_MPPSBH(x0, NS)))])); % élements combinés
 
 % --- Evaluation du coût de la configuration 
-cost_function_bf = @(x0, env) sum(((x0_to_global_assembly(x0).alpha(env) - g_bf(env)) .* (g_bf(env) > 0.1)).^2);
-cost_function_mf = @(x0, env) sum(((x0_to_global_assembly(x0).alpha(env) - g_mf(env)) .* (g_mf(env) > 0.1)).^2);
-cost_function_hf = @(x0, env) sum(((x0_to_global_assembly(x0).alpha(env) - g_hf(env)) .* (g_hf(env) > 0.1)).^2);
-cost_function_bf_mf = @(x0, env) sum(((x0_to_global_assembly(x0).alpha(env) - g_bf_mf(env)) .* (g_bf_mf(env) > 0.1)).^2);
-cost_function_mf_hf = @(x0, env) sum(((x0_to_global_assembly(x0).alpha(env) - g_bf_mf(env)) .* (g_bf_hf(env) > 0.1)).^2);
-cost_function_bf_hf = @(x0, env) sum(((x0_to_global_assembly(x0).alpha(env) - g_bf_hf(env)) .* (g_bf_hf(env) > 0.1)).^2);
+cost_function_bf = @(x0, env) sum(((x0_to_global_assembly(x0).absorption_coefficient(env) - g_bf(env)) .* (g_bf(env) > 0.1)).^2);
+cost_function_mf = @(x0, env) sum(((x0_to_global_assembly(x0).absorption_coefficient(env) - g_mf(env)) .* (g_mf(env) > 0.1)).^2);
+cost_function_hf = @(x0, env) sum(((x0_to_global_assembly(x0).absorption_coefficient(env) - g_hf(env)) .* (g_hf(env) > 0.1)).^2);
+cost_function_bf_mf = @(x0, env) sum(((x0_to_global_assembly(x0).absorption_coefficient(env) - g_bf_mf(env)) .* (g_bf_mf(env) > 0.1)).^2);
+cost_function_mf_hf = @(x0, env) sum(((x0_to_global_assembly(x0).absorption_coefficient(env) - g_bf_mf(env)) .* (g_bf_hf(env) > 0.1)).^2);
+cost_function_bf_hf = @(x0, env) sum(((x0_to_global_assembly(x0).absorption_coefficient(env) - g_bf_hf(env)) .* (g_bf_hf(env) > 0.1)).^2);
 
 objective = @(x0) [cost_function_bf(x0, env(dB)), cost_function_mf(x0, env(dB))];
 
@@ -244,7 +244,7 @@ hold on
 [filtered_scores, filtered_index] = perso_convex_pareto_filter(scores);
 scatter(filtered_scores(:, 1), filtered_scores(:, 2), 'r');
 
-xopti_to_cell_array_of_global_assembly_alpha = @(x, env) arrayfun(@(i) x0_to_global_assembly(x(i, :)).alpha(env), 1:size(x, 1), 'UniformOutput', false);
+xopti_to_cell_array_of_global_assembly_alpha = @(x, env) arrayfun(@(i) x0_to_global_assembly(x(i, :)).absorption_coefficient(env), 1:size(x, 1), 'UniformOutput', false);
 cell_of_MPPSBH_assembly_alpha_to_mean_alpha = @(alpha_cell_array, gabarit) arrayfun(@(i) mean(alpha_cell_array{i}(gabarit)), 1:size(alpha_cell_array, 2), 'UniformOutput', false);
 
 % On récupère les vecteurs d'absorption des meilleures configurations
@@ -268,7 +268,7 @@ perso_interactive_multi_plot(env(dB).w /(2*pi), filtered_alpha, mean_alpha_bf, m
 % ms = MultiStart('UseParallel', true, 'Display', 'iter');
 % 
 % % Fonction d'affichage de l'absorption de la meilleure configuration
-% handle_plot_alpha = @(x, ~, ~) perso_plot_alpha(params_to_MPPSBH_assembly(reshape(x, N, NV, NS)).alpha(env(dB)), ...
+% handle_plot_alpha = @(x, ~, ~) perso_plot_alpha(params_to_MPPSBH_assembly(reshape(x, N, NV, NS)).absorption_coefficient(env(dB)), ...
 %                                           env(dB), ...
 %                                           g_lb_hf);
 % % Définition du problème d'optimisation
@@ -306,7 +306,7 @@ MPPSBH_lb_hf_1_config = MPPSBH_lb_hf_1.Configuration;
 figure()
 hold on
 plot(env(dB).w/(2*pi), g_hf(env(dB)) , "--", 'DisplayName', 'Gabarit');
-plot(env(dB).w/ (2*pi), assembly_lb_hf_opti.alpha(env(dB)), 'DisplayName', 'Assemblage');
+plot(env(dB).w/ (2*pi), assembly_lb_hf_opti.absorption_coefficient(env(dB)), 'DisplayName', 'Assemblage');
 perso_configure_alpha_figure(2000);
 
 % % Indicateurs

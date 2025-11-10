@@ -33,8 +33,8 @@ function x_opti = opt_screen_JCA(solution, distance, screen_thickness, env, scre
     g = @(env) (env.w / (2*pi) > 150 & env.w / (2*pi) < fmax);
 
     % On calcule la différence entre le coefficient d'absorption avec et sans l'écran
-    cost_function = @(params, env) sum(((serial_handle_assembly(num2cell(params)).alpha(env) ... % avec
-                                         - solution.alpha(env)) ... % sans
+    cost_function = @(params, env) sum(((serial_handle_assembly(num2cell(params)).absorption_coefficient(env) ... % avec
+                                         - solution.absorption_coefficient(env)) ... % sans
                                             .* (g(env) > 0.1)) ... % filtrage de la bande de fréquence d'interêt
                                                 .^2);
 
@@ -47,8 +47,8 @@ function x_opti = opt_screen_JCA(solution, distance, screen_thickness, env, scre
     % Résultats
     figure()
     hold on
-    plot(env.w/(2*pi), solution.alpha(env), 'DisplayName', 'sans écran résistif');
-    plot(env.w/(2*pi), serial_handle_assembly(num2cell(x_opti)).alpha(env), 'DisplayName', 'avec écran résistif optimisé');
+    plot(env.w/(2*pi), solution.absorption_coefficient(env), 'DisplayName', 'sans écran résistif');
+    plot(env.w/(2*pi), serial_handle_assembly(num2cell(x_opti)).absorption_coefficient(env), 'DisplayName', 'avec écran résistif optimisé');
     legend();
 end
 

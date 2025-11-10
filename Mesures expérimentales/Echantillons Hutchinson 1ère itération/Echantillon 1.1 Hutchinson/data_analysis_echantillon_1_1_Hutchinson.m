@@ -49,10 +49,10 @@ plot(f, alpha1_100, 'DisplayName', 'Résultat expérimental');
 % MPPSBH = classMPPSBH_Rectangular(config1);
 MPPSBH_frustum = classMPPSBH_Rectangular(config1);
 % MPPSBH_sbdv = classMPPSBH_Rectangular_subdiv(config1);
-% alpha_model = MPPSBH.alpha(handle_env(100, 0));
-alpha_model_frustum = MPPSBH_frustum.alpha(handle_env(100, 0));
+% alpha_model = MPPSBH.absorption_coefficient(handle_env(100, 0));
+alpha_model_frustum = MPPSBH_frustum.absorption_coefficient(handle_env(100, 0));
 
-% alpha_model_sbdv = MPPSBH_sbdv.alpha(handle_env(100, 0));
+% alpha_model_sbdv = MPPSBH_sbdv.absorption_coefficient(handle_env(100, 0));
 % plot(env.w/(2*pi), alpha_model, 'DisplayName', 'Modèle analytique - approx. p');
 plot(env.w/(2*pi), alpha_model_frustum, 'DisplayName', 'Modèle analytique');
 % plot(env.w/(2*pi), alpha_model_sbdv, 'DisplayName', 'Modèle analytiques subdiv');
@@ -106,13 +106,13 @@ hold on
 plot(f, alpha1_140, 'DisplayName', 'Mesures expérimentales');
 
 % % Modèle linéaire
-% alpha_model = classMPPSBH_Rectangular(config1).alpha(handle_env(145, 0));
+% alpha_model = classMPPSBH_Rectangular(config1).absorption_coefficient(handle_env(145, 0));
 % plot(env.w/(2*pi), alpha_model, 'DisplayName', 'Modèle analytique linéaire');
 % legend()
 
 % Modèle non-linéaire appliqué à toutes les plaques 
-Zs_NL = classMPPSBH_Rectangular_HL(config1).alpha(handle_env(140, 0), 'iter Laly');
-% Zs_NL_iter = classMPPSBH_Rectangular_HL_iter(config1).alpha(handle_env(140, 0), 'iter');
+Zs_NL = classMPPSBH_Rectangular_HL(config1).absorption_coefficient(handle_env(140, 0), 'iter Laly');
+% Zs_NL_iter = classMPPSBH_Rectangular_HL_iter(config1).absorption_coefficient(handle_env(140, 0), 'iter');
 
 plot(env.w/(2*pi), Zs_NL, 'DisplayName', 'Modèle analytique non-linéaire itératif');
 % plot(env.w/(2*pi), Zs_NL_iter, 'DisplayName', 'Modèle analytique non-linéaire itératif de Laly');
@@ -130,12 +130,12 @@ hold on
 plot(f, alpha1_150, 'DisplayName', 'Mesures expérimentales');
 
 % % Modèle linéaire
-% alpha_model = classMPPSBH_Rectangular(config1).alpha(handle_env(145, 0));
+% alpha_model = classMPPSBH_Rectangular(config1).absorption_coefficient(handle_env(145, 0));
 % plot(env.w/(2*pi), alpha_model, 'DisplayName', 'Modèle analytique linéaire');
 % legend()
 
 % Modèle non-linéaire appliqué à toutes les plaques 
-Zs_NL = classMPPSBH_Rectangular_HL(config1).alpha(handle_env(150, 0), 'iter Laly');
+Zs_NL = classMPPSBH_Rectangular_HL(config1).absorption_coefficient(handle_env(150, 0), 'iter Laly');
 plot(env.w/(2*pi), Zs_NL, 'DisplayName', 'Modèle analytique non-linéaire itératif');
 xlabel('Fréquence(Hz)')
 ylabel('Coefficient d''absorption')
@@ -148,12 +148,12 @@ hold on
 perso_plot_surface_impedance(f, data1.Zs.Sample6, 'DisplayName', 'Mesures expérimentales - 145 dB');
 
 % % Modèle linéaire
-% alpha_model = classMPPSBH_Rectangular(config1).alpha(handle_env(145, 0));
+% alpha_model = classMPPSBH_Rectangular(config1).absorption_coefficient(handle_env(145, 0));
 % plot(env.w/(2*pi), alpha_model, 'DisplayName', 'Modèle analytique linéaire');
 % legend()
 
 % Modèle non-linéaire appliqué à toutes les plaques 
-Zs_NL = classMPPSBH_Rectangular_HL(config1).alpha(handle_env(145, 0), 'iter');
+Zs_NL = classMPPSBH_Rectangular_HL(config1).absorption_coefficient(handle_env(145, 0), 'iter');
 perso_plot_surface_impedance(env.w/(2*pi), Zs_NL/env.air.parameters.Z0, 'DisplayName', 'Modèle analytique non-linéaire itératif');
 legend();
 
@@ -166,7 +166,7 @@ legend();
 % % close();
 
 % % % Modèle non-linéaire avec seulement la première plaque concernée
-% alpha_model_HL_first_plate = classMPPSBH_Rectangular_HL_first_plate(config1).alpha(handle_env(145, 0));
+% alpha_model_HL_first_plate = classMPPSBH_Rectangular_HL_first_plate(config1).absorption_coefficient(handle_env(145, 0));
 % plot(env145, 0).w/(2*pi), alpha_model_HL_first_plate, 'DisplayName', 'Modèle analytique non-linéaire première plaque');
 % legend()
 

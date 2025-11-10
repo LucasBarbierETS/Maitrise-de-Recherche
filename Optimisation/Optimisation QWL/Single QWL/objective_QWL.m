@@ -9,7 +9,7 @@ function cost = objective_QWL(params, R, gabarit, air, w, f_peak, bandwidth)
     w_max = f_max*2*pi;
 
     % Calcul du modèle avec les paramètres
-    alpha_model = multiQWL(R, r, L, 'circle').alpha(air, w);
+    alpha_model = multiQWL(R, r, L, 'circle').absorption_coefficient(air, w);
 
     % Sélectionne la partie du modèle dans la plage de fréquences spécifiée
     % valid_indices = (w >= w_min) & (w <= w_max);

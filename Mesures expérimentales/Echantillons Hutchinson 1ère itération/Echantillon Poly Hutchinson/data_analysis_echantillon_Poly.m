@@ -25,7 +25,7 @@ hold on
 plot(f, alphaPoly_100, 'DisplayName', 'Résultat expérimental')
 
 % Résultat numérique
-plot(env(100).w/(2*pi), subelm.alpha(env(100)) , 'DisplayName', 'Résultat numérique')
+plot(env(100).w/(2*pi), subelm.absorption_coefficient(env(100)) , 'DisplayName', 'Résultat numérique')
 legend()
 
 %%%%%%%%%%%%%%%%% Ajout d'un plaque supérieure %%%%%%%%%%%%%%%%%%%%%%%

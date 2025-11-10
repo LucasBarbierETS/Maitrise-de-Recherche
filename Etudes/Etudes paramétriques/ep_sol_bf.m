@@ -15,7 +15,7 @@ launch_environnement
 %     config = sol_bf_lin_config; % récupération de la configuration optimisée
 %     config.TopPlateHolesRadius = r(i);
 %     current_sol = sol_bf(config);
-%     my_plot(i, env.w/(2*pi), current_sol.alpha(env), 'DisplayName', ['r = ', num2str(r(i))]);
+%     my_plot(i, env.w/(2*pi), current_sol.absorption_coefficient(env), 'DisplayName', ['r = ', num2str(r(i))]);
 % end
 % legend();
 
@@ -29,7 +29,7 @@ launch_environnement
 %     config = sol_bf_lin_config;
 %     config.TopPlatePorosity = phi(i);
 %     current_sol = sol_bf(config);
-%     my_plot(i, env.w/(2*pi), current_sol.alpha(env), 'DisplayName', ['phi = ', num2str(phi(i))]);
+%     my_plot(i, env.w/(2*pi), current_sol.absorption_coefficient(env), 'DisplayName', ['phi = ', num2str(phi(i))]);
 % end
 % legend();
 
@@ -52,7 +52,7 @@ launch_environnement
 % for i = 1:length(sw)
 %     config = sol_bf.create_config(30e-3^2, 2, 30e-3, 30e-3, {[30e-3, sw(i)]}, phi, r, {pt}, {L}, 'Hankel', 'Bezançon', 'false', 'false');
 %     current_sol = sol_bf(config);
-%     my_plot(i, env.w/(2*pi), current_sol.alpha(env), 'DisplayName', ['sw = ', num2str(sw(i)*1000), 'mm']);
+%     my_plot(i, env.w/(2*pi), current_sol.absorption_coefficient(env), 'DisplayName', ['sw = ', num2str(sw(i)*1000), 'mm']);
 % end
 % 
 % title({'Etude paramétrique d''une solution SBF en fonction de la largeur de la fente';['r = ', num2str(r*1000), 'mm - pt = ', num2str(pt*1000), 'mm - L = ', num2str(L*1000), 'mm']});
@@ -79,7 +79,7 @@ alpha_num = zeros(5, length(env.w));
 for i = 1:length(bct)
     config = sol_bf.create_config(30e-3^2, 2, 30e-3, 30e-3, {[30e-3, sw]}, phi, r, {pt}, {[L-bct(i), bct(i)]}, 'Hankel', 'Bezançon', 'false', 'false');
     current_sol = sol_bf(config);
-    my_plot(i, env.w/(2*pi), current_sol.alpha(env), 'DisplayName', ['bct = ', num2str(bct(i)*1000), 'mm']);
+    my_plot(i, env.w/(2*pi), current_sol.absorption_coefficient(env), 'DisplayName', ['bct = ', num2str(bct(i)*1000), 'mm']);
 
     % Validation numérique
     % tube = ImpedanceTube2D(ImpedanceTube2D.create_config({current_sol}));

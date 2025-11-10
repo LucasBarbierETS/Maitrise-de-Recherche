@@ -50,9 +50,9 @@ classdef classelement < classobject
                 % sgtitle(class(sblm))
                 % perso_plot_transfer_matrix(TM, env, 'TM');
                 
-                if isprop(sblm.Configuration, 'EndStatus') && strcmp(sblm.Configuration.EndStatus, 'closed')
-                    break
-                end
+                % if isprop(sblm.Configuration, 'EndStatus') && strcmp(sblm.Configuration.EndStatus, 'closed')
+                %     break
+                % end
             end
         end
                     

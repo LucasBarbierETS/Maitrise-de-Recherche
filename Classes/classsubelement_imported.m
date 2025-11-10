@@ -82,8 +82,8 @@ classdef classsubelement_imported < classsubelement
             
             figure()
             hold on
-            plot(env.w/(2*pi), analytical_element.alpha(env), 'DisplayName', 'Résultat direct')
-            plot(env.w/(2*pi), imported_element.alpha(env), 'DisplayName', 'Résultat importé + écran résistif')
+            plot(env.w/(2*pi), analytical_element.absorption_coefficient(env), 'DisplayName', 'Résultat direct')
+            plot(env.w/(2*pi), imported_element.absorption_coefficient(env), 'DisplayName', 'Résultat importé + écran résistif')
             legend()
             perso_configure_alpha_figure(2000);
         end

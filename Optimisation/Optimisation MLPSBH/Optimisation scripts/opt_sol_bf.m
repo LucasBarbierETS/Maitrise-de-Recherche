@@ -52,7 +52,7 @@ new_config = @(params) feval(@(var) sol_bf.create_config(30e-3^2, var.N(1), 30e-
                                        x0_to_variables(params, var));
 
 buildMPPSBH = @(params) sol_bf(new_config(params));
-cost_function = @(params, env) sum(((buildMPPSBH(params).alpha(env) - g(env)) .* (g(env) > 0.1)).^2);
+cost_function = @(params, env) sum(((buildMPPSBH(params).absorption_coefficient(env) - g(env)) .* (g(env) > 0.1)).^2);
 objective = @(params) cost_function(params, env);
 
 %% Fonction handle pour les contraintes
@@ -115,5 +115,5 @@ sol_bf_opti_config = new_config(xopti);
 sol_bf_opti = sol_bf(sol_bf_opti_config);
 
 figure()
-plot(env.w/(2*pi), g(env) ,"--", env.w/(2*pi), sol_bf_opti.alpha(env));
+plot(env.w/(2*pi), g(env) ,"--", env.w/(2*pi), sol_bf_opti.absorption_coefficient(env));
 xlim([0 2000]);

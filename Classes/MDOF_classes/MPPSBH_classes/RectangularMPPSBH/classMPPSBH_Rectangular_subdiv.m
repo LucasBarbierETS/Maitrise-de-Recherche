@@ -23,19 +23,19 @@ classdef classMPPSBH_Rectangular_subdiv < classelement
                 for i = 1:length(pp)
 
                     % Plaque perforée
-                    obj.Configuration.ListOfSubelements{end+1} = classMPP_Circular(classMPP_Circular.create_config(mpw(i)*mpd(i), pt(i), phr(i), pp(i), mpw(i), mpd(i)));
+                    obj.Configuration.ListOfObjects{end+1} = classMPP_Circular(classMPP_Circular.create_config(mpw(i)*mpd(i), pt(i), phr(i), pp(i), mpw(i), mpd(i)));
         
                     % Cavité trapezoidale
                     wc = (mpw(i) + mpw(i+1))/2;
                     dc = (mpd(i) + mpd(i+1))/2;
-                    obj.Configuration.ListOfSubelements{end+1} = classcavity_trapezoidal_subdiv(classcavity_trapezoidal_subdiv.create_config(ct(i)/2, mpw(i), mpd(i), wc, dc, 10));
+                    obj.Configuration.ListOfObjects{end+1} = classcavity_trapezoidal_subdiv(classcavity_trapezoidal_subdiv.create_config(ct(i)/2, mpw(i), mpd(i), wc, dc, 10));
     
                     % Cavité cubique en parallèle
                     annular_cavity = classannularcavity_cubical(classannularcavity_cubical.create_config(wc, dc, cavw, cavd, ct(i), 'Volume'));
-                    obj.Configuration.ListOfSubelements{end+1} = classjunction(classjunction.create_config(annular_cavity, wc, dc));
+                    obj.Configuration.ListOfObjects{end+1} = classjunction(classjunction.create_config(annular_cavity, wc, dc));
         
                     % Cavité trapezoidale
-                    obj.Configuration.ListOfSubelements{end+1} = classcavity_trapezoidal_subdiv(classcavity_trapezoidal_subdiv.create_config(ct(i)/2, wc, dc, mpw(i+1), mpd(i+1), 10));
+                    obj.Configuration.ListOfObjects{end+1} = classcavity_trapezoidal_subdiv(classcavity_trapezoidal_subdiv.create_config(ct(i)/2, wc, dc, mpw(i+1), mpd(i+1), 10));
                 end 
             end
         end
@@ -155,7 +155,7 @@ classdef classMPPSBH_Rectangular_subdiv < classelement
             end
         
             % === 6. Ouverture automatique du dossier ===
-            fprintf('[📂] Ouverture du dossier dans l’explorateur...\n');
+            fprintf('[] Ouverture du dossier dans l’explorateur...\n');
             system(sprintf('explorer "%s"', output_dir));
         end
     
@@ -627,9 +627,9 @@ classdef classMPPSBH_Rectangular_subdiv < classelement
                 {d/2}, {phi}, {t}, {L/N - t});
             
             % calcul de la réponse des modèles analytiques
-            alpha_model = classMPPSBH_Rectangular_subdiv(config).alpha(env);
-            alpha_model_HL = classMPPSBH_Rectangular_HL(config).alpha(env);
-            alpha_model_HL_fp = classMPPSBH_Rectangular_HL_first_plate(config).alpha(env);
+            alpha_model = classMPPSBH_Rectangular_subdiv(config).absorption_coefficient(env);
+            alpha_model_HL = classMPPSBH_Rectangular_HL(config).absorption_coefficient(env);
+            alpha_model_HL_fp = classMPPSBH_Rectangular_HL_first_plate(config).absorption_coefficient(env);
 
 
             plot(env.w / (2*pi), alpha_model, 'Color', 'g', 'LineWidth', 1, 'DisplayName', 'Modèle linéaire');
@@ -639,7 +639,7 @@ classdef classMPPSBH_Rectangular_subdiv < classelement
             %% Profil quadratique
 
             % % calcul de la réponse du modèle analytique
-            % alpha_model = classMPPSBH_Rectangular(classMPPSBH_Rectangular.create_config(N, R, R, {{R, rend, N+1, 0.5}}, {phi}, {d/2}, {t}, {L/N - t})).alpha(env);
+            % alpha_model = classMPPSBH_Rectangular(classMPPSBH_Rectangular.create_config(N, R, R, {{R, rend, N+1, 0.5}}, {phi}, {d/2}, {t}, {L/N - t})).absorption_coefficient(env);
             % 
             % plot(env.w / (2*pi), alpha_model, 'Color', 'b', 'LineWidth', 1, 'DisplayName', 'Profil quadratique - Modèle');
             % 

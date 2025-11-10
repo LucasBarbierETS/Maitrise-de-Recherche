@@ -73,7 +73,7 @@ classdef classsubelement
                 % perso_plot_transfer_matrix(TM_inv, env, 'TM inv'); 
 
             catch ME
-                % 🔥 En cas d'erreur imprévue (ex. NaN, taille incohérente, etc.)
+                %  En cas d'erreur imprévue (ex. NaN, taille incohérente, etc.)
                 error('Erreur lors de l''inversion de la matrice de transfert'); 
             end
 
@@ -162,7 +162,7 @@ classdef classsubelement
    
         function mean_alpha = alpha_mean(obj, env, f_min, f_max)
             mask = @(env) (env.w / (2*pi) > f_min & env.w / (2*pi) < f_max);
-            alpha = obj.alpha(env);
+            alpha = obj.absorption_coefficient(env);
             mean_alpha = mean(alpha(mask(env)));
         end
 
@@ -173,7 +173,7 @@ classdef classsubelement
                 a = varargin{1};
             else
                 % Calculer la fonction alpha à partir de l'objet et de l'environnement
-                a = obj.alpha(env);
+                a = obj.absorption_coefficient(env);
             end
             
             % Identifier les maximums locaux dans la fonction alpha
@@ -193,7 +193,7 @@ classdef classsubelement
 
         function error = alpha_error(obj, env, alpha_comp)
 
-            error = 1/length(env.w)*sum(abs(obj.alpha(env) - alpha_comp)./alpha_comp);
+            error = 1/length(env.w)*sum(abs(obj.absorption_coefficient(env) - alpha_comp)./alpha_comp);
             % perso_ouvrir_lien_Zotero('zotero://open-pdf/library/items/233HZ8GN?page=8&annotation=62TL63NL');
         end  
         

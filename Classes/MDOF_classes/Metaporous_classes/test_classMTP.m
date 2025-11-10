@@ -96,18 +96,18 @@ figure()
 % subplot(2,2,1)
 hold on
 plot(x_blue, y_blue, 'LineStyle', '--', 'LineWidth', 0.3, 'Color', 'b')
-plot(env.w / (2 * pi), Porous.alpha(env), 'Color', 'b')
+plot(env.w / (2 * pi), Porous.absorption_coefficient(env), 'Color', 'b')
 legend('Données de référence', 'Poreux')
  
 % plot(x_black, y_black, 'LineStyle', '--', 'Color', 'k')
 % plot(x_red, y_red, 'LineStyle', '--', 'Color', 'r')
 % plot(x_green, y_green, 'LineStyle', '--', 'Color', 'g')
 
-plot(env.w / (2 * pi), MTP1.alpha(env), 'DisplayName', 'Compressibilité modifiée (volume)')
-% plot(env.w / (2 * pi), MTP2.alpha(env), 'DisplayName', 'Compressibilité modifiée (longueur)')
-% plot(env.w / (2 * pi), MTP_Cav.alpha(env), 'DisplayName', 'volume + cavités parallèles')
-% plot(env.w / (2 * pi), MTP_SC.alpha(env), 'DisplayName', 'Changements de section')
-% plot(env.w / (2 * pi), MTP_Cav_SC.alpha(env), 'DisplayName', 'Changements de section + cavités parallèles')
+plot(env.w / (2 * pi), MTP1.absorption_coefficient(env), 'DisplayName', 'Compressibilité modifiée (volume)')
+% plot(env.w / (2 * pi), MTP2.absorption_coefficient(env), 'DisplayName', 'Compressibilité modifiée (longueur)')
+% plot(env.w / (2 * pi), MTP_Cav.absorption_coefficient(env), 'DisplayName', 'volume + cavités parallèles')
+% plot(env.w / (2 * pi), MTP_SC.absorption_coefficient(env), 'DisplayName', 'Changements de section')
+% plot(env.w / (2 * pi), MTP_Cav_SC.absorption_coefficient(env), 'DisplayName', 'Changements de section + cavités parallèles')
 % xline(freq_QWL, 'Color', [0 0 0], 'Label', 'Fréquence 1/4 d''onde', 'LabelVerticalAlignment', 'bottom');
 
 xlabel("frequence (Hz)")

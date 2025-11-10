@@ -42,7 +42,7 @@ for i = 1:numel(coeff_list)
     obj = classJCA_Rigid(config);
  
     % --- Calculs physiques ---
-    alpha = obj.alpha(env);
+    alpha = obj.absorption_coefficient(env);
     Zs = obj.surface_impedance(env);
     Zs_norm = Zs / env.air.parameters.Z0;
 

@@ -54,7 +54,7 @@ classdef classscreen
             cavity = classcavity(classcavity.create_config(ct, s));
          
             % Création de l'élement 
-            alpha_model = classelement(classelement.create_config({screen, cavity}, 'closed', s)).alpha(env);
+            alpha_model = classelement(classelement.create_config({screen, cavity}, 'closed', s)).absorption_coefficient(env);
 
             % importation des données de références
             data = csvread('Laly2017, fig.6.3, blue.txt');

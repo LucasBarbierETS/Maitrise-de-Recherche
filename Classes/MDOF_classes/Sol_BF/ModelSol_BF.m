@@ -9,7 +9,7 @@ pt = config.PlatesThickness;
 cavw = config.CavitiesWidth;
 ct = config.CavitiesThickness;
 sw = config.SlitsWidth;
-los = config.ListOfSubelements;
+los = config.ListOfObjects;
 N = length(sw); % number of cells (slit backed by a cavity)
 
 %% Création des variables et paramètres du modèle 
@@ -106,7 +106,7 @@ JCAfirstplate.propertyGroup('def').set('heatcapacity', 'cp');
 JCAfirstplate.propertyGroup('def').set('ratioofspecificheat', '1.4');
 % JCAfirstplate.propertyGroup('def').set('gamma', 'gamma');
 
-JCAparam = los{1}.Configuration.ListOfSubelements{1}.Configuration.JCAParameters;
+JCAparam = los{1}.Configuration.ListOfObjects{1}.Configuration.JCAParameters;
 
 % Porosité
 JCAfirstplate.propertyGroup('def').set('porosity', num2str(JCAparam.Porosity));

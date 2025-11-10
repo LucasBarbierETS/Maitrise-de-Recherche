@@ -9,7 +9,7 @@ function correlation = verif_config_multiQWL(params, shape, air, w)
 
     % Calcul du coefficient alpha pour la configuration de base
     config_base = multiQWL(params, shape);
-    alpha_base = config_base.alpha(air, w);
+    alpha_base = config_base.absorption_coefficient(air, w);
 
     % Préallocation des tableaux pour stocker les coefficients
     num_resonators = length(r);
@@ -24,7 +24,7 @@ function correlation = verif_config_multiQWL(params, shape, air, w)
         params_sans_resonateur = horzcat(R_sans_resonateur,r_sans_resonateur,L_sans_resonateur);
 
         config_sans_resonateur = classmultiQWL(params_sans_resonateur);
-        alphas_configs(:, i) = config_sans_resonateur.alpha(air, w);
+        alphas_configs(:, i) = config_sans_resonateur.absorption_coefficient(air, w);
     end
 
     % Calcul de la corrélation avec la configuration de base

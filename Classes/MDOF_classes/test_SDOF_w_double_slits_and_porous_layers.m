@@ -71,7 +71,7 @@ new_config = @(params) feval(@(variables) classDoublePorousSlits.create_config( 
     layer_thickness, cavities_thickness, cavities_width), x0_to_variables(params, variables));
 
 buildDPS = @(params) classDoublePorousSlits(new_config(params));
-cost_function = @(params, env) sum(((buildDPS(params).alpha(env) - g(env)) .* (g(env) > 0.1)).^2);
+cost_function = @(params, env) sum(((buildDPS(params).absorption_coefficient(env) - g(env)) .* (g(env) > 0.1)).^2);
 objective = @(params) cost_function(params, env);
 
 % Options d'optimisation
@@ -107,6 +107,6 @@ Ms_sol = classDoublePorousSlits(Ms_config);
 % Tracé des solutions obtenus
 
 figure()
-plot(env.w/(2*pi), g(env) ,"--", env.w/(2*pi), Ms_sol.alpha(env));
+plot(env.w/(2*pi), g(env) ,"--", env.w/(2*pi), Ms_sol.absorption_coefficient(env));
 legend('gabarit', 'MultiStart');
 

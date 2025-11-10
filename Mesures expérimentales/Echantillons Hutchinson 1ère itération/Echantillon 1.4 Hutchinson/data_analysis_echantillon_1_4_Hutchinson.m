@@ -44,7 +44,7 @@ plot(f, alpha4_100, 'DisplayName', 'Résultat expérimental');
 
 % Modèle linéaire
 MPPSBH = classMPPSBH_Rectangular(config4);
-alpha_model = MPPSBH.alpha(handle_env(100, 0));
+alpha_model = MPPSBH.absorption_coefficient(handle_env(100, 0));
 plot(env.w/(2*pi), alpha_model, 'DisplayName', 'Modèle analytique');
 
 %% Validation numérique 3D
@@ -80,22 +80,22 @@ legend('Location','best')
 % plot(f, alpha4_145, 'DisplayName', 'Mesures expérimentales');
 % 
 % % % Modèle linéaire
-% % alpha_model = classMPPSBH_Rectangular(config4).alpha(env(145));
+% % alpha_model = classMPPSBH_Rectangular(config4).absorption_coefficient(env(145));
 % % plot(env(145).w/(2*pi), alpha_model, 'DisplayName', 'Modèle analytique linéaire');
 % % legend()
 % 
 % % Modèle non-linéaire appliqué à toutes les plaques 
-% alpha_model_HL = classMPPSBH_Rectangular_HL(config4).alpha(env(145));
+% alpha_model_HL = classMPPSBH_Rectangular_HL(config4).absorption_coefficient(env(145));
 % plot(env(145).w/(2*pi), alpha_model_HL, 'DisplayName', 'Modèle analytique non-linéaire (toutes les plaques)');
 % legend()
 % 
 % % Modèle non-linéaire itératif
 % % SPL4_145_interpolated = interp1(f, SPL4_145, env([]).w / (2*pi));
-% % alpha_model_HL_first_plate = classMPPSBH_Rectangular_HL_iter(config4).alpha(env(SPL4_145_interpolated), 'iter');
-% alpha_model_HL_iter = classMPPSBH_Rectangular_HL_iter(config4).alpha(env(135), 'iter', 1e-8);
+% % alpha_model_HL_first_plate = classMPPSBH_Rectangular_HL_iter(config4).absorption_coefficient(env(SPL4_145_interpolated), 'iter');
+% alpha_model_HL_iter = classMPPSBH_Rectangular_HL_iter(config4).absorption_coefficient(env(135), 'iter', 1e-8);
 % plot(env(145).w/(2*pi), alpha_model_HL_iter, 'DisplayName', 'Modèle analytique non-linéaire (itératif)');
 % 
 % % % Modèle non-linéaire avec seulement la première plaque concernée
-% % alpha_model_HL_first_plate = classMPPSBH_Rectangular_HL_first_plate(config4).alpha(env(145));
+% % alpha_model_HL_first_plate = classMPPSBH_Rectangular_HL_first_plate(config4).absorption_coefficient(env(145));
 % % plot(env(145).w/(2*pi), alpha_model_HL_first_plate, 'DisplayName', 'Modèle analytique non-linéaire première plaque');
 % legend()

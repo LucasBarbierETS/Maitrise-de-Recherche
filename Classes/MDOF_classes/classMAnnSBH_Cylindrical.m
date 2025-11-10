@@ -27,8 +27,8 @@ classdef classMAnnSBH_Cylindrical < classelement
                 cm = config.CavitiesModel;
                 
                 % Plaque perforée centrale (première MPP circulaire)
-                % obj.Configuration.ListOfSubelements{end+1} = classMPP_Circular(classMPP_Circular.create_config(pp(1), hr(1), pt(1), pi*ppar(1)^2, ptc(1)));
-                obj.Configuration.ListOfSubelements{end+1} = classMPP_Circular(classMPP_Circular.create_config(pp(1), hr(1), pt(1), pi*ppar(1)^2));
+                % obj.Configuration.ListOfObjects{end+1} = classMPP_Circular(classMPP_Circular.create_config(pp(1), hr(1), pt(1), pi*ppar(1)^2, ptc(1)));
+                obj.Configuration.ListOfObjects{end+1} = classMPP_Circular(classMPP_Circular.create_config(pp(1), hr(1), pt(1), pi*ppar(1)^2));
                 
                 % Boucle sur les cavités et plaques
                 for i = 1:length(ct) - 1
@@ -37,20 +37,20 @@ classdef classMAnnSBH_Cylindrical < classelement
     
                      % Cavité annulaire
                     % annular_cavity = classannularcavity(classannularcavity.create_config(mpr, cavr, ct(i), cm));
-                    % obj.Configuration.ListOfSubelements{end+1} = classjunction_cylindrical(classjunction_cylindrical.create_config(annular_cavity, mpr, ct(i)));
+                    % obj.Configuration.ListOfObjects{end+1} = classjunction_cylindrical(classjunction_cylindrical.create_config(annular_cavity, mpr, ct(i)));
                 
                     % Cavité - ou jonction cylindrique
-                    obj.Configuration.ListOfSubelements{end+1} = classannularcell(classannularcell.create_config(ppar(i), ppar(i+1), cavr, ct(i), cm));
+                    obj.Configuration.ListOfObjects{end+1} = classannularcell(classannularcell.create_config(ppar(i), ppar(i+1), cavr, ct(i), cm));
                 
                     % MPP suivante
-                    obj.Configuration.ListOfSubelements{end+1} = classMPP_Circular(classMPP_Circular.create_config(pp(i+1), hr(i+1), pt(i+1), pi*ppar(i+1)^2));
-                    % obj.Configuration.ListOfSubelements{end+1} = classMPP_Circular(classMPP_Circular.create_config(pp(i+1), hr(i+1), pt(i+1), pi*ppar(i+1)^2, ptc(i+1)));
+                    obj.Configuration.ListOfObjects{end+1} = classMPP_Circular(classMPP_Circular.create_config(pp(i+1), hr(i+1), pt(i+1), pi*ppar(i+1)^2));
+                    % obj.Configuration.ListOfObjects{end+1} = classMPP_Circular(classMPP_Circular.create_config(pp(i+1), hr(i+1), pt(i+1), pi*ppar(i+1)^2, ptc(i+1)));
                 end
                 
                 % Traitement de la dernière cavité
                 % annular_cavity = classannularcavity(classannularcavity.create_config(mpr, cavr, ct(end), cm)); 
-                % obj.Configuration.ListOfSubelements{end+1} = classjunction_cylindrical(classjunction_cylindrical.create_config(annular_cavity, mpr, ct(end)));
-                obj.Configuration.ListOfSubelements{end+1} = classannularcell(classannularcell.create_config(ppar(end-1), ppar(end), cavr, ct(end), cm));
+                % obj.Configuration.ListOfObjects{end+1} = classjunction_cylindrical(classjunction_cylindrical.create_config(annular_cavity, mpr, ct(end)));
+                obj.Configuration.ListOfObjects{end+1} = classannularcell(classannularcell.create_config(ppar(end-1), ppar(end), cavr, ct(end), cm));
             end 
         end
     end
@@ -242,7 +242,7 @@ classdef classMAnnSBH_Cylindrical < classelement
             MLPSBH = classMLPSBH_Cylindrical(config);
             MLPSBH_config = MLPSBH.Configuration;
             % MLPSBH.disp_subelements_parameters_table(env);
-            alpha_model = MLPSBH.alpha(env);
+            alpha_model = MLPSBH.absorption_coefficient(env);
             
             % importation des données de références
             data = csvread('Dupont2018.txt');

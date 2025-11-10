@@ -32,7 +32,7 @@ w = linspace(0, 2000 * 2 * pi, 2000);
 % Calculer les matrices de transfert et l'impédance de surface
 TM = multiQWL.transfermatrix(air, w);
 Zs = multiQWL.surfaceImpedance(air, w);
-alpha = multiQWL.alpha(air, w);
+alpha = multiQWL.absorption_coefficient(air, w);
 fpeak = multiQWL.alpha_peak(air, w);
 
 % Tracer les résultats

@@ -229,12 +229,12 @@ x_to_global_assembly = @(x) ...
                 repmat({combined_Poly_element(x_TP(x))}, 1, 4)])); % Solutions Poly
 
 % Evaluation du coût de la configuration 
-cost_function_bf = @(x, env) sum(((x_to_global_assembly(x).alpha(env) - g_bf(env)) .* (g_bf(env) > 0.1)).^2, 'omitnan');
-cost_function_mf = @(x, env) sum(((x_to_global_assembly(x).alpha(env) - g_mf(env)) .* (g_mf(env) > 0.1)).^2, 'omitnan');
-cost_function_hf = @(x, env) sum(((x_to_global_assembly(x).alpha(env) - g_hf(env)) .* (g_hf(env) > 0.1)).^2, 'omitnan');
-cost_function_bf_mf = @(x, env) sum(((x_to_global_assembly(x).alpha(env) - g_bf_mf(env)) .* (g_bf_mf(env) > 0.1)).^2, 'omitnan');
-cost_function_mf_hf = @(x, env) sum(((x_to_global_assembly(x).alpha(env) - g_bf_mf(env)) .* (g_bf_hf(env) > 0.1)).^2, 'omitnan');
-cost_function_bf_hf = @(x, env) sum(((x_to_global_assembly(x).alpha(env) - g_bf_hf(env)) .* (g_bf_hf(env) > 0.1)).^2, 'omitnan');
+cost_function_bf = @(x, env) sum(((x_to_global_assembly(x).absorption_coefficient(env) - g_bf(env)) .* (g_bf(env) > 0.1)).^2, 'omitnan');
+cost_function_mf = @(x, env) sum(((x_to_global_assembly(x).absorption_coefficient(env) - g_mf(env)) .* (g_mf(env) > 0.1)).^2, 'omitnan');
+cost_function_hf = @(x, env) sum(((x_to_global_assembly(x).absorption_coefficient(env) - g_hf(env)) .* (g_hf(env) > 0.1)).^2, 'omitnan');
+cost_function_bf_mf = @(x, env) sum(((x_to_global_assembly(x).absorption_coefficient(env) - g_bf_mf(env)) .* (g_bf_mf(env) > 0.1)).^2, 'omitnan');
+cost_function_mf_hf = @(x, env) sum(((x_to_global_assembly(x).absorption_coefficient(env) - g_bf_mf(env)) .* (g_bf_hf(env) > 0.1)).^2, 'omitnan');
+cost_function_bf_hf = @(x, env) sum(((x_to_global_assembly(x).absorption_coefficient(env) - g_bf_hf(env)) .* (g_bf_hf(env) > 0.1)).^2, 'omitnan');
 
 objective = @(x) [cost_function_bf(x, env(dB)), cost_function_mf(x, env(dB)), cost_function_hf(x, env(dB))];
 
@@ -268,7 +268,7 @@ hold on
 [filtered_scores, filtered_index] = perso_convex_pareto_filter(scores);
 scatter(filtered_scores(:, 1), filtered_scores(:, 2), 'r');
 
-xopti_to_cell_array_of_global_assembly_alpha = @(x, env) arrayfun(@(i) x_to_global_assembly(x(i, :)).alpha(env), 1:size(x, 1), 'UniformOutput', false);
+xopti_to_cell_array_of_global_assembly_alpha = @(x, env) arrayfun(@(i) x_to_global_assembly(x(i, :)).absorption_coefficient(env), 1:size(x, 1), 'UniformOutput', false);
 cell_of_MPPSBH_assembly_alpha_to_mean_alpha = @(alpha_cell_array, gabarit) arrayfun(@(i) mean(alpha_cell_array{i}(gabarit)), 1:size(alpha_cell_array, 2), 'UniformOutput', false);
 
 % On récupère les vecteurs d'absorption des meilleures configurations
@@ -312,21 +312,21 @@ Solution_Poly_config = Solution_Poly.Configuration;
 figure()
 hold on
 plot(env(dB).w/(2*pi), g_hf(env(dB)) , "--", 'DisplayName', 'Gabarit');
-plot(env(dB).w/ (2*pi), assembly_lb_hf_opti.alpha(env(dB)), 'DisplayName', 'Assemblage');
-plot(env(dB).w/ (2*pi), MPPSBH_lb_hf_1.alpha(env(dB)), 'DisplayName', 'MPPSBH 1');
-plot(env(dB).w/ (2*pi), MPPSBH_lb_hf_2.alpha(env(dB)), 'DisplayName', 'MPPSBH 2');
-plot(env(dB).w/ (2*pi), MPPSBH_lb_hf_3.alpha(env(dB)), 'DisplayName', 'MPPSBH 3');
-plot(env(dB).w/ (2*pi), MPPSBH_lb_hf_4.alpha(env(dB)), 'DisplayName', 'MPPSBH 4');
+plot(env(dB).w/ (2*pi), assembly_lb_hf_opti.absorption_coefficient(env(dB)), 'DisplayName', 'Assemblage');
+plot(env(dB).w/ (2*pi), MPPSBH_lb_hf_1.absorption_coefficient(env(dB)), 'DisplayName', 'MPPSBH 1');
+plot(env(dB).w/ (2*pi), MPPSBH_lb_hf_2.absorption_coefficient(env(dB)), 'DisplayName', 'MPPSBH 2');
+plot(env(dB).w/ (2*pi), MPPSBH_lb_hf_3.absorption_coefficient(env(dB)), 'DisplayName', 'MPPSBH 3');
+plot(env(dB).w/ (2*pi), MPPSBH_lb_hf_4.absorption_coefficient(env(dB)), 'DisplayName', 'MPPSBH 4');
 perso_configure_alpha_figure(2000);
 
 % Autres Solutions
 figure()
 hold on
 plot(env(dB).w/(2*pi), g_hf(env(dB)) , "--", 'DisplayName', 'Gabarit');
-plot(env(dB).w/ (2*pi), assembly_lb_hf_opti.alpha(env(dB)), 'DisplayName', 'Assemblage');
-plot(env(dB).w/ (2*pi), Solution_SDOF.alpha(env(dB)), 'DisplayName', 'SDOF');
-plot(env(dB).w/ (2*pi), Solution_Poly.alpha(env(dB)), 'DisplayName', 'Solution Poly');
-plot(env(dB).w/ (2*pi), imported_Poly_subelement.alpha(env(dB)), 'DisplayName', 'Solution Poly sans plaque');
+plot(env(dB).w/ (2*pi), assembly_lb_hf_opti.absorption_coefficient(env(dB)), 'DisplayName', 'Assemblage');
+plot(env(dB).w/ (2*pi), Solution_SDOF.absorption_coefficient(env(dB)), 'DisplayName', 'SDOF');
+plot(env(dB).w/ (2*pi), Solution_Poly.absorption_coefficient(env(dB)), 'DisplayName', 'Solution Poly');
+plot(env(dB).w/ (2*pi), imported_Poly_subelement.absorption_coefficient(env(dB)), 'DisplayName', 'Solution Poly sans plaque');
 perso_configure_alpha_figure(2000);
 
 %% Indicateurs

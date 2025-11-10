@@ -705,14 +705,14 @@ handle_nonlconf = @(x) perso_nonlconf(x_ETS(x), N, NS, top_plate_ETS(x_TP_ETS(x)
 %% Fonctions coût
 
 % Définition de la cartouche sur laquelle l'optimisation à lieu
-% handle_alpha = @(x, env, g_obj) subsref(Cartouches.cartouche_Poly(x).alpha(env), substruct('()', {g_obj(env)}));
-% handle_alpha = @(x, env, g_obj) subsref(Cartouches.cartouche_Poly_HL(x).alpha(env), substruct('()', {g_obj(env)}));
-% handle_alpha = @(x, env, g_obj) subsref(Cartouches.cartouche_globale(x).alpha(env), substruct('()', {g_obj(env)}));
-% handle_alpha = @(x, env, g_obj) subsref(Cartouches.cartouche_globale_HL(x).alpha(env), substruct('()', {g_obj(env)}));
-% handle_alpha = @(x, env, g_obj) subsref(Cartouches.cartouche_globale_HL_fp(x).alpha(env), substruct('()', {g_obj(env)}));
+% handle_alpha = @(x, env, g_obj) subsref(Cartouches.cartouche_Poly(x).absorption_coefficient(env), substruct('()', {g_obj(env)}));
+% handle_alpha = @(x, env, g_obj) subsref(Cartouches.cartouche_Poly_HL(x).absorption_coefficient(env), substruct('()', {g_obj(env)}));
+% handle_alpha = @(x, env, g_obj) subsref(Cartouches.cartouche_globale(x).absorption_coefficient(env), substruct('()', {g_obj(env)}));
+% handle_alpha = @(x, env, g_obj) subsref(Cartouches.cartouche_globale_HL(x).absorption_coefficient(env), substruct('()', {g_obj(env)}));
+% handle_alpha = @(x, env, g_obj) subsref(Cartouches.cartouche_globale_HL_fp(x).absorption_coefficient(env), substruct('()', {g_obj(env)}));
 
-% handle_alpha = @(x, env, g_obj) subsref(Cartouches.cartouche_globale_HL_iter(x).alpha(env, 'iter'), substruct('()', {g_obj(env)}));
-handle_alpha = @(x, env, g_obj) subsref(Cartouches.cartouche_globale_HL_fp(x).alpha(env), substruct('()', {g_obj(env)}));
+% handle_alpha = @(x, env, g_obj) subsref(Cartouches.cartouche_globale_HL_iter(x).absorption_coefficient(env, 'iter'), substruct('()', {g_obj(env)}));
+handle_alpha = @(x, env, g_obj) subsref(Cartouches.cartouche_globale_HL_fp(x).absorption_coefficient(env), substruct('()', {g_obj(env)}));
 handle_cost_function = @(x, env, g_obj) mean(1 - handle_alpha(x, env, g_obj));
 handle_objective = @(x, env, g_obj_cell) arrayfun(@(i) handle_cost_function(x, env, g_obj_cell{i}), 1:length(g_obj_cell) ,'UniformOutput', false);
 
@@ -759,10 +759,10 @@ timeGa = toc;
 
 %% Conditionnement du vecteur d'optimisation
 
-xopti_to_cell_array_of_alpha = @(x, env) arrayfun(@(i) vertcat(Cartouches.cartouche_globale(x(i, :)).alpha(env), ...
-                                                               Cartouches.cartouche_globale_HL_fp(x(i, :)).alpha(env), ...
-                                                               Cartouches.cartouche_globale_HL(x(i, :)).alpha(env), ...
-                                                               Cartouches.cartouche_globale_HL_iter(x(i, :)).alpha(env, 'iter')), ...
+xopti_to_cell_array_of_alpha = @(x, env) arrayfun(@(i) vertcat(Cartouches.cartouche_globale(x(i, :)).absorption_coefficient(env), ...
+                                                               Cartouches.cartouche_globale_HL_fp(x(i, :)).absorption_coefficient(env), ...
+                                                               Cartouches.cartouche_globale_HL(x(i, :)).absorption_coefficient(env), ...
+                                                               Cartouches.cartouche_globale_HL_iter(x(i, :)).absorption_coefficient(env, 'iter')), ...
                                                        1:size(x, 1), 'UniformOutput', false);
 
 

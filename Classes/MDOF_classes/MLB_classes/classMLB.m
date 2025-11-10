@@ -25,7 +25,7 @@ classdef classMLB < classelement
 
         function obj = classMLB(config)
             
-            % On appelle le supeconstructueur. obj hérite des propriétés .ListOfSubelements et .EndStatus
+            % On appelle le supeconstructueur. obj hérite des propriétés .ListOfObjects et .EndStatus
             obj@classelement({}, 'closed');
             
             if nargin > 0

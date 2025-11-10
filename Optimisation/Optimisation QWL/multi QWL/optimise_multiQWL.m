@@ -55,7 +55,7 @@ function multi_QWL_opti = optimise_multiQWL(config, params, gabarit, air, w, num
         
         % On calcule la fonction coût pour la configuration réévaluée. Ici on calcule la somme des écarts au carré entre la réponse 
         % et le gabarit
-        alpha_model = classmultiQWL(config).alpha(air, w);
+        alpha_model = classmultiQWL(config).absorption_coefficient(air, w);
         ojective = sum((alpha_model - gabarit).^2);
 
     end

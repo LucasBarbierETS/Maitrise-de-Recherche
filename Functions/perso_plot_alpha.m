@@ -1,6 +1,6 @@
 function perso_plot_alpha(solution, env, varargin)
     
-    plot(env.w/(2*pi), solution.alpha(env), 'DisplayName', 'Meilleure solution');
+    plot(env.w/(2*pi), solution.absorption_coefficient(env), 'DisplayName', 'Meilleure solution');
     
     if nargin > 2
         plot(env.w/(2*pi), varargin{1}(env), '--', 'DisplayName', 'Gabarit');

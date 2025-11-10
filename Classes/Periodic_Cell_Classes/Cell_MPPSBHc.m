@@ -32,14 +32,14 @@ classdef Cell_MPPSBHc < classelement
             % Référence : perso_ouvrir_lien_Zotero('zotero://open-pdf/library/items/AH7QFLYS?page=4&annotation=64Y6HACJ')
 
             % Plaque perforée
-            obj.Configuration.ListOfSubelements{end+1} = classMPP_Maa(classMPP_Maa.create_config(pp, phr, pt, SMPP));
+            obj.Configuration.ListOfObjects{end+1} = classMPP_Maa(classMPP_Maa.create_config(pp, phr, pt, SMPP));
 
             % Cavité cylindrique
-            obj.Configuration.ListOfSubelements{end+1} = classcavity(classcavity.create_config(ct, Scav));
+            obj.Configuration.ListOfObjects{end+1} = classcavity(classcavity.create_config(ct, Scav));
 
             % Cavité annulaire en parallèle
             ac = classannularcavity(classannularcavity.create_config(pmr, cr, ct, 'Volume'));
-            obj.Configuration.ListOfSubelements{end+1} = classjunction(classjunction.create_config(Scav, ac));
+            obj.Configuration.ListOfObjects{end+1} = classjunction(classjunction.create_config(Scav, ac));
         end
     end
 

@@ -22,10 +22,10 @@ classdef classMMPP < classelement
                 for i = 1:N
 
                     % Plaque perforée
-                    obj.Configuration.ListOfSubelements{end+1} = classMPP_Circular(classMPP_Circular.create_config(s, pt(i), phr(i), pp(i)));
+                    obj.Configuration.ListOfObjects{end+1} = classMPP_Circular(classMPP_Circular.create_config(s, pt(i), phr(i), pp(i)));
         
                     % Cavité 
-                    obj.Configuration.ListOfSubelements{end+1} = classcavity(classcavity.create_config(s, ct(i)));
+                    obj.Configuration.ListOfObjects{end+1} = classcavity(classcavity.create_config(s, ct(i)));
                 end 
             end
         end
@@ -93,9 +93,9 @@ classdef classMMPP < classelement
 
             hold on
             % subtitle("Atalla2007 - fig. 3 - p. 9")
-            % plot(env.w / (2*pi), MMPP.alpha(env), 'Color', 'g', 'LineWidth', 0.5, 'DisplayName', 'Modèle analytique linéaire');
-            % plot(env.w / (2*pi), MMPP_HL_fp.alpha(env), 'Color', 'r', 'LineWidth', 0.5, 'DisplayName', 'Modèle analytique HL appliqué à la première plaque');
-            plot(env.w / (2*pi), MMPP_HL.alpha(env), 'Color', 'm', 'LineWidth', 0.5, 'DisplayName', 'Modèle analytique HL');
+            % plot(env.w / (2*pi), MMPP.absorption_coefficient(env), 'Color', 'g', 'LineWidth', 0.5, 'DisplayName', 'Modèle analytique linéaire');
+            % plot(env.w / (2*pi), MMPP_HL_fp.absorption_coefficient(env), 'Color', 'r', 'LineWidth', 0.5, 'DisplayName', 'Modèle analytique HL appliqué à la première plaque');
+            plot(env.w / (2*pi), MMPP_HL.absorption_coefficient(env), 'Color', 'm', 'LineWidth', 0.5, 'DisplayName', 'Modèle analytique HL');
             plot(x_data1, y_data1, 'Color', 'g','LineWidth', 1, 'LineStyle', '--', 'DisplayName', 'Données de références - Mesure');
             % plot(x_data2, y_data2, 'Color', 'g','LineWidth', 1, 'LineStyle', '--', 'DisplayName', 'Données de références - Ingard');
             perso_configure_alpha_figure(5000);

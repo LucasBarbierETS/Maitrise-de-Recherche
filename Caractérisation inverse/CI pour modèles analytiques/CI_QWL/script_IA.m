@@ -33,7 +33,7 @@ for i = 1:numel(lengths)
         
         % Créer l'objet QWL et calculer le résultat
         qwl = classQWL(length, 'circle', dimension);
-        result = qwl.alpha(air, w); % supposer que calculate() est la méthode de calcul du modèle
+        result = qwl.absorption_coefficient(air, w); % supposer que calculate() est la méthode de calcul du modèle
         
         % Stocker les paramètres d'entrée et le résultat
         inputs(index, :) = result;
@@ -96,8 +96,8 @@ function loss = customLoss(YPred, YTrue, air, w)
         dimension_true = YTrue(i, 2);
         
         % Calculer le résultat du modèle analytique pour les paramètres prévus et réels
-        result_pred = classQWL(length_pred, 'circle', dimension_pred).alpha(air, w);
-        result_true = classQWL(length_true, 'circle', dimension_true).alpha(air, w);
+        result_pred = classQWL(length_pred, 'circle', dimension_pred).absorption_coefficient(air, w);
+        result_true = classQWL(length_true, 'circle', dimension_true).absorption_coefficient(air, w);
         
         % Calculer l'erreur entre les résultats du modèle analytique
         errors(i) = mean((result_pred - result_true).^2);

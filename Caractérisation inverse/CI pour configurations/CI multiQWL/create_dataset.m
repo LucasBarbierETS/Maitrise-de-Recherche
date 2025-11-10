@@ -48,7 +48,7 @@ for i = 1:sz
     configurations_set(i,:) = [sides, lengths];
 
     responses_set(i,:) = classmultiQWL(classmultiQWL.read_free_square_config(configurations_set(i,:))) ...
-                    .alpha(air, w);
+                    .absorption_coefficient(air, w);
 end
 
 data = horzcat(responses_set, configurations_set);

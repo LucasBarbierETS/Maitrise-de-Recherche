@@ -1,7 +1,7 @@
 function [R_opti, L_opti] = optimised_QWL(R, r_init, shape, f_peak, bandwidth, alpha_max, Air, w)
 
     % Fonction d'objectif pour l'optimisation
-    objective = @(params) sum((classQWL(R, params(1), params(2), shape).alpha(Air, w) - gabarit_QWL(w, f_peak, bandwidth, alpha_max)).^2);
+    objective = @(params) sum((classQWL(R, params(1), params(2), shape).absorption_coefficient(Air, w) - gabarit_QWL(w, f_peak, bandwidth, alpha_max)).^2);
 
     % Valeurs initiales du rayon et de la longueur
     R_QW = r_init;

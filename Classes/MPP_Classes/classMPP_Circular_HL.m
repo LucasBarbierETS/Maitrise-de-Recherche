@@ -186,9 +186,9 @@ classdef classMPP_Circular_HL < classMPP_Circular
             plate_HL = classMPP_Circular_HL(classMPP_Circular_HL.create_config(S, t, r, phi)); 
             cavity = classcavity(classcavity.create_config(S, D));
             E_HL = classelement(classelement.create_config({plate_HL, cavity}, 'closed', S));
-            % plot(env.w/(2*pi), E_HL.alpha(env), 'DisplayName', 'Modèle non-linéaire');
-            plot(env.w/(2*pi), E_HL.alpha(env, 'iter'), 'DisplayName', 'Modèle non-linéaire itératif');
-            plot(env.w/(2*pi), E_HL.alpha(env, 'iter Laly'), 'DisplayName', 'Modèle non-linéaire itératif Laly');
+            % plot(env.w/(2*pi), E_HL.absorption_coefficient(env), 'DisplayName', 'Modèle non-linéaire');
+            plot(env.w/(2*pi), E_HL.absorption_coefficient(env, 'iter'), 'DisplayName', 'Modèle non-linéaire itératif');
+            plot(env.w/(2*pi), E_HL.absorption_coefficient(env, 'iter Laly'), 'DisplayName', 'Modèle non-linéaire itératif Laly');
             plot(data3_3(:, 1), data3_3(:, 2), 'DisplayName', 'Résultat expérimental de référence');
             perso_configure_alpha_figure(4000);
 
@@ -214,9 +214,9 @@ classdef classMPP_Circular_HL < classMPP_Circular
             cavity = classcavity(classcavity.create_config(S, D));
             E = classelement(classelement.create_config({plate, cavity}, 'closed', S));
             E_HL = classelement(classelement.create_config({plate_HL, cavity}, 'closed', S));
-            plot(env.w/(2*pi), E.alpha(env), 'DisplayName', 'Prédiction du modèle linéaire');
-            % plot(env.w/(2*pi), E_HL.alpha(env), 'DisplayName', 'Modèle non-linéaire');
-            plot(env.w/(2*pi), E_HL.alpha(env, 'iter Laly'), 'DisplayName', 'Prédiction du modèle fort niveau');
+            plot(env.w/(2*pi), E.absorption_coefficient(env), 'DisplayName', 'Prédiction du modèle linéaire');
+            % plot(env.w/(2*pi), E_HL.absorption_coefficient(env), 'DisplayName', 'Modèle non-linéaire');
+            plot(env.w/(2*pi), E_HL.absorption_coefficient(env, 'iter Laly'), 'DisplayName', 'Prédiction du modèle fort niveau');
             plot(data3_4(:, 1), data3_4(:, 2), 'DisplayName', 'Résultat expérimental de référence');
             perso_configure_alpha_figure(4000);
 
@@ -242,9 +242,9 @@ classdef classMPP_Circular_HL < classMPP_Circular
             cavity = classcavity(classcavity.create_config(S, D));
             E = classelement(classelement.create_config({plate, cavity}, 'closed', S));
             E_HL = classelement(classelement.create_config({plate_HL, cavity}, 'closed', S));
-            plot(env.w/(2*pi), E.alpha(env), 'DisplayName', 'Prédiction du modèle linéaire');
-            % plot(env.w/(2*pi), E_HL.alpha(env), 'DisplayName', 'Modèle non-linéaire');
-            plot(env.w/(2*pi), E_HL.alpha(env, 'iter Laly'), 'DisplayName', 'Prédiction du modèle fort niveau');
+            plot(env.w/(2*pi), E.absorption_coefficient(env), 'DisplayName', 'Prédiction du modèle linéaire');
+            % plot(env.w/(2*pi), E_HL.absorption_coefficient(env), 'DisplayName', 'Modèle non-linéaire');
+            plot(env.w/(2*pi), E_HL.absorption_coefficient(env, 'iter Laly'), 'DisplayName', 'Prédiction du modèle fort niveau');
             plot(data3_5(:, 1), data3_5(:, 2), 'DisplayName', 'Résultat expérimental de référence');
             perso_configure_alpha_figure(4000);
 s
@@ -268,8 +268,8 @@ s
             plate_HL = classMPP_Circular_HL(classMPP_Circular_HL.create_config(S, t, r, phi)); 
             cavity = classcavity(classcavity.create_config(S, D));
             E_HL = classelement(classelement.create_config({plate_HL, cavity}, 'closed', S));
-            % plot(env.w/(2*pi), E_HL.alpha(env), 'DisplayName', 'Modèle non-linéaire');
-            plot(env.w/(2*pi), E_HL.alpha(env, 'iter Laly'), 'DisplayName', 'Prédiction du modèle fort niveau');
+            % plot(env.w/(2*pi), E_HL.absorption_coefficient(env), 'DisplayName', 'Modèle non-linéaire');
+            plot(env.w/(2*pi), E_HL.absorption_coefficient(env, 'iter Laly'), 'DisplayName', 'Prédiction du modèle fort niveau');
             plot(data3_6(:, 1), data3_6(:, 2), 'DisplayName', 'Données de référence');
             perso_configure_alpha_figure(4000);
 
@@ -298,9 +298,9 @@ s
             cavity = classcavity(classcavity.create_config(S, D));
             E = classelement(classelement.create_config({plate, cavity}, 'closed', S));
             E_HL = classelement(classelement.create_config({plate_HL, cavity}, 'closed', S));
-            plot(env.w/(2*pi), E.alpha(env), 'DisplayName', 'Prédiction du modèle linéaire');
-            % plot(env.w/(2*pi), E_HL.alpha(env), 'DisplayName', 'Modèle non-linéaire');
-            plot(env.w/(2*pi), E_HL.alpha(env, 'iter Laly'), 'DisplayName', 'Prédiction du modèle fort niveau');
+            plot(env.w/(2*pi), E.absorption_coefficient(env), 'DisplayName', 'Prédiction du modèle linéaire');
+            % plot(env.w/(2*pi), E_HL.absorption_coefficient(env), 'DisplayName', 'Modèle non-linéaire');
+            plot(env.w/(2*pi), E_HL.absorption_coefficient(env, 'iter Laly'), 'DisplayName', 'Prédiction du modèle fort niveau');
             plot(data3_8(:, 1), data3_8(:, 2), 'DisplayName', 'Résultat expérimental de référence');
             perso_configure_alpha_figure(4000);
             xlim([200 1400])
@@ -333,11 +333,11 @@ s
             plate_HL = classMPP_Circular_HL(classMPP_Circular_HL.create_config(S, t, r, phi)); 
             cavity = classcavity(classcavity.create_config(S, D));
             E_HL = classelement(classelement.create_config({plate_HL, cavity}, 'closed', S));
-            plot(env1.w/(2*pi), E_HL.alpha(env1), 'DisplayName', 'Modèle non-linéaire  - 125 dB');
-            plot(env1.w/(2*pi), E_HL.alpha(env1, 'iter'), 'DisplayName', 'Modèle non-linéaire itératif - 125 dB');
+            plot(env1.w/(2*pi), E_HL.absorption_coefficient(env1), 'DisplayName', 'Modèle non-linéaire  - 125 dB');
+            plot(env1.w/(2*pi), E_HL.absorption_coefficient(env1, 'iter'), 'DisplayName', 'Modèle non-linéaire itératif - 125 dB');
             plot(data3_11_125(:, 1), data3_11_125(:, 2), 'DisplayName', 'Données de référence - 125 dB');
-            plot(env2.w/(2*pi), E_HL.alpha(env2), 'DisplayName', 'Modèle non-linéaire - 150 dB');
-            plot(env2.w/(2*pi), E_HL.alpha(env2, 'iter'), 'DisplayName', 'Modèle non-linéaire itératif - 150 dB');
+            plot(env2.w/(2*pi), E_HL.absorption_coefficient(env2), 'DisplayName', 'Modèle non-linéaire - 150 dB');
+            plot(env2.w/(2*pi), E_HL.absorption_coefficient(env2, 'iter'), 'DisplayName', 'Modèle non-linéaire itératif - 150 dB');
             plot(data3_11_150(:, 1), data3_11_150(:, 2), 'DisplayName', 'Données de référence - 150 dB ');
             perso_configure_alpha_figure(4000);
 
@@ -361,8 +361,8 @@ s
             plate_HL = classMPP_Circular_HL(classMPP_Circular_HL.create_config(S, t, r, phi)); 
             cavity = classcavity(classcavity.create_config(S, D));
             E_HL = classelement(classelement.create_config({plate_HL, cavity}, 'closed', S));
-            plot(env.w/(2*pi), E_HL.alpha(env), 'DisplayName', 'Modèle non-linéaire');
-            plot(env.w/(2*pi), E_HL.alpha(env, 'iter'), 'DisplayName', 'Modèle non-linéaire itératif');
+            plot(env.w/(2*pi), E_HL.absorption_coefficient(env), 'DisplayName', 'Modèle non-linéaire');
+            plot(env.w/(2*pi), E_HL.absorption_coefficient(env, 'iter'), 'DisplayName', 'Modèle non-linéaire itératif');
             plot(data3_12(:, 1), data3_12(:, 2), 'DisplayName', 'Données de référence');
             perso_configure_alpha_figure(4000);
 
@@ -386,8 +386,8 @@ s
             plate_HL = classMPP_Circular_HL(classMPP_Circular_HL.create_config(S, t, r, phi)); 
             cavity = classcavity(classcavity.create_config(S, D));
             E_HL = classelement(classelement.create_config({plate_HL, cavity}, 'closed', S));
-            plot(env.w/(2*pi), E_HL.alpha(env), 'DisplayName', 'Modèle non-linéaire');
-            plot(env.w/(2*pi), E_HL.alpha(env, 'iter'), 'DisplayName', 'Modèle non-linéaire itératif');
+            plot(env.w/(2*pi), E_HL.absorption_coefficient(env), 'DisplayName', 'Modèle non-linéaire');
+            plot(env.w/(2*pi), E_HL.absorption_coefficient(env, 'iter'), 'DisplayName', 'Modèle non-linéaire itératif');
             plot(data3_13(:, 1), data3_13(:, 2), 'DisplayName', 'Données de référence');
             perso_configure_alpha_figure(4000);
 
@@ -411,8 +411,8 @@ s
             plate_HL = classMPP_Circular_HL(classMPP_Circular_HL.create_config(S, t, r, phi)); 
             cavity = classcavity(classcavity.create_config(S, D));
             E_HL = classelement(classelement.create_config({plate_HL, cavity}, 'closed', S));
-            plot(env.w/(2*pi), E_HL.alpha(env), 'DisplayName', 'Modèle non-linéaire');
-            plot(env.w/(2*pi), E_HL.alpha(env, 'iter'), 'DisplayName', 'Modèle non-linéaire itératif');
+            plot(env.w/(2*pi), E_HL.absorption_coefficient(env), 'DisplayName', 'Modèle non-linéaire');
+            plot(env.w/(2*pi), E_HL.absorption_coefficient(env, 'iter'), 'DisplayName', 'Modèle non-linéaire itératif');
             plot(data3_14(:, 1), data3_14(:, 2), 'DisplayName', 'Données de référence');
             perso_configure_alpha_figure(4000);
          end
