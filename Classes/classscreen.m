@@ -70,7 +70,7 @@ classdef classscreen
             ylabel("Coefficient d'Absorption")
             ylim([0 1])
             % xlim([0 2000])
-            subtitle("Validation JCA -  Verdière2013 - figure 4 - tracé E") 
+            subtitle("Validation JCA -  Verdiere2013 - figure 4 - tracé E") 
         end
     end
 end

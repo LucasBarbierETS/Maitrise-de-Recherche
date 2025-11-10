@@ -1,5 +1,5 @@
 classdef element_assembly
-    % Reference : Verdière, Kévin, et al. « Transfer Matrix Method Applied 
+    % Reference : Verdiere, Kévin, et al. « Transfer Matrix Method Applied 
     %             to the Parallel Assembly of Sound Absorbing Materials ». 
     %             The Journal of the Acoustical Society of America, vol. 
     %             134, no 6, décembre 2013, p. 4648‑58. DOI.org (Crossref), 

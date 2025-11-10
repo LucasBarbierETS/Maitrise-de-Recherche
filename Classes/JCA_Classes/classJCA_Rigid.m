@@ -197,7 +197,7 @@ classdef classJCA_Rigid < classobject
    
         function validate()
             
-            %% Poreux (Verdière2013)
+            %% Poreux (Verdiere2013)
 
             perso_figure('Validation classJCA_Rigid - Coefficient d''absorption')
             
@@ -224,7 +224,7 @@ classdef classJCA_Rigid < classobject
             alpha_model = E.alpha(env);
 
             % importation des données de références
-            data = csvread('Verdière2013_fig4_E.txt');
+            data = csvread('Verdiere2013_fig4_E.txt');
             [x_data, y_data] = perso_interpole_et_lisse(data(:, 1), data(:, 2), 1000, 0.05);
 
             % JCAelement = classelement(classelement.create_config({E}, 'closed', s));
@@ -241,7 +241,7 @@ classdef classJCA_Rigid < classobject
             ylabel("Coefficient d'Absorption")
             ylim([0 1])
             % xlim([0 2000])
-            subtitle("Validation JCA -  Verdière2013 - figure 4 - tracé E")
+            subtitle("Validation JCA -  Verdiere2013 - figure 4 - tracé E")
  
             %% Validation classJCA_Rigid - TM sans écoulement
             perso_figure('Validation classJCA_Rigid - TM sans écoulement')
@@ -273,7 +273,7 @@ classdef classJCA_Rigid < classobject
             perso_figure('Validation classJCA_Rigid - TM sans écoulement')
 
             % % importation des données de références
-            % data = csvread('Verdière2013_fig4_E.txt');
+            % data = csvread('Verdiere2013_fig4_E.txt');
             % [x_data, y_data] = perso_interpole_et_lisse(data(:, 1), data(:, 2), 1000, 0.05);
 
             % JCAelement = classelement(classelement.create_config({E}, 'closed', s));
@@ -291,7 +291,7 @@ classdef classJCA_Rigid < classobject
             % ylabel("Coefficient d'Absorption")
             % ylim([0 1])
             % % xlim([0 2000])
-            % subtitle("Validation JCA -  Verdière2013 - figure 4 - tracé E")
+            % subtitle("Validation JCA -  Verdiere2013 - figure 4 - tracé E")
         end
     end
 end
