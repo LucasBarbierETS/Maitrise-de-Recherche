@@ -161,7 +161,7 @@ Objets.MPPSBH_i = @(config, i) classMPPSBH_Rectangular( ...
         {ETS_cavities_depth/depth_holes_number}, ... % distance entre perforations (depth)
         {depth_holes_number}, ... % nombre de perforations en profondeur
         {config(i, :, 3)}, ... % nombre de perforations en largeur
-        {plates_thickness}, ... % épaisseur des plaques (supérieure + internes)
+        {ETS_plates_thickness}, ... % épaisseur des plaques (supérieure + internes)
         {perso_simplex_map(config(i, :, 4), cavities_total_thickness)})); %;  % épaisseur de cavité
 
 % Debog (OK)
@@ -177,7 +177,7 @@ Objets.MPPSBH_HL_fp_i = @(config, i) classMPPSBH_Rectangular_HL_first_plate( ...
         {ETS_cavities_depth/depth_holes_number}, ... % distance entre perforations (depth)
         {depth_holes_number}, ... % nombre de perforations en profondeur
         {config(i, :, 3)}, ... % nombre de perforations en largeur
-        {plates_thickness}, ... % épaisseur des plaques (supérieure + internes)
+        {ETS_plates_thickness}, ... % épaisseur des plaques (supérieure + internes)
         {perso_simplex_map(config(i, :, 4), cavities_total_thickness)})); %;  % épaisseur de cavité 
 
 Objets.MPPSBH_HL_i = @(config, i) classMPPSBH_Rectangular_HL( ...
@@ -188,7 +188,7 @@ Objets.MPPSBH_HL_i = @(config, i) classMPPSBH_Rectangular_HL( ...
         {ETS_cavities_depth/depth_holes_number}, ... % distance entre perforations (depth)
         {depth_holes_number}, ... % nombre de perforations en profondeur
         {config(i, :, 3)}, ... % nombre de perforations en largeur
-        {plates_thickness}, ... % épaisseur des plaques (supérieure + internes)
+        {ETS_plates_thickness}, ... % épaisseur des plaques (supérieure + internes)
         {perso_simplex_map(config(i, :, 4), cavities_total_thickness)})); %;  % épaisseur de cavité 
 
 Objets.MPPSBH_HL_iter_i = @(config, i) classMPPSBH_Rectangular_HL_iter( ...
@@ -199,7 +199,7 @@ Objets.MPPSBH_HL_iter_i = @(config, i) classMPPSBH_Rectangular_HL_iter( ...
         {ETS_cavities_depth/depth_holes_number}, ... % distance entre perforations (depth)
         {depth_holes_number}, ... % nombre de perforations en profondeur
         {config(i, :, 3)}, ... % nombre de perforations en largeur
-        {plates_thickness}, ... % épaisseur des plaques (supérieure + internes)
+        {ETS_plates_thickness}, ... % épaisseur des plaques (supérieure + internes)
         {perso_simplex_map(config(i, :, 4), cavities_total_thickness)})); %;  % épaisseur de cavité
 
 % % Debog : Approche itérative (OK)

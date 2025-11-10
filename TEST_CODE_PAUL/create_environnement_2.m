@@ -1,28 +1,32 @@
-function env = create_environnement_2(root, temperature, static_pressure, relative_humidity, ...
-                                    freqs, varargin)
+function env = create_environnement_2(temperature, static_pressure, relative_humidity, ...
+                                    freqs, options)
     
-    env.Root = root;
-    air = classair(temperature, static_pressure, relative_humidity);
-    env.air = air;
+    arguments
+        temperature
+        static_pressure
+        relative_humidity
+        freqs
+        options.Root = NaN
+        options.SPL = 100
+        options.M = 0
+    end
+
+    env.Root = options.Root;
+    env.freqs = freqs;
+    env.air = classair(temperature, static_pressure, relative_humidity);
 
     % Fréquences et pulsations
-    env.f = freqs(:)';  % vecteur colonne
-    env.w = 2 * pi * env.f;
+    env.freqs = freqs(:)';  % vecteur colonne
+    env.w = 2 * pi * env.freqs;
 
     % Pression de référence pour l'échelle des niveau de pression
     env.p_ref = 20e-6; 
 
-    % Si l'utilisateur à indiqué un niveau de pression (total ou incident)
-    if nargin > 5
-        env.SPL = varargin{1};
-        % env.pt_rms = env.p_ref * 10.^(env.SPL/20); Dans Laly
-        env.pt = sqrt(2) * env.p_ref * 10.^(env.SPL/20); % Dans Lopez : perso_ouvrir_lien_Zotero('zotero://open-pdf/library/items/UXM5QAPK?page=153&annotation=PTUY9E3V');
-    end
+    env.SPL = options.SPL;
+    env.pt_rms = env.p_ref * 10.^(env.SPL/20); 
+    env.pt = sqrt(2) * env.p_ref * 10.^(env.SPL/20); % Dans Lopez : perso_ouvrir_lien_Zotero('zotero://open-pdf/library/items/UXM5QAPK?page=153&annotation=PTUY9E3V');
 
-    % Si l'utilisateur à indiqué un nombre de Mach moyen
-    if nargin > 6
-        env.M = varargin{2};
-    end
+    env.M = options.M;
 end
 
 

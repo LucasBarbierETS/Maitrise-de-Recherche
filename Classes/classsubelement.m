@@ -16,7 +16,7 @@ classdef classsubelement
             end
         end
 
-        function [TM_inv, pt_out, u_out] = inverse_transfer_matrix(obj, env, options)
+        function [TM, TM_inv, pt_out, u_out] = inverse_transfer_matrix(obj, env, options)
 
             arguments
                 obj
@@ -28,11 +28,15 @@ classdef classsubelement
             end
             
             try
-                if all(structfun(@(x) all(isnan(x), 'all'), options.TM))
+                isValidTM = isstruct(options.TM) && ...            % TM doit être une structure
+                all(isfield(options.TM, {'T11','T12','T21','T22'})) && ... % avec champs requis
+                any(~isnan([options.TM.T11, options.TM.T12, options.TM.T21, options.TM.T22]), 'all'); % AU MOINS une valeur non-NaN
+
+                if isValidTM
+                   TM = options.TM; 
+                else  
                     args = perso_namedargs(options);
                     TM = obj.transfer_matrix(env, args{:});
-                else
-                    TM = options.TM;
                 end
 
                 % % Debog : Matrice de transfert inverse
