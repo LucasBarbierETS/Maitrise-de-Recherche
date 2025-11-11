@@ -43,9 +43,9 @@ function perso_interactive_multi_plot(x, alpha, Zs, f_max, Frequences)
         'NumberTitle','on','Position',[1050 120 900 600], ...
         'KeyPressFcn',@onKey); % même navigation clavier
 
-    s_zs_real = subplot(2,1,1,'Parent',figZs, 'ylim', [0 30]);
+    s_zs_real = subplot(2,1,1,'Parent',figZs);
     hold(s_zs_real,'on'); box(s_zs_real,'on');
-    s_zs_imag = subplot(2,1,2,'Parent',figZs, 'ylim', [-10 10]);
+    s_zs_imag = subplot(2,1,2,'Parent',figZs);
     hold(s_zs_imag,'on'); box(s_zs_imag,'on');
 
     yZ = Zs{currentIndex}; % [2 x numel(x)] (complexe)
@@ -95,8 +95,8 @@ function perso_interactive_multi_plot(x, alpha, Zs, f_max, Frequences)
 
         % Z_s
         yZ = Zs{currentIndex};
-        set(hZR,'XData',x,'YData',real(yZ));
-        set(hZI,'XData',x,'YData',imag(yZ));
+        set(hZR,'XData',x,'YData',real(yZ), ylim, [0 30]);
+        set(hZI,'XData',x,'YData',imag(yZ), ylim, [0 30]);
         title(s_zs_imag, sprintf('Z_s — Tracé %d / %d', currentIndex, numPlots));
         % (titres des axes conservés)
         drawnow;

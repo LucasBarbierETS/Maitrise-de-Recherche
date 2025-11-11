@@ -248,172 +248,204 @@ perso_plot_targetted_frequencies(Frequences, 1)
 chosed_index = input('Veuillez entrer le numéro de la configuration choisie : ');
 x_opti = sorted_xopti(chosed_index, :);
 
+
+%% Étude paramétrique
+
+x_init = x_opti(chosed_index,:); % configuration de référence
+param_name = 'rayon des perforations';
+r_values = linspace(0.2e-3, 1.2e-3, 5); % 5 valeurs de rayon
+
+alpha_cases = cell(1, numel(r_values));
+
+for k = 1:numel(r_values)
+    % --- on modifie les rayons uniquement ---
+    x_mod = x_init;
+    idx_r = 1:(N*NS); % indices correspondant aux rayons dans le vecteur x
+    x_mod(idx_r) = r_values(k); % remplace tous les rayons par une même valeur
+    
+    % --- on calcule α(f) ---
+    alpha_cases{k} = handle_alpha(x_mod, env);
+end
+
+% --- Tracé comparatif ---
+figure;
+hold on
+colors = lines(numel(r_values));
+for k = 1:numel(r_values)
+    plot(env.w/(2*pi), alpha_cases{k}, 'Color', colors(k,:), ...
+        'DisplayName', sprintf('r = %.1f mm', r_values(k)*1e3));
+end
+xlabel('Fréquence (Hz)');
+ylabel('Coefficient d''absorption \alpha');
+legend('Location','best');
+title(sprintf('Influence du %s', param_name));
+
 %% Sauvergarde
-% 
-% env_saved = input('Sauvegarder l''environnement d''optimisation : ');
-% 
-% if env_saved ~= 1
-%     return
-% end
-% 
-% currentTime = char(datetime('now', 'Format', 'MM_dd_HH_mm'));
-% 
-% optimisation_type = '\optimisation_ETS_Poly_';
-% 
-% % objective_type = 'H1_';
-% % objective_type = 'H2_';
-% % objective_type = 'H1_H2_';
-% objective_type = 'H1-4_';
-% % objective_type = 'neutre_';
-% 
-% folder_full_name = [folderName, optimisation_type, objective_type, currentTime];
-% mkdir(folder_full_name);
-% mkdir([folder_full_name, '\Figures']);
-% save([folder_full_name, '\environnement matlab.mat']);
 
-% %% Affichage des performances et des contributions
-% 
-% % temp_plot_MPPSBH_results(x_opti, 1);
-% % temp_plot_module_ETS(x_opti);
-% % temp_plot_cartouche_ETS(x_opti);
-% % temp_plot_cartouches(x_opti);
-% 
-% x_TP_ETS(x_opti);
-% x_TP_Poly(x_opti);
-% top_plate(x_TP_ETS(x_opti)).Configuration % Plaque ETS
-% top_plate(x_TP_Poly(x_opti)).Configuration % Plaque Poly
-% 
-% perso_figure('Prédiction des performances de la configuration optimale');
-% hold on
-% title('Prédiction des performances de la configuration optimale');
-% Cartouches.cartouche_globale(x_opti).plot_alpha(env, 'Cartouche globale');
-% % Cartouches.cartouche_globale_HL_fp(x_opti).plot_alpha(env, 'Cartouche globale HL fp');
-% Cartouches.cartouche_globale_HL_iter(x_opti).plot_alpha(env, 'Cartouche globale HL fp iter', 'iter');
-% perso_plot_targetted_frequencies(Frequences, 1);
-% perso_configure_alpha_figure(3000);
-% 
-% saveas(gcf, [folder_full_name, '\Figures\Prédiction des performances de la configuration optimale.fig']);
-% 
-% perso_figure('Surface d''impédance de la configuration optimale')
-% hold on
-% title('Surface d''impédance de la configuration optimale');
-% perso_plot_surface_impedance(Cartouches.cartouche_globale(x_opti).surface_impedance(env), env, 'Cartouche globale');
-% % perso_plot_surface_impedance(Cartouches.cartouche_globale_HL_fp(x_opti).surface_impedance(env), env, 'Cartouche globale HL fp');
-% perso_plot_surface_impedance(Cartouches.cartouche_globale_HL_iter(x_opti).surface_impedance_iter(env), env, 'Cartouche globale HL iter');
-% 
-% saveas(gcf, [folder_full_name, '\Figures\Surface d''impédance de la configuration optimale.fig']);
-% 
-% perso_figure('Prédiction des performances de la cartouche ETS');
-% hold on
-% title('Prédiction des performances de la cartouche ETS');
-% Cartouches.cartouche_ETS(x_opti).plot_alpha(env, 'Cartouche ETS');
-% % Cartouches.cartouche_ETS_HL_fp(x_opti).plot_alpha(env, 'Cartouche v HL fp');
-% Cartouches.cartouche_ETS_HL_iter(x_opti).plot_alpha(env, 'Cartouche ETS HL fp iter', 'iter');
-% perso_plot_targetted_frequencies(Frequences, 1);
-% perso_configure_alpha_figure(3000);
-% 
-% saveas(gcf, [folder_full_name, '\Figures\Prédiction des performances de la cartouche ETS.fig']);
-% 
-% perso_figure('Surface d''impédance de la cartouche ETS')
-% hold on
-% title('Surface d''impédance de la cartouche ETS');
-% perso_plot_surface_impedance(Cartouches.cartouche_ETS(x_opti).surface_impedance(env), env, 'cartouche ETS');
-% % perso_plot_surface_impedance(Cartouches.cartouche_ETS_HL_fp(x_opti).surface_impedance(env), env, 'cartouche ETS HL fp');
-% perso_plot_surface_impedance(Cartouches.cartouche_ETS_HL_iter(x_opti).surface_impedance_iter(env), env, 'cartouche ETS HL iter');
-% 
-% saveas(gcf, [folder_full_name, '\Figures\Surface d''impédance de la cartouche ETS.fig']);
-% 
-% perso_figure('Prédiction des performances de la cartouche Poly');
-% hold on
-% title('Prédiction des performances de la cartouche Poly');
-% Cartouches.cartouche_Poly(x_opti).plot_alpha(env, 'Cartouche Poly');
-% % Cartouches.cartouche_Poly_HL_fp(x_opti).plot_alpha(env, 'Cartouche v HL fp');
-% Cartouches.cartouche_Poly_HL_iter(x_opti).plot_alpha(env, 'Cartouche Poly HL fp iter', 'iter');
-% perso_plot_targetted_frequencies(Frequences, 1);
-% perso_configure_alpha_figure(3000);
-% 
-% saveas(gcf, [folder_full_name, '\Figures\Prédiction des performances de la cartouche Poly.fig']);
-% 
-% perso_figure('Surface d''impédance de la cartouche Poly')
-% hold on
-% title('Surface d''impédance de la cartouche Poly');
-% perso_plot_surface_impedance(Cartouches.cartouche_Poly(x_opti).surface_impedance(env), env, 'cartouche Poly');
-% % perso_plot_surface_impedance(Cartouches.cartouche_Poly_HL_fp(x_opti).surface_impedance(env), env, 'cartouche Poly HL fp');
-% perso_plot_surface_impedance(Cartouches.cartouche_Poly_HL_iter(x_opti).surface_impedance_iter(env), env, 'cartouche Poly HL iter');
-% 
-% saveas(gcf, [folder_full_name, '\Figures\Surface d''impédance de la cartouche Poly.fig']);
+env_saved = input('Sauvegarder l''environnement d''optimisation : ');
 
-% %% Validation des contributions individuelles
-% 
-% % Contributions des élements MPPSBHs
-% for i = 1:NS
-%     figure()
-%     % Tube_MPPSBH_element_contrib = ImpedanceTube2D(ImpedanceTube2D.create_config({Contributions.contribution_MPPSBH_element_i(x_opti, i)}));
-%     % Tube_MPPSBH_element_contrib = Tube_MPPSBH_element_contrib.launch_tube_measurement(env);
-%     % Tube_MPPSBH_element_contrib.plot_alpha(env, ['Contribution MPPSBH' num2str(i)]);
-%     Contributions.contribution_MPPSBH_element_i(x_opti, i).plot_alpha(env, 'modèle linéaire');
-%     Contributions.contribution_MPPSBH_element_HL_i(x_opti, i).plot_alpha(env, 'modèle HL');
-%     Contributions.contribution_MPPSBH_element_HL_fp_i(x_opti, i).plot_alpha(env, 'modèle HL appliqué à la première plaque seulement');
-%     perso_configure_alpha_figure(2000);
-%     saveas(gcf, [folder_full_name, '\Figures\Validation de la contribution de MPPSBH' num2str(i) '.fig']);
-% 
-%     % figure()
-%     % mphgeom(Tube_MPPSBH_element_contrib.Configuration.ComsolModel);
-%     % saveas(gcf, [folder_full_name, '\Figures\Géométrie de l''élement MPPSBH' num2str(i) '.fig']);
-%     % mphsave(Tube_MPPSBH_element_contrib.Configuration.ComsolModel, [folder_full_name, '\validation_2D_MPPSBH_', num2str(i), '.mph']);
-% end
-% 
-% % Contribution de la cavité jaune dans la cartouche ETS
-% % Tube_ETS_yc_contrib = ImpedanceTube2D(ImpedanceTube2D.create_config({Contributions.contribution_ETS_yellow_cavity(x_opti)}));
-% % Tube_ETS_yc_contrib = Tube_ETS_yc_contrib.launch_tube_measurement(env);
-% figure();
-% % Tube_ETS_yc_contrib.plot_alpha(env, 'Contribution ETS cavité jaune');
-% Contributions.contribution_ETS_yellow_cavity(x_opti).plot_alpha(env, 'modèle linéaire');
-% Contributions.contribution_ETS_HL_yellow_cavity(x_opti).plot_alpha(env, 'modèle HL');
-% perso_configure_alpha_figure(2000);
-% saveas(gcf, [folder_full_name, '\Figures\Validation de la contribution de la cavité jaune de la cartouche ETS.fig']);
-% % mphsave(Tube_ETS_yc_contrib.Configuration.ComsolModel, [folder_full_name, '\validation_2D_ETS_yellow_cavity.mph']);
-% 
-% % Contribution de la solution Poly
-% % Tube_Poly_element_contrib = ImpedanceTube2D(ImpedanceTube2D.create_config({Contributions.contribution_Poly_numerical_element(x_opti)}));
-% % Tube_Poly_element_contrib = Tube_Poly_element_contrib.launch_tube_measurement(env);
-% figure();
-% imported_Poly_element.plot_alpha(env,'élement importé seul');
-% % Tube_Poly_element_contrib.plot_alpha(env, 'Contribution Poly élement numérique');
-% Contributions.contribution_Poly_element(x_opti).plot_alpha(env, 'Contribution Poly élement numérique - modèle linéaire');
-% Contributions.contribution_Poly_HL_element(x_opti).plot_alpha(env, 'modèle HL');
-% 
-% perso_configure_alpha_figure(2000);
-% saveas(gcf, [folder_full_name, '\Figures\Validation de la contribution de la solution de Poly.fig']);
-% % mphsave(Tube_Poly_element_contrib.Configuration.ComsolModel, [folder_full_name, '\validation_2D_Poly_numerical_element.mph']);
-% 
-% % Contribution de la cavité jaune dans la cartouche ETS
-% % Tube_Poly_yc_contrib = ImpedanceTube2D(ImpedanceTube2D.create_config({Contributions.contribution_Poly_yellow_cavity(x_opti)}));
-% % Tube_Poly_yc_contrib = Tube_Poly_yc_contrib.launch_tube_measurement(env);
-% figure();
-% % Tube_Poly_yc_contrib.plot_alpha(env, 'Contribution Poly cavité jaune');
-% Contributions.contribution_Poly_yellow_cavity(x_opti).plot_alpha(env, 'modèle linéaire');
-% Contributions.contribution_Poly_HL_yellow_cavity(x_opti).plot_alpha(env, 'modèle HL');
-% 
-% perso_configure_alpha_figure(2000);
-% saveas(gcf, [folder_full_name, '\Figures\Validation de la contribution de la cavité jaune de la cartouche Poly.fig']);
-% % mphsave(Tube_Poly_yc_contrib.Configuration.ComsolModel, [folder_full_name, '\validation_2D_Poly_yellow_cavity.mph']);
-% 
-% %% Sauvegarde des rapports de configuration
-% 
-% % Rapport de configuration des plaques couvrantes
-% report_root = [folder_full_name, '\Rapports de configuration des plaques couvrantes'];
-% mkdir(report_root);
-% 
-% perso_top_plate_export_report(x_TP_ETS(x_opti), radius, [report_root, '\rapport de configuration plaque ETS.xlsx']);
-% perso_top_plate_export_report(x_TP_Poly(x_opti), radius, [report_root, '\rapport de configuration plaque Poly.xlsx']);
-% 
-% % Rapport de configuration des MPPSBHs
-% report_root = [folder_full_name, '\Rapports de configuration des MPPSBHs'];
-% mkdir(report_root);
-% 
-% for i = 1:NS
-%     Objets.MPPSBH_i(x_ETS(x_opti), radius(x_radius(x_opti)), i).export_report([report_root, '\rapport de configuration - MPPSBH ', num2str(i), '.xlsx'])
-% end
+if env_saved ~= 1
+    return
+end
+
+currentTime = char(datetime('now', 'Format', 'MM_dd_HH_mm'));
+
+optimisation_type = '\optimisation_ETS_Poly_';
+
+% objective_type = 'H1_';
+% objective_type = 'H2_';
+% objective_type = 'H1_H2_';
+objective_type = 'H1-4_';
+% objective_type = 'neutre_';
+
+folder_full_name = [folderName, optimisation_type, objective_type, currentTime];
+mkdir(folder_full_name);
+mkdir([folder_full_name, '\Figures']);
+save([folder_full_name, '\environnement matlab.mat']);
+
+%% Affichage des performances et des contributions
+
+% temp_plot_MPPSBH_results(x_opti, 1);
+% temp_plot_module_ETS(x_opti);
+% temp_plot_cartouche_ETS(x_opti);
+% temp_plot_cartouches(x_opti);
+
+x_TP_ETS(x_opti);
+x_TP_Poly(x_opti);
+top_plate(x_TP_ETS(x_opti)).Configuration % Plaque ETS
+top_plate(x_TP_Poly(x_opti)).Configuration % Plaque Poly
+
+perso_figure('Prédiction des performances de la configuration optimale');
+hold on
+title('Prédiction des performances de la configuration optimale');
+Cartouches.cartouche_globale(x_opti).plot_alpha(env, 'Cartouche globale');
+% Cartouches.cartouche_globale_HL_fp(x_opti).plot_alpha(env, 'Cartouche globale HL fp');
+Cartouches.cartouche_globale_HL_iter(x_opti).plot_alpha(env, 'Cartouche globale HL fp iter', 'iter');
+perso_plot_targetted_frequencies(Frequences, 1);
+perso_configure_alpha_figure(3000);
+
+saveas(gcf, [folder_full_name, '\Figures\Prédiction des performances de la configuration optimale.fig']);
+
+perso_figure('Surface d''impédance de la configuration optimale')
+hold on
+title('Surface d''impédance de la configuration optimale');
+perso_plot_surface_impedance(Cartouches.cartouche_globale(x_opti).surface_impedance(env), env, 'Cartouche globale');
+% perso_plot_surface_impedance(Cartouches.cartouche_globale_HL_fp(x_opti).surface_impedance(env), env, 'Cartouche globale HL fp');
+perso_plot_surface_impedance(Cartouches.cartouche_globale_HL_iter(x_opti).surface_impedance_iter(env), env, 'Cartouche globale HL iter');
+
+saveas(gcf, [folder_full_name, '\Figures\Surface d''impédance de la configuration optimale.fig']);
+
+perso_figure('Prédiction des performances de la cartouche ETS');
+hold on
+title('Prédiction des performances de la cartouche ETS');
+Cartouches.cartouche_ETS(x_opti).plot_alpha(env, 'Cartouche ETS');
+% Cartouches.cartouche_ETS_HL_fp(x_opti).plot_alpha(env, 'Cartouche v HL fp');
+Cartouches.cartouche_ETS_HL_iter(x_opti).plot_alpha(env, 'Cartouche ETS HL fp iter', 'iter');
+perso_plot_targetted_frequencies(Frequences, 1);
+perso_configure_alpha_figure(3000);
+
+saveas(gcf, [folder_full_name, '\Figures\Prédiction des performances de la cartouche ETS.fig']);
+
+perso_figure('Surface d''impédance de la cartouche ETS')
+hold on
+title('Surface d''impédance de la cartouche ETS');
+perso_plot_surface_impedance(Cartouches.cartouche_ETS(x_opti).surface_impedance(env), env, 'cartouche ETS');
+% perso_plot_surface_impedance(Cartouches.cartouche_ETS_HL_fp(x_opti).surface_impedance(env), env, 'cartouche ETS HL fp');
+perso_plot_surface_impedance(Cartouches.cartouche_ETS_HL_iter(x_opti).surface_impedance_iter(env), env, 'cartouche ETS HL iter');
+
+saveas(gcf, [folder_full_name, '\Figures\Surface d''impédance de la cartouche ETS.fig']);
+
+perso_figure('Prédiction des performances de la cartouche Poly');
+hold on
+title('Prédiction des performances de la cartouche Poly');
+Cartouches.cartouche_Poly(x_opti).plot_alpha(env, 'Cartouche Poly');
+% Cartouches.cartouche_Poly_HL_fp(x_opti).plot_alpha(env, 'Cartouche v HL fp');
+Cartouches.cartouche_Poly_HL_iter(x_opti).plot_alpha(env, 'Cartouche Poly HL fp iter', 'iter');
+perso_plot_targetted_frequencies(Frequences, 1);
+perso_configure_alpha_figure(3000);
+
+saveas(gcf, [folder_full_name, '\Figures\Prédiction des performances de la cartouche Poly.fig']);
+
+perso_figure('Surface d''impédance de la cartouche Poly')
+hold on
+title('Surface d''impédance de la cartouche Poly');
+perso_plot_surface_impedance(Cartouches.cartouche_Poly(x_opti).surface_impedance(env), env, 'cartouche Poly');
+% perso_plot_surface_impedance(Cartouches.cartouche_Poly_HL_fp(x_opti).surface_impedance(env), env, 'cartouche Poly HL fp');
+perso_plot_surface_impedance(Cartouches.cartouche_Poly_HL_iter(x_opti).surface_impedance_iter(env), env, 'cartouche Poly HL iter');
+
+saveas(gcf, [folder_full_name, '\Figures\Surface d''impédance de la cartouche Poly.fig']);
+
+%% Validation des contributions individuelles
+
+% Contributions des élements MPPSBHs
+for i = 1:NS
+    figure()
+    % Tube_MPPSBH_element_contrib = ImpedanceTube2D(ImpedanceTube2D.create_config({Contributions.contribution_MPPSBH_element_i(x_opti, i)}));
+    % Tube_MPPSBH_element_contrib = Tube_MPPSBH_element_contrib.launch_tube_measurement(env);
+    % Tube_MPPSBH_element_contrib.plot_alpha(env, ['Contribution MPPSBH' num2str(i)]);
+    Contributions.contribution_MPPSBH_element_i(x_opti, i).plot_alpha(env, 'modèle linéaire');
+    Contributions.contribution_MPPSBH_element_HL_i(x_opti, i).plot_alpha(env, 'modèle HL');
+    Contributions.contribution_MPPSBH_element_HL_fp_i(x_opti, i).plot_alpha(env, 'modèle HL appliqué à la première plaque seulement');
+    perso_configure_alpha_figure(2000);
+    saveas(gcf, [folder_full_name, '\Figures\Validation de la contribution de MPPSBH' num2str(i) '.fig']);
+
+    % figure()
+    % mphgeom(Tube_MPPSBH_element_contrib.Configuration.ComsolModel);
+    % saveas(gcf, [folder_full_name, '\Figures\Géométrie de l''élement MPPSBH' num2str(i) '.fig']);
+    % mphsave(Tube_MPPSBH_element_contrib.Configuration.ComsolModel, [folder_full_name, '\validation_2D_MPPSBH_', num2str(i), '.mph']);
+end
+
+% Contribution de la cavité jaune dans la cartouche ETS
+% Tube_ETS_yc_contrib = ImpedanceTube2D(ImpedanceTube2D.create_config({Contributions.contribution_ETS_yellow_cavity(x_opti)}));
+% Tube_ETS_yc_contrib = Tube_ETS_yc_contrib.launch_tube_measurement(env);
+figure();
+% Tube_ETS_yc_contrib.plot_alpha(env, 'Contribution ETS cavité jaune');
+Contributions.contribution_ETS_yellow_cavity(x_opti).plot_alpha(env, 'modèle linéaire');
+Contributions.contribution_ETS_HL_yellow_cavity(x_opti).plot_alpha(env, 'modèle HL');
+perso_configure_alpha_figure(2000);
+saveas(gcf, [folder_full_name, '\Figures\Validation de la contribution de la cavité jaune de la cartouche ETS.fig']);
+% mphsave(Tube_ETS_yc_contrib.Configuration.ComsolModel, [folder_full_name, '\validation_2D_ETS_yellow_cavity.mph']);
+
+% Contribution de la solution Poly
+% Tube_Poly_element_contrib = ImpedanceTube2D(ImpedanceTube2D.create_config({Contributions.contribution_Poly_numerical_element(x_opti)}));
+% Tube_Poly_element_contrib = Tube_Poly_element_contrib.launch_tube_measurement(env);
+figure();
+imported_Poly_element.plot_alpha(env,'élement importé seul');
+% Tube_Poly_element_contrib.plot_alpha(env, 'Contribution Poly élement numérique');
+Contributions.contribution_Poly_element(x_opti).plot_alpha(env, 'Contribution Poly élement numérique - modèle linéaire');
+Contributions.contribution_Poly_HL_element(x_opti).plot_alpha(env, 'modèle HL');
+
+perso_configure_alpha_figure(2000);
+saveas(gcf, [folder_full_name, '\Figures\Validation de la contribution de la solution de Poly.fig']);
+% mphsave(Tube_Poly_element_contrib.Configuration.ComsolModel, [folder_full_name, '\validation_2D_Poly_numerical_element.mph']);
+
+% Contribution de la cavité jaune dans la cartouche ETS
+% Tube_Poly_yc_contrib = ImpedanceTube2D(ImpedanceTube2D.create_config({Contributions.contribution_Poly_yellow_cavity(x_opti)}));
+% Tube_Poly_yc_contrib = Tube_Poly_yc_contrib.launch_tube_measurement(env);
+figure();
+% Tube_Poly_yc_contrib.plot_alpha(env, 'Contribution Poly cavité jaune');
+Contributions.contribution_Poly_yellow_cavity(x_opti).plot_alpha(env, 'modèle linéaire');
+Contributions.contribution_Poly_HL_yellow_cavity(x_opti).plot_alpha(env, 'modèle HL');
+
+perso_configure_alpha_figure(2000);
+saveas(gcf, [folder_full_name, '\Figures\Validation de la contribution de la cavité jaune de la cartouche Poly.fig']);
+% mphsave(Tube_Poly_yc_contrib.Configuration.ComsolModel, [folder_full_name, '\validation_2D_Poly_yellow_cavity.mph']);
+
+%% Sauvegarde des rapports de configuration
+
+% Rapport de configuration des plaques couvrantes
+report_root = [folder_full_name, '\Rapports de configuration des plaques couvrantes'];
+mkdir(report_root);
+
+perso_top_plate_export_report(x_TP_ETS(x_opti), radius, [report_root, '\rapport de configuration plaque ETS.xlsx']);
+perso_top_plate_export_report(x_TP_Poly(x_opti), radius, [report_root, '\rapport de configuration plaque Poly.xlsx']);
+
+% Rapport de configuration des MPPSBHs
+report_root = [folder_full_name, '\Rapports de configuration des MPPSBHs'];
+mkdir(report_root);
+
+for i = 1:NS
+    Objets.MPPSBH_i(x_ETS(x_opti), radius(x_radius(x_opti)), i).export_report([report_root, '\rapport de configuration - MPPSBH ', num2str(i), '.xlsx'])
+end
 
 
