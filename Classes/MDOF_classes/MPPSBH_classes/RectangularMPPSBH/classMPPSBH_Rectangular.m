@@ -60,7 +60,7 @@ classdef classMPPSBH_Rectangular < classelement
     end
 
     methods % Gestion des configurations
-        function export_plate_hole_coordinates(obj, folder_name, sfx)
+        function export_plate_hole_coordinates(obj, folder_name)
             % Crée un dossier de configuration et y exporte les coordonnées des trous pour chaque plaque
         
             config = obj.Configuration;
@@ -74,7 +74,7 @@ classdef classMPPSBH_Rectangular < classelement
             depth = config.CavitiesDepth - 2e-3;
 
             % Dossier racine des configurations
-            coord_dir = fullfile(folder_name, 'Coordonnées des perforations');
+            coord_dir = fullfile(folder_name, '\Coordonnées des perforations');
         
             % Création des dossiers si nécessaires
             if ~exist(folder_name, 'dir')
@@ -101,7 +101,7 @@ classdef classMPPSBH_Rectangular < classelement
                 hole_radius = radius(i) * 1e3;  % rayon en mm
         
                 % Fichier CSV de la plaque
-                filename = fullfile(coord_dir, sprintf('plaque_%02d%s.csv', i, sfx));
+                filename = fullfile(coord_dir, sprintf('plaque_%d.csv', i));
                 fileID = fopen(filename, 'w');
         
                 if fileID == -1
@@ -124,11 +124,11 @@ classdef classMPPSBH_Rectangular < classelement
             fprintf('[✓] Tous les fichiers de coordonnées ont été exportés dans : %s\n', coord_dir);
         end
 
-        function launch_in_solidworks(obj, folder_name)
+        function launch_in_solidworks(obj, root, folder_name)
             % Lancer l'export et le script Python avec création de dossiers et ouverture de l'explorateur
         
             % === 1. Définition des chemins ===
-            base_root = 'E:\OneDrive - ETS\CRIAQ-REAR\Maitrise LB\MATLAB\Classes\MDOF_classes\MLPSBH_classes\RectangularMLPSBH\Configurations';
+            base_root = [root, '\Solidworks'];
             output_dir = fullfile(base_root, folder_name);
         
             % === 2. Création du dossier principal si nécessaire ===
@@ -140,10 +140,10 @@ classdef classMPPSBH_Rectangular < classelement
             end
         
             % === 3. Exporter les coordonnées ===
-            obj.export_plate_hole_coordinates(folder_name);
+            obj.export_plate_hole_coordinates(output_dir);
         
             % === 4. Appel du script Python ===
-            py_script = 'E:\OneDrive - ETS\CRIAQ-REAR\Maitrise LB\MATLAB\Classes\MDOF_classes\MLPSBH_classes\RectangularMLPSBH\MATLAB to SOLIDWORKS\build_MPPSBH_from_json.py';
+            py_script = [root, '\Classes\MDOF_classes\MPPSBH_classes\RectangularMPPSBH\MATLAB to SOLIDWORKS\build_MPPSBH_from_json.py'];
             command = sprintf('python "%s" "%s"', py_script, output_dir);
         
             fprintf('[▶] Lancement du script Python :\n%s\n', command);

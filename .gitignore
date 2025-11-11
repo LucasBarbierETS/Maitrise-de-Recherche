@@ -4,3 +4,7 @@
 *.mph.lock
 *.mph.backup
 ~model*.mph
+
+# Solidworks
+
+*.SLDPRT
