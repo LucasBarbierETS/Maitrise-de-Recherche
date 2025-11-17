@@ -48,7 +48,7 @@ classdef classJCA_Rigid < classobject
             obj@classobject(config)
         end
 
-        function ep = equivalent_parameters(obj, env)
+        function ep = equivalent_parameters(obj, env, options)
 
             w = env.w;
             air = env.air;
@@ -65,7 +65,7 @@ classdef classJCA_Rigid < classobject
 
             % On vérifie que la tortuosité à été évaluée lorsque elle a été définie
             if ~isnumeric(tor)
-                tor = tor(env);
+                tor = tor(env, options);
             end
 
             % % Debog : Tortuosité
@@ -77,7 +77,7 @@ classdef classJCA_Rigid < classobject
 
             % On vérifie que la resistivité à été évaluée lorsque elle a été définie 
             if ~isnumeric(sig)
-                sig = sig(env);
+                sig = sig(env, options);
             end
 
             % % Debog : Résistivité
@@ -126,24 +126,21 @@ classdef classJCA_Rigid < classobject
 
         function [TM, options] = transfer_matrix(obj, env, options)
             
-            % On gère les cas ou les paramètres équivalents ont été définis/ modifiées de l'extérieur (voir classMTP_with_slit_cavities par ex.)
             if isempty(obj.EquivalentParameters)
-                ep = obj.equivalent_parameters(env);
+                try
+                ep = obj.equivalent_parameters(env, options);
             else 
-                % ici une méthode différente de .equivalentparameters est encapsulée dans obj.EquivalentParameters
-                ep = obj.EquivalentParameters(obj, env);
+                ep = obj.EquivalentParameters(obj, env, options);
             end
 
             d = obj.Configuration.Thickness;
-            S = obj.Configuration.Section; 
-            % phi = obj.Configuration.JCAParameters.Porosity;
+            s = obj.Configuration.Section; 
             kd = ep.keq * d;
             TM.T11 = cos(kd);
-            % TM.T12 = 1j * (ep.Zeq * phi) / S .* sin(kd);
-            TM.T12 = 1j * ep.Zeq / S .* sin(kd);
-            % TM.T21 = 1j * S ./ (ep.Zeq * phi) .* sin(kd);
-            TM.T21 = 1j * S ./ ep.Zeq .* sin(kd);
+            TM.T12 = 1j * ep.Zeq / s .* sin(kd);
+            TM.T21 = 1j * s ./ ep.Zeq .* sin(kd);
             TM.T22 = cos(kd);
+
             % % Debog : Matrice de transfert inverse
             % perso_figure('nombre d''onde d''un sous-élement dans classJCA_Rigid/transfer_matrix')
             % clf;
@@ -162,7 +159,7 @@ classdef classJCA_Rigid < classobject
             % sgtitle(class(obj))
             % perso_plot_transfer_matrix(TM, env, 'TM'); 
 
-            
+            [~, options] = obj.inverse_transfer_matrix(env, options, TM);
         end   
     
         function output_model = set_COMSOL_2D_Model(obj, input_model, elem_index, sblm_index, env)
@@ -225,7 +222,7 @@ classdef classJCA_Rigid < classobject
 
             % création de l'objet de classe
             E = classJCA_Rigid(classJCA_Rigid.create_config(s, t, phi, tor, sig, vl, tl,'width', w, 'depth', d));
-            alpha_model = E.alpha(env);
+            alpha_model = E.absorption_coefficient(env);
 
             % importation des données de références
             data = csvread('Verdière2013_fig4_E.txt');
@@ -270,7 +267,7 @@ classdef classJCA_Rigid < classobject
             E = classelement(classelement.create_config(...
                 {classJCA_Rigid(classJCA_Rigid.create_config(w * d, t, phi, tor, sig, vl, tl, 'width', w,'width', d))}, 'closed', w * d));
 
-            TM_sb = E.side_branch_transfer_matrix(env, Lx);
+            TM_sb = E.side_branch_transfer_matrix(env, Lx, M);
 
             perso_plot_transfer_matrix(TM_sb, env, 'test', 3000);
 

@@ -15,19 +15,21 @@ classdef classobject
                 obj.Configuration = config;
             end
         end
-
     end
 
     methods % Matrices
         
-        function [TM, TM_inv, options] = inverse_transfer_matrix(obj, env, options)
+        function [TM_inv, options] = inverse_transfer_matrix(obj, env, options, varargin)
 
+            if nargin < 3 || isempty(options)
+                 options = struct(); % ou ton options par défaut
+            end
 
-            % Gestion des options
-            default = struct('pt_in', [], 'u_in', []);
-            options = parse_options(options, default);
-
-            TM = obj.transfer_matrix(env, options);
+            if nargin >= 4
+                TM = varargin{1};
+            else
+                T< = obj.transfer_matrix(env, options);
+            end
 
             % % Debog : Matrice de transfert inverse
             % perso_figure('TM d''un sous-élement dans classsubelement/inverse_transfer_matrix')
@@ -62,20 +64,12 @@ classdef classobject
                 % perso_figure('TM d''un sous-élement dans classsubelement/inverse_transfer_matrix')
                 % perso_plot_transfer_matrix(TM_inv, env, 'TM inv'); 
         
-            pt_in = options.pt_in; u_in = options.u_in;
-            if ~perso_isnan(pt_in) && ~perso_isnan(u_in)
-                pt_out = TM_inv.T11 .* pt_in + TM_inv.T12 .* u_in;
-                u_out = TM_inv.T21 .* pt_in + TM_inv.T22 .* u_in;
-            else
-                pt_out = NaN;
-                u_out = NaN;
-            end
+            options = perso_propagate(TM_inv, options);
         end
     
         function YM = admittance_matrix(env, options)
 
-            args = namedargs2cell(options);
-            TM = elem.transfer_matrix(env, args{:});
+            TM = elem.transfer_matrix(env, options);
             YM.Y11 = 1 ./ TM.T12 .* TM.T22;
             YM.Y12 = 1 ./ TM.T12 .* (TM.T21 .* TM.T12 - TM.T22 .* TM.T11);
             YM.Y21 = 1 ./ TM.T12;
@@ -123,6 +117,46 @@ classdef classobject
                 fprintf('%-35s %-15s %-10s\n', param, valueStr, unit);
             end
         end
+    
+        function obj = plot_alpha(obj, env, options) % f_min, f_max 
+                
+                % Résultats analytiques
+                alpha = obj.absorption_coefficient(env, options);
+    
+                f = env.w / (2 * pi);
+                color = perso_random_color_rgb_triplet();
+    
+                hold on
+    
+                plot(f, alpha, 'color', color, 'DisplayName', options.plot_name);
+                % ...
+                % y_line_anal = yline(obj.alpha_mean(env, f_min, f_max), '--b', ...
+                % ['alpha moyen an. ', num2str(f_min), ' - ', num2str(f_max), ' Hz : ', num2str(obj.alpha_mean(env, f_min, f_max), 2)], ...
+                % 'LabelHorizontalAlignment', 'left', ...
+                % 'LabelVerticalAlignment', 'top', ...
+                % 'HandleVisibility', 'off');
+                
+                % Résultats numériques
+                if isfield(obj.Configuration, 'ComsolModel')
+                    data = mphtable(obj.Configuration.ComsolModel, 'tbl1').data;
+                    obj.Configuration.Alpha2D = data;
+                    color = perso_random_color_rgb_triplet();
+                    plot(data(:, 1), data(:, 2), 'LineStyle', 'o--','Color', color, 'DisplayName', [name ' - Résultat FEM'])
+                    % m = (data(:, 1) > f_min & data(:, 1) < f_max);
+                    % yline(mean(data(m, 2)), '--r', ...
+                    %       ['alpha moyen FEM ', num2str(f_min), ' - ', num2str(f_max), ' Hz : ', num2str(obj.alpha_mean(env, f_min, f_max), 2)], ...
+                    %       'LabelHorizontalAlignment', 'right', ...
+                    %       'LabelVerticalAlignment', 'top', ...
+                    %       'HandleVisibility', 'off');
+                end
+    
+                % Résultats numériques 3D
+                if isfield(obj.Configuration, 'Comsol3DModel')
+                    data = mphtable(obj.Configuration.Comsol3DModel, 'tbl1').data;
+                    obj.Configuration.Alpha3D = data;
+                    plot(data(:, 1), data(:, 2), 'LineStyle', '--', 'DisplayName', [name ' - Résultat FEM 3D'])
+                end
+            end
     end
 end
 

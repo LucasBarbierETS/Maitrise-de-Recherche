@@ -21,7 +21,11 @@ classdef classobject
         
         function [TM_inv, options] = inverse_transfer_matrix(obj, env, options, varargin)
 
-            if nargin > 2
+            if nargin < 3 || isempty(options)
+                 options = struct(); % ou ton options par défaut
+            end
+
+            if nargin >= 4
                 TM = varargin{1};
             else
                 TM = obj.transfer_matrix(env, options);

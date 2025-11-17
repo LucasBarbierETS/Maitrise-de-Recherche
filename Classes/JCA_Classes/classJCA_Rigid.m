@@ -127,7 +127,9 @@ classdef classJCA_Rigid < classobject
         function [TM, options] = transfer_matrix(obj, env, options)
             
             if isempty(obj.EquivalentParameters)
-                ep = obj.equivalent_parameters(env, options);
+                try ep = obj.equivalent_parameters(env, options);
+                catch
+                end
             else 
                 ep = obj.EquivalentParameters(obj, env, options);
             end
@@ -266,7 +268,7 @@ classdef classJCA_Rigid < classobject
             E = classelement(classelement.create_config(...
                 {classJCA_Rigid(classJCA_Rigid.create_config(w * d, t, phi, tor, sig, vl, tl, 'width', w,'width', d))}, 'closed', w * d));
 
-            TM_sb = E.side_branch_transfer_matrix(env, Lx);
+            TM_sb = E.side_branch_transfer_matrix(env, Lx, M);
 
             perso_plot_transfer_matrix(TM_sb, env, 'test', 3000);
 

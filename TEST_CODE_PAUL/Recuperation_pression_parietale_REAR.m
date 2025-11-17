@@ -37,10 +37,10 @@ obj = @(coeff) classJCA_Rigid(config(coeff));
 elm = @(coeff) classelement(classelement.create_config({obj(coeff)}, 'closed', surface));
 
 %% --- debog TM et TM_inv --- 
-[TM, TM_inv] = obj(coeff).inverse_transfer_matrix(env); % bien changer la valeur du coeff en fonction de l'étude
+[TM_inv,options] = obj(coeff).inverse_transfer_matrix(env); % bien changer la valeur du coeff en fonction de l'étude
 % perso_plot_transfer_matrix(TM, env, 'TM');
 % perso_plot_transfer_matrix(TM_inv, env, 'TM inv');
-% TM = transfert_matrix(env);
+TM = obj(coeff).transfer_matrix(env, options);
 
 %% --- Calcul de la PSD corrigée ---
 % p_flush = pt_rms_main./TM_inv.T11; % rigid wall
@@ -58,7 +58,7 @@ sgtitle(sprintf('Comparaison niveau de pression (%s)', file_main), 'Interpreter'
 plot(f_main, PSD_main, 'k--', 'LineWidth',1.5, 'DisplayName',sprintf('Mesurée (%dD) - 3500RPM',coeff));
 
 % Courbe corrigée / simulée
-plot(env.freqs, PSD_corr, 'r-', 'LineWidth',1.8, 'DisplayName', sprintf('Corrigée (%dD) - 3500RPM',coeff));
+plot(env.w/(2*pi), PSD_corr, 'r-', 'LineWidth',1.8, 'DisplayName', sprintf('Corrigée (%dD) - 3500RPM',coeff));
 
 % Courbe référence
 plot(fmean, L_RMS_band, 'LineWidth',1.2, 'DisplayName','Numérique (Elissa)');
