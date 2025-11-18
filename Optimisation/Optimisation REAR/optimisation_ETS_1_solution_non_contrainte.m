@@ -59,9 +59,9 @@ depth_holes_distance = ETS_cavities_depth / (depth_holes_number + 1);
 
 %% Structure des variables optimisées
 
-NS = 1; % Nombre de MPPSBH optimisés
+NS = 4; % Nombre de MPPSBH optimisés
 NV = 4; % Nombre de variables pour chaque solution (rayon des perforations, nombre de perfs en largeur, espacement des perfs en largeur, theta)
-N = 6; % Nombre de plaques optimisées indépendantes pour chaque solution
+N = 4; % Nombre de plaques optimisées indépendantes pour chaque solution
 
 cavities_total_thickness = ETS_total_thickness - N * ETS_plates_thickness;
 
@@ -144,7 +144,7 @@ Objets.MPPSBH_i = @(config, i) classMPPSBH_Rectangular( ...
         ETS_input_surface, N, ETS_cavities_depth, ETS_cavities_width, ...
         {config(i, :, 1)}, ... % rayon des perforations
         {config(i, :, 2)}, ... % distance entre perforations (width)
-        {ETS_cavities_depth/depth_holes_number}, ... % distance entre perforations (depth)
+        {ETS_cavities_depth / depth_holes_number}, ... % distance entre perforations (depth)
         {depth_holes_number}, ... % nombre de perforations en profondeur
         {config(i, :, 3)}, ... % nombre de perforations en largeur
         {ETS_plates_thickness}, ... % épaisseur des plaques (supérieure + internes)

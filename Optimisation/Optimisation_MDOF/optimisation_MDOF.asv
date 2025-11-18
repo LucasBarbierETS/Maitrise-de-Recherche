@@ -65,7 +65,7 @@ NV = 3; % Nombre de variables pour chaque solution rayon des perforations, nombr
 
 cavities_total_thickness = total_thickness - plates_thickness;
 
-NP = 500; % nombre de points de départ (parents)
+NP = 50; % nombre de points de départ (parents)
 
 % Récupération des parties du vecteur d'optimisation
 config = @(x) reshape(x, NS, NV);
@@ -122,11 +122,11 @@ intcon = find([zeros(1, NS), ones(1, 2 * NS)]);
 Objects = struct();
 
 Objects.Plate = @(config, i)classMPP_Circular(classMPP_Circular.create_config(acoustic_section, ...
-                                                                   plates_thickness, config(i, 1), config(i, 2) * config(i, 3) * pi * config(i, 1)^2 / acoustic_section));
+                                                                   plates_thickness, config(, nw * nd * pi * r^2 / acoustic_section));
 
 Objects.Cavity = classcavity(classcavity_rectangular.create_config(cavities_total_thickness, cavities_width, cavities_depth));
 
-Objects.SDOF = @(config, i) classelement(classelement.create_config({Objects.Plate(config, i), Objects.Cavity}, 'closed', total_surface));
+Objects.SDOF = @(r, nw, nd, i) classelement(classelement.create_config({Objects.Plate(r, nw, nd), Objects.Cavity}, 'closed', total_surface));
 
 
 % Debog (OK)
@@ -171,7 +171,7 @@ handle_cost_function = @(x, env, g_obj) mean(1 - handle_alpha(x, env, g_obj));
 handle_objective = @(x, env, g_obj_cell) arrayfun(@(i) handle_cost_function(x, env, g_obj_cell{i}), 1:length(g_obj_cell) ,'UniformOutput', false);
 
 
-objective = @(x) cell2mat(handle_objective(x, env, {g_obj_h1, g_obj_h2})); % Objectif Cartouche globale
+objective = @(x) cell2mat(handle_objective(x, env, {g_obj_h1, g_obj_h2, g_obj_h3, g_obj_h4, g_obj_lb})); % Objectif Cartouche globale
 
 %% GENETIC ALGORITHM
 
@@ -203,11 +203,11 @@ timeGa = toc;
 
 %% Conditionnement du vecteur d'optimisation
 
-xopti_to_cell_array_of_alpha = @(x, env) arrayfun(@(i) vertcat(Objects.assembly_of_SDOF(xopti(i, :)).absorption_coefficient(env, {})), ...
+xopti_to_cell_array_of_alpha = @(x, env) arrayfun(@(i) vertcat(Objects.assembly_of_MPPSBH(xopti(i, :)).absorption_coefficient(env, {})), ...
                                                        1:size(x, 1), 'UniformOutput', false);
 
 
-xopti_to_cell_array_of_Zs = @(x, env) arrayfun(@(i) vertcat(Objects.assembly_of_SDOF(xopti(i, :)).surface_impedance(env, {})/env.air.parameters.Z0), ...
+xopti_to_cell_array_of_Zs = @(x, env) arrayfun(@(i) vertcat(Objects.assembly_of_MPPSBH(xopti(i, :)).surface_impedance(env, {})/env.air.parameters.Z0), ...
                                                     1:size(x, 1), 'UniformOutput', false);
 
 % On récupère les vecteurs d'absorption des meilleures configurations
