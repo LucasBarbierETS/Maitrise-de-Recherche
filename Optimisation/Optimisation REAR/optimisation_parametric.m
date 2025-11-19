@@ -72,7 +72,7 @@ Objets.assembly_of_MPPSBH = @(x) classelementassembly( ...
 r_values     = linspace(0.2e-3, 1.2e-3, 6);
 dw_values    = linspace(1e-3,   4e-3,   6);
 pw_values    = round(linspace(2, 10,   6));
-theta_values = linspace(1, 5, 6);
+theta_values = linspace(1, 5, 5);
 N_values     = 3:8;  % nombre de plaques
 
 figure('Name','Étude paramétrique multi-paramètres','NumberTitle','off');

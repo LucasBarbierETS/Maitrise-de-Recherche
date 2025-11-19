@@ -156,7 +156,7 @@ Objets.MPPSBH_i = @(config, i) classMPPSBH_Rectangular( ...
 % close();
 
 Objets.cell_of_MPPSBH = @(x) arrayfun(@(i) Objets.MPPSBH_i(config(x), i), 1:NS ,'UniformOutput', false);
-Objects.assembly_of_MPPSBH = @(x) classelementassembly(classelementassembly.create_config(Objets.cell_of_MPPSBH(x)));
+Objets.assembly_of_MPPSBH = @(x) classelementassembly(classelementassembly.create_config(Objets.cell_of_MPPSBH(x)));
 
 %% Fonction de définitions de la matrice de contraintes non linéaires  
 
@@ -187,7 +187,7 @@ handle_nonlconf = @(x) perso_nonlconf_1_solution(config(x), depth_holes_number, 
 %% Fonctions coût
 
 % Définition de la cartouche sur laquelle l'optimisation à lieu
-handle_alpha = @(x, env, g_obj) subsref(Objects.assembly_of_MPPSBH(x).absorption_coefficient(env, struct('HL_method', 'linear')), substruct('()', {g_obj(env)}));
+handle_alpha = @(x, env, g_obj) subsref(Objets.assembly_of_MPPSBH(x).absorption_coefficient(env, struct('HL_method', 'linear')), substruct('()', {g_obj(env)}));
 handle_cost_function = @(x, env, g_obj) mean(1 - handle_alpha(x, env, g_obj));
 handle_objective = @(x, env, g_obj_cell) arrayfun(@(i) handle_cost_function(x, env, g_obj_cell{i}), 1:length(g_obj_cell) ,'UniformOutput', false);
 
@@ -224,11 +224,11 @@ timeGa = toc;
 
 %% Conditionnement du vecteur d'optimisation
 
-xopti_to_cell_array_of_alpha = @(x, env) arrayfun(@(i) vertcat(Objects.assembly_of_MPPSBH(xopti(i, :)).absorption_coefficient(env, {})), ...
+xopti_to_cell_array_of_alpha = @(x, env) arrayfun(@(i) vertcat(Objets.assembly_of_MPPSBH(xopti(i, :)).absorption_coefficient(env, {})), ...
                                                        1:size(x, 1), 'UniformOutput', false);
 
 
-xopti_to_cell_array_of_Zs = @(x, env) arrayfun(@(i) vertcat(Objects.assembly_of_MPPSBH(xopti(i, :)).surface_impedance(env, {})/env.air.parameters.Z0), ...
+xopti_to_cell_array_of_Zs = @(x, env) arrayfun(@(i) vertcat(Objets.assembly_of_MPPSBH(xopti(i, :)).surface_impedance(env, {})/env.air.parameters.Z0), ...
                                                     1:size(x, 1), 'UniformOutput', false);
 
 % On récupère les vecteurs d'absorption des meilleures configurations
