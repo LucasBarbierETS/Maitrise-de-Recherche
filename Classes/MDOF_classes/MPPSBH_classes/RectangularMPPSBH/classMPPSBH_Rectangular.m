@@ -60,6 +60,7 @@ classdef classMPPSBH_Rectangular < classelement
     end
 
     methods % Gestion des configurations
+        
         function export_plate_hole_coordinates(obj, folder_name)
             % Crée un dossier de configuration et y exporte les coordonnées des trous pour chaque plaque
         
@@ -124,6 +125,57 @@ classdef classMPPSBH_Rectangular < classelement
             fprintf('[✓] Tous les fichiers de coordonnées ont été exportés dans : %s\n', coord_dir);
         end
 
+        function export_cavities_thickness(obj, folder_name)
+            
+            % Exporte les dimensions et épaisseurs des cavités dans un CSV
+            % Création du dossier si nécessaire
+        
+            config = obj.Configuration;
+        
+            % Récupération des épaisseurs des cavités
+            cavities_thickness = config.CavitiesThickness; % [m]
+            N = length(cavities_thickness);
+        
+            % Largeur et profondeur (habituellement identiques pour toi)
+            cav_width = config.CavitiesWidth;   % (si présent dans ton modèle)
+            cav_depth = config.CavitiesDepth;
+        
+            % --- Dossier d'export ---
+            coord_dir = fullfile(folder_name);
+            if ~exist(coord_dir,'dir')
+                mkdir(coord_dir);
+            end
+        
+            % Dossier des coordonnées
+            coord_dir = fullfile(folder_name, '\Coordonnées des perforations');
+            if ~exist(coord_dir, 'dir')
+                mkdir(coord_dir);
+            end
+
+            % Chemin correct du CSV
+            filename = fullfile(coord_dir, 'cavites.csv');
+            fileID = fopen(filename,'w');
+        
+            if fileID == -1
+                error('[✗] Impossible de créer cavites.csv dans %s', coord_dir);
+            end
+        
+            % En-têtes
+            fprintf(fileID, 'Index,Width_mm,Depth_mm,Thickness_mm\n');
+        
+            % Export
+            for i = 1:N
+                fprintf(fileID, '%d,%.3f,%.3f,%.3f\n', ...
+                    i, ...
+                    cav_width*1e3, ...
+                    cav_depth*1e3, ...
+                    cavities_thickness(i)*1e3);
+            end
+        
+            fclose(fileID);
+            fprintf('[✓] Fichier cavites.csv exporté : %s\n', filename);
+        end
+
         function launch_in_solidworks(obj, root, folder_name)
             % Lancer l'export et le script Python avec création de dossiers et ouverture de l'explorateur
         
@@ -141,6 +193,7 @@ classdef classMPPSBH_Rectangular < classelement
         
             % === 3. Exporter les coordonnées ===
             obj.export_plate_hole_coordinates(output_dir);
+            obj.export_cavities_thickness(output_dir); % <-- à rajouter
         
             % === 4. Appel du script Python ===
             py_script = [root, '\Classes\MDOF_classes\MPPSBH_classes\RectangularMPPSBH\MATLAB to SOLIDWORKS\build_MPPSBH_from_json.py'];
@@ -639,11 +692,11 @@ classdef classMPPSBH_Rectangular < classelement
 
     methods (Static, Access = public) % Validation
         
-        function validate()
+        function validate(env)
 
-            figure()
-            hold on
-            title('Validation Rectangular MPPSBH');
+            % figure()
+            % hold on
+            % title('Validation Rectangular MPPSBH');
             
             % Paramètres de la configuration
             R = 30e-3;
@@ -654,8 +707,8 @@ classdef classMPPSBH_Rectangular < classelement
             t = 0.2e-3;
             phi = 0.03;
             
-            % création de l'environnement
-            env = create_environnement(23, 100800, 22, 1, 5000, 5000, 140);
+            % % création de l'environnement
+            % env = create_environnement(23, 100800, 22, 1, 5000, 5000, 'SPL', 140);
 
             %% Profil linéaire
             config = classMPPSBH_Rectangular.create_config(30e-3^2,  ...
@@ -665,13 +718,12 @@ classdef classMPPSBH_Rectangular < classelement
             % calcul de la réponse des modèles analytiques
             alpha_model = classMPPSBH_Rectangular(config).absorption_coefficient(env);
             % classMPPSBH_Rectangular_iter2(config).absorption_coefficient(env)
-            alpha_model_HL = classMPPSBH_Rectangular_HL(config).absorption_coefficient(env);
-            alpha_model_HL_fp = classMPPSBH_Rectangular_HL_first_plate(config).absorption_coefficient(env);
-
+            % alpha_model_HL = classMPPSBH_Rectangular_HL(config).absorption_coefficient(env);
+            % alpha_model_HL_fp = classMPPSBH_Rectangular_HL_first_plate(config).absorption_coefficient(env);
 
             plot(env.w / (2*pi), alpha_model, 'Color', 'g', 'LineWidth', 1, 'DisplayName', 'Modèle linéaire');
-            plot(env.w / (2*pi), alpha_model_HL, 'Color', 'g', 'LineWidth', 1, 'DisplayName', 'Modèle forts niveaux');
-            plot(env.w / (2*pi), alpha_model_HL_fp, 'Color', 'g', 'LineWidth', 1, 'DisplayName', 'Modèle forts niveaux sur la première plaque');
+            % plot(env.w / (2*pi), alpha_model_HL, 'Color', 'g', 'LineWidth', 1, 'DisplayName', 'Modèle forts niveaux');
+            % plot(env.w / (2*pi), alpha_model_HL_fp, 'Color', 'g', 'LineWidth', 1, 'DisplayName', 'Modèle forts niveaux sur la première plaque');
 
             %% Profil quadratique
 
