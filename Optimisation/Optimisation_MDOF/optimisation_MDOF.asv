@@ -1,5 +1,64 @@
-%% Sélection du dossier de destination des élements sauvegardés
-folderName = [env.Root, '\Optimisation\Optimisation_non_contrainte'];
+%% ========================================================================
+%  FONCTIONS INTERNES
+% ========================================================================
+
+function HV = hypervolume(P, ref)
+    if isempty(P), HV = 0; return; end
+    sorted = sortrows(P,1);
+    HV = 0; prev_f1 = ref(1);
+    for i = size(P,1):-1:1
+        f1 = sorted(i,1); f2 = sorted(i,2);
+        HV = HV + (prev_f1 - f1) * (ref(2) - f2);
+        prev_f1 = f1;
+    end
+end
+
+function d = spread(P)
+    if size(P,1) < 3, d = NaN; return; end
+    P = sortrows(P);
+    di = sqrt(sum(diff(P).^2,2));
+    d_mean = mean(di);
+    d = (abs(di(1)-d_mean) + abs(di(end)-d_mean) + sum(abs(di - d_mean))) ...
+        / ((size(P,1)-1) * d_mean);
+end
+
+function C = convergence(P, ideal)
+    C = mean(sqrt(sum((P - ideal).^2, 2)));
+end
+
+function P_red = reduce_front_crowding(P, Nref)
+    % P : N×M, front non dominé
+    % Nref : nombre cible de points
+    N = size(P,1);
+    if N <= Nref
+        P_red = P;
+        return;
+    end
+
+    M = size(P,2);
+    crowd = zeros(N,1);
+
+    % Crowding distance façon NSGA-II
+    for m = 1:M
+        [vals, idx] = sort(P(:,m));
+        crowd(idx(1))   = Inf;
+        crowd(idx(end)) = Inf;
+        denom = vals(end) - vals(1);
+        if denom == 0
+            continue;
+        end
+        for i = 2:N-1
+            crowd(idx(i)) = crowd(idx(i)) + ...
+                (vals(i+1) - vals(i-1)) / denom;
+        end
+    end
+
+    % On garde les Nref points les plus "éloignés"
+    [~, order] = sort(crowd, 'descend');
+    keepIdx = order(1:Nref);
+    P_red = P(keepIdx, :);
+end
+
 
 %% Fréquences cibles, Gabarits
 
@@ -8,10 +67,6 @@ folderName = [env.Root, '\Optimisation\Optimisation_non_contrainte'];
 Frequences.f_min_lb = 200;
 Frequences.f_max_lb = 1500;
 g_obj_lb = @(env) (env.w / (2*pi) > Frequences.f_min_lb & env.w / (2*pi) < Frequences.f_max_lb);
-
-% Objectifs tonaux
-% On définit une largeur de bande associée à la variation du régime moteur de 3000 à 3500 RPM
-% On définit les bandes de variations des harmoniques tant que celles-ci ne se recoupent pas
 
 % Première harmonique (Fondamentale) : 233 Hz (20 Hz)
 Frequences.f_min_h1 = 220;
@@ -65,7 +120,7 @@ NV = 3; % Nombre de variables pour chaque solution rayon des perforations, nombr
 
 cavities_total_thickness = total_thickness - plates_thickness;
 
-NP = 50; % nombre de points de départ (parents)
+NP = 25; % nombre de points de départ (parents)
 
 % Récupération des parties du vecteur d'optimisation
 config = @(x) reshape(x, NS, NV);
@@ -86,10 +141,6 @@ n_max = 20;
 
 ub = horzcat(repmat(r_max, 1, NS), repmat(n_max, 1, 2 * NS));
 
-% Debog : Porosité max et min
-% phi_min = pi * radius(1)^2 / tp_dw_max^2; % < 1 %
-% phi_max = pi * radius(4)^2 / tp_dw_min^2; % > 30 %
-
 %% Valeurs initiales en fonction du type de variable
 
 r_init = r_min + (r_max - r_min) * rand(NP, NS);
@@ -97,21 +148,6 @@ n_init = n_min + (n_max - n_min) * rand(NP, 2 * NS);
 
 x0 = horzcat(r_init, n_init);
 
-% % Debog : Largeur des fentes crées
-% figure();
-% sw_init = repmat(2 * radius(r_init), 1, NS) + dw_init .* (pw_init - 1);
-% histogram(sw_init, 20);
-% title('Largeur des fentes dans les MPPSBHs')
-
-% % Debog : Porosité des plaques crées
-% figure();
-% hold on
-% phi_init_app = (pi * (repmat(radius(r_init), 1, NS)).^2 * depth_holes_number .* pw_init) / (ETS_cavities_width * ETS_cavities_depth);
-% phi_init = (pi * (repmat(radius_mm(r_init), 1, NS)).^2 * depth_holes_number .* pw_init) ./ (sw_init * ETS_cavities_depth);
-% histogram(phi_init_app, 20, 'DisplayName', 'Porosité apparente de la plaque');
-% histogram(phi_init, 20, 'DisplayName', 'Porosité effective de la zone perforée');
-% title('Porosités des plaques dans les MPPSBHs');
-% legend()
 
 %% Contrainte sur les variables entières
 
@@ -122,46 +158,16 @@ intcon = find([zeros(1, NS), ones(1, 2 * NS)]);
 Objects = struct();
 
 Objects.Plate = @(config, i)classMPP_Circular(classMPP_Circular.create_config(acoustic_section, ...
-                                                                   plates_thickness, config(, nw * nd * pi * r^2 / acoustic_section));
+                                                                   plates_thickness, config(i, 1), config(i, 2) * config(i, 3) * pi * config(i, 1)^2 / acoustic_section));
 
 Objects.Cavity = classcavity(classcavity_rectangular.create_config(cavities_total_thickness, cavities_width, cavities_depth));
 
-Objects.SDOF = @(r, nw, nd, i) classelement(classelement.create_config({Objects.Plate(r, nw, nd), Objects.Cavity}, 'closed', total_surface));
+Objects.SDOF = @(config, i) classelement(classelement.create_config({Objects.Plate(config, i), Objects.Cavity}, 'closed', total_surface));
 
-
-% Debog (OK)
-% figure()
-% Objets.MPPSBH_i(x_ETS(x0(1, :)), x_SPLX(x0(1, :)), 1).plot_alpha(env, 'modèle linéaire');
-% close();
 
 Objects.cell_of_SDOF = @(x) arrayfun(@(i) Objects.SDOF(config(x), i), 1:NS ,'UniformOutput', false);
 Objects.assembly_of_SDOF = @(x) classelementassembly(classelementassembly.create_config(Objects.cell_of_SDOF(x)));
 
-%% Fonction de définitions de la matrice de contraintes non linéaires  
-
-% Définition du handle avec paramètres capturés
-handle_nonlconf = @(x) perso_nonlconf_1_solution(config(x), depth_holes_number, cavities_width, cavities_depth);
-
-% % Debog : Test des contraintes non-linéaires sur les configurations initiales
-% [c, ceq] = handle_nonlconf(x0);
-% ratio = sum(~any(c > 0, 2))/NP * 100;
-% sprintf('%f pourcents de configurations respectant les contraintes non-linéaires', ratio)
-
-%% Affichage des porosités simulées
-
-% figure()
-% hold on
-% p_ETS = zeros(1, NP);
-% p_Poly = zeros(1, NP);
-% for i = 1:NP
-%     p_ETS(i) = top_plate(x_TP_ETS(x0(i, :))).Configuration.Porosity;
-%     p_Poly(i) = top_plate(x_TP_Poly(x0(i, :))).Configuration.Porosity;
-% end
-% 
-% histogram(p_ETS, 20, 'DisplayName', 'Cartouche ETS');
-% histogram(p_Poly, 20, 'DisplayName', 'Cartouche Poly');
-% title('Porosités des plaques couvrantes simulées');
-% legend()
 
 %% Fonctions coût
 
@@ -170,229 +176,770 @@ handle_alpha = @(x, env, g_obj) subsref(Objects.assembly_of_SDOF(x).absorption_c
 handle_cost_function = @(x, env, g_obj) mean(1 - handle_alpha(x, env, g_obj));
 handle_objective = @(x, env, g_obj_cell) arrayfun(@(i) handle_cost_function(x, env, g_obj_cell{i}), 1:length(g_obj_cell) ,'UniformOutput', false);
 
-
-objective = @(x) cell2mat(handle_objective(x, env, {g_obj_h1, g_obj_h2, g_obj_h3, g_obj_h4, g_obj_lb})); % Objectif Cartouche globale
-
-%% GENETIC ALGORITHM
-
-options = optimoptions('ga', ...
-                       'Display', 'iter', ...
-                       'PopulationSize', NP, ... % nombre de points dans la population initiale
-                       'FunctionTolerance', 1e-1, ...
-                       'ConstraintTolerance', 1e-6, ...
-                       'MaxStallGenerations', 5, ...
-                       'MaxGenerations', 100, ...
-                       'MutationFcn',  'mutationadaptfeasible',... {@mutationgaussian, 2, 0.5}, ... %'mutationuniform', ... 
-                       'CrossoverFraction', 0.5, ...
-                       'MigrationInterval', 10, ...
-                       'MigrationFraction', 0.3, ...
-                       'InitialPopulationMatrix', x0); 
-
-% Options d'affichage
-% options.PlotFcn = {@gaplotbestf, @gaplotmaxconstr, @gaplotbestindiv}; % Pour un seul objectif
-options.PlotFcn = {@gaplotpareto, ... % Pour deux objectifs ou plus
-                   @gaplotscorediversity}; % , ...
-                   % @(x, optimValues, state) perso_plot_constraints_violation(x, optimValues, state, NS, N)}; 
-
-rng; % For reproducibility"
-tic;
-% profile on
-[xopti, fval, eflag, ~, population, scores] = gamultiobj(objective, numel(x0(1, :)), [], [], [], [], lb, ub, [], intcon, options);
-% profile viewer
-timeGa = toc;
-
-%% Conditionnement du vecteur d'optimisation
-
-xopti_to_cell_array_of_alpha = @(x, env) arrayfun(@(i) vertcat(Objects.assembly_of_MPPSBH(xopti(i, :)).absorption_coefficient(env, {})), ...
-                                                       1:size(x, 1), 'UniformOutput', false);
+% objective = @(x) cell2mat(handle_objective(x, env, {g_obj_h1, g_obj_h2})); 
+objective = @(x) cell2mat(handle_objective(x, env, {g_obj_h1, g_obj_h2, g_obj_h3, g_obj_h4, g_obj_lb}));
 
 
-xopti_to_cell_array_of_Zs = @(x, env) arrayfun(@(i) vertcat(Objects.assembly_of_MPPSBH(xopti(i, :)).surface_impedance(env, {})/env.air.parameters.Z0), ...
-                                                    1:size(x, 1), 'UniformOutput', false);
 
-% On récupère les vecteurs d'absorption des meilleures configurations
-[sorted_scores_opti, sorted_index_opti] = sort(fval);
-sorted_xopti = xopti(sorted_index_opti(:, 1), :);
-filtered_alpha = xopti_to_cell_array_of_alpha(sorted_xopti, env);
-filtered_Zs = xopti_to_cell_array_of_Zs(sorted_xopti, env);
+% %% =========================================================================
+% %  MODULE : OPTIMISATION MULTI-ALGORITHMES AVEC ÉVALUATION AUTOMATIQUE
+% % =========================================================================
 
-% Tracé interractif des meilleurs résultats de l'optimisation multi objectif
-perso_interactive_multi_plot(env.w/(2*pi), filtered_alpha, filtered_Zs, 2000, Frequences);
-
-% On rajoute des barres pour représenter les bandes d'optimisation
-perso_plot_targetted_frequencies(Frequences, 1)
-
-%% Résultats et sélection de la solution 
-
-chosed_index = input('Veuillez entrer le numéro de la configuration choisie : ');
-x_opti = sorted_xopti(chosed_index, :);
-
-%% Sauvergarde
 % 
-% env_saved = input('Sauvegarder l''environnement d''optimisation : ');
+% disp("=== Lancement du module d'optimisation multi-algorithmes ===");
 % 
-% if env_saved ~= 1
-%     return
+% %% 1) Encapsulation du problème multi-objectifs
+% numVars = numel(x0(1,:));
+% 
+% problem.objective = objective;
+% problem.lb        = lb;
+% problem.ub        = ub;
+% problem.intcon    = intcon;
+% problem.nonlcon   = [];
+% 
+% % Points de référence
+% refPoint   = [1 1 1 1 1];
+% idealPoint = [0 0 0 0 0];
+% 
+% %% 2) Liste d’algorithmes à tester
+% 
+% algoList = {
+% 
+%     struct('Name','GA-default', 'Type','GA', ...
+%            'Options', optimoptions('ga','PopulationSize',NP,'Display','none'))
+% 
+%     struct('Name','GA-gaussianMutation', 'Type','GA', ...
+%            'Options', optimoptions('ga','MutationFcn',{@mutationgaussian,2,0.5}, ...
+%                                    'PopulationSize',NP,'Display','none'))
+% 
+%     struct('Name','GA-uniformMutation', 'Type','GA', ...
+%            'Options', optimoptions('ga','MutationFcn',@mutationuniform, ...
+%                                    'PopulationSize',NP,'Display','none'))
+% 
+%     struct('Name','GA-highCrossover', 'Type','GA', ...
+%            'Options', optimoptions('ga','CrossoverFraction',0.8, ...
+%                                    'PopulationSize',NP,'Display','none'))
+% 
+%     struct('Name','GA-tournament', 'Type','GA', ...
+%            'Options', optimoptions('ga','SelectionFcn',@selectiontournament, ...
+%                                    'PopulationSize',NP,'Display','none'))
+% 
+%     % struct('Name','PSO', 'Type','PSO', ...
+%     %        'Options', optimoptions('particleswarm','SwarmSize',150,'Display','none'))
+% 
+%     struct('Name','PatternSearch', 'Type','PS', ...
+%            'Options', optimoptions('patternsearch','Display','none'))
+% };
+% 
+% %% 2) Liste d’algorithmes à tester
+% 
+% algoList = {
+% 
+%     struct('Name','GA-default', 'Type','GA', ...
+%            'Options', optimoptions('gamultiobj', ...
+%                 'PopulationSize', NP, ...
+%                 'Display','none'))
+% 
+%     struct('Name','GA-gaussianMutation', 'Type','GA', ...
+%            'Options', optimoptions('gamultiobj', ...
+%                 'MutationFcn', {@mutationgaussian,2,0.5}, ...
+%                 'PopulationSize', NP, ...
+%                 'Display','none'))
+% 
+%     struct('Name','GA-uniformMutation', 'Type','GA', ...
+%            'Options', optimoptions('gamultiobj', ...
+%                 'MutationFcn', @mutationuniform, ...
+%                 'PopulationSize', NP, ...
+%                 'Display','none'))
+% 
+%     struct('Name','GA-highCrossover', 'Type','GA', ...
+%            'Options', optimoptions('gamultiobj', ...
+%                 'CrossoverFraction', 0.8, ...
+%                 'PopulationSize', NP, ...
+%                 'Display','none'))
+% 
+% 
+%     % struct('Name','PSO', 'Type','PSO', ...
+%     %        'Options', optimoptions('particleswarm', ...
+%     %             'SwarmSize',150, ...
+%     %             'Display','none'))
+% 
+%      struct('Name','NSGA2-custom', 'Type','NSGA2', ...
+%            'Options', struct('PopSize', NP, ...
+%                              'MaxGen', 80, ...
+%                              'Pc', 0.9, ...       % probabilité de crossover
+%                              'Pm', 0.1, ...       % probabilité de mutation
+%                              'EtaC', 15, ...      % index SBX
+%                              'EtaM', 20))         % index mutation polynomiale
+% };
+% 
+% %% 3) Boucle d’exécution
+% 
+% results = struct();
+% 
+% for k = 1:length(algoList)
+% 
+%     algo = algoList{k};
+% 
+%     fprintf("\n=== Test algorithme : %s ===\n", algo.Name);
+% 
+%     %% ---------- CONFIGURATION DES OPTIONS SELON L'ALGORITHME ----------
+%     opts = algo.Options;
+% 
+%     switch algo.Type
+% 
+%         % ============================================================
+%         % GA = GAMULTIOBJ
+%         % ============================================================
+%         case 'GA'
+%             opts = optimoptions(opts, ...
+%                 'InitialPopulationMatrix', x0, ...
+%                 'PopulationSize', NP, ...
+%                 'MaxGenerations', 80, ...
+%                 'MaxStallGenerations', 6, ...
+%                 'FunctionTolerance', 1e-1, ...
+%                 'ConstraintTolerance', 1e-6, ...
+%                 'Display', 'none' ...
+%             );
+% 
+%         % ============================================================
+%         % PSO = PARTICLESWARM (pas de constraints, pas de population init.)
+%         % ============================================================
+% 
+%         % case 'PSO'
+%         %     opts = optimoptions(opts, ...
+%         %         'SwarmSize', 150, ...
+%         %         'FunctionTolerance', 1e-1, ...
+%         %         'Display','none' ...
+%         %     );
+% 
+%         % ============================================================
+%         % PS = PATTERNSEARCH (pas de constraints, ni population)
+%         % ============================================================
+%         case 'PS'
+%             opts = optimoptions(opts, ...
+%                 'FunctionTolerance', 1e-1, ...
+%                 'Display','none' ...
+%             );
+%     end
+% 
+%     %% ---------- LANCEMENT DE L’ALGORITHME ----------
+% 
+%     tic;
+% 
+%     switch algo.Type
+% 
+%         case 'GA'
+%             [xop, P] = gamultiobj(problem.objective, numVars, [], [], [], [], ...
+%                                   problem.lb, problem.ub, problem.nonlcon, ...
+%                                   problem.intcon, opts);
+% 
+%         % case 'PSO'
+%         %     fmono = @(x) sum(problem.objective(x));
+%         %     [xop, fval] = particleswarm(fmono, numVars, ...
+%         %                                 problem.lb, problem.ub, opts);
+%         %     P = [fval 0];  % pseudo-Pareto
+% 
+%         case 'PS'
+%             fmono = @(x) sum(problem.objective(x));
+%             x0_PS = mean([problem.lb; problem.ub]);
+% 
+%             [xop, fval] = patternsearch(fmono, x0_PS, [], [], [], [], ...
+%                                         problem.lb, problem.ub, [], opts);
+% 
+%             P = [fval 0];
+% 
+%         case 'NSGA2'
+%             [xop, P] = nsga2_moea(problem, algo.Options);
+%     end
+% 
+%     execTime = toc;
+% 
+%     %% ---------- STOCKAGE ----------
+% 
+%     results(k).Name        = algo.Name;
+%     results(k).x           = xop;
+%     results(k).pareto      = P;
+%     results(k).time        = execTime;
+%     results(k).Hypervolume = hypervolume(P, refPoint);
+%     results(k).Spread      = spread(P);
+%     results(k).Convergence = convergence(P, idealPoint);
+%     results(k).Cardinality = size(P,1);
+% 
 % end
 % 
-% currentTime = char(datetime('now', 'Format', 'MM_dd_HH_mm'));
+% %% 4) Tableau comparatif
 % 
-% optimisation_type = '\optimisation_ETS_Poly_';
+% T = table( ...
+%     {results.Name}.', ...
+%     [results.Hypervolume].', ...
+%     [results.Spread].', ...
+%     [results.Convergence].', ...
+%     [results.Cardinality].', ...
+%     [results.time].', ...
+%     'VariableNames', ...
+%     {'Algo','Hypervolume','Spread','Convergence','NbPoints','Time_s'} ...
+% );
 % 
-% % objective_type = 'H1_';
-% % objective_type = 'H2_';
-% % objective_type = 'H1_H2_';
-% objective_type = 'H1-4_';
-% % objective_type = 'neutre_';
+% disp(T);
 % 
-% folder_full_name = [folderName, optimisation_type, objective_type, currentTime];
-% mkdir(folder_full_name);
-% mkdir([folder_full_name, '\Figures']);
-% save([folder_full_name, '\environnement matlab.mat']);
-
-% %% Affichage des performances et des contributions
+% %% 5) Plot des fronts
 % 
-% % temp_plot_MPPSBH_results(x_opti, 1);
-% % temp_plot_module_ETS(x_opti);
-% % temp_plot_cartouche_ETS(x_opti);
-% % temp_plot_cartouches(x_opti);
+% figure; hold on; grid on; xlabel("Obj. H1"); ylabel("Obj. H2");
+% title("Comparaison des fronts de Pareto");
+% for k = 1:length(results)
+%     P = results(k).pareto;
+%     plot(P(:,1), P(:,2), 'o', 'DisplayName', results(k).Name);
+% end
+% legend("show");
 % 
-% x_TP_ETS(x_opti);
-% x_TP_Poly(x_opti);
-% top_plate(x_TP_ETS(x_opti)).Configuration % Plaque ETS
-% top_plate(x_TP_Poly(x_opti)).Configuration % Plaque Poly
+% disp("=== Fin du module multi-algorithmes ===");
 % 
-% perso_figure('Prédiction des performances de la configuration optimale');
-% hold on
-% title('Prédiction des performances de la configuration optimale');
-% Cartouches.cartouche_globale(x_opti).plot_alpha(env, 'Cartouche globale');
-% % Cartouches.cartouche_globale_HL_fp(x_opti).plot_alpha(env, 'Cartouche globale HL fp');
-% Cartouches.cartouche_globale_HL_iter(x_opti).plot_alpha(env, 'Cartouche globale HL fp iter', 'iter');
-% perso_plot_targetted_frequencies(Frequences, 1);
-% perso_configure_alpha_figure(3000);
+% %% 6) Sélection du meilleur algorithme
+% % scores = [results.Hypervolume] - 0.5*[results.Spread] - 0.5*[results.Convergence];
+% % [~, bestID] = max(scores);
+% [~, bestID] = max([results.Hypervolume]);
+% best = results(bestID);
 % 
-% saveas(gcf, [folder_full_name, '\Figures\Prédiction des performances de la configuration optimale.fig']);
+% fprintf("\n>>> Meilleur algorithme trouvé : %s\n", best.Name);
 % 
-% perso_figure('Surface d''impédance de la configuration optimale')
-% hold on
-% title('Surface d''impédance de la configuration optimale');
-% perso_plot_surface_impedance(Cartouches.cartouche_globale(x_opti).surface_impedance(env), env, 'Cartouche globale');
-% % perso_plot_surface_impedance(Cartouches.cartouche_globale_HL_fp(x_opti).surface_impedance(env), env, 'Cartouche globale HL fp');
-% perso_plot_surface_impedance(Cartouches.cartouche_globale_HL_iter(x_opti).surface_impedance_iter(env), env, 'Cartouche globale HL iter');
+% %% 7) Renommage pour respecter ton pipeline
+% xopti = best.x;
+% fval  = best.pareto;
 % 
-% saveas(gcf, [folder_full_name, '\Figures\Surface d''impédance de la configuration optimale.fig']);
 % 
-% perso_figure('Prédiction des performances de la cartouche ETS');
-% hold on
-% title('Prédiction des performances de la cartouche ETS');
-% Cartouches.cartouche_ETS(x_opti).plot_alpha(env, 'Cartouche ETS');
-% % Cartouches.cartouche_ETS_HL_fp(x_opti).plot_alpha(env, 'Cartouche v HL fp');
-% Cartouches.cartouche_ETS_HL_iter(x_opti).plot_alpha(env, 'Cartouche ETS HL fp iter', 'iter');
-% perso_plot_targetted_frequencies(Frequences, 1);
-% perso_configure_alpha_figure(3000);
+% %% ===============================
+% %  CONDITIONNEMENT DU FRONT SELECTED
+% % ===============================
 % 
-% saveas(gcf, [folder_full_name, '\Figures\Prédiction des performances de la cartouche ETS.fig']);
-% 
-% perso_figure('Surface d''impédance de la cartouche ETS')
-% hold on
-% title('Surface d''impédance de la cartouche ETS');
-% perso_plot_surface_impedance(Cartouches.cartouche_ETS(x_opti).surface_impedance(env), env, 'cartouche ETS');
-% % perso_plot_surface_impedance(Cartouches.cartouche_ETS_HL_fp(x_opti).surface_impedance(env), env, 'cartouche ETS HL fp');
-% perso_plot_surface_impedance(Cartouches.cartouche_ETS_HL_iter(x_opti).surface_impedance_iter(env), env, 'cartouche ETS HL iter');
-% 
-% saveas(gcf, [folder_full_name, '\Figures\Surface d''impédance de la cartouche ETS.fig']);
-% 
-% perso_figure('Prédiction des performances de la cartouche Poly');
-% hold on
-% title('Prédiction des performances de la cartouche Poly');
-% Cartouches.cartouche_Poly(x_opti).plot_alpha(env, 'Cartouche Poly');
-% % Cartouches.cartouche_Poly_HL_fp(x_opti).plot_alpha(env, 'Cartouche v HL fp');
-% Cartouches.cartouche_Poly_HL_iter(x_opti).plot_alpha(env, 'Cartouche Poly HL fp iter', 'iter');
-% perso_plot_targetted_frequencies(Frequences, 1);
-% perso_configure_alpha_figure(3000);
-% 
-% saveas(gcf, [folder_full_name, '\Figures\Prédiction des performances de la cartouche Poly.fig']);
-% 
-% perso_figure('Surface d''impédance de la cartouche Poly')
-% hold on
-% title('Surface d''impédance de la cartouche Poly');
-% perso_plot_surface_impedance(Cartouches.cartouche_Poly(x_opti).surface_impedance(env), env, 'cartouche Poly');
-% % perso_plot_surface_impedance(Cartouches.cartouche_Poly_HL_fp(x_opti).surface_impedance(env), env, 'cartouche Poly HL fp');
-% perso_plot_surface_impedance(Cartouches.cartouche_Poly_HL_iter(x_opti).surface_impedance_iter(env), env, 'cartouche Poly HL iter');
-% 
-% saveas(gcf, [folder_full_name, '\Figures\Surface d''impédance de la cartouche Poly.fig']);
-
-% %% Validation des contributions individuelles
-% 
-% % Contributions des élements MPPSBHs
-% for i = 1:NS
-%     figure()
-%     % Tube_MPPSBH_element_contrib = ImpedanceTube2D(ImpedanceTube2D.create_config({Contributions.contribution_MPPSBH_element_i(x_opti, i)}));
-%     % Tube_MPPSBH_element_contrib = Tube_MPPSBH_element_contrib.launch_tube_measurement(env);
-%     % Tube_MPPSBH_element_contrib.plot_alpha(env, ['Contribution MPPSBH' num2str(i)]);
-%     Contributions.contribution_MPPSBH_element_i(x_opti, i).plot_alpha(env, 'modèle linéaire');
-%     Contributions.contribution_MPPSBH_element_HL_i(x_opti, i).plot_alpha(env, 'modèle HL');
-%     Contributions.contribution_MPPSBH_element_HL_fp_i(x_opti, i).plot_alpha(env, 'modèle HL appliqué à la première plaque seulement');
-%     perso_configure_alpha_figure(2000);
-%     saveas(gcf, [folder_full_name, '\Figures\Validation de la contribution de MPPSBH' num2str(i) '.fig']);
-% 
-%     % figure()
-%     % mphgeom(Tube_MPPSBH_element_contrib.Configuration.ComsolModel);
-%     % saveas(gcf, [folder_full_name, '\Figures\Géométrie de l''élement MPPSBH' num2str(i) '.fig']);
-%     % mphsave(Tube_MPPSBH_element_contrib.Configuration.ComsolModel, [folder_full_name, '\validation_2D_MPPSBH_', num2str(i), '.mph']);
+% % Si xopti est un vecteur -> conversion en matrice 1×nVars
+% if isvector(xopti)
+%     xopti = xopti(:).';  
 % end
 % 
-% % Contribution de la cavité jaune dans la cartouche ETS
-% % Tube_ETS_yc_contrib = ImpedanceTube2D(ImpedanceTube2D.create_config({Contributions.contribution_ETS_yellow_cavity(x_opti)}));
-% % Tube_ETS_yc_contrib = Tube_ETS_yc_contrib.launch_tube_measurement(env);
-% figure();
-% % Tube_ETS_yc_contrib.plot_alpha(env, 'Contribution ETS cavité jaune');
-% Contributions.contribution_ETS_yellow_cavity(x_opti).plot_alpha(env, 'modèle linéaire');
-% Contributions.contribution_ETS_HL_yellow_cavity(x_opti).plot_alpha(env, 'modèle HL');
-% perso_configure_alpha_figure(2000);
-% saveas(gcf, [folder_full_name, '\Figures\Validation de la contribution de la cavité jaune de la cartouche ETS.fig']);
-% % mphsave(Tube_ETS_yc_contrib.Configuration.ComsolModel, [folder_full_name, '\validation_2D_ETS_yellow_cavity.mph']);
-% 
-% % Contribution de la solution Poly
-% % Tube_Poly_element_contrib = ImpedanceTube2D(ImpedanceTube2D.create_config({Contributions.contribution_Poly_numerical_element(x_opti)}));
-% % Tube_Poly_element_contrib = Tube_Poly_element_contrib.launch_tube_measurement(env);
-% figure();
-% imported_Poly_element.plot_alpha(env,'élement importé seul');
-% % Tube_Poly_element_contrib.plot_alpha(env, 'Contribution Poly élement numérique');
-% Contributions.contribution_Poly_element(x_opti).plot_alpha(env, 'Contribution Poly élement numérique - modèle linéaire');
-% Contributions.contribution_Poly_HL_element(x_opti).plot_alpha(env, 'modèle HL');
-% 
-% perso_configure_alpha_figure(2000);
-% saveas(gcf, [folder_full_name, '\Figures\Validation de la contribution de la solution de Poly.fig']);
-% % mphsave(Tube_Poly_element_contrib.Configuration.ComsolModel, [folder_full_name, '\validation_2D_Poly_numerical_element.mph']);
-% 
-% % Contribution de la cavité jaune dans la cartouche ETS
-% % Tube_Poly_yc_contrib = ImpedanceTube2D(ImpedanceTube2D.create_config({Contributions.contribution_Poly_yellow_cavity(x_opti)}));
-% % Tube_Poly_yc_contrib = Tube_Poly_yc_contrib.launch_tube_measurement(env);
-% figure();
-% % Tube_Poly_yc_contrib.plot_alpha(env, 'Contribution Poly cavité jaune');
-% Contributions.contribution_Poly_yellow_cavity(x_opti).plot_alpha(env, 'modèle linéaire');
-% Contributions.contribution_Poly_HL_yellow_cavity(x_opti).plot_alpha(env, 'modèle HL');
-% 
-% perso_configure_alpha_figure(2000);
-% saveas(gcf, [folder_full_name, '\Figures\Validation de la contribution de la cavité jaune de la cartouche Poly.fig']);
-% % mphsave(Tube_Poly_yc_contrib.Configuration.ComsolModel, [folder_full_name, '\validation_2D_Poly_yellow_cavity.mph']);
-% 
-% %% Sauvegarde des rapports de configuration
-% 
-% % Rapport de configuration des plaques couvrantes
-% report_root = [folder_full_name, '\Rapports de configuration des plaques couvrantes'];
-% mkdir(report_root);
-% 
-% perso_top_plate_export_report(x_TP_ETS(x_opti), radius, [report_root, '\rapport de configuration plaque ETS.xlsx']);
-% perso_top_plate_export_report(x_TP_Poly(x_opti), radius, [report_root, '\rapport de configuration plaque Poly.xlsx']);
-% 
-% % Rapport de configuration des MPPSBHs
-% report_root = [folder_full_name, '\Rapports de configuration des MPPSBHs'];
-% mkdir(report_root);
-% 
-% for i = 1:NS
-%     Objets.MPPSBH_i(x_ETS(x_opti), radius(x_radius(x_opti)), i).export_report([report_root, '\rapport de configuration - MPPSBH ', num2str(i), '.xlsx'])
+% % fval doit être cohérent : pour PSO/PS -> mettre une ligne
+% if size(fval,1) ~= size(xopti,1)
+%     fval = repmat(fval, size(xopti,1), 1);
 % end
+% 
+% % Tri du front par le premier objectif
+% [~, sorted_index_opti] = sort(fval(:,1));
+% sorted_xopti = xopti(sorted_index_opti, :);
+% sorted_fval  = fval(sorted_index_opti, :);
+% 
+% %% ===============================
+% %  RÉCUPÉRATION DES COURBES POUR CHAQUE SOLUTION
+% % ===============================
+% 
+% xopti_to_cell_array_of_alpha = @(X) ...
+%     arrayfun(@(i) Objects.assembly_of_SDOF(X(i,:)) ...
+%                       .absorption_coefficient(env, struct('HL_method','linear')), ...
+%              1:size(X,1), 'UniformOutput', false);
+% 
+% xopti_to_cell_array_of_Zs = @(X) ...
+%     arrayfun(@(i) Objects.assembly_of_SDOF(X(i,:)) ...
+%                       .surface_impedance(env, {}) ./ env.air.parameters.Z0, ...
+%              1:size(X,1), 'UniformOutput', false);
+% 
+% filtered_alpha = xopti_to_cell_array_of_alpha(sorted_xopti);
+% filtered_Zs    = xopti_to_cell_array_of_Zs(sorted_xopti);
+% 
+% %% ===============================
+% %  PLOT INTERACTIF DES SOLUTIONS
+% % ===============================
+% 
+% perso_interactive_multi_plot( ...
+%     env.w/(2*pi), ...
+%     filtered_alpha, ...
+%     filtered_Zs, ...
+%     2000, ...
+%     Frequences ...
+% );
+% 
+% perso_plot_targetted_frequencies(Frequences, 1);
 
 
+%% =========================================================================
+%  MODULE : ÉTUDE DE L’IMPACT DU NOMBRE DE POINTS DE DÉPART
+%           ET DU TYPE D’INITIALISATION
+%           (GA vs NSGA-II custom)
+% =========================================================================
+
+disp("=== Lancement de l'étude PopSize × InitType (GA + NSGA2) ===");
+
+%% 1) Définition du problème multi-objectifs
+numVars = numel(lb);
+
+problem.objective = objective;
+problem.lb        = lb;
+problem.ub        = ub;
+problem.intcon    = intcon;
+problem.nonlcon   = [];
+
+M = 5;   % nombre d'objectifs
+refPoint   = ones(1,M);
+idealPoint = zeros(1,M);
+
+%% 2) Populations et types d'initialisation testés
+
+popSizes = [10 25 50];
+initTypes = {
+    'random'      % uniforme, ton actuel
+    'latin'       % meilleur remplissage de l’espace
+    'clustered'   % autour de zones prometteuses
+};
+
+%% 3) Stockage
+results = struct();
+expID = 1;
+
+%% =========================================================================
+%  MODULE 1 : GÉNÉRATION DES POPULATIONS INITIALES
+% =========================================================================
+
+disp("=== MODULE 1 : Génération des populations initiales ===");
+
+analysis = struct();
+ID = 1;
+
+for ps = popSizes
+    for it = 1:length(initTypes)
+
+        initType = initTypes{it};
+
+        % ---- Génération population ----
+        x0_test = generate_initial_population(initType, ps, lb, ub, NS * NV);
+
+        % ---- Découpage variables ----
+        X = reshape(x0_test, ps, NS * NV);
+
+        r_vals  = X(:, 1:NS);
+        nL_vals = X(:, NS+1 : 2*NS);
+        nP_vals = X(:, 2*NS+1 : 3*NS);
+
+        porosity = nL_vals .* nP_vals .* (pi .* r_vals.^2) / acoustic_section;
+
+        % ---- Stockage ----
+        analysis(ID).PopSize  = ps;
+        analysis(ID).InitType = initType;
+        analysis(ID).X0       = x0_test;
+        analysis(ID).r        = r_vals;
+        analysis(ID).nL       = nL_vals;
+        analysis(ID).nP       = nP_vals;
+        analysis(ID).Porosity = porosity;
+
+        ID = ID + 1;
+    end
+end
+
+disp("=== Populations initiales générées ===");
+
+
+%% =========================================================================
+%  MODULE 2 : ANALYSE DES DISTRIBUTIONS INITIALES
+% =========================================================================
+
+disp("=== MODULE 2 : Analyse distributions ===");
+
+% Liste unique pour les légendes
+uniqueTypes = initTypes;
+
+%% --- A) Boxplots rayon, nL, Porosité ---
+
+figure;
+tiledlayout(3,1);
+
+% --- Rayon ---
+nexttile; hold on; title("Distribution Rayon r");
+for it = 1:length(uniqueTypes)
+    idx = find(strcmp({analysis.InitType}, uniqueTypes{it}));
+    r_all = vertcat(analysis(idx).r);
+    boxchart(r_all(:));
+end
+legend(uniqueTypes);
+
+% --- Nombre perf largeur ---
+nexttile; hold on; title("Distribution Nb perfs largeur nL");
+for it = 1:length(uniqueTypes)
+    idx = find(strcmp({analysis.InitType}, uniqueTypes{it}));
+    nL_all = vertcat(analysis(idx).nL);
+    boxchart(nL_all(:));
+end
+legend(uniqueTypes);
+
+% --- Porosité ---
+nexttile; hold on; title("Distribution Porosité");
+for it = 1:length(uniqueTypes)
+    idx = find(strcmp({analysis.InitType}, uniqueTypes{it}));
+    poro_all = vertcat(analysis(idx).Porosity);
+    boxchart(poro_all(:));
+end
+legend(uniqueTypes);
+
+
+%% --- B) Histogrammes comparés sur la porosité ---
+
+figure; hold on; grid on; title("Histogrammes porosité");
+for it = 1:length(uniqueTypes)
+    idx = find(strcmp({analysis.InitType}, uniqueTypes{it}));
+    poro_all = vertcat(analysis(idx).Porosity);
+    histogram(poro_all(:), 25, "Normalization","pdf");
+end
+legend(uniqueTypes);
+xlabel("Porosité"); ylabel("PDF");
+
+
+%% --- C) Scatter rayon vs porosité ---
+
+figure; hold on; grid on; title("r vs Porosité selon init");
+
+colors = lines(length(uniqueTypes));
+
+for it = 1:length(uniqueTypes)
+    idx = find(strcmp({analysis.InitType}, uniqueTypes{it}));
+    r_all = vertcat(analysis(idx).r);
+    poro_all = vertcat(analysis(idx).Porosity);
+    scatter(r_all(:), poro_all(:), 10, colors(it,:), "filled");
+end
+
+xlabel("Rayon r [m]");
+ylabel("Porosité");
+legend(uniqueTypes);
+
+
+%% =========================================================================
+%  MODULE 3 : EXPÉRIMENTATION AVEC GA / NSGA-II
+% =========================================================================
+
+disp("=== MODULE 3 : Évaluation GA/NSGA2 ===");
+
+results = struct();
+expID = 1;
+
+for k = 1:length(analysis)
+
+    x0_test = analysis(k).X0;
+    ps      = analysis(k).PopSize;
+    initType = analysis(k).InitType;
+
+    fprintf("\n--- PopSize = %d | Init = %s ---\n", ps, initType);
+
+    %% ===== GA (gamultiobj) =====
+    optsGA = optimoptions("gamultiobj", ...
+        "PopulationSize", ps, ...
+        "InitialPopulationMatrix", x0_test, ...
+        "MaxGenerations", 80, ...
+        "MaxStallGenerations", 6, ...
+        "FunctionTolerance", 1e-1, ...
+        "ConstraintTolerance", 1e-6, ...
+        "Display","none");
+
+    tic;
+    [Xga, Pga] = gamultiobj(problem.objective, numVars, ...
+                            [],[],[],[], ...
+                            problem.lb, problem.ub, ...
+                            problem.nonlcon, problem.intcon, optsGA);
+    tGA = toc;
+
+    results(expID).Algo = "GA";
+    results(expID).Pop = ps;
+    results(expID).Init = initType;
+
+    results(expID).Pareto = Pga;     % valeurs objectives
+    results(expID).X = Xga;          % === parametres optimisés ===
+
+    results(expID).Hypervolume = hypervolume(Pga, refPoint);
+    results(expID).Convergence = convergence(Pga, idealPoint);
+    results(expID).Card = size(Pga,1);
+    results(expID).Time = tGA;
+
+    expID = expID + 1;
+
+    %% ===== NSGA2 custom (si activé) =====
+    % optsNSGA.x0 = x0_test;
+    % [Xnsga, Pnsga] = nsga2_moea(problem, optsNSGA);
+    %
+    % results(expID).X = Xnsga;
+    % ... etc
+end
+
+disp("=== FIN MODULE 3 ===");
+
+
+%% =========================================================================
+%  MODULE 4 : POST-TRAITEMENT DES PARAMÈTRES OPTIMISÉS
+% =========================================================================
+
+disp("=== POST-TRAITEMENT : Analyse des solutions optimisées ===");
+
+optAnalysis = struct();
+OID = 1;
+
+for k = 1:length(results)
+
+    % --- Meta-données
+    algo = results(k).Algo;
+    ps   = results(k).Pop;
+    init = results(k).Init;
+
+    if ~isfield(results(k), "X")
+        warning("Pas de X dans results(k). Le post-traitement saute cet item.");
+        continue;
+    end
+
+    Xopt = results(k).X;   % (Npoints × Nvars)
+    Npts = size(Xopt,1);
+
+    % ---- Décomposition des variables optimisées ----
+    r_vals  = Xopt(:, 1:NS);
+    nL_vals = Xopt(:, NS+1 : 2*NS);
+    nP_vals = Xopt(:, 2*NS+1 : 3*NS);
+
+    porosity = nL_vals .* nP_vals .* (pi .* r_vals.^2) / acoustic_section;
+
+    % ---- Stockage ----
+    optAnalysis(OID).Algo     = algo;
+    optAnalysis(OID).PopSize  = ps;
+    optAnalysis(OID).InitType = init;
+
+    optAnalysis(OID).r        = r_vals;
+    optAnalysis(OID).nL       = nL_vals;
+    optAnalysis(OID).nP       = nP_vals;
+    optAnalysis(OID).Porosity = porosity;
+
+    OID = OID + 1;
+end
+
+disp("=== FIN POST-TRAITEMENT (paramètres optimisés) ===");
+
+%% =========================================================================
+%  MODULE 5 : VISUALISATION DES PARAMÈTRES OPTIMISÉS
+% =========================================================================
+
+disp("=== MODULE 5 : Visualisation des distributions optimisées ===");
+
+if isempty(optAnalysis)
+    warning("optAnalysis est vide : aucune solution optimisée n’a été enregistrée.");
+    return;
+end
+
+% --- Récupération listes uniques ---
+optPops  = unique([optAnalysis.PopSize]);
+optInits = unique(string({optAnalysis.InitType}));
+optAlgos = unique(string({optAnalysis.Algo}));
+
+%% 1) Histogrammes du rayon optimisé
+figure; tiledlayout(length(optInits), length(optPops), "TileSpacing","compact");
+
+for i = 1:length(optInits)
+    for j = 1:length(optPops)
+
+        % sélection des entrées correspondantes
+        idx = find([optAnalysis.PopSize] == optPops(j) & ...
+                   string({optAnalysis.InitType}) == optInits(i));
+
+        nexttile;
+        hold on;
+
+        if isempty(idx)
+            title(sprintf("Pop=%d | Init=%s\n(no data)", optPops(j), optInits(i)));
+            continue;
+        end
+
+        % concatène tous les r de cette famille
+        rAll = cell2mat(arrayfun(@(s) s.r(:), optAnalysis(idx), 'UniformOutput', false));
+
+        histogram(rAll, 20, 'Normalization','pdf');
+        title(sprintf("Pop=%d | Init=%s", optPops(j), optInits(i)));
+        xlabel("Rayon r (m)");
+        ylabel("PDF");
+
+    end
+end
+
+sgtitle("Distribution du rayon optimisé r pour chaque PopSize × InitType");
+
+%% 2) Histogrammes porosité
+figure; tiledlayout(length(optInits), length(optPops), "TileSpacing","compact");
+
+for i = 1:length(optInits)
+    for j = 1:length(optPops)
+
+        idx = find([optAnalysis.PopSize] == optPops(j) & ...
+                   string({optAnalysis.InitType}) == optInits(i));
+
+        nexttile;
+        hold on;
+
+        if isempty(idx)
+            title(sprintf("Pop=%d | Init=%s (no data)", optPops(j), optInits(i)));
+            continue;
+        end
+
+        porAll = cell2mat(arrayfun(@(s) s.Porosity(:), optAnalysis(idx), 'UniformOutput', false));
+
+        histogram(porAll, 20, 'Normalization','pdf');
+        title(sprintf("Pop=%d | Init=%s", optPops(j), optInits(i)));
+        xlabel("Porosité");
+        ylabel("PDF");
+
+    end
+end
+
+sgtitle("Distribution de la porosité optimisée pour chaque PopSize × InitType");
+
+%% 3) Scatter 2D (r vs porosité)
+figure; hold on; grid on;
+title("Relation r – Porosité (toutes solutions optimisées)");
+xlabel("Rayon r (m)");
+ylabel("Porosité");
+
+cmap = lines(numel(optAnalysis));
+
+for k = 1:length(optAnalysis)
+    r = optAnalysis(k).r(:);
+    por = optAnalysis(k).Porosity(:);
+    scatter(r, por, 12, 'filled', 'MarkerFaceColor', cmap(k,:));
+end
+
+legend("AutoUpdate","off");
+
+
+
+
+%% =========================================================================
+%  POST-TRAITEMENT : Impact PopSize × InitType (GA vs NSGA2)
+% =========================================================================
+
+disp("=== POST-TRAITEMENT PopSize × InitType ===");
+
+%% 1) Extraction des champs depuis results
+
+Algos   = string({results.Algo});
+Pops    = [results.Pop];
+Inits   = string({results.Init});
+HV      = [results.Hypervolume];
+Conv    = [results.Convergence];
+
+popList  = unique(Pops);
+initList = unique(Inits);
+algoList = unique(Algos);
+
+%% =========================================================================
+% 2) HYPERVOLUME vs PopSize (séparé par INIT, pour chaque ALGOS)
+% =========================================================================
+
+for a = 1:length(algoList)
+    algo = algoList(a);
+
+    figure; hold on; grid on;
+    title("Hypervolume vs PopSize — Algo : " + algo);
+    xlabel("Population initiale");
+    ylabel("Hypervolume");
+
+    for i = 1:length(initList)
+        init = initList(i);
+
+        idx = (Algos == algo) & (Inits == init);
+        if any(idx)
+            plot(Pops(idx), HV(idx), "-o", "LineWidth", 1.4, ...
+                "DisplayName", init);
+        end
+    end
+
+    legend("show", "Location", "best");
+end
+
+%% =========================================================================
+% 3) CONVERGENCE vs PopSize (séparé par INIT, pour chaque ALGOS)
+% =========================================================================
+
+for a = 1:length(algoList)
+    algo = algoList(a);
+
+    figure; hold on; grid on;
+    title("Convergence vs PopSize — Algo : " + algo);
+    xlabel("Population initiale");
+    ylabel("Convergence (distance au point idéal)");
+
+    for i = 1:length(initList)
+        init = initList(i);
+
+        idx = (Algos == algo) & (Inits == init);
+        if any(idx)
+            plot(Pops(idx), Conv(idx), "-s", "LineWidth", 1.4, ...
+                "DisplayName", init);
+        end
+    end
+
+    legend("show", "Location", "best");
+end
+
+%% =========================================================================
+% 4) HEATMAP HYPERVOLUME pour chaque algorithme
+% =========================================================================
+
+for a = 1:length(algoList)
+    algo = algoList(a);
+
+    HVmat = nan(length(popList), length(initList));
+
+    for ip = 1:length(popList)
+        for ii = 1:length(initList)
+            idx = (Pops == popList(ip)) & (Inits == initList(ii)) & (Algos == algo);
+            if any(idx)
+                HVmat(ip,ii) = HV(idx);
+            end
+        end
+    end
+
+    figure;
+    heatmap(initList, string(popList), HVmat);
+    xlabel("Initialisation");
+    ylabel("Population initiale");
+    title("Heatmap — Hypervolume — Algo : " + algo);
+end
+
+%% =========================================================================
+% 5) HEATMAP CONVERGENCE pour chaque algorithme
+% =========================================================================
+
+for a = 1:length(algoList)
+    algo = algoList(a);
+
+    Cmat = nan(length(popList), length(initList));
+
+    for ip = 1:length(popList)
+        for ii = 1:length(initList)
+            idx = (Pops == popList(ip)) & (Inits == initList(ii)) & (Algos == algo);
+            if any(idx)
+                Cmat(ip,ii) = Conv(idx);
+            end
+        end
+    end
+
+    figure;
+    heatmap(initList, string(popList), Cmat);
+    xlabel("Initialisation");
+    ylabel("Population initiale");
+    title("Heatmap — Convergence — Algo : " + algo);
+end
+
+%% =========================================================================
+% 6) Tableau résumé
+% =========================================================================
+
+T = table( ...
+    Algos.', ...
+    Pops.', ...
+    Inits.', ...
+    HV.', ...
+    Conv.', ...
+    'VariableNames', ...
+    {'Algo','PopSize','Init','Hypervolume','Convergence'} ...
+);
+
+disp("=== TABLEAU RÉCAPITULATIF ===");
+disp(T);
+
+disp("=== FIN POST-TRAITEMENT ===");

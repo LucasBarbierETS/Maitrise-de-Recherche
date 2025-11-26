@@ -1,239 +1,207 @@
-%% Sélection du dossier de destination des élements sauvegardés
-folderName = [env.Root, '\Optimisation\Optimisation_non_contrainte'];
-
 %% Fréquences cibles, Gabarits
 
-% % Objectif larges bande
-
-Frequences.f_min_lb = 200;
-Frequences.f_max_lb = 1500;
-g_obj_lb = @(env) (env.w / (2*pi) > Frequences.f_min_lb & env.w / (2*pi) < Frequences.f_max_lb);
-
-% Objectifs tonaux
-% On définit une largeur de bande associée à la variation du régime moteur de 3000 à 3500 RPM
-% On définit les bandes de variations des harmoniques tant que celles-ci ne se recoupent pas
-
-% Première harmonique (Fondamentale) : 233 Hz (20 Hz)
-Frequences.f_min_h1 = 220;
-Frequences.f_max_h1 = 240;
-g_obj_h1 = @(env) (env.w / (2*pi) > Frequences.f_min_h1 & env.w / (2*pi) < Frequences.f_max_h1);
-
-% Deuxième harmonique : 467 Hz (40 Hz)
-Frequences.f_min_h2 = 430;
-Frequences.f_max_h2 = 470;
-g_obj_h2 = @(env) (env.w / (2*pi) > Frequences.f_min_h2 & env.w / (2*pi) < Frequences.f_max_h2);
-
-% Troisième harmonique : 700 Hz (60 Hz)
-Frequences.f_min_h3 = 640;
-Frequences.f_max_h3 = 700;
-g_obj_h3 = @(env) (env.w / (2*pi) > Frequences.f_min_h3 & env.w / (2*pi) < Frequences.f_max_h3);
-
-% Quatrième harmonique : 933 Hz (80 Hz)
-Frequences.f_min_h4 = 870;
-Frequences.f_max_h4 = 950;
-g_obj_h4 = @(env) (env.w / (2*pi) > Frequences.f_min_h4 & env.w / (2*pi) < Frequences.f_max_h4);
-
-g_obj_harm =  @(env) g_obj_h1(env) + g_obj_h2(env) + g_obj_h3(env) + g_obj_h4(env) > 0;
+module_frequences_et_gabarits
 
 %% Niveau Sonore, Ecoulement
 
 dB = 134;
 % dB = 120;
 M = 0.1;
-env = handle_env(dB, M);
+env  = handle_env(dB, M);
 env0 = handle_env(dB, 0);
 
-%% Paramètres géométriques invariants
+%% =========================================================================
+%   MODULE D'OPTIMISATION : MULTI-MPPSBH
+% =========================================================================
 
-% Solution ETS
-ETS_total_thickness = 117e-3;
-ETS_width = 30e-3;
-ETS_depth = 30e-3;
-ETS_cavities_width = 28e-3; 
-ETS_cavities_depth = 28e-3; 
-ETS_input_surface = ETS_width * ETS_depth;
-ETS_plates_thickness = 2e-3;
-rigid_backing_thickness = 1e-3;
-depth_holes_number = 10;
-depth_holes_distance = ETS_cavities_depth / (depth_holes_number + 1);
+%% === 1. Paramètres géométriques invariants (ETS) ===
 
-%% Structure des variables optimisées
+ETS_total_thickness  = 117e-3;
+ETS_width            = 30e-3;
+ETS_depth            = 30e-3;
+ETS_cav_width        = 28e-3;
+ETS_cav_depth        = 28e-3;
+ETS_input_surface    = ETS_width * ETS_depth;
+ETS_plate_thickness  = 2e-3;
+depth_holes_number   = 20;
+depth_holes_distance = ETS_cav_depth / (depth_holes_number + 1);
 
-NS = 4; % Nombre de MPPSBH optimisés
-NV = 4; % Nombre de variables pour chaque solution (rayon des perforations, nombre de perfs en largeur, espacement des perfs en largeur, theta)
-N = 4; % Nombre de plaques optimisées indépendantes pour chaque solution
+%% === 2. Définition du Config pour multi-MPPSBH ===
 
-cavities_total_thickness = ETS_total_thickness - N * ETS_plates_thickness;
+Config = struct();
+Config.Structure = "stack";     % NS solutions × N plaques × NV variables
 
-NP = 50; %nombre de points de départ (parents)
+Config.NS = 4;                  % nombre de solutions optimisées
+Config.N  = 6;                  % plaques par solution
+Config.NV = 4;                  % variables par plaque
 
-% Récupération des parties du vecteur d'optimisation
-config = @(x) permute(reshape(x, [], NS, N, NV), [2, 3, 4, 1]); % Solutions ETS
+% Variables optimisées
+Config.Variables = {
+    struct('name',"radius", 'lb',0.1e-3,      'ub',0.5e-3,             'isInt',false)
+    struct('name',"dw",     'lb',3*0.1e-3,    'ub',3*0.5e-3,           'isInt',false)
+    struct('name',"pw",     'lb',1,           'ub',depth_holes_number, 'isInt',true)
+    struct('name',"theta",  'lb',1,           'ub',5,                  'isInt',false)
+};
 
-%% Valeurs minimales en fonction du type de variable
+% Cavité totale disponible = épaisseur totale - plaques
+Config.cavities_total_thickness = ETS_total_thickness - Config.N * ETS_plate_thickness;
 
-% Solution ETS
-r_min = 0.2e-3;
-dw_min = 3 * r_min;
-pw_min = 1;
+%% === 3. Bornes, contraintes entières et population initiale ===
 
-theta_min = 1;
+NP = 500; % nombre de points de départ (parents)
 
-lb = horzcat(repmat(r_min, 1, N * NS), repmat(dw_min, 1, N * NS), repmat(pw_min, 1, N * NS), repmat(theta_min, 1, N * NS));
+[lb, ub, intcon] = build_bounds_from_config(Config);
 
-%% Valeurs maximales en fonction du type de variable
+% population initiale (ici random, mais tu peux passer "latin", "clustered", etc.)
+x0 = generate_initial_population(Config, NP, "latin");
 
-% Solution ETS
-r_max = 1e-3;
-dw_max =  3*r_max;
-pw_max = depth_holes_number;
+% % (optionnel) visu des points initiaux
+% plot_initial_population(x0, Config);
 
-theta_max = 5;
+%% === 4. Fonction de reformatage du vecteur d’optimisation x
+%  x : vecteur 1×D
+%  Retour : cfg(iSolution, iPlaque, iVariable)
 
-ub = horzcat(repmat(r_max, 1, N * NS), repmat(dw_max, 1, N * NS), repmat(pw_max, 1, N * NS), repmat(theta_max, 1, N * NS));
+config = @(x) permute( ...
+                reshape(x, Config.NV, Config.N, Config.NS), ...
+                [3 2 1] );     % => NS × N × NV
 
-% Debog : Porosité max et min
-% phi_min = pi * radius(1)^2 / tp_dw_max^2; % < 1 %
-% phi_max = pi * radius(4)^2 / tp_dw_min^2; % > 30 %
-
-%% Valeurs initiales en fonction du type de variable
-
-% Rayon des perforations
-r_init = r_min + (r_max - r_min) * rand(NP, N * NS);
-
-% Distance inter-perforation en largeur
-dw_init = dw_min + (dw_max - dw_min) * rand(NP, N * NS);
-% dw_init_sorted = sort(dw_init, 2, "descend");
-
-% Nombre de perforation en largeur
-pw_init = randi([pw_min, pw_max], NP, N * NS);
-% pw_init_sorted = sort(pw_init, 2, "descend"); 
-
-% Paramètres de répartition de l'épaisseur
-theta_init = theta_min + (theta_max - theta_min) * rand(NP, N * NS);
-
-x0 = horzcat(r_init, dw_init, pw_init, theta_init);
-
-% % Debog : Largeur des fentes crées
-% figure();
-% sw_init = repmat(2 * radius(r_init), 1, NS) + dw_init .* (pw_init - 1);
-% histogram(sw_init, 20);
-% title('Largeur des fentes dans les MPPSBHs')
-
-% % Debog : Porosité des plaques crées
-% figure();
-% hold on
-% phi_init_app = (pi * (repmat(radius(r_init), 1, NS)).^2 * depth_holes_number .* pw_init) / (ETS_cavities_width * ETS_cavities_depth);
-% phi_init = (pi * (repmat(radius_mm(r_init), 1, NS)).^2 * depth_holes_number .* pw_init) ./ (sw_init * ETS_cavities_depth);
-% histogram(phi_init_app, 20, 'DisplayName', 'Porosité apparente de la plaque');
-% histogram(phi_init, 20, 'DisplayName', 'Porosité effective de la zone perforée');
-% title('Porosités des plaques dans les MPPSBHs');
-% legend()
-
-%% Contrainte sur les variables entières
-
-intcon = find([zeros(1, N*NS), zeros(1, N*NS), ones(1, N*NS), zeros(1, N*NS)]);
-
-%% Création dynamique des MPPSBHs
+%% === 5. Construction dynamique d’un MPPSBH donné ===
 
 Objets = struct();
 
-% Construction du ième MPPSBH à partir d'une découpe du vecteur d'optimisation
-Objets.MPPSBH_i = @(config, i) classMPPSBH_Rectangular( ...
+Objets.MPPSBH_i = @(cfg, iSol) classMPPSBH_Rectangular( ...
     classMPPSBH_Rectangular.create_explicit_rectangular_pattern_config( ...
-        ETS_input_surface, N, ETS_cavities_depth, ETS_cavities_width, ...
-        {config(i, :, 1)}, ... % rayon des perforations
-        {config(i, :, 2)}, ... % distance entre perforations (width)
-        {ETS_cavities_depth / depth_holes_number}, ... % distance entre perforations (depth)
-        {depth_holes_number}, ... % nombre de perforations en profondeur
-        {config(i, :, 3)}, ... % nombre de perforations en largeur
-        {ETS_plates_thickness}, ... % épaisseur des plaques (supérieure + internes)
-        {perso_simplex_map(config(i, :, 4), cavities_total_thickness)})); %;  % épaisseur de cavité
+        ETS_input_surface, ...
+        Config.N, ...
+        ETS_cav_depth, ...
+        ETS_cav_width, ...
+        num2cell(cfg(iSol,:,1)), ...              % radius
+        num2cell(cfg(iSol,:,2)), ...              % dw
+        repmat({depth_holes_distance},1,Config.N),... 
+        repmat({depth_holes_number},1,Config.N),  ...
+        num2cell(cfg(iSol,:,3)), ...              % pw
+        repmat({ETS_plate_thickness},1,Config.N), ...
+        num2cell(perso_simplex_map(cfg(iSol,:,4), ...
+                    Config.cavities_total_thickness)) ...
+    ) ...
+);
 
-% Debog (OK)
-% figure()
-% Objets.MPPSBH_i(x_ETS(x0(1, :)), x_SPLX(x0(1, :)), 1).plot_alpha(env, 'modèle linéaire');
-% close();
+%% === 6. Construction de toutes les solutions MPPSBH puis de l’assembly ===
 
-Objets.cell_of_MPPSBH = @(x) arrayfun(@(i) Objets.MPPSBH_i(config(x), i), 1:NS ,'UniformOutput', false);
-Objets.assembly_of_MPPSBH = @(x) classelementassembly(classelementassembly.create_config(Objets.cell_of_MPPSBH(x)));
+Objets.cell_of_MPPSBH = @(x) arrayfun( ...
+    @(i) Objets.MPPSBH_i(config(x), i), 1:Config.NS, 'UniformOutput', false);
 
-%% Fonction de définitions de la matrice de contraintes non linéaires  
+Objets.assembly = @(x) ...
+    classelementassembly( ...
+        classelementassembly.create_config( ...
+            Objets.cell_of_MPPSBH(x) ...
+        ) ...
+    );
 
-% Définition du handle avec paramètres capturés
-handle_nonlconf = @(x) perso_nonlconf_1_solution(config(x), depth_holes_number, ETS_cavities_width, ETS_cavities_depth);
+%% === 7. Contraintes non-linéaires spécifiques ===
 
-% % Debog : Test des contraintes non-linéaires sur les configurations initiales
-% [c, ceq] = handle_nonlconf(x0);
-% ratio = sum(~any(c > 0, 2))/NP * 100;
-% sprintf('%f pourcents de configurations respectant les contraintes non-linéaires', ratio)
+handle_nonlconf = @(x) ...
+    perso_nonlconf_1_solution( ...
+        config(x), ...
+        depth_holes_number, ...
+        ETS_cav_width, ...
+        ETS_cav_depth ...
+    );
 
-%% Affichage des porosités simulées
+%% === 8. Fonctions coût multi-objectifs ===
 
-% figure()
-% hold on
-% p_ETS = zeros(1, NP);
-% p_Poly = zeros(1, NP);
-% for i = 1:NP
-%     p_ETS(i) = top_plate(x_TP_ETS(x0(i, :))).Configuration.Porosity;
-%     p_Poly(i) = top_plate(x_TP_Poly(x0(i, :))).Configuration.Porosity;
-% end
+handle_alpha = @(x, env, g_obj) subsref( ...
+    Objets.assembly(x).absorption_coefficient(env, struct('HL_method','linear')), ...
+    substruct('()', {g_obj(env)}));
+
+handle_cost_one = @(x, env, g_obj) mean(1 - handle_alpha(x, env, g_obj));
+
+handle_objective = @(x, env, g_cells) ...
+    arrayfun(@(k) handle_cost_one(x, env, g_cells{k}), ...
+             1:length(g_cells));
+
+objective = @(x) ...
+    handle_objective(x, env, {g_obj_h1, g_obj_h2, g_obj_h3, g_obj_h4, g_obj_lb});
+
+%% ============================
+%   9. MULTI-OBJECTIVE NSGA-II
+%      (wrapper générique)
+% =============================
+
+[xopti, fval, population, scores, eflag, timeNSGA2] = ...
+    run_nsga2_block( ...
+        objective, lb, ub, intcon, handle_nonlconf, ...
+        x0, NP, ...
+        'MaxGen', 100, ...
+        'Pc', 0.5, ...
+        'Pm', 0.1, ...
+        'EtaC', 20, ...
+        'EtaM', 20, ...
+        'Display', "iter", ...
+        'FunctionTolerance', 1e-1, ...
+        'ConstraintTolerance', 1e-6, ...
+        'PlotFcn', {@nsga2_plot_pareto, @nsga2_plot_rank_diversity} ...
+    );
+
+% %% ============================
+% %   9. GENETIC ALGORITHM (GA)
+% %   multi-objectifs standard
+% % ============================
 % 
-% histogram(p_ETS, 20, 'DisplayName', 'Cartouche ETS');
-% histogram(p_Poly, 20, 'DisplayName', 'Cartouche Poly');
-% title('Porosités des plaques couvrantes simulées');
-% legend()
+% optionsGA = optimoptions('gamultiobj', ...
+%     'Display', 'iter', ...
+%     'PopulationSize', NP, ...
+%     'InitialPopulationMatrix', x0, ...
+%     'FunctionTolerance', 1e-1, ...
+%     'ConstraintTolerance', 1e-6, ...
+%     'MaxStallGenerations', 5, ...
+%     'MaxGenerations', 100, ...
+%     'MutationFcn', 'mutationadaptfeasible', ...
+%     'CrossoverFraction', 0.5, ...
+%     'MigrationInterval', 10, ...
+%     'MigrationFraction', 0.3, ...
+%     'PlotFcn', { ...
+%          @gaplotpareto, ...         % Pareto front
+%          @gaplotscorediversity ...  % Diversité
+%          % @(x,optimValues,state) perso_plot_constraints_violation(x,optimValues,state,Config)
+%      } ...
+% );
+% 
+% rng;  % Reproductibilité
+% 
+% tic;
+% [xopti, fval, eflag, outputGA, population, scores] = ...
+%     gamultiobj(objective, numel(x0(1,:)), ...
+%                [], [], [], [], ...
+%                lb, ub, ...
+%                handle_nonlconf, ...
+%                intcon, ...
+%                optionsGA);
+% timeGA = toc;
 
-%% Fonctions coût
+%% ========================================================================
+%  MODULE D'OPTIMISATION: CONDITIONNEMENT DES CONFIGURATIONS OPTIMISEES
+% =========================================================================
 
-% Définition de la cartouche sur laquelle l'optimisation à lieu
-handle_alpha = @(x, env, g_obj) subsref(Objets.assembly_of_MPPSBH(x).absorption_coefficient(env, struct('HL_method', 'linear')), substruct('()', {g_obj(env)}));
-handle_cost_function = @(x, env, g_obj) mean(1 - handle_alpha(x, env, g_obj));
-handle_objective = @(x, env, g_obj_cell) arrayfun(@(i) handle_cost_function(x, env, g_obj_cell{i}), 1:length(g_obj_cell) ,'UniformOutput', false);
-
-
-objective = @(x) cell2mat(handle_objective(x, env, {g_obj_h1, g_obj_h2, g_obj_h3, g_obj_h4, g_obj_lb})); % Objectif Cartouche globale
-
-%% GENETIC ALGORITHM
-
-options = optimoptions('ga', ...
-                       'Display', 'iter', ...
-                       'PopulationSize', NP, ... % nombre de points dans la population initiale
-                       'FunctionTolerance', 1e-1, ...
-                       'ConstraintTolerance', 1e-6, ...
-                       'MaxStallGenerations', 5, ...
-                       'MaxGenerations', 100, ...
-                       'MutationFcn',  'mutationadaptfeasible',... {@mutationgaussian, 2, 0.5}, ... %'mutationuniform', ... 
-                       'CrossoverFraction', 0.5, ...
-                       'MigrationInterval', 10, ...
-                       'MigrationFraction', 0.3, ...
-                       'InitialPopulationMatrix', x0); 
-
-% Options d'affichage
-% options.PlotFcn = {@gaplotbestf, @gaplotmaxconstr, @gaplotbestindiv}; % Pour un seul objectif
-options.PlotFcn = {@gaplotpareto, ... % Pour deux objectifs ou plus
-                   @gaplotscorediversity}; % , ...
-                   % @(x, optimValues, state) perso_plot_constraints_violation(x, optimValues, state, NS, N)}; 
-
-rng; % For reproducibility"
-tic;
-% profile on
-[xopti, fval, eflag, ~, population, scores] = gamultiobj(objective, numel(x0(1, :)), [], [], [], [], lb, ub, handle_nonlconf, intcon, options);
-% profile viewer
-timeGa = toc;
-
-%% Conditionnement du vecteur d'optimisation
-
-xopti_to_cell_array_of_alpha = @(x, env) arrayfun(@(i) vertcat(Objets.assembly_of_MPPSBH(xopti(i, :)).absorption_coefficient(env, {})), ...
+xopti_to_cell_array_of_alpha = @(x, env) arrayfun(@(i) vertcat(Objets.assembly(x(i, :)).absorption_coefficient(env, struct('HL_method', 'linear'))), ...
                                                        1:size(x, 1), 'UniformOutput', false);
 
 
-xopti_to_cell_array_of_Zs = @(x, env) arrayfun(@(i) vertcat(Objets.assembly_of_MPPSBH(xopti(i, :)).surface_impedance(env, {})/env.air.parameters.Z0), ...
+xopti_to_cell_array_of_Zs = @(x, env) arrayfun(@(i) vertcat(Objets.assembly(x(i, :)).surface_impedance(env, {})/env.air.parameters.Z0), ...
                                                     1:size(x, 1), 'UniformOutput', false);
 
-% On récupère les vecteurs d'absorption des meilleures configurations
+% % On récupère les vecteurs d'absorption des meilleures configurations
+% pareto_rank = scores(:,1);     % rang (1=front de Pareto)
+% crowding    = scores(:,2);     % diversité
+% 
+% % Tri : meilleur rang, puis plus grande crowding distance
+% [~, idx_sorted] = sortrows([pareto_rank crowding], [1 -2]);
+% 
+% sorted_xopti = xopti(idx_sorted, :);
 [sorted_scores_opti, sorted_index_opti] = sort(fval);
 sorted_xopti = xopti(sorted_index_opti(:, 1), :);
+
 filtered_alpha = xopti_to_cell_array_of_alpha(sorted_xopti, env);
 filtered_Zs = xopti_to_cell_array_of_Zs(sorted_xopti, env);
 
@@ -241,12 +209,141 @@ filtered_Zs = xopti_to_cell_array_of_Zs(sorted_xopti, env);
 perso_interactive_multi_plot(env.w/(2*pi), filtered_alpha, filtered_Zs, 2000, Frequences);
 
 % On rajoute des barres pour représenter les bandes d'optimisation
-perso_plot_targetted_frequencies(Frequences, 1)
+perso_plot_targetted_frequencies(Frequences, 1);
 
-%% Résultats et sélection de la solution 
+%% =========================================================================
+%  MODULE F : Analyse détaillée des variables optimisées (1 run)
+% =========================================================================
 
-chosed_index = input('Veuillez entrer le numéro de la configuration choisie : ');
-x_opti = sorted_xopti(chosed_index, :);
+disp("=== MODULE F : Analyse détaillée des variables optimisées (1 run) ===");
+
+% On suppose qu'il n'y a qu'un seul run, donc results(1)
+if ~isfield(results(1),'X') || isempty(results(1).X)
+    warning("Le run ne contient pas de X. Analyse impossible.");
+    return;
+end
+
+X = results(1).X;    % Population finale optimisée
+Nk = size(X,1);
+
+% Extraction variables (comme tu l'as défini)
+r_vals  = X(:, 1:NS);
+nL_vals = X(:, NS+1 : 2*NS);
+nP_vals = X(:, 2*NS+1 : 3*NS);
+por_vals = nL_vals .* nP_vals .* (pi .* r_vals.^2) / acoustic_section;
+
+%% =========================================================================
+% 1) HISTOGRAMMES PAR TYPE DE VARIABLE
+% =========================================================================
+
+figure; 
+tiledlayout(2,2,"TileSpacing","compact"); 
+
+nexttile;
+histogram(r_vals(:), 25, 'Normalization','pdf');
+title("Distribution du rayon r (tous SDOF)");
+xlabel("r (m)");
+
+nexttile;
+histogram(nL_vals(:), 25, 'Normalization','pdf');
+title("Distribution du nombre de lignes nL");
+xlabel("nL");
+
+nexttile;
+histogram(nP_vals(:), 25, 'Normalization','pdf');
+title("Distribution du nombre de colonnes nP");
+xlabel("nP");
+
+nexttile;
+histogram(por_vals(:), 25, 'Normalization','pdf');
+title("Distribution de la porosité finale");
+xlabel("porosité");
+
+sgtitle("Histogrammes globaux des variables optimisées");
+
+%% =========================================================================
+% 2) HISTOGRAMMES PAR SDOF (r, porosité)
+% =========================================================================
+figure;
+tiledlayout(NS,2,"TileSpacing","compact");
+
+for j = 1:NS
+    nexttile;
+    histogram(r_vals(:,j), 20, 'Normalization', 'pdf');
+    title(sprintf("SDOF %d : r_j", j));
+    
+    nexttile;
+    histogram(por_vals(:,j), 20, 'Normalization', 'pdf');
+    title(sprintf("SDOF %d : porosité_j", j));
+end
+sgtitle("Distributions r_j et porosité_j par SDOF");
+
+%% =========================================================================
+% 3) SCATTER PAIRS
+% =========================================================================
+
+figure; tiledlayout(2,2,"TileSpacing","compact");
+
+nexttile;
+scatter(r_vals(:), por_vals(:), 20, 'filled');
+xlabel("r"); ylabel("Porosité");
+title("r vs porosité");
+
+nexttile;
+scatter(r_vals(:), nL_vals(:), 20, 'filled');
+xlabel("r"); ylabel("nL");
+title("r vs nL");
+
+nexttile;
+scatter(r_vals(:), nP_vals(:), 20, 'filled');
+xlabel("r"); ylabel("nP");
+title("r vs nP");
+
+nexttile;
+scatter(por_vals(:), nL_vals(:), 20, 'filled');
+xlabel("porosité"); ylabel("nL");
+title("porosité vs nL");
+
+sgtitle("Relations entre variables (toutes dimensions confondues)");
+
+%% =========================================================================
+% 4) BOXPLOTS GLOBAUX
+% =========================================================================
+
+figure;
+boxplot([r_vals(:) nL_vals(:) nP_vals(:) por_vals(:)], ...
+        'Labels', {'r','nL','nP','porosité'});
+title("Boxplots des variables optimisées");
+
+%% =========================================================================
+% 5) MATRICE DE CORRÉLATION
+% =========================================================================
+
+DATA = [r_vals(:) nL_vals(:) nP_vals(:) por_vals(:)];
+C = corrcoef(DATA);
+
+figure;
+heatmap({'r','nL','nP','poro'}, {'r','nL','nP','poro'}, C, ...
+    'Colormap', parula, 'ColorLimits', [-1 1]);
+title("Matrice de corrélation entre variables optimisées");
+
+%% =========================================================================
+% 6) Statistiques globales
+% =========================================================================
+
+Stats.mean_r = mean(r_vals(:));
+Stats.std_r  = std(r_vals(:));
+Stats.min_r  = min(r_vals(:));
+Stats.max_r  = max(r_vals(:));
+
+Stats.mean_poro = mean(por_vals(:));
+Stats.std_poro  = std(por_vals(:));
+
+disp("=== STATISTIQUES DES VARIABLES OPTIMISEES ===");
+disp(Stats);
+
+disp("=== FIN MODULE F ===");
+
 
 %% Sauvergarde
 % 
