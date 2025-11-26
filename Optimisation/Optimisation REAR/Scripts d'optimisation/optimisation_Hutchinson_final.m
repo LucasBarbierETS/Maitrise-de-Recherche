@@ -110,7 +110,7 @@ tor = 1;
 sig = 12340;
 vl = 0.000105;
 tl = 0.000316;
-JCAmat = classJCA_Rigid(classJCA_Rigid.create_config(total_width * total_depth, JCAmat_thickness, phi, tor, sig, vl, tl, 'width', total_width, 'depth', total_depth));
+JCAmat = classJCA_Rigid(classJCA_Rigid.create_config(total_width*total_depth, JCAmat_thickness, phi, tor, sig, vl, tl, 'width', total_width, 'depth', total_depth));
 
 % % Debog : Comportement du poreux seul
 % figure()
@@ -125,13 +125,13 @@ JCAmat = classJCA_Rigid(classJCA_Rigid.create_config(total_width * total_depth, 
 
 %% Création dynamique de la plaque couvrante
 
-porosity = @(x)pi * (radius_mm(x(1)) * 1e-3)^2 / x(2)^2;
+porosity = @(x) pi * (radius_mm(x(1))*1e-3)^2 / x(2)^2;
 
 % Plaque supérieure (optimisée)
 % top_plate = @(x) classMPP_Circular(classMPP_Circular.create_explicit_rectangular_plate_config( ...
 % top_plate_thickness, radius_mm(x(1))*1e-3, total_width, total_depth, x(2), x(3)));
 top_plate = @(x) classMPP_Circular(classMPP_Circular.create_config(total_width * total_depth,  ...
-top_plate_thickness, radius_mm(x(1)) * 1e-3, porosity(x)));
+top_plate_thickness, radius_mm(x(1))*1e-3, porosity(x)));
 
 Cartouche_Hutchinson = @(x) classelement(classelement.create_config({top_plate(x), JCAmat}, 'closed', total_input_surface));
 

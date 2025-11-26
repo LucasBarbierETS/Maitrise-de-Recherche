@@ -1,6 +1,7 @@
 classdef classelement < classobject
     
     properties 
+
         ListOfObjects
     end
 
@@ -335,12 +336,12 @@ classdef classelement < classobject
             if nargin > 3
                 Zs = obj.surface_impedance(env, varargin{:});
             else
-                Zs = obj.surface_impedance(env);
+                Zs = obj.surface_impedance(env, {});
             end
 
             % On normalise l'impédance
-            Zsn = Zs/env.air.parameters.Z0;
-            perso_plot_surface_impedance(env.w/(2*pi), Zsn, env, name)
+            % Zsn = Zs/env.air.parameters.Z0;
+            perso_plot_surface_impedance(env.w/(2*pi), Zs, env, name)
          end
         
         function save_class_object(obj, filename)
