@@ -5,7 +5,7 @@ data_main = raw_main(61:end, :); % Suppression des 60 premières lignes
 f_main = data_main(:,1)';
 pt_rms_main = data_main(:,2)';
 
-[file_second, path_second] = uigetfile('*.txt', 'Sélectionne le fichier principal');
+[file_second, pathsecond] = uigetfile('*.txt', 'Sélectionne le fichier principal');
 raw_second = readmatrix(fullfile(path_second, file_second));
 data_second = raw_second(61:end, :); % Suppression des 60 premières lignes
 f_second = data_second(:,1)';
@@ -23,7 +23,6 @@ file_path = fullfile([env.Root, '\Optimisation\Optimisation REAR\stator_spectrum
 
 %% --- Passage en Niveau de pression des données de Manuel REAR ---
 PSD_main = 20*log10(abs(pt_rms_main)/env.p_ref);
-PSD_second = 20*log10(abs(pt_rms_second)/env.p_ref);
 
 %%--- Récupération matrice de transfert Comsol ---
 [fileA, fileB] = deal('tableau_1_6D.txt', 'tableau_2_6D.txt');
@@ -77,11 +76,6 @@ perso_plot_transfer_matrix(TM, env, 'TM analytique', 2000);
 % p_flush = pt_rms_main./TM_inv.T11; % rigid wall
 p_flush_exp = TM.T11.*pt_rms_main; % rigid wall
 PSD_corr_exp = 20*log10(abs(p_flush_exp)/env.p_ref);
-
-%% --- Calcul de la PSD corrigée - analytique ---
-% p_flush = pt_rms_main./TM_inv.T11; % rigid wall
-p_flush_exp2 = TM.T11.*pt_rms_second; % rigid wall
-PSD_corr_exp2 = 20*log10(abs(p_flush_exp2)/env.p_ref);
 
 
 %% --- Calcul de la PSD corrigée - Comsol ---
@@ -144,24 +138,18 @@ for i = 1:size(bandes,1)
         'HandleVisibility','off');
 end
 
-%% --- Figure comparer 6D-3D ---
+%% --- Figure PSD ---
 figure('Name', sprintf('PSD - %s', file_main), 'NumberTitle','off');
 hold on; grid on;
 xlabel('Fréquence (Hz)'); ylabel('Niveau de pression (dB)');
-xlim([0 1000]);
+xlim([0 2500]);
 sgtitle(sprintf('Comparaison PSD 6D-3D (%s)', file_main), 'Interpreter','none');
 
 % Courbe mesurée
-plot(f_main, PSD_main, 'k--', 'LineWidth',1.5, 'DisplayName',sprintf('Mesure 6D (%dD) - 3500RPM',coeff));
+plot(f_main, PSD_main, 'k--', 'LineWidth',1.5, 'DisplayName',sprintf('Mesure Bell (%dD) - 3500RPM',coeff));
 
 % Courbe corrigée / simulée - analytique
-plot(env.f, PSD_corr_exp, 'c-', 'LineWidth',1.8, 'DisplayName', sprintf('Corrigée analytique 6D (%dD) - 3500RPM',coeff));
-
-% Courbe corrigée / simulée - analytique
-plot(env.f, PSD_corr_exp2, 'g-', 'LineWidth',1.8, 'DisplayName', sprintf('Corrigée analytique 3D (%dD) - 3500RPM',coeff));
-
-% Courbe corrigée / simulée - analytique
-plot(env.f, PSD_second, 'r-', 'LineWidth',1.8, 'DisplayName', sprintf('Mesure 3D (%dD) - 3500RPM',coeff));
+plot(env.f, PSD_corr_exp, 'c-', 'LineWidth',1.8, 'DisplayName', sprintf('Corrigée analytique (%dD) - 3500RPM',coeff));
 
 %% --- Enregistrement du PSD corrigé analytique + PSD mesuré dans un fichier .txt ---
 
