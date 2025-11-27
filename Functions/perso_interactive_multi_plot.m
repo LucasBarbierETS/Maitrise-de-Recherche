@@ -16,19 +16,6 @@ function perso_interactive_multi_plot(x, alpha, Zs, f_max, Frequences)
     currentIndex = 1;
     numPlots     = size(alpha, 2);
 
-    %---mettre un poreux pour comparaison sur courbe---
-    env = create_environnement(t,sp,hum,1,4000,200);
-    config = classJCA_Rigid.create_config(9e-4, 117e-3,0.971,1.02,8644,123e-6,186e-6);
-    objJCA = classJCA_Rigid(config);
-    config_el = struct();
-    config_el.ListOfObjects = {objJCA};
-
-    elm = classelement(config_el);   % seulement 1 argument !
-
-    alpha = elm.absorption_coefficient(env, options);
-    Zs_ref    = obj.surface_impedance(env, options);        % 1 × Nf, complexe
-
-
     % --- Fenêtre 1 : α ---
     figAlpha = figure('Name','Multi-tracé interactif (α)', ...
         'NumberTitle','on','Position',[100 100 900 600], ...
@@ -37,10 +24,6 @@ function perso_interactive_multi_plot(x, alpha, Zs, f_max, Frequences)
     s_alpha = subplot(1,1,1,'Parent',figAlpha);
     hold(s_alpha,'on'); box(s_alpha,'on');
 
-    % --- Référence absorption poreux JCA ---
-    plot(s_alpha, x, alpha_ref, '--k', 'LineWidth', 1.5, ...
-     'DisplayName', 'Référence poreux JCA');
-    
     yA = alpha{currentIndex}; % [2 x numel(x)]
     hAlpha = plot(s_alpha, x, yA, 'DisplayName', 'Modèle');
     
@@ -66,10 +49,6 @@ function perso_interactive_multi_plot(x, alpha, Zs, f_max, Frequences)
     hold(s_zs_imag,'on'); box(s_zs_imag,'on');
 
     yZ = Zs{currentIndex}; % [2 x numel(x)] (complexe)
-    % Partie réelle
-    plot(s_zs_real, x, real(Zs_ref), '--k', 'LineWidth', 1.5, ...
-    'DisplayName','Réf. poreux (Re)');% Partie réelle
-
     % Réel
     hZR = plot(s_zs_real, x, real(yZ), 'DisplayName','Modèle');
 
@@ -78,9 +57,6 @@ function perso_interactive_multi_plot(x, alpha, Zs, f_max, Frequences)
     title(s_zs_real, 'Partie réelle');
 
     % Imaginaire
-    % Partie imaginaire
-    plot(s_zs_imag, x, imag(Zs_ref), '--k', 'LineWidth', 1.5, ...
-    'DisplayName','Réf. poreux (Im)');
     hZI = plot(s_zs_imag, x, imag(yZ), 'DisplayName','Modèle');
     
     addBands(s_zs_imag, Frequences);
