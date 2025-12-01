@@ -5,13 +5,6 @@ data_main = raw_main(61:end, :); % Suppression des 60 premières lignes
 f_main = data_main(:,1)';
 pt_rms_main = data_main(:,2)';
 
-[file_second, path_second] = uigetfile('*.txt', 'Sélectionne le fichier principal');
-raw_second = readmatrix(fullfile(path_second, file_second));
-data_second = raw_second(61:end, :); % Suppression des 60 premières lignes
-f_second = data_second(:,1)';
-pt_rms_second = data_second(:,2)';
-
-
 %% --- Création de l'environnement avec le fichier principal ---
 env = create_environnement_2(t, sp, hum, f_main, 'Root', root);
 
@@ -23,7 +16,6 @@ file_path = fullfile([env.Root, '\Optimisation\Optimisation REAR\stator_spectrum
 
 %% --- Passage en Niveau de pression des données de Manuel REAR ---
 PSD_main = 20*log10(abs(pt_rms_main)/env.p_ref);
-PSD_second = 20*log10(abs(pt_rms_second)/env.p_ref);
 
 %%--- Récupération matrice de transfert Comsol ---
 [fileA, fileB] = deal('tableau_1_6D.txt', 'tableau_2_6D.txt');
@@ -78,11 +70,6 @@ perso_plot_transfer_matrix(TM, env, 'TM analytique', 2000);
 p_flush_exp = TM.T11.*pt_rms_main; % rigid wall
 PSD_corr_exp = 20*log10(abs(p_flush_exp)/env.p_ref);
 
-%% --- Calcul de la PSD corrigée - analytique ---
-% p_flush = pt_rms_main./TM_inv.T11; % rigid wall
-p_flush_exp2 = TM.T11.*pt_rms_second; % rigid wall
-PSD_corr_exp2 = 20*log10(abs(p_flush_exp2)/env.p_ref);
-
 
 %% --- Calcul de la PSD corrigée - Comsol ---
 % p_flush = pt_rms_main./TM_inv.T11; % rigid wall
@@ -90,7 +77,6 @@ p_flush_c = T11i.*pt_rms_main; % rigid wall
 PSD_corr_c = 20*log10(abs(p_flush_c)/env.p_ref);
 
 %% -- OASPL CORRIGEE -- 
-p0 = 2e-5;
 mf2500_c = f_main <2500;
 mf1000_c = f_main <1000;
 OASPL2500_corrigee = 10*log10(sum(abs(p_flush_exp(mf2500_c)).^2)/p0^2);
@@ -143,53 +129,3 @@ for i = 1:size(bandes,1)
         'FaceAlpha', 0.3, 'EdgeColor', 'none',...
         'HandleVisibility','off');
 end
-
-%% --- Figure comparer 6D-3D ---
-figure('Name', sprintf('PSD - %s', file_main), 'NumberTitle','off');
-hold on; grid on;
-xlabel('Fréquence (Hz)'); ylabel('Niveau de pression (dB)');
-xlim([0 1000]);
-sgtitle(sprintf('Comparaison PSD 6D-3D (%s)', file_main), 'Interpreter','none');
-
-% Courbe mesurée
-plot(f_main, PSD_main, 'k--', 'LineWidth',1.5, 'DisplayName',sprintf('Mesure 6D (%dD) - 3500RPM',coeff));
-
-% Courbe corrigée / simulée - analytique
-plot(env.f, PSD_corr_exp, 'c-', 'LineWidth',1.8, 'DisplayName', sprintf('Corrigée analytique 6D (%dD) - 3500RPM',coeff));
-
-% Courbe corrigée / simulée - analytique
-plot(env.f, PSD_corr_exp2, 'g-', 'LineWidth',1.8, 'DisplayName', sprintf('Corrigée analytique 3D (%dD) - 3500RPM',coeff));
-
-% Courbe corrigée / simulée - analytique
-plot(env.f, PSD_second, 'r-', 'LineWidth',1.8, 'DisplayName', sprintf('Mesure 3D (%dD) - 3500RPM',coeff));
-
-%% --- Enregistrement du PSD corrigé analytique + PSD mesuré dans un fichier .txt ---
-
-% Nom du fichier de sortie
-output_name = sprintf('PSD_corrigee_analytique_%s', file_main);
-output_name = strrep(output_name, '.txt', '_out.txt');
-
-% Chemin complet du fichier
-output_path = fullfile(path_main, output_name);
-
-% Ouverture du fichier en écriture
-fid = fopen(output_path, 'w');
-
-% Ligne d'en-tête
-fprintf(fid, 'Frequence_Hz\tPSD_corrigee_dB\tPSD_mesuree_dB\n');
-
-% Préparation des données (alignement sur mêmes longueurs)
-% env.f et PSD_corr_exp sont sur la grille analytique
-% PSD_main est sur la grille f_main → on interpole dessus
-PSD_main_interp = interp1(f_main, PSD_main, env.f, 'linear', 'extrap');
-
-% Données sous forme (N x 3)
-data_out = [env.f(:), PSD_corr_exp(:), PSD_main_interp(:)];
-
-% Écriture ligne par ligne
-fprintf(fid, '%f\t%f\t%f\n', data_out.');
-
-% Fermeture du fichier
-fclose(fid);
-
-fprintf('✔ Fichier exporté : %s\n', output_path);
