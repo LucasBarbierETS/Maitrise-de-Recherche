@@ -1,15 +1,13 @@
 function [c, ceq] = perso_nonlconf_1_solution(config, depth_holes_number, cavities_width, cavities_depth) %, phi_min, phi_max)
     
     r = config(:, :, 1);
-    % dw  = config(:, :, 2);
-    dw = 3 * r;
-    % pw  = config(:, :, 3);
-    pw  = config(:, :, 2);
+    dw  = config(:, :, 2);
+    pw  = config(:, :, 3);
     sw = (pw - 1) .* dw + 2 .* r;
     porosity = (pi * r.^2 .* pw * depth_holes_number) / (sw * cavities_depth);
     
     c1 = sw - cavities_width;
-    % c2 = dw - 2 * r;
+
     % c2 = porosity - phi_max; 
     % c3 = phi_min - porosity; 
 
