@@ -19,10 +19,10 @@ function JCAmat = perso_create_JCA_material(model, name, JCAconfig, env)
     JCAmat.propertyGroup('PoroacousticsModel').set('Lth', num2str(JCAconfig.ThermalCaracteristicLength));
     
     % Tortuosité
-    if isa(JCAconfig.Tortuosity, 'function_handle')
-        JCAmat.propertyGroup('PoroacousticsModel').set('tau', num2str(JCAconfig.Tortuosity(env, {})));
-    else
+    if isa(JCAconfig.Tortuosity, 'double')
         JCAmat.propertyGroup('PoroacousticsModel').set('tau', num2str(JCAconfig.Tortuosity));
+    else
+        JCAmat.propertyGroup('PoroacousticsModel').set('tau', num2str(JCAconfig.Tortuosity(env, {})));
     end
     % Résistivité
     if isa(JCAconfig.AirFlowResistivity, 'function_handle')

@@ -1,17 +1,17 @@
 %% Lancement du serveur COMSOL 
 
-% try
-%     v = mphversion;
-% catch
-%     try
-%         addpath('C:\Program Files\COMSOL\COMSOL63\Multiphysics\mli');
-%         system('start comsolmphserver');
-%         mphstart;
-%         import com.comsol.model.*
-%         import com.comsol.model.util.*
-%     catch
-%     end
-% end
+try
+    v = mphversion;
+catch
+    try
+        addpath('C:\Program Files\COMSOL\COMSOL63\Multiphysics\mli');
+        system('start comsolmphserver');
+        mphstart;
+        import com.comsol.model.*
+        import com.comsol.model.util.*
+    catch
+    end
+end
 
 %% Ajout des chemins d'accès
 
@@ -34,8 +34,8 @@ hum = 50; % Humidité relative
 
 % Support fréquentiel
 fmin = 1;
-fmax = 5000;
-points = 5000;
+fmax = 2000;
+points = 200;
 % points = 100;
 
 % Niveau sonore
