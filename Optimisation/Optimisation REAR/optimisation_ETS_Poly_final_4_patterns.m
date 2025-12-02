@@ -50,17 +50,17 @@ g_obj_harm =  @(env) g_obj_h1(env) + g_obj_h2(env) + g_obj_h3(env) + g_obj_h4(en
 % env = handle_env(dB, M);
 % env0 = handle_env(dB, 0);
 
-M = readmatrix([env.Root, '\Optimisation\Optimisation REAR\stator_spectrum_data.txt'], ...
+data = readmatrix([env.Root, '\Optimisation\Optimisation REAR\stator_spectrum_data.txt'], ...
                'CommentStyle', '#');
-f1 = M(:,1); 
-f2 = M(:,2);
-fmean = M(:, 3);
+f1 = data(:,1); 
+f2 = data(:,2);
+fmean = data(:, 3);
 mf2500 = fmean < 2500;
-DSP_dB = M(:,5); % (dB re p0^2/Hz)
+DSP_dB = data(:,5); % (dB re p0^2/Hz)
 df = f2 - f1;
 
 % Linéarisation de la densité spectrale de puissance (Pa^2/Hz)
-DSP = (p0^2) * 10.^(DSP_dB/10);
+DSP = (env.p_ref^2) * 10.^(DSP_dB/10);
 L_tiers = compute_third_octave(fmean, DSP, env.w/(2*pi));
 M = 0.1;
 env = handle_env(L_tiers, M);
@@ -149,7 +149,6 @@ tp_dhn_min = 4;
 % tp_whn_yc_min = 1;
 % tp_dhn_yc_min = 4;
 tp_dw_min = 3 * radius(4);
-
 
 % Solution ETS
 dw_min = 3 * radius(3);

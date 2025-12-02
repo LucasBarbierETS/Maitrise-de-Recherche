@@ -1,4 +1,5 @@
 function [lb, ub, intcon] = build_bounds_from_config(Config)
+    
     NS  = Config.NS;
     NV  = Config.NV;
     N   = Config.N;
@@ -9,6 +10,7 @@ function [lb, ub, intcon] = build_bounds_from_config(Config)
     ub_single = cellfun(@(v) v.ub, Vars);
 
     switch Config.Structure
+        
         case "flat"
             % NS solutions, NV vars chacune
             lb = repmat(lb_single, 1, NS);

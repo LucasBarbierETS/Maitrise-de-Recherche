@@ -1,17 +1,17 @@
 %% Lancement du serveur COMSOL 
 
-% try
-%     v = mphversion;
-% catch
-%     try
-%         addpath('C:\Program Files\COMSOL\COMSOL63\Multiphysics\mli');
-%         system('start comsolmphserver');
-%         mphstart;
-%         import com.comsol.model.*
-%         import com.comsol.model.util.*
-%     catch
-%     end
-% end
+try
+    v = mphversion;
+catch
+    try
+        addpath('C:\Program Files\COMSOL\COMSOL63\Multiphysics\mli');
+        system('start comsolmphserver');
+        mphstart;
+        import com.comsol.model.*
+        import com.comsol.model.util.*
+    catch
+    end
+end
 
 %% Ajout des chemins d'accès
 
