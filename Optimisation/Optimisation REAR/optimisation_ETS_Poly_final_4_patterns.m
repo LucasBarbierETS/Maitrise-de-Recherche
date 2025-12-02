@@ -44,11 +44,27 @@ g_obj_harm =  @(env) g_obj_h1(env) + g_obj_h2(env) + g_obj_h3(env) + g_obj_h4(en
 
 %% Niveau Sonore, Ecoulement
 
-dB = 134;
-% dB = 120;
+% dB = 134;
+% % dB = 120;
+% M = 0.1;
+% env = handle_env(dB, M);
+% env0 = handle_env(dB, 0);
+
+M = readmatrix([env.Root, '\Optimisation\Optimisation REAR\stator_spectrum_data.txt'], ...
+               'CommentStyle', '#');
+f1 = M(:,1); 
+f2 = M(:,2);
+fmean = M(:, 3);
+mf2500 = fmean < 2500;
+DSP_dB = M(:,5); % (dB re p0^2/Hz)
+df = f2 - f1;
+
+% Linéarisation de la densité spectrale de puissance (Pa^2/Hz)
+DSP = (p0^2) * 10.^(DSP_dB/10);
+L_tiers = compute_third_octave(fmean, DSP, env.w/(2*pi));
 M = 0.1;
-env = handle_env(dB, M);
-env0 = handle_env(dB, 0);
+env = handle_env(L_tiers, M);
+% env0 = handle_env(dB, 0);
 
 %% Paramètres géométriques invariants
 

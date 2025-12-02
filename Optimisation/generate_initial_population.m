@@ -1,4 +1,5 @@
 function X0 = generate_initial_population(Config, NP, initType)
+    
     if nargin < 3
         initType = "random";
     end
@@ -22,7 +23,7 @@ function X0 = generate_initial_population(Config, NP, initType)
             U = rand(NP, D);
 
         case "latin"
-            U = lhsdesign(NP, D, 'criterion','maximin','iterations',50);
+            U = lhsdesign(NP, D, 'criterion','maximin','iterations', 50);
 
         otherwise
             warning("Type d'initialisation inconnu (%s), random utilisé.", initType);

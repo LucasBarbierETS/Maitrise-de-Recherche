@@ -39,11 +39,25 @@ figure();
 hold on
 plot(fmean, DSP_dB, 'DisplayName', 'Densité spectrale de Puissance [dB re 4e-10 Pa^2/Hz]');
 plot(fmean, L_RMS_band, 'DisplayName', 'Niveau de pression RMS par bande [dB re 2e-5 Pa], Pas = 7.38 Hz');
+
 yline(OASPL5000, 'r--', 'DisplayName', 'Niveau RMS global 0-5000 Hz [dB re 2e-5 Pa]', ...
-    'Label', ['OASPL5000 = ', num2str(round(OASPL5000, 2)), ' dB'], 'LabelHorizontalAlignment', 'left', 'LabelVerticalAlignment', 'top', 'HandleVisibility', 'off');
+    'Label', ['OASPL5000 = ', num2str(round(OASPL5000, 2)), ' dB'], ...
+    'LabelHorizontalAlignment', 'left', 'LabelVerticalAlignment', 'top', 'HandleVisibility', 'off');
+
 yline(OASPL2500, 'b--', 'DisplayName', 'Niveau RMS global 0-2500 Hz [dB re 2e-5 Pa]', ...
-    'Label', ['OASPL2500 = ', num2str(round(OASPL2500, 2)), ' dB'], 'LabelHorizontalAlignment', 'right',  'LabelVerticalAlignment', 'bottom', 'HandleVisibility', 'off');
-% yline(L_RMS_band_mean, 'k--', 'DisplayName', 'Niveau RMS moyen par bande [dB re 2e-5 Pa, Pas = 7.38 Hz]');
-% yline(DSP_dB_mean, 'c--', 'DisplayName', 'DSP moyenne [dB re 4e-10 Pa^2/Hz]');
-xlim([0 5000])
+    'Label', ['OASPL2500 = ', num2str(round(OASPL2500, 2)), ' dB'], ...
+    'LabelHorizontalAlignment', 'right',  'LabelVerticalAlignment', 'bottom', 'HandleVisibility', 'off');
+
+%% === 1/3 d'octave (calcul des bandes) ===
+
+data = load('C:\Users\lucas.barbier\Documents\Maitrise ETS\Répertoire GitHub\Optimisation\Optimisation MPPSBH non contrainte\niveau de pression pariétal corrigé.txt');
+f_corrected = data(:, 1);
+corrected = data(:, 2);
+f_support = linspace(1, 2000, 2000);
+L_tiers = compute_third_octave(fmean, DSP, f_support);
+
+% figure()
+plot(f_support, L_tiers);
+
+xlim([0 1500])
 legend();

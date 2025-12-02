@@ -38,7 +38,6 @@ variables_config.NV = 3;               % variables par plaque
 
 % Variables optimisées
 variables_config.Variables = {
-var_r = Variable('radius', 0.2e-3, 0.5e-3, false, 'is_discrete', true, 'admitted_values', []);
 struct('name',"radius", 'lb',0.2e-3,      'ub',0.5e-3,             'isInt',false)
 % struct('name',"dw",     'lb',3*0.2e-3,    'ub',3*0.5e-3,           'isInt',false)
 struct('name',"pw",     'lb',1,           'ub',depth_holes_number, 'isInt',true)
@@ -66,7 +65,7 @@ x0 = generate_initial_population(variables_config, NP, "latin");
 
 config_NV_N_NS = @(x) reshape(x, variables_config.NV, variables_config.N, variables_config.NS);
 config_NS_N_NV = @(x) permute(config_NV_N_NS(x), [3 2 1]);
-get_var = @(x, i) reshape((feval(@(tmp) tmp(i, :, :), config_NV_N_NS(x))), 1, []); %#ok<FVAL>
+get_var = @(x, i) reshape((feval(@(tmp) tmp(i, :, :), config_NV_N_NS(x))); %#ok<FVAL>
 
 %% === 5. Construction dynamique d’un MPPSBH donné ===
 
@@ -104,11 +103,14 @@ Objets.assembly = @(x) ...
 %% === 7. Contraintes non-linéaires ===
 
 slit_width = @(nb_width, dist_width, radius) (nb_width - 1) .* dist_width + 2 .* radius;
-slit_width_config = @(x) vertcat(get_var(x, 2), 3 * get_var(x, 1), get_var(x, 1));
+% slit_width_config = @(x) reshape(permute(eval(config_NS_N_NV(x), (:, :, [1:2]), [3, 1, 2]), NV);
+
 
 % Contrainte dynamique sur la largeur des fentes sur chaque plaque
 width_con = @(nb_width, dist_width, radius) slit_width(nb_width, dist_width, radius) - cavities_width;
 neq_hdl = {width_con};
+
+
 
 handle_nonlconf = @(x) ...
     perso_nonlconf_1_solution( ...
