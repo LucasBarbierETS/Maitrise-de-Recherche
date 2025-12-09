@@ -35,6 +35,7 @@ classdef classMPPSBH_Rectangular < classelement
     
                     % Cavité cubique en parallèle
                     annular_cavity = classannularcavity_cubical(classannularcavity_rectangular_frustum.create_config(mpw(i), mpd(i), mpw(i+1), mpd(i+1), cavw, cavd, ct(i)));
+                    % annular_cavity = classannularcavity_cubical(classannularcavity_rectangular_frustum.create_config(mpw(i), mpd(i), mpw(i+1), mpd(i+1), cavw, cavd, ct(i), 'Plane Wave Corrected'));
                     obj.Configuration.ListOfObjects{end+1} = classjunction(classjunction.create_config(annular_cavity, wc * dc));
         
                     % Cavité trapezoidale

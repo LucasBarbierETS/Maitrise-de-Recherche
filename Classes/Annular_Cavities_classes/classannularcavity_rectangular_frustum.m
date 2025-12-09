@@ -14,7 +14,7 @@ classdef classannularcavity_rectangular_frustum < classannularcavity_cubical
         function config = create_config(main_pore_width_in, main_pore_depth_in, ...
                                 main_pore_width_out, main_pore_depth_out, ...
                                 cavity_width, cavity_depth, ...
-                                cavity_thickness)
+                                cavity_thickness, varargin)
 
             config = struct();
         
@@ -42,7 +42,12 @@ classdef classannularcavity_rectangular_frustum < classannularcavity_cubical
             Si = wi * di;
             So = wo * do;
             config.CavityVolume = w * d * ct - 1/3 * ct * (Si + sqrt(Si*So) + So);
-            config.CavityModel = 'Lumped Volume';
+
+            if nargin > 7
+                config.CavityModel = varargin{1};
+            else
+                config.CavityModel = 'Lumped Volume';
+            end
         end
     end
 end

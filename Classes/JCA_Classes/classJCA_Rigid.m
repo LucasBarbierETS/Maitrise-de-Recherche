@@ -136,7 +136,10 @@ classdef classJCA_Rigid < classobject
 
             d = obj.Configuration.Thickness;
             s = obj.Configuration.Section; 
-            kd = ep.keq * d;
+            try
+                kd = ep.keq * d;
+            catch
+            end
             TM.T11 = cos(kd);
             TM.T12 = 1j * ep.Zeq / s .* sin(kd);
             TM.T21 = 1j * s ./ ep.Zeq .* sin(kd);

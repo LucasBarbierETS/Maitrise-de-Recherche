@@ -24,7 +24,7 @@ classdef classQWL < classJCA_Rigid
             end
 
             % Définir la résistivité
-            resistivity = @(env) 4 * k0 * env.air.parameters.eta / rh^2;
+            resistivity = @(env, options) 4 * k0 * env.air.parameters.eta / rh^2;
 
             % Appeler le constructeur de la classe parent
             obj@classJCA_Rigid(classJCA_Rigid.create_config(s, l_corr, 1, 1, resistivity, rh, rh));

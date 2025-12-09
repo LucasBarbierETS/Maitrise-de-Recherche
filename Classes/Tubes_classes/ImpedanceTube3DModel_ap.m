@@ -73,6 +73,7 @@ function model = ImpedanceTube3DModel_ap(list_of_solutions, env)
     blkt2.set('size', {['sol' num2str(length(list_of_solutions)) '_xr'] 'Td' 'd2s'});
 
     model.component('component').geom('geometry').run('fin');
+    model.component('component').geom('geometry').runAll;
 
     %% Sélections
     box_tube = model.component('component').selection.create('tube', 'Box');

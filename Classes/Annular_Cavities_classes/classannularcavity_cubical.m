@@ -19,7 +19,12 @@ classdef classannularcavity_cubical < classobject
                     
                 case 'Plane Wave'
 
-                    mpw = config.MainPoreWidth;
+                    if isfield(config, 'MainPoreWidth')
+                        mpw = config.MainPoreWidth;
+                    else
+                        mpw = (config.MainPoreWidthIn + config.MainPoreWidthOut) / 2;
+                    end
+
                     cw  = config.CavityWidth;
                     cd = config.CavityDepth;
                     ct = config.CavityThickness;
@@ -27,11 +32,12 @@ classdef classannularcavity_cubical < classobject
                     % Fente pour un des deux côtés
                     QWL_Slit = classQWL_Slit(classQWL_Slit.create_config((cw - mpw)/2, ct, cd));
                     % QWL_Slit = classQWL_Slit(classQWL_Slit.create_config(cw/2, ct, cd));
-                    Zsde = 2 * QWL_Slit.surface_impedance(env);
+                    elem = classelement(classelement.create_config({QWL_Slit}, 'closed', ct * cd));
+                    Zsde = 2 * elem.surface_impedance(env, {});
 
                 case 'Plane Wave Corrected'
 
-                    mpw = config.MainPoreWidth;
+                    % mpw = config.MainPoreWidth;
                     mpwi = config.MainPoreWidthIn;
                     mpwo = config.MainPoreWidthOut;
                     cw  = config.CavityWidth;
@@ -43,7 +49,8 @@ classdef classannularcavity_cubical < classobject
                     l_corr = sqrt(((cw - mpwi)/2)^2+(ct/2)^2) + sqrt(((cw - mpwo)/2)^2+(ct/2)^2);
                     QWL_Slit = classQWL_Slit(classQWL_Slit.create_config(l_corr/2, ct, cd));
                     % QWL_Slit = classQWL_Slit(classQWL_Slit.create_config(cw/2, ct, cd));
-                    Zsde = 2 * QWL_Slit.surface_impedance(env);
+                    elem = classelement(classelement.create_config({QWL_Slit}, 'closed', ct * cd));
+                    Zsde = 2 * elem.surface_impedance(env, {});
 
                 case 'Lumped Volume'
 
