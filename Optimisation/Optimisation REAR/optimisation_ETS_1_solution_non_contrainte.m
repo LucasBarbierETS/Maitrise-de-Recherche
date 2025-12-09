@@ -635,21 +635,21 @@ for i = 1:length(selected_index)
         % mphsave(Tube3D_ap.Configuration.ComsolModel, [sub_sub_folder_name, '\modèle numérique 3D-AP']);
 
         % Pour importer
-        model = mphload([sub_sub_folder_name, '\modèle numérique 3D-AP']);
-        Tube3D_ap = ImpedanceTube3D.load_model(model);
+        % model = mphload([sub_sub_folder_name, '\modèle numérique 3D-AP']);
+        % Tube3D_ap = ImpedanceTube3D.load_model(model);
         % Tube3D_ap = Tube3D_ap.launch_tube_measurement_ap(env_FEM);
         % mphsave(Tube3D_ap.Configuration.ComsolModel, [sub_sub_folder_name, '\modèle numérique 3D-AP']);
 
-        % Performance
-        figure();
-        hold on
-        Tube3D_ap.plot_alpha('Modélisation numérique 3D - AP');
-        alpha = MPPSBH.absorption_coefficient(env, struct('HL_method', 'linear'));
-        plot(env.w/(2*pi), alpha, 'DisplayName', 'Modèle analytique linéaire');
-        xlim([fmin, fmax])
-        legend('Location','best')
-        saveas(gcf, [sub_sub_folder_name, '\Performances', '.fig']);
-        % close(gcf);
+        % % Performance
+        % figure();
+        % hold on
+        % % Tube3D_ap.plot_alpha('Modélisation numérique 3D - AP');
+        % alpha = MPPSBH.absorption_coefficient(env, struct('HL_method', 'linear'));
+        % plot(env.w/(2*pi), alpha, 'DisplayName', 'Modèle analytique linéaire');
+        % xlim([fmin, fmax])
+        % legend('Location','best')
+        % saveas(gcf, [sub_sub_folder_name, '\Performances', '.fig']);
+        % % close(gcf);
 
         % % % Géométrie
         % figure()
@@ -658,33 +658,33 @@ for i = 1:length(selected_index)
         % close(gcf);
     end
 
-    % Assemblage
+    % % Assemblage
+    % 
+    % assembly_folder_name = [sub_folder_name, '\Assemblage incidence normale'];
+    % mkdir(assembly_folder_name);
+    % 
+    % cell_MPPSBH = Objets.cell_of_MPPSBH(selected_xopti(i,:));
+    % assembly = Objets.assembly(selected_xopti(i,:));
+    % Tube3D_ap = ImpedanceTube3D(ImpedanceTube3D.create_config(cell_MPPSBH));
+    % Tube3D_ap = Tube3D_ap.launch_tube_measurement_ap(env_FEM);
+    % mphsave(Tube3D_ap.Configuration.ComsolModel, [assembly_folder_name, '\modèle numérique 3D-AP']);
+    % 
+    % % Performance
+    % figure();
+    % hold on
+    % % Tube3D_ap.plot_alpha('Modélisation numérique 3D - AP');
+    % alpha = assembly.absorption_coefficient(env, struct('HL_method', 'linear'));
+    % plot(env.w/(2*pi), alpha, 'DisplayName', 'Modèle analytique linéaire');
+    % xlim([fmin, fmax])
+    % legend('Location','best')
+    % saveas(gcf, [assembly_folder_name, '\Performances', '.fig']);
+    % close(gcf);
 
-    assembly_folder_name = [sub_folder_name, '\Assemblage incidence normale'];
-    mkdir(assembly_folder_name);
-
-    cell_MPPSBH = Objets.cell_of_MPPSBH(selected_xopti(i,:));
-    assembly = Objets.assembly(selected_xopti(i,:));
-    Tube3D_ap = ImpedanceTube3D(ImpedanceTube3D.create_config(cell_MPPSBH));
-    Tube3D_ap = Tube3D_ap.launch_tube_measurement_ap(env_FEM);
-    mphsave(Tube3D_ap.Configuration.ComsolModel, [assembly_folder_name, '\modèle numérique 3D-AP']);
-    
-    % Performance
-    figure();
-    hold on
-    Tube3D_ap.plot_alpha('Modélisation numérique 3D - AP');
-    alpha = assembly.absorption_coefficient(env, struct('HL_method', 'linear'));
-    plot(env.w/(2*pi), alpha, 'DisplayName', 'Modèle analytique linéaire');
-    xlim([fmin, fmax])
-    legend('Location','best')
-    saveas(gcf, [assembly_folder_name, '\Performances', '.fig']);
-    close(gcf);
-
-    % Géométrie
-    figure()
-    mphgeom(Tube3D_ap.Configuration.ComsolModel);
-    saveas(gcf, [assembly_folder_name, '\Géométrie', '.fig']);
-    close(gcf);
+    % % Géométrie
+    % figure()
+    % mphgeom(Tube3D_ap.Configuration.ComsolModel);
+    % saveas(gcf, [assembly_folder_name, '\Géométrie', '.fig']);
+    % close(gcf);
 end
 
 
