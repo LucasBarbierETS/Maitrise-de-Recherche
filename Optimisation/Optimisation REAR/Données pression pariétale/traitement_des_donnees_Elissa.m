@@ -1,14 +1,14 @@
 p0 = 20e-6;
 
 % Lis le fichier en ignorant les lignes qui commencent par '#'
-M = readmatrix([env.Root, '\Optimisation\Optimisation REAR\stator_spectrum_data.txt'], ...
+elissa = readmatrix([env.Root, '\Optimisation\Optimisation REAR\Données pression pariétale\stator_spectrum_data.txt'], ...
                'CommentStyle', '#');
 
-f1 = M(:,1); 
-f2 = M(:,2);
-fmean = M(:, 3);
+f1 = elissa(:,1); 
+f2 = elissa(:,2);
+fmean = elissa(:, 3);
 mf2500 = fmean < 2500;
-DSP_dB = M(:,5); % (dB re p0^2/Hz)
+DSP_dB = elissa(:,5); % (dB re p0^2/Hz)
 
 df = f2 - f1;
 
@@ -40,24 +40,38 @@ hold on
 plot(fmean, DSP_dB, 'DisplayName', 'Densité spectrale de Puissance [dB re 4e-10 Pa^2/Hz]');
 plot(fmean, L_RMS_band, 'DisplayName', 'Niveau de pression RMS par bande [dB re 2e-5 Pa], Pas = 7.38 Hz');
 
-yline(OASPL5000, 'r--', 'DisplayName', 'Niveau RMS global 0-5000 Hz [dB re 2e-5 Pa]', ...
-    'Label', ['OASPL5000 = ', num2str(round(OASPL5000, 2)), ' dB'], ...
-    'LabelHorizontalAlignment', 'left', 'LabelVerticalAlignment', 'top', 'HandleVisibility', 'off');
+% yline(OASPL5000, 'r--', 'DisplayName', 'Niveau RMS global 0-5000 Hz [dB re 2e-5 Pa]', ...
+%     'Label', ['OASPL5000 = ', num2str(round(OASPL5000, 2)), ' dB'], ...
+%     'LabelHorizontalAlignment', 'left', 'LabelVerticalAlignment', 'top', 'HandleVisibility', 'off');
 
 yline(OASPL2500, 'b--', 'DisplayName', 'Niveau RMS global 0-2500 Hz [dB re 2e-5 Pa]', ...
     'Label', ['OASPL2500 = ', num2str(round(OASPL2500, 2)), ' dB'], ...
     'LabelHorizontalAlignment', 'right',  'LabelVerticalAlignment', 'bottom', 'HandleVisibility', 'off');
 
-%% === 1/3 d'octave (calcul des bandes) ===
-
-data = load('C:\Users\lucas.barbier\Documents\Maitrise ETS\Répertoire GitHub\Optimisation\Optimisation MPPSBH non contrainte\niveau de pression pariétal corrigé.txt');
-f_corrected = data(:, 1);
-corrected = data(:, 2);
-f_support = linspace(1, 2000, 2000);
+f_support = linspace(1, 2500, 2500);
 L_tiers = compute_third_octave(fmean, DSP, f_support);
 
 % figure()
+plot(f_support, L_tiers, 'DisplayName', 'DSP par 1/3 d''octave');
+
+xlim([0 2500])
+ylim([50 140])
+legend();
+
+%% === 1/3 d'octave (calcul des bandes) ===
+
+data = load('C:\Users\lucas.barbier\Documents\Maitrise ETS\Répertoire GitHub\Optimisation\Optimisation MPPSBH non contrainte\niveau de pression pariétal corrigé.txt');
+f_corr = data(:, 1);
+DSP_dB_corr = data(:, 2);
+DSP_corr = (p0^2) * 10.^(DSP_dB_corr/10);
+f_support = linspace(1, 2500, 2500);
+L_tiers = compute_third_octave(f_corr(1:2500), DSP_corr(1:2500), f_support);
+
+% figure()
+plot(f_corr(1:2500), DSP_dB_corr(1:2500))
 plot(f_support, L_tiers);
 
-xlim([0 1500])
+% xlim([0 1500])
 legend();
+
+
