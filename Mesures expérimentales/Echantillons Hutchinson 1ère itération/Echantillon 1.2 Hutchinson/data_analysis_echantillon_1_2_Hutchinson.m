@@ -1,16 +1,19 @@
-%% Exploitation des données expérimentales en tube à incidence normale Echantillon 2
+%% Exploitation des données expérimentales en tube à incidence normale
+% Echantillon 1.2 Hutchinson
 
-%%  Gestion des adresses et des répértoires
-folder_path = [env.Root, '\Mesures expérimentales\Echantillons Hutchinson 1ère itération\Echantillon 1.2 Hutchinson'];
+%% Gestion des chemins
+folder_path = [env.Root, ...
+    '\Mesures expérimentales\Echantillons Hutchinson 1ère itération\Echantillon 1.2 Hutchinson'];
 
 %% Importation des données
-
 data2 = perso_load_mecanum_files([folder_path, '\Export_Data']);
 
-% Coefficient d'absorption
+f = data2.f;   % Support fréquentiel MESURÉ (unique)
+
+%% Extraction des données
 alpha2 = data2.alpha;
-f = data2.f;
-alpha2_100 = alpha2.Sample1;
+Zs2    = data2.Zs;
+
 alpha2_110 = alpha2.Sample2;
 alpha2_120 = alpha2.Sample3;
 alpha2_130 = alpha2.Sample4;
@@ -18,10 +21,6 @@ alpha2_140 = alpha2.Sample5;
 alpha2_145 = alpha2.Sample6;
 alpha2_150 = alpha2.Sample7;
 
-% Coefficient d'absorption
-Zs2 = data2.Zs;
-f = data2.f;
-Zs2_100 = Zs2.Sample1;
 Zs2_110 = Zs2.Sample2;
 Zs2_120 = Zs2.Sample3;
 Zs2_130 = Zs2.Sample4;
@@ -29,55 +28,111 @@ Zs2_140 = Zs2.Sample5;
 Zs2_145 = Zs2.Sample6;
 Zs2_150 = Zs2.Sample7;
 
-%% Affichage des résultats expérimentaux
+%% Paramètres de niveaux SPL
+levels = [110 120 130 140 145 150];
 
-perso_figure('Validation expérimentale - Echantillon 1.2 Hutchinson - 100-150 dB');
-subplot(3, 1, 1)
-title('Prototype 1.2')
-hold on
+alpha_all = { ...
+    alpha2_110, alpha2_120, alpha2_130, ...
+    alpha2_140, alpha2_145, alpha2_150 };
 
-plot(f, alpha2_110, 'DisplayName', '110 dB');
-plot(f, alpha2_120, 'DisplayName', '120 dB');
-plot(f, alpha2_130, 'DisplayName', '130 dB');
-plot(f, alpha2_140, 'DisplayName', '140 dB');
-plot(f, alpha2_145, 'DisplayName', '145 dB');
-plot(f, alpha2_150, 'DisplayName', '150 dB');
-perso_configure_alpha_figure(fmax);
-xlim([f_min, 3500])
-legend('Location', 'best');
+Zs_all = { ...
+    Zs2_110, Zs2_120, Zs2_130, ...
+    Zs2_140, Zs2_145, Zs2_150 };
 
-subplot(3, 1, 2)
-title('Résistance de surface normalisée')
-hold on
+%% Paramètres d’extraction des maxima locaux
+
+fmin = 200;        % fréquencies en Hz (limite basse)
+fmax = 700;       % fréquencies en Hz (limite haute)
+band = (f >= fmin) & (f <= fmax);
+
+minProminence   = 0.02;   % au lieu de 0.05
+minPeakDistance = 50;     % au lieu de 80
+sgolay_window   = 9;      % un peu moins de lissage
+
+%% Structure de stockage
+Results = struct();
+
+%% Boucle de détection des maxima locaux
+for k = 1:numel(levels)
+
+    alpha_k = alpha_all{k};
+    Zs_k    = Zs_all{k};
+
+    % --- lissage léger (pour atténuer le bruit)
+    alpha_s = smoothdata(alpha_k, 'sgolay', sgolay_window);
+
+    % --- recherche des maxima locaux
+    [pks, locs] = findpeaks(alpha_s, f, ...
+        'MinPeakProminence', minProminence, ...
+        'MinPeakDistance',  minPeakDistance);
+
+    % --- filtrage fréquentiel
+    idx_valid = (locs >= fmin) & (locs <= fmax);
+    pks  = pks(idx_valid);
+    locs = locs(idx_valid);
+
+    % --- extraction de R et X aux fréquences de pics détectés
+    nPeaks = numel(locs);
+    Rpk = zeros(nPeaks,1);
+    Xpk = zeros(nPeaks,1);
+
+    for i = 1:nPeaks
+        [~, idx_nearest] = min(abs(f - locs(i)));
+        Rpk(i) = real(Zs_k(idx_nearest));
+        Xpk(i) = imag(Zs_k(idx_nearest));
+    end
+
+    % --- stockage
+    Results(k).Level_dB = levels(k);
+    Results(k).f_peak   = locs(:);
+    Results(k).alpha    = pks(:);
+    Results(k).R_peak   = Rpk(:);
+    Results(k).X_peak   = Xpk(:);
+end
+
+%% Affichage des résultats
+for k = 1:numel(Results)
+    fprintf('--- Niveau %d dB ---\n', Results(k).Level_dB);
+    fprintf('f (Hz)   alpha    R_norm   X_norm\n');
+    disp([Results(k).f_peak, Results(k).alpha, Results(k).R_peak, Results(k).X_peak])
+end
+
+%% Visualisation des maxima locaux (validation)
+figure('Name','Maxima locaux – Détection')
+for k = 1:numel(levels)
+    subplot(numel(levels),1,k)
+    plot(f, alpha_all{k}, 'Color',[0.7 0.7 0.7]); hold on
+    plot(f, smoothdata(alpha_all{k},'sgolay',sgolay_window),'b','LineWidth',1.1)
+    plot(Results(k).f_peak, Results(k).alpha,'ro','MarkerSize',6,'LineWidth',1.2)
+    xlim([fmin fmax])
+    ylabel(sprintf('%d dB', levels(k)))
+    if k == 1
+        title('Maxima locaux détectés sur le coefficient d''absorption')
+    end
+end
 xlabel('Fréquence (Hz)')
-ylabel('Re(Zs/Z0)')
-yline(1, '--k', 'HandleVisibility', 'off');
-xlim([f_min, 3500])
-legend('Location', 'best');
 
-plot(f, real(Zs2_110), 'DisplayName', '110 dB');
-plot(f, real(Zs2_120), 'DisplayName', '120 dB');
-plot(f, real(Zs2_130), 'DisplayName', '130 dB');
-plot(f, real(Zs2_140), 'DisplayName', '140 dB');
-plot(f, real(Zs2_145), 'DisplayName', '145 dB');
-plot(f, real(Zs2_150), 'DisplayName', '150 dB');
+T = table();
 
-subplot(3, 1, 3)
-title('Réactance de surface normalisée')
-hold on
-xlabel('Fréquence (Hz)')
-ylabel('Im(Zs/Z0)')
-yline(0, '--', 'HandleVisibility', 'off');
-xlim([f_min, 3500])
-ylim([-8 8])
-legend('Location', 'best');
+for k = 1:numel(Results)
 
-plot(f, imag(Zs2_110), 'DisplayName', '110 dB');
-plot(f, imag(Zs2_120), 'DisplayName', '120 dB');
-plot(f, imag(Zs2_130), 'DisplayName', '130 dB');
-plot(f, imag(Zs2_140), 'DisplayName', '140 dB');
-plot(f, imag(Zs2_145), 'DisplayName', '145 dB');
-plot(f, imag(Zs2_150), 'DisplayName', '150 dB');
+    nPeaks = numel(Results(k).f_peak);
+
+    Level = repmat(Results(k).Level_dB, nPeaks, 1);
+
+    f_Hz   = Results(k).f_peak(:);        % Hz (valeurs réelles)
+    f_kHz  = f_Hz / 1000;                  % kHz
+
+    alpha  = Results(k).alpha(:);
+    R_norm = Results(k).R_peak(:);
+    X_norm = Results(k).X_peak(:);
+
+    T_k = table(Level, f_Hz, f_kHz, alpha, R_norm, X_norm);
+
+    T = [T; T_k];
+end
+
+disp(T);
 
 %% Définition de la configuration géométrique
 
@@ -107,8 +162,8 @@ plot(f, alpha2_100, 'DisplayName', 'Mesure expérimentale');
 MPPSBH = classMPPSBH_Rectangular_frustum(config2);
 alpha_model = MPPSBH.absorption_coefficient(handle_env(100, 0));
 plot(env.w/(2*pi), alpha_model, 'DisplayName', 'Modèle analytique régime linéaire');
-perso_configure_alpha_figure(f_max)
-xlim([f_min, f_max])
+perso_configure_alpha_figure(f(end))
+xlim([f(1), f(end)])
 
 %% Validation numérique 3D
 
@@ -131,7 +186,7 @@ Tube3D_ap = ImpedanceTube3D(ImpedanceTube3D.create_config({}));
 Tube3D_ap = Tube3D_ap.load_model(mphload([folder_path, '\modèle numérique 3D-AP.mph']));
 Tube3D_ap.plot_alpha('Modélisation numérique');
 
-xlim([f_min, f_max])
+xlim([f(1), f(end)])
 legend('Location','best')
 
 % %%%%%%%%%%%%%%%%%%%%%%%%%%%% 145 dB %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%

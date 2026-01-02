@@ -37,10 +37,13 @@ MPPSBH_LV = classMPPSBH_Rectangular_iter2(config_2_1_LV);
 
 % perso_figure('Validation expérimentale - C2.1 - 100 dB'); hold on % Affichage individuel
 perso_figure('Comparaison expérimental - numérique'); subplot(4, 2, 1); hold on % Affichage groupé
-
-% plot(env.w/(2*pi), MPPSBH_PW.absorption_coefficient(env), 'DisplayName', 'Modèle analytique linéaire - PT');
-% plot(env.w/(2*pi), MPPSBH_PWC.absorption_coefficient(env), 'DisplayName', 'Modèle analytique linéaire - PT corrigée');
-plot(env.w/(2*pi), MPPSBH_LV.absorption_coefficient(env), 'DisplayName', 'Modèle analytique linéaire - AV');
+options_HL = struct('HL_method', 'all');
+plot(env.w/(2*pi), MPPSBH_PW.absorption_coefficient(env, {}), 'DisplayName', 'Modèle analytique linéaire - PT');
+plot(env.w/(2*pi), MPPSBH_PWC.absorption_coefficient(env, {}), 'DisplayName', 'Modèle analytique linéaire - PT corrigée');
+plot(env.w/(2*pi), MPPSBH_LV.absorption_coefficient(env, {}), 'DisplayName', 'Modèle analytique linéaire - AV');
+plot(env.w/(2*pi), MPPSBH_PW.absorption_coefficient(handle_env(140, 0), options_HL), 'DisplayName', 'Modèle analytique forts niveaux - PT');
+plot(env.w/(2*pi), MPPSBH_PWC.absorption_coefficient(handle_env(140, 0), options_HL), 'DisplayName', 'Modèle analytique forts niveaux - PT corrigée');
+plot(env.w/(2*pi), MPPSBH_LV.absorption_coefficient(handle_env(140, 0), options_HL), 'DisplayName', 'Modèle analytique forts niveaux - AV');
 
 %% Modèle 2D-TV
 
@@ -70,9 +73,9 @@ Tube3D_ap.plot_alpha('C2.1 num. 3D');
 
 %% Mesure expérimentale à incidence normale
 
-% data = perso_load_mecanum_files([env.Root, '\Mesures expérimentales\Echantillons Hutchinson 2ème itération\' ...
-%                                            'Incidence normale\Echantillon 2.1\Export_Data_1']);
-% 
+data = perso_load_mecanum_files([env.Root, '\Mesures expérimentales\Echantillons Hutchinson 2ème itération\' ...
+                                           'Incidence normale\Echantillon 2.1\Export_Data_1']);
+
 % plot(data.f, data.alpha.Sample4, 'DisplayName', 'C2.1 exp.');
 % xlim([data.f(1) data.f(end)])
 
@@ -98,7 +101,7 @@ fill([f fliplr(f)], [m+s fliplr(m-s)], ...
      [0.8 0.8 1], 'EdgeColor','none','FaceAlpha',0.4, 'HandleVisibility', 'off');
 
 % Courbe moyenne
-plot(f, m, 'b', 'DisplayName', 'C2.2 exp.', 'LineWidth', 0.5);
+plot(f, m, 'b', 'DisplayName', 'C2.1 exp.', 'LineWidth', 0.5);
 xlim([data.f(1) data.f(end)])
 
 % %% Incidence

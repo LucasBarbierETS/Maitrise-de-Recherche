@@ -30,7 +30,7 @@ config1 = classMPPSBH_Rectangular.create_explicit_rectangular_pattern_config(30e
     {[9 9 2 1 3 4]}, ...
     {[6 9 8 10 9 8]}, ...
     {[1 2 2 2 2 2] *  1e-3}, ...
-    {14.83e-3});
+    {14.83e-3}, 'Lumped Volume');
 
 %% %%%%%%%%%%%%%%%%%%%%%%%%%% 100 dB %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
@@ -99,7 +99,7 @@ legend('Location','best')
 %%%%%%%%%%%%%%%%%%%%%%%%%%%% 140 dB %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 perso_figure('Validation expérimentale - Echantillon Hutchinson 1.1 - Forts niveaux');
-subplot(2, 1, 1)
+subplot(2, 1, 2)
 title('Configuration C1.1, SPL = 140 dB')
 hold on
 
@@ -111,23 +111,25 @@ plot(f, alpha1_140, 'DisplayName', 'Mesures expérimentales');
 % legend()
 
 % Modèle non-linéaire appliqué à toutes les plaques 
-Zs_NL = classMPPSBH_Rectangular_HL(config1).absorption_coefficient(handle_env(140, 0), 'iter Laly');
-% Zs_NL_iter = classMPPSBH_Rectangular_HL_iter(config1).absorption_coefficient(handle_env(140, 0), 'iter');
-
-plot(env.w/(2*pi), Zs_NL, 'DisplayName', 'Modèle analytique non-linéaire itératif');
+alpha_first = classMPPSBH_Rectangular_iter2(config1).absorption_coefficient(handle_env(140, 0), struct('HL_method', 'first'));
+alpha_all = classMPPSBH_Rectangular_iter2(config1).absorption_coefficient(handle_env(140, 0), struct('HL_method', 'all'));
+alpha_rp = classMPPSBH_Rectangular_iter2(config1).absorption_coefficient(handle_env(140, 0), struct('HL_method', 'retropropagation'));
+plot(env.w/(2*pi), alpha_first, 'DisplayName', 'Modèle analytique PP');
+plot(env.w/(2*pi), alpha_all, 'DisplayName', 'Modèle analytique TP');
+plot(env.w/(2*pi), alpha_rp, 'DisplayName', 'Modèle analytique RP');
 % plot(env.w/(2*pi), Zs_NL_iter, 'DisplayName', 'Modèle analytique non-linéaire itératif de Laly');
 xlabel('Fréquence(Hz)')
 ylabel('Coefficient d''absorption')
 xlim([f_min, f_max])
 legend()
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%% 150 dB %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%% 130 dB %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-subplot(2, 1, 2)
-title('Configuration C1.1, SPL = 150 dB')
+subplot(2, 1, 1)
+title('Configuration C1.1, SPL = 130 dB')
 hold on
 
-plot(f, alpha1_150, 'DisplayName', 'Mesures expérimentales');
+plot(f, alpha1_130, 'DisplayName', 'Mesures expérimentales');
 
 % % Modèle linéaire
 % alpha_model = classMPPSBH_Rectangular(config1).absorption_coefficient(handle_env(145, 0));
@@ -135,8 +137,13 @@ plot(f, alpha1_150, 'DisplayName', 'Mesures expérimentales');
 % legend()
 
 % Modèle non-linéaire appliqué à toutes les plaques 
-Zs_NL = classMPPSBH_Rectangular_HL(config1).absorption_coefficient(handle_env(150, 0), 'iter Laly');
-plot(env.w/(2*pi), Zs_NL, 'DisplayName', 'Modèle analytique non-linéaire itératif');
+alpha_first = classMPPSBH_Rectangular_iter2(config1).absorption_coefficient(handle_env(132, 0), struct('HL_method', 'first'));
+alpha_all = classMPPSBH_Rectangular_iter2(config1).absorption_coefficient(handle_env(132, 0), struct('HL_method', 'all'));
+alpha_rp = classMPPSBH_Rectangular_iter2(config1).absorption_coefficient(handle_env(132, 0), struct('HL_method', 'retropropagation'));
+plot(env.w/(2*pi), alpha_first, 'DisplayName', 'Modèle analytique PP');
+plot(env.w/(2*pi), alpha_all, 'DisplayName', 'Modèle analytique TP');
+plot(env.w/(2*pi), alpha_rp, 'DisplayName', 'Modèle analytique RP');
+% plot(env.w/(2*pi), Zs_NL_iter, 'DisplayName', 'Modèle analytique non-linéaire itératif de Laly');
 xlabel('Fréquence(Hz)')
 ylabel('Coefficient d''absorption')
 xlim([f_min, f_max])

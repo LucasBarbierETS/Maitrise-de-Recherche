@@ -30,6 +30,20 @@ classdef classelement < classobject
                 
                 sblm = config.ListOfObjects{i};
                 options.Id = [options.Id, i];
+
+                if isa(sblm, 'classelement_imported') || isa(sblm, 'classelementassembly')
+                    
+                    S = sblm.Configuration.Surface;
+
+                    try
+                        TM.T11 = TM.T11 .* sblm.surface_impedance(env, options)/S + TM.T12;
+                    catch
+                        sprinf('pause!');
+                    end
+                    TM.T21 = TM.T21 .* sblm.surface_impedance(env, options)/S + TM.T22;
+                    return
+                end
+
                 try
                     [sblm_TM, options] = sblm.transfer_matrix(env, options);
                 catch
@@ -47,10 +61,10 @@ classdef classelement < classobject
                 % if all(structfun(@(x) all(isnan(x), 'all'), TM))
                 %     error('Matrice de transfert vide dans classelement/transfer_matrix')
                 % end
-                %
+                % 
                 % sgtitle(class(sblm))
                 % perso_plot_transfer_matrix(TM, env, 'TM');
-                
+                % 
                 % if isprop(sblm.Configuration, 'EndStatus') && strcmp(sblm.Configuration.EndStatus, 'closed')
                 %     break
                 % end
@@ -210,6 +224,12 @@ classdef classelement < classobject
                 [TM, options] = obj.transfer_matrix(env, options);
                 Zs = S * TM.T11 ./ TM.T21;
                 u_ext = env.pt ./ Zs * S;
+
+                % % Debog : Matrice de transfert inverse
+                % perso_figure('TM d''un sous-élement dans classelement/surface_impedance')
+                % clf;
+                % sgtitle(class(obj))
+                % perso_plot_transfer_matrix(TM, env, 'TM'); 
 
                 % % Debog : Tracé de l'impédance de surface
                 % perso_figure('Impédance de surface dans classsubelement/surface_impedance');

@@ -1,13 +1,22 @@
 %% ========================================================================
 %%
+%%  Chargement des données optimisées (Aout 2025)
+%%
+%% =========================================================================
+
+% local_root = uigetdir();
+% load([local_root, '\environnement matlab.mat'])
+
+%% ========================================================================
+%%
 %%  Fréquences cibles, gabarits
 %%
 %% =========================================================================
 
 % % Objectif larges bande
 
-Frequences.f_min_lb = 200;
-Frequences.f_max_lb = 1500;
+Frequences.f_min_lb = 220;
+Frequences.f_max_lb = 950;
 g_obj_lb = @(env) (env.w / (2*pi) > Frequences.f_min_lb & env.w / (2*pi) < Frequences.f_max_lb);
 
 % Objectifs tonaux
@@ -44,7 +53,8 @@ g_obj_harm =  @(env) g_obj_h1(env) + g_obj_h2(env) + g_obj_h3(env) + g_obj_h4(en
 %%
 %% =========================================================================
 
-data = readmatrix([env.Root, '\Optimisation\Optimisation REAR\stator_spectrum_data.txt'], ...
+
+data = readmatrix([env.Root, '\Optimisation\Optimisation REAR\Données pression pariétale\stator_spectrum_data.txt'], ...
                'CommentStyle', '#');
 f1 = data(:,1); 
 f2 = data(:,2);
@@ -73,21 +83,21 @@ cavities_width   = 28e-3;
 cavities_depth   = 28e-3;
 input_surface    = width * depth;
 plate_thickness  = 2e-3;
-depth_holes_number  = 18;
-depth_holes_distance = ETS_cav_depth / (depth_holes_number + 1);
+depth_holes_number  = 25;
+depth_holes_distance = cavities_depth / (depth_holes_number + 1);
 
 % Liste des diamètres de foret en pouces
 
-diameters_mm = [ ...
-    0.508, 0.521, 0.533, 0.559, 0.584, 0.589, ...
-    0.711, 0.794, 0.737, 0.787, 0.812, 0.838, ...
-    0.891, 0.914, 0.953, 0.965, 1.016];
-
-drill_tag = {'#76','#75','#74','#73','#72','#71', ...
-                '#70','1/32','#69','#68','#67','#66', ...
-                '#65','#64','#63','#62','#61'};
-
-radius_m = @(i) diameters_mm(i) / 2 * 1e-3;
+% diameters_mm = [ ...
+%     0.508, 0.521, 0.533, 0.559, 0.584, 0.589, ...
+%     0.711, 0.794, 0.737, 0.787, 0.812, 0.838, ...
+%     0.891, 0.914, 0.953, 0.965, 1.016];
+% 
+% drill_tag = {'#76','#75','#74','#73','#72','#71', ...
+%                 '#70','1/32','#69','#68','#67','#66', ...
+%                 '#65','#64','#63','#62','#61'};
+% 
+% radius_m = @(i) diameters_mm(i) / 2 * 1e-3;
 
 %% =========================================================================
 %%
@@ -96,17 +106,21 @@ radius_m = @(i) diameters_mm(i) / 2 * 1e-3;
 %% =========================================================================
 
 NS = 4; % Nombre de MPPSBH 
-NV = 3; % Nombre de variables
+% NV = 3; % Nombre de variables
+NV = 2; % Nombre de variables
 N = 6; % Nombre de plaques 
+
+Ngen = 2000000;
 
 % NP = 500; % Nombre de points de départ
 % NP = 100;
-NP = 50;
+% NP = 50;
 % NP = 10;
 % NP = 5;
 % NP = 2;
 
 cavities_total_thickness = total_thickness - N * plate_thickness;
+cavities_thickness = cavities_total_thickness / N;
 
 %% =========================================================================
 %%
@@ -116,30 +130,37 @@ cavities_total_thickness = total_thickness - N * plate_thickness;
 
 % Valeurs minimales
 
-r_min = 1;
+% r_min = 1;
+r_min = 0.125e-3;
 nb_w_min = 1;
-theta_min = 1;
+% theta_min = 1;
 phi_min = 0.01;
-phi_max = 0.3;
-lb = horzcat(repmat(r_min, 1, N * NS), repmat(nb_w_min, 1, N * NS), repmat(theta_min, 1, N)); %#ok<RPMT1> % NV * N * NS
+phi_max = 0.20;
+% lb = horzcat(repmat(r_min, 1, N * NS), repmat(nb_w_min, 1, N * NS), repmat(theta_min, 1, N * NS)); %#ok<RPMT1> % NV * N * NS
+lb = horzcat(repmat(r_min, 1, N * NS), repmat(nb_w_min, 1, N * NS)); %#ok<RPMT1> % NV * N * NS
 
 % Valeurs maximales
 
-r_max = 17;
-nb_w_max = 18;
-theta_max = 5;
-ub = horzcat(repmat(r_max, 1, N * NS), repmat(nb_w_max, 1, N * NS), repmat(theta_max, 1, N)); % NV * N * NS
+% r_max = 17;
+r_max = 0.5e-3;
+nb_w_max = 25;
+% theta_max = 3;
+% ub = horzcat(repmat(r_max, 1, N * NS), repmat(nb_w_max, 1, N * NS), repmat(theta_max, 1, N * NS)); % NV * N * NS
+ub = horzcat(repmat(r_max, 1, N * NS), repmat(nb_w_max, 1, N * NS)); % NV * N * NS
 
 % Valeurs initiales 
 
-r_init = randi([r_min, r_max], NP, N * NS);
-nb_w_init = randi([nb_w_min, nb_w_max], NP, N * NS); 
-theta_init = theta_min + (theta_max - theta_min) * rand(NP, N * NS);
-x0 = horzcat(r_init, nb_w_init, theta_init);
+% r_init = randi([r_min, r_max], NP, N * NS);
+r_init = r_min + (r_max - r_min) * rand(Ngen, N * NS);
+nb_w_init = randi([nb_w_min, nb_w_max], Ngen, N * NS); 
+% theta_init = theta_min + (theta_max - theta_min) * rand(Ngen, N * NS);
+% x0 = horzcat(r_init, nb_w_init, theta_init);
+init.x0 = horzcat(r_init, nb_w_init);
 
 % Contrainte sur les variables entières
 
-intcon = find(horzcat(ones(1, N * NS), ones(1, N * NS), zeros(1, N * NS)));
+% intcon = find(horzcat(zeros(1, N * NS), ones(1, N * NS), zeros(1, N * NS)));
+intcon = find(horzcat(zeros(1, N * NS), ones(1, N * NS)));
 
 % Récupération des variables
 
@@ -151,14 +172,27 @@ get_sol = @(x, i) reshape((feval(@(tmp) tmp(i, :, :), config_NS_N_NV(x))), 1, []
 
 % Contraintes non linéaires
 
-slit_width_hdl = @(radius, nb_width, theta) (nb_width - 1) .* 3 .* radius + 2 .* radius;
+slit_width_hdl = @(radius, nb_width, theta) (nb_width - 1) .* 4 .* radius + 2 .* radius;
+slit_depth_hdl = @(radius, nb_width, theta) (2 * depth_holes_number + 1) * radius;
 real_porosity_hdl = @(radius, nb_width, theta) (nb_width * depth_holes_number) .* pi .* radius.^2 / (cavities_width * cavities_depth);
 
-slit_width_cstr = @(M) slit_width_hdl(radius_m(M(1,:)), M(2,:), M(3,:)) - cavities_width; % slit_width < cavities_width
-real_porosity_inf_cstr = @(M) phi_min - real_porosity_hdl(radius_m(M(1,:)), M(2,:), M(3,:)) - phi_min; % phi > phi_min
-real_porosity_sup_cstr = @(M) real_porosity_hdl(radius_m(M(1,:)), M(2,:), M(3,:)) - phi_max; % phi < phi_max
+% % slit_width_cstr = @(M) slit_width_hdl(radius_m(M(1,:)), M(2,:), M(3,:)) - cavities_width; % slit_width < cavities_width
+% slit_width_cstr = @(M) slit_width_hdl(M(1,:), M(2,:), M(3,:)) - cavities_width; % slit_width < cavities_width
+% slit_depth_cstr = @(M) slit_depth_hdl(M(1,:), M(2,:), M(3,:)) - cavities_depth; % slit_width < cavities_width
+% % real_porosity_inf_cstr = @(M) phi_min - real_porosity_hdl(radius_m(M(1,:)), M(2,:), M(3,:)) - phi_min; % phi > phi_min
+% % real_porosity_sup_cstr = @(M) real_porosity_hdl(radius_m(M(1,:)), M(2,:), M(3,:)) - phi_max; % phi < phi_max
+% real_porosity_inf_cstr = @(M) phi_min - real_porosity_hdl(M(1,:), M(2,:), M(3,:)); % phi > phi_min
+% real_porosity_sup_cstr = @(M) real_porosity_hdl(M(1,:), M(2,:), M(3,:)) - phi_max; % phi < phi_max
 
-neq_cstr = {slit_width_cstr, real_porosity_inf_cstr, real_porosity_sup_cstr};
+% slit_width_cstr = @(M) slit_width_hdl(radius_m(M(1,:)), M(2,:), M(3,:)) - cavities_width; % slit_width < cavities_width
+slit_width_cstr = @(M) slit_width_hdl(M(1,:), M(2,:)) - cavities_width; % slit_width < cavities_width
+slit_depth_cstr = @(M) slit_depth_hdl(M(1,:), M(2,:)) - cavities_depth; % slit_width < cavities_width
+% real_porosity_inf_cstr = @(M) phi_min - real_porosity_hdl(radius_m(M(1,:)), M(2,:), M(3,:)) - phi_min; % phi > phi_min
+% real_porosity_sup_cstr = @(M) real_porosity_hdl(radius_m(M(1,:)), M(2,:), M(3,:)) - phi_max; % phi < phi_max
+real_porosity_inf_cstr = @(M) phi_min - real_porosity_hdl(M(1,:), M(2,:)); % phi > phi_min
+real_porosity_sup_cstr = @(M) real_porosity_hdl(M(1,:), M(2,:)) - phi_max; % phi < phi_max
+
+neq_cstr = {slit_width_cstr, slit_depth_cstr, real_porosity_inf_cstr, real_porosity_sup_cstr};
 eq_cstr = {};
 
 function [c, c_eq] = nonlconFcn(neq_cstr, eq_cstr, config_NV_N_X_NS)
@@ -177,30 +211,119 @@ nonlconFcn_hdl = @(x) nonlconFcn(neq_cstr, eq_cstr, config_NV_N_X_NS(x));
 
 %% =========================================================================
 %%
+%% Filtrage des configurations valides
+%%
+%% =========================================================================
+
+fprintf("Filtrage des configurations valides parmi %d candidats...\n", Ngen);
+
+% --- Extraction vectorisée des M = (r ; nb_w ; theta) ---
+% x0 est Ngen × (N*NS*NV)
+% On reforme M sous forme 3 × (N*NS) × Ngen
+init = {};
+init.M = permute( reshape(x0, Ngen, N * NS, NV), [3 2 1]);  % -> NV × nVars × Ngen
+
+% Aplatir sur les plaques et les candidats d’un coup
+init.Mflat = reshape(init.M, NV, []);   % -> NV × (Ngen*nVars)
+
+init.r_all   = init.Mflat(1,:);
+init.nbw_all = init.Mflat(2,:);
+% init.theta_all = Mflat(3,:);
+
+% --- Contraintes non linéaires sur chaque plaque ---
+% init.ok_slit     = slit_width_hdl(init.r_all, init.nbw_all, init.theta_all) <= cavities_width;
+% init.ok_depth    = slit_depth_hdl(init.r_all, init.nbw_all, init.theta_all) <= cavities_depth;
+% init.ok_phi_min  = real_porosity_hdl(init.r_all, init.nbw_all, init.theta_all) >= phi_min;
+% init.ok_phi_max  = real_porosity_hdl(init.r_all, init.nbw_all, init.theta_all) <= phi_max;
+
+init.ok_slit     = slit_width_hdl(init.r_all, init.nbw_all) <= cavities_width;
+init.ok_depth    = slit_depth_hdl(init.r_all, init.nbw_all) <= cavities_depth;
+init.ok_phi_min  = real_porosity_hdl(init.r_all, init.nbw_all) >= phi_min;
+init.ok_phi_max  = real_porosity_hdl(init.r_all, init.nbw_all) <= phi_max;
+
+% Combine : toutes les contraintes doivent être vraies
+init.plate_ok = init.ok_slit & init.ok_depth & init.ok_phi_min & init.ok_phi_max;
+
+% Reshape : chaque colonne = un candidat
+init.plate_ok = reshape(init.plate_ok, N * NS, Ngen);
+
+% Un candidat est valide seulement si TOUTES ses plaques le sont
+init.candidate_ok = all(init.plate_ok, 1);
+
+valid_idx = find(init.candidate_ok);
+
+fprintf("Configurations valides trouvées : %d / %d\n", numel(valid_idx), Ngen);
+
+% Si aucune configuration valide
+if isempty(valid_idx)
+    error("Aucune configuration valide trouvée. Augmenter Ngen ou vérifier les contraintes.");
+end
+
+% On garde TOUTES les configurations valides
+x0_final = x0(valid_idx, :);
+clear('init');
+
+fprintf("Nombre final de configurations valides conservées : %d\n", size(x0_final, 1));
+
+%% =========================================================================
+%%
 %% Création des objets dynamiques
 %%
 %% =========================================================================
 
 Objets = struct();
 
+% Objets.MPPSBH_i = @(config, i) classMPPSBH_Rectangular( ...
+%     classMPPSBH_Rectangular.create_explicit_rectangular_pattern_config( ...
+%         input_surface, ...
+%         N, ...
+%         cavities_depth, ...
+%         cavities_width, ...
+%         num2cell(radius_m(config(i, :, 1))), ...              % radius
+%         num2cell(radius_m(config(i, :, 1)) * 3), ...          % dw
+%         repmat({depth_holes_distance}, 1, N),... 
+%         repmat({depth_holes_number}, 1, N),  ...
+%         num2cell(config(i, :, 2)), ...                        % pw
+%         repmat({plate_thickness}, 1, N), ...
+%         num2cell(perso_simplex_map(config(i, :, 3), cavities_total_thickness)) ...
+%         ) ...
+%     );
+
 Objets.MPPSBH_i = @(config, i) classMPPSBH_Rectangular( ...
     classMPPSBH_Rectangular.create_explicit_rectangular_pattern_config( ...
         input_surface, ...
         N, ...
-        ETS_cav_depth, ...
-        ETS_cav_width, ...
-        num2cell(radius_m(config(i, :, 1))), ...                  % radius
-        num2cell(radius_m(config(i, :, 1)) * 3), ...              % dw
+        cavities_depth, ...
+        cavities_width, ...
+        num2cell(config(i, :, 1)), ...                 % radius
+        num2cell(config(i, :, 1) * 4), ...             % dw
         repmat({depth_holes_distance}, 1, N),... 
         repmat({depth_holes_number}, 1, N),  ...
-        num2cell(config(i, :, 2)), ...                   % pw
-        repmat({ETS_plate_thickness}, 1, N), ...
+        num2cell(config(i, :, 2)), ...                 % pw
+        repmat({plate_thickness}, 1, N), ...
         num2cell(perso_simplex_map(config(i, :, 3), cavities_total_thickness)) ...
         ) ...
     );
 
+% Objets.MPPSBH_i = @(config, i) classMPPSBH_Rectangular( ...
+%     classMPPSBH_Rectangular.create_explicit_rectangular_pattern_config( ...
+%         input_surface, ...
+%         N, ...
+%         cavities_depth, ...
+%         cavities_width, ...
+%         num2cell(config(i, :, 1)), ...                 % radius
+%         num2cell(config(i, :, 1) * 4), ...             % dw
+%         repmat({depth_holes_distance}, 1, N),... 
+%         repmat({depth_holes_number}, 1, N),  ...
+%         num2cell(config(i, :, 2)), ...                 % pw
+%         repmat({plate_thickness}, 1, N), ...
+%         repmat({cavities_thickness}, 1, N) ...
+%         ) ...
+%     );
+
 Objets.cell_of_MPPSBH = @(x) arrayfun( ...
-    @(i) Objets.MPPSBH_i(config_NS_N_NV(x), i), 1:NS, 'UniformOutput', false);
+        @(i) Objets.MPPSBH_i(config_NS_N_NV(x), i), 1:NS, 'UniformOutput', false ...
+    );
 
 Objets.assembly = @(x) ...
     classelementassembly( ...
@@ -225,11 +348,11 @@ handle_objective = @(x, env, g_cells) ...
     arrayfun(@(k) handle_cost_one(x, env, g_cells{k}), ...
              1:length(g_cells));
 
-% objective = @(x) ...
-%     handle_objective(x, env, {g_obj_h1, g_obj_h2, g_obj_h3, g_obj_h4, g_obj_lb});
-
 objective = @(x) ...
-    handle_objective(x, env, {g_obj_h1, g_obj_h2, g_obj_lb});
+    handle_objective(x, env, {g_obj_h1, g_obj_h2, g_obj_h3, g_obj_h4});
+
+% objective = @(x) ...
+%     handle_objective(x, env, {g_obj_h1, g_obj_h2, g_obj_lb});
 
 %% ========================================================================
 %%
@@ -237,58 +360,58 @@ objective = @(x) ...
 %%
 %% ========================================================================
 
-% % =======================
-% % MULTI-OBJECTIVE NSGA-II
-% % =======================
+% =======================
+% MULTI-OBJECTIVE NSGA-II
+% =======================
+
+[xopti, fval, population, scores, eflag, timeNSGA2] = ...
+    run_nsga2_block( ...
+        objective, lb, ub, intcon, nonlconFcn_hdl, ...
+        x0_final, size(x0_final, 1), ...
+        'MaxGen', 100, ...
+        'Pc', 0.9, ...
+        'Pm', 1/size(lb, 2), ...
+        'EtaC', 15, ...
+        'EtaM', 20, ...
+        'Display', "iter", ...
+        'FunctionTolerance', 1e-1, ...
+        'ConstraintTolerance', 1e-6, ...
+        'PlotFcn', {@nsga2_plot_pareto, @nsga2_plot_rank_diversity} ...
+    );
+
+% % ======================
+% % GENETIC ALGORITHM (GA)
+% % ======================
 % 
-% [xopti, fval, population, scores, eflag, timeNSGA2] = ...
-%     run_nsga2_block( ...
-%         objective, lb, ub, intcon, nonlconFcn_hdl, ...
-%         x0, NP, ...
-%         'MaxGen', 100, ...
-%         'Pc', 0.5, ...
-%         'Pm', 0.1, ...
-%         'EtaC', 20, ...
-%         'EtaM', 20, ...
-%         'Display', "iter", ...
-%         'FunctionTolerance', 1e-1, ...
-%         'ConstraintTolerance', 1e-6, ...
-%         'PlotFcn', {@nsga2_plot_pareto, @nsga2_plot_rank_diversity} ...
-%     );
-
-% ======================
-% GENETIC ALGORITHM (GA)
-% ======================
-
-optionsGA = optimoptions('gamultiobj', ...
-    'Display', 'iter', ...
-    'PopulationSize', NP, ...
-    'InitialPopulationMatrix', x0, ...
-    'FunctionTolerance', 1e-1, ...
-    'ConstraintTolerance', 1e-6, ...
-    'MaxStallGenerations', 5, ...
-    'MaxGenerations', 100, ...
-    'MutationFcn', 'mutationadaptfeasible', ...
-    'CrossoverFraction', 0.5, ...
-    'MigrationInterval', 10, ...
-    'MigrationFraction', 0.3, ...
-    'PlotFcn', { ...
-         @gaplotpareto, ...         % Pareto front
-         @gaplotscorediversity ...  % Diversité
-         % @(x,optimValues,state) perso_plot_constraints_violation(x,optimValues,state,Config)
-     } ...
-);
-
-rng;  % Reproductibilité
-tic;
-[xopti, fval, eflag, outputGA, population, scores] = ...
-    gamultiobj(objective, numel(x0(1,:)), ...
-               [], [], [], [], ...
-               lb, ub, ...
-               nonlconFcn_hdl, ...
-               intcon, ...
-               optionsGA);
-timeGA = toc;
+% optionsGA = optimoptions('gamultiobj', ...
+%     'Display', 'iter', ...
+%     'PopulationSize', NP, ...
+%     'InitialPopulationMatrix', x0_final, ...
+%     'FunctionTolerance', 1e-1, ...
+%     'ConstraintTolerance', 1e-6, ...
+%     'MaxStallGenerations', 5, ...
+%     'MaxGenerations', 100, ...
+%     'MutationFcn', 'mutationadaptfeasible', ...
+%     'CrossoverFraction', 0.5, ...
+%     'MigrationInterval', 10, ...
+%     'MigrationFraction', 0.3, ...
+%     'PlotFcn', { ...
+%          @gaplotpareto, ...         % Pareto front
+%          @gaplotscorediversity ...  % Diversité
+%          % @(x,optimValues,state) perso_plot_constraints_violation(x,optimValues,state,Config)
+%      } ...
+% );
+% 
+% rng;  % Reproductibilité
+% tic;
+% [xopti, fval, eflag, outputGA, population, scores] = ...
+%     gamultiobj(objective, numel(x0(1,:)), ...
+%                [], [], [], [], ...
+%                lb, ub, ...
+%                nonlconFcn_hdl, ...
+%                intcon, ...
+%                optionsGA);
+% timeGA = toc;
 
 %% ========================================================================
 %%
@@ -324,10 +447,9 @@ perso_interactive_multi_plot(env.w/(2*pi), filtered_alpha, filtered_Zs, 2000, Fr
 % On rajoute des barres pour représenter les bandes d'optimisation
 perso_plot_targetted_frequencies(Frequences, 1);
 
-% selected_index = [40, 138, 198, 330, 449];
 selected_index = input('Liste des configurations sélectionnées : ');
 
-selected_xopti = xopti(selected_index, :);
+selected_xopti = sorted_xopti(selected_index, :);
 alpha_selected = filtered_alpha(selected_index);
 selected_assembly = arrayfun(@(i) Objets.assembly(selected_xopti(i,:)), 1:size(selected_xopti, 1), 'UniformOutput', false);
 
@@ -478,68 +600,103 @@ if env_saved ~= 1
 end
 
 folder_full_name = uigetdir();
-mkdir([folder_full_name, '\Assemblages Solidworks']);
 save([folder_full_name, '\environnement matlab.mat']);
 
 %% ========================================================================
-
+%%
 %% Validation
+%%
 %% ========================================================================
+
+% Solutions individuelles
 
 validation_folder_name = [folder_full_name, '\Validation'];
 mkdir(validation_folder_name);
 
+points_FEM = 50;
+env_FEM = handle_env_FEM(points_FEM);
+
 for i = 1:length(selected_index)
 
-        sub_folder_name = [validation_folder_name, '\Configuration ', num2str(selected_index(i))];
-        mkdir(sub_folder_name);
+    sub_folder_name = [validation_folder_name, '\Configuration ', num2str(selected_index(i))];
+    mkdir(sub_folder_name);
 
     for j = 1:NS
 
-        sub_sub_folder_name = [sub_folder_name, '\MPPSBH ', num2str(j)];
-        mkdir(sub_sub_folder_name);
-
-        points_FEM = 10;
-        env_FEM = handle_env_FEM(points_FEM);
-        try
-            MPPSBH = Objets.MPPSBH_i(config_NS_N_NV(selected_xopti(i,:)), j);
-        catch
-            continue
-        end
-        
-        Tube3D_ap = ImpedanceTube3D(ImpedanceTube3D.create_config({MPPSBH}));
-        Tube3D_ap = Tube3D_ap.launch_tube_measurement_ap(env_FEM);
-        mphsave(Tube3D_ap.Configuration.ComsolModel, [sub_sub_folder_name, '\modèle numérique 3D-AP']);
-        
-        % Performance
-        figure();
-        hold on
-        Tube3D_ap.plot_alpha('Modélisation numérique 3D - AP');
-        alpha = MPPSBH.absorption_coefficient(env, struct('HL_method', 'linear'));
-        plot(env.w/(2*pi), alpha, 'DisplayName', 'Modèle analytique linéaire');
-        xlim([fmin, fmax])
-        legend('Location','best')
-        saveas(gcf, [sub_sub_folder_name, '\Performances', '.fig']);
-        close(gcf);
-
-        % Géométrie
-        figure()
-        mphgeom(Tube3D_ap.Configuration.ComsolModel);
-        saveas(gcf, [sub_sub_folder_name, '\Géométrie', '.fig']);
-        close(gcf);
+        % sub_sub_folder_name = [sub_folder_name, '\MPPSBH ', num2str(j)];
+        % mkdir(sub_sub_folder_name);
+        % 
+        % MPPSBH = Objets.MPPSBH_i(config_NS_N_NV(selected_xopti(i,:)), j);
+        % save([sub_sub_folder_name, '\MPPSBH_', num2str(j), '_config_', num2str(selected_index(i)), '.mat'], 'MPPSBH')
+        % 
+        % Tube3D_ap = ImpedanceTube3D(ImpedanceTube3D.create_config({MPPSBH}));
+        % Tube3D_ap = Tube3D_ap.launch_tube_measurement_ap(env_FEM);
+        % mphsave(Tube3D_ap.Configuration.ComsolModel, [sub_sub_folder_name, '\modèle numérique 3D-AP']);
+        % 
+        % % Performance
+        % figure();
+        % hold on
+        % Tube3D_ap.plot_alpha('Modélisation numérique 3D - AP');
+        % alpha = MPPSBH.absorption_coefficient(env, struct('HL_method', 'linear'));
+        % plot(env.w/(2*pi), alpha, 'DisplayName', 'Modèle analytique linéaire');
+        % xlim([fmin, fmax])
+        % legend('Location','best')
+        % saveas(gcf, [sub_sub_folder_name, '\Performances', '.fig']);
+        % close(gcf);
+        % 
+        % % % Géométrie
+        % figure()
+        % mphgeom(Tube3D_ap.Configuration.ComsolModel);
+        % saveas(gcf, [sub_sub_folder_name, '\Géométrie', '.fig']);
+        % close(gcf);
     end
+
+    % Assemblage
+
+    assembly_folder_name = [sub_folder_name, '\Assemblage incidence normale'];
+    mkdir(assembly_folder_name);
+
+    cell_MPPSBH = Objets.cell_of_MPPSBH(selected_xopti(i,:));
+    assembly = Objets.assembly(selected_xopti(i,:));
+    Tube3D_ap = ImpedanceTube3D(ImpedanceTube3D.create_config(cell_MPPSBH));
+    Tube3D_ap = Tube3D_ap.launch_tube_measurement_ap(env_FEM);
+    mphsave(Tube3D_ap.Configuration.ComsolModel, [assembly_folder_name, '\modèle numérique 3D-AP']);
+    
+    % Performance
+    figure();
+    hold on
+    Tube3D_ap.plot_alpha('Modélisation numérique 3D - AP');
+    alpha = assembly.absorption_coefficient(env, struct('HL_method', 'linear'));
+    plot(env.w/(2*pi), alpha, 'DisplayName', 'Modèle analytique linéaire');
+    xlim([fmin, fmax])
+    legend('Location','best')
+    saveas(gcf, [assembly_folder_name, '\Performances', '.fig']);
+    close(gcf);
+
+    % Géométrie
+    figure()
+    mphgeom(Tube3D_ap.Configuration.ComsolModel);
+    saveas(gcf, [assembly_folder_name, '\Géométrie', '.fig']);
+    close(gcf);
 end
 
+
 %% ========================================================================
+%%
 %% Géométries Solidworks
+%%
 %% ========================================================================
 
+
 %% ========================================================================
+%%
 %% Validation
+%%
 %% ========================================================================
-
 %% ========================================================================
+%%
 %% Performances des configurations optimisées
+%%
 %% ========================================================================
 
 % x_TP_ETS(x_opti);
@@ -607,7 +764,9 @@ end
 % %% Validation des contributions individuelles
 
 %% ========================================================================
+%%
 %% Sauvegarde des rapports de configuration
+%%
 %% ========================================================================
 % 
 % % Rapport de configuration des plaques couvrantes
@@ -622,7 +781,7 @@ end
 % mkdir(report_root);
 % 
 % for i = 1:NS
-%     Objets.MPPSBH_i(x_ETS(x_opti), radius(x_radius(x_opti)), i).export_report([report_root, '\rapport de configuration - MPPSBH ', num2str(i), '.xlsx'])
+%     Objets.MPPSBH_i(x_ETS(x_opti), radius(x_radius(x_opti)), i).export_report([report_root, '\rapport de configuration - MPPSBH ', num2str(j), '.xlsx'])
 % end
 
 

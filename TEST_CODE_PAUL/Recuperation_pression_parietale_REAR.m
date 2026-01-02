@@ -13,10 +13,10 @@ pt_rms_second = data_second(:,2)';
 
 
 %% --- Création de l'environnement avec le fichier principal ---
-env = create_environnement_2(t, sp, hum, f_main, 'Root', root);
+env = create_environnement_2(root, t, sp, hum, f_main);
 
 %% --- Utilisation Niveau de pression elissa du modèle numérique---
-file_path = fullfile([env.Root, '\Optimisation\Optimisation REAR\stator_spectrum_data.txt']);
+file_path = fullfile([env.Root, '\Optimisation\Optimisation REAR\Données pression pariétale\stator_spectrum_data.txt']);
 
 % Appel simple (récupère les résultats sans tracer)
 [fmean, L_RMS_band, OASPL2500, OASPL1000] = compute_LRMS_from_elissa(file_path, 'fmax', 5000);
@@ -163,33 +163,33 @@ plot(env.f, PSD_corr_exp2, 'g-', 'LineWidth',1.8, 'DisplayName', sprintf('Corrig
 % Courbe corrigée / simulée - analytique
 plot(env.f, PSD_second, 'r-', 'LineWidth',1.8, 'DisplayName', sprintf('Mesure 3D (%dD) - 3500RPM',coeff));
 
-%% --- Enregistrement du PSD corrigé analytique + PSD mesuré dans un fichier .txt ---
-
-% Nom du fichier de sortie
-output_name = sprintf('PSD_corrigee_analytique_%s', file_main);
-output_name = strrep(output_name, '.txt', '_out.txt');
-
-% Chemin complet du fichier
-output_path = fullfile(path_main, output_name);
-
-% Ouverture du fichier en écriture
-fid = fopen(output_path, 'w');
-
-% Ligne d'en-tête
-fprintf(fid, 'Frequence_Hz\tPSD_corrigee_dB\tPSD_mesuree_dB\n');
-
-% Préparation des données (alignement sur mêmes longueurs)
-% env.f et PSD_corr_exp sont sur la grille analytique
-% PSD_main est sur la grille f_main → on interpole dessus
-PSD_main_interp = interp1(f_main, PSD_main, env.f, 'linear', 'extrap');
-
-% Données sous forme (N x 3)
-data_out = [env.f(:), PSD_corr_exp(:), PSD_main_interp(:)];
-
-% Écriture ligne par ligne
-fprintf(fid, '%f\t%f\t%f\n', data_out.');
-
-% Fermeture du fichier
-fclose(fid);
-
-fprintf('✔ Fichier exporté : %s\n', output_path);
+% %% --- Enregistrement du PSD corrigé analytique + PSD mesuré dans un fichier .txt ---
+% 
+% % Nom du fichier de sortie
+% output_name = sprintf('PSD_corrigee_analytique_%s', file_main);
+% output_name = strrep(output_name, '.txt', '_out.txt');
+% 
+% % Chemin complet du fichier
+% output_path = fullfile(path_main, output_name);
+% 
+% % Ouverture du fichier en écriture
+% fid = fopen(output_path, 'w');
+% 
+% % Ligne d'en-tête
+% fprintf(fid, 'Frequence_Hz\tPSD_corrigee_dB\tPSD_mesuree_dB\n');
+% 
+% % Préparation des données (alignement sur mêmes longueurs)
+% % env.f et PSD_corr_exp sont sur la grille analytique
+% % PSD_main est sur la grille f_main → on interpole dessus
+% PSD_main_interp = interp1(f_main, PSD_main, env.f, 'linear', 'extrap');
+% 
+% % Données sous forme (N x 3)
+% data_out = [env.f(:), PSD_corr_exp(:), PSD_main_interp(:)];
+% 
+% % Écriture ligne par ligne
+% fprintf(fid, '%f\t%f\t%f\n', data_out.');
+% 
+% % Fermeture du fichier
+% fclose(fid);
+% 
+% fprintf('✔ Fichier exporté : %s\n', output_path);

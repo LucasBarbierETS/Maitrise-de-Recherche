@@ -133,7 +133,7 @@ phi = 0.1;
 % % % end
 % % 
 % % Tube3D_ap.plot_alpha('Modèle numérique 3D - AP - répartition uniforme');
-% 
+
 % %% Profil à porosité décroissante (quadratique)
 % 
 % subplot(1, 2, 2);
@@ -190,13 +190,13 @@ phi = 0.1;
 
 %%%%%%%%%%%%%%%%%%%%%%%% Etude de l'impact du nombre de plaques %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-perso_figure('Etude de l''impact du nombre de plaques');
+perso_figure('Etude de l''impact du nombre de plaques - Coefficient d''absorption');
 
-%% Profil à porosité constante
-          
-subplot(1, 2, 1);
-hold on
-title('Profil constant');
+% %% Profil à porosité constante
+% 
+% % subplot(1, 2, 1);
+% hold on
+perso_figure('Profil constant');
 
 config = @(N) classMPPSBH_Rectangular.create_config(W^2, N,...
     W, W, {wc}, {wc}, ...
@@ -206,28 +206,31 @@ N_var = [2, 4, 8, 16, 32];
 
 for i= 1:length(N_var)
 
-    MPPSBH = classMPPSBH_Rectangular(config(N_var(i)));
-    alpha_model = MPPSBH.absorption_coefficient(env);
+    MPPSBH = classMPPSBH_Rectangular_iter2(config(N_var(i)));
+    alpha_model = MPPSBH.absorption_coefficient(env, {});
+    subplot(2, 1, 1); hold on
     plot(env.w / (2*pi), alpha_model, 'LineWidth', 1, 'DisplayName', ['Modèle linéaire - ', num2str(N_var(i)), ' plaques']);
-
+    subplot(2, 1, 2); hold on
+    plot(env.w/(2*pi), real(MPPSBH.surface_impedance(env, {})/env.air.parameters.Z0), 'LineWidth', 1, 'DisplayName', [num2str(N_var(i)), ' plaques']);
 end
 
-%% Profil linéaire
+%% Profil à décroissance linéaire
 
-subplot(1, 2, 2);
-hold on
-title('Profil Linéaire');
+% subplot(1, 2, 2);
 
+perso_figure('Profil à décroissance linéaire');
 config = @(N) classMPPSBH_Rectangular.create_config(W^2, N,...
     W, W, {{W, wend, N, 1}}, {{W, wend, N, 1}}, ...
     {d/2}, {phi}, {t}, {L/N - t});
 
 for i= 1:length(N_var)
-
-    MPPSBH = classMPPSBH_Rectangular(config(N_var(i)));
-    alpha_model = MPPSBH.absorption_coefficient(env);
+   
+    MPPSBH = classMPPSBH_Rectangular_iter2(config(N_var(i)));
+    alpha_model = MPPSBH.absorption_coefficient(env, {});
+    subplot(2, 1, 1); hold on
     plot(env.w / (2*pi), alpha_model, 'LineWidth', 1, 'DisplayName', ['Modèle linéaire - ', num2str(N_var(i)), ' plaques']);
-
+    subplot(2, 1, 2); hold on
+    plot(env.w/(2*pi), real(MPPSBH.surface_impedance(env, {})/env.air.parameters.Z0), 'LineWidth', 1, 'DisplayName', [num2str(N_var(i)), ' plaques']);
 end
 
 %%%%%%%%%%%%%%%%%%%%%%%% Etude de l'effet trou noir acoustique %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%

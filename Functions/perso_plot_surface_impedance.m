@@ -12,7 +12,7 @@ function perso_plot_surface_impedance(f, Zs, env, name, varargin)
         y_real_max = 10;
     end
 
-    ylim([0 y_real_max])
+    ylim([0 y_real_max]);
 
     ReZs = real(Zs/env.air.parameters.Z0);
     ImZs = imag(Zs/env.air.parameters.Z0);

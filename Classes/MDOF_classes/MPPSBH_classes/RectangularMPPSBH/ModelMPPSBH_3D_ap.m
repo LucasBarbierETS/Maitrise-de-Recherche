@@ -57,8 +57,8 @@ box_mat.set('condition', 'inside');
 for i = 1:N
     box_MPP = model.component('component').selection.create(['sol' num2str(index) '_MPP' num2str(i)], 'Box');
     box_MPP.set('entitydim', 3);
-    box_MPP.set('zmax', num2str(1e-6 - sum(pt(1:i-1)) - sum(ct(1:i-1))));
-    box_MPP.set('zmin', num2str(-1e-6 - sum(pt(1:i)) - sum(ct(1:i-1))));
+    box_MPP.set('zmax', num2str(1e-4 - sum(pt(1:i-1)) - sum(ct(1:i-1))));
+    box_MPP.set('zmin', num2str(-1e-4 - sum(pt(1:i)) - sum(ct(1:i-1))));
     box_MPP.set('xmax', ['sol' num2str(index) '_xr+0.01[mm]']);
     box_MPP.set('xmin', ['sol' num2str(index) '_xl-0.01[mm]']);
     box_MPP.set('condition', 'inside');
@@ -74,8 +74,8 @@ for i = 1:N
     % Volume de cavité i
     box_cav = model.component('component').selection.create(['sol' num2str(index) '_cav' num2str(i)], 'Box');
     box_cav.set('entitydim', 3);
-    box_cav.set('zmax', num2str(-(sum(pt(1:i)) + sum(ct(1:i-1))) + 0.01e-3));  % haut cavité (sous plaque i)
-    box_cav.set('zmin', num2str(-(sum(pt(1:i)) + sum(ct(1:i))) - 0.01e-3));    % bas cavité
+    box_cav.set('zmax', num2str(-(sum(pt(1:i)) + sum(ct(1:i-1))) + 1e-4));  % haut cavité (sous plaque i)
+    box_cav.set('zmin', num2str(-(sum(pt(1:i)) + sum(ct(1:i))) - 1e-4));    % bas cavité
     box_cav.set('xmax', ['sol' num2str(index) '_xr+0.01[mm]']);
     box_cav.set('xmin', ['sol' num2str(index) '_xl-0.01[mm]']);
     box_cav.set('condition', 'inside');
@@ -83,8 +83,8 @@ for i = 1:N
     % Frontières de cavité i (parois air)
     box_cav_bnd = model.component('component').selection.create(['sol' num2str(index) '_cav_bnd' num2str(i)], 'Box');
     box_cav_bnd.set('entitydim', 2);
-    box_cav_bnd.set('zmax', num2str(-(sum(pt(1:i)) + sum(ct(1:i-1))) + 0.01e-3));
-    box_cav_bnd.set('zmin', num2str(-(sum(pt(1:i)) + sum(ct(1:i))) - 0.01e-3));
+    box_cav_bnd.set('zmax', num2str(-(sum(pt(1:i)) + sum(ct(1:i-1))) + 1e-4));
+    box_cav_bnd.set('zmin', num2str(-(sum(pt(1:i)) + sum(ct(1:i))) - 1e-4));
     box_cav_bnd.set('xmax', ['sol' num2str(index) '_xr+0.01[mm]']);
     box_cav_bnd.set('xmin', ['sol' num2str(index) '_xl-0.01[mm]']);
     box_cav_bnd.set('condition', 'inside');
@@ -108,7 +108,6 @@ for i = 1:N
     JCAmat    = perso_create_JCA_material(model, name, JCAconfig, env);
     JCAmat.selection.named(['sol' num2str(index) '_MPP' num2str(i)]);
 end
-
 
 
 %% Physiques
@@ -148,7 +147,7 @@ ftri_size.set('hauto', 2);
 % blp.set('blhmin', 'd_visc');
 
 mesh.run;
-
+geom.runAll;
 out = model;
 
 end

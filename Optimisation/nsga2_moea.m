@@ -41,8 +41,9 @@ function [pop, f_pop] = nsga2_moea(problem, opts)
     end
 
     %% === Initialisation ===
-    pop = rand(N, D) .* (ub - lb) + lb;
-    pop = apply_integer_and_bounds(pop, lb, ub, hasInt, intcon);
+    % pop = rand(N, D) .* (ub - lb) + lb;
+    % pop = apply_integer_and_bounds(pop, lb, ub, hasInt, intcon);
+    pop = opts.x0;
 
     [f_pop, cons_viol] = eval_population(problem, pop, hasNonl);
 
@@ -118,12 +119,46 @@ function [pop, f_pop] = nsga2_moea(problem, opts)
         f_pop    = new_f;
         [~, cons_viol] = eval_population(problem, pop, hasNonl);
 
+        %% === DEBUG : Analyse interne NSGA-II ===
+
+        if g == 1
+            fprintf("\n=== DEBUG NSGA-II ===\n");
+            fprintf("Génération | Front1 | Front2 | Front3 | Dominés | Mean crowd | Min crowd | Max crowd\n");
+        end
+        
+        % Recalcule classement pour cette génération
+        [fronts_dbg, rank_dbg] = fast_nondominated_sort(f_pop, cons_viol);
+        crowd_dbg = crowding_distance(f_pop, fronts_dbg);
+        
+        % Taille des fronts (afficher 3 premiers max)
+        nf1 = numel(fronts_dbg{1});
+        nf2 = 0; if numel(fronts_dbg) >= 2, nf2 = numel(fronts_dbg{2}); end
+        nf3 = 0; if numel(fronts_dbg) >= 3, nf3 = numel(fronts_dbg{3}); end
+        
+        dominated = sum(rank_dbg > 1);
+        
+        mc = mean(crowd_dbg(~isinf(crowd_dbg)));
+        mic = min(crowd_dbg(~isinf(crowd_dbg)));
+        mac = max(crowd_dbg(~isinf(crowd_dbg)));
+        
+        fprintf("%5d     | %6d | %6d | %6d | %7d | %10.4f | %10.4f | %10.4f\n", ...
+                g, nf1, nf2, nf3, dominated, mc, mic, mac);
+        
+        %% OPTIONAL : Scatter plot (si f_pop a 2 objectifs)
+        if size(f_pop,2) == 2
+            figure(100); clf;
+            scatter(f_pop(:,1), f_pop(:,2), 25, rank_dbg, 'filled');
+            title(sprintf("Génération %d — Objectifs", g));
+            xlabel("f_1"); ylabel("f_2");
+            colorbar; drawnow;
+        end
+
         %% --- PlotFcn : affichage en direct ---
         for pf = 1:numel(plotFcns)
             try
                 feval(plotFcns{pf}, pop, f_pop, g);
             catch ME
-                warning("PlotFcn error: %s", ME.message);
+                warning("PlotFcn error: %s", ME.message); %#ok<MEXCEP>
             end
         end
 

@@ -1,7 +1,7 @@
-classdef classMPPSBH_Rectangular_subdiv < classelement
+classdef classMPPSBH_Rectangular < classelement
 
     methods
-        function obj = classMPPSBH_Rectangular_subdiv(config)
+        function obj = classMPPSBH_Rectangular(config)
         
             % Appel du constructeur de la classe parente
             obj@classelement(classelement.create_config({}, 'closed', []));
@@ -23,19 +23,24 @@ classdef classMPPSBH_Rectangular_subdiv < classelement
                 for i = 1:length(pp)
 
                     % Plaque perforée
-                    obj.Configuration.ListOfObjects{end+1} = classMPP_Circular(classMPP_Circular.create_config(mpw(i)*mpd(i), pt(i), phr(i), pp(i), mpw(i), mpd(i)));
+                    obj.Configuration.ListOfObjects{end+1} = classMPP_Circular(classMPP_Circular.create_config(mpw(i)*mpd(i), pt(i), phr(i), pp(i), ...
+                        'PerforatedAreaWidth', mpw(i), 'PerforatedAreaDepth', mpd(i)));
         
                     % Cavité trapezoidale
                     wc = (mpw(i) + mpw(i+1))/2;
                     dc = (mpd(i) + mpd(i+1))/2;
-                    obj.Configuration.ListOfObjects{end+1} = classcavity_trapezoidal_subdiv(classcavity_trapezoidal_subdiv.create_config(ct(i)/2, mpw(i), mpd(i), wc, dc, 10));
+
+                    % Cavité trapezoidale
+                    obj.Configuration.ListOfObjects{end+1} = classcavity_trapezoidal_subdiv(classcavity_trapezoidal_subdiv.create_config(ct(i)/2, mpw(i), mpd(i), wc, dc));
     
                     % Cavité cubique en parallèle
-                    annular_cavity = classannularcavity_cubical(classannularcavity_cubical.create_config(wc, dc, cavw, cavd, ct(i), 'Volume'));
-                    obj.Configuration.ListOfObjects{end+1} = classjunction(classjunction.create_config(annular_cavity, wc, dc));
+
+                    % annular_cavity = classannularcavity_cubical(classannularcavity_rectangular_frustum.create_config(mpw(i), mpd(i), mpw(i+1), mpd(i+1), cavw, cavd, ct(i)));
+                    annular_cavity = classannularcavity_cubical(classannularcavity_rectangular_frustum.create_config(mpw(i), mpd(i), mpw(i+1), mpd(i+1), cavw, cavd, ct(i), 'Plane Wave Corrected'));
+                    obj.Configuration.ListOfObjects{end+1} = classjunction(classjunction.create_config(annular_cavity, wc * dc));
         
                     % Cavité trapezoidale
-                    obj.Configuration.ListOfObjects{end+1} = classcavity_trapezoidal_subdiv(classcavity_trapezoidal_subdiv.create_config(ct(i)/2, wc, dc, mpw(i+1), mpd(i+1), 10));
+                    obj.Configuration.ListOfObjects{end+1} = classcavity_trapezoidal_subdiv(classcavity_trapezoidal_subdiv.create_config(ct(i)/2, wc, dc, mpw(i+1), mpd(i+1)));
                 end 
             end
         end
@@ -57,7 +62,8 @@ classdef classMPPSBH_Rectangular_subdiv < classelement
     end
 
     methods % Gestion des configurations
-        function export_plate_hole_coordinates(obj, folder_name, sfx)
+        
+        function export_plate_hole_coordinates(obj, folder_name)
             % Crée un dossier de configuration et y exporte les coordonnées des trous pour chaque plaque
         
             config = obj.Configuration;
@@ -71,7 +77,7 @@ classdef classMPPSBH_Rectangular_subdiv < classelement
             depth = config.CavitiesDepth - 2e-3;
 
             % Dossier racine des configurations
-            coord_dir = fullfile(folder_name, 'Coordonnées des perforations');
+            coord_dir = fullfile(folder_name, '\Coordonnées des perforations');
         
             % Création des dossiers si nécessaires
             if ~exist(folder_name, 'dir')
@@ -98,7 +104,7 @@ classdef classMPPSBH_Rectangular_subdiv < classelement
                 hole_radius = radius(i) * 1e3;  % rayon en mm
         
                 % Fichier CSV de la plaque
-                filename = fullfile(coord_dir, sprintf('plaque_%02d%s.csv', i, sfx));
+                filename = fullfile(coord_dir, sprintf('plaque_%d.csv', i));
                 fileID = fopen(filename, 'w');
         
                 if fileID == -1
@@ -121,11 +127,62 @@ classdef classMPPSBH_Rectangular_subdiv < classelement
             fprintf('[✓] Tous les fichiers de coordonnées ont été exportés dans : %s\n', coord_dir);
         end
 
-        function launch_in_solidworks(obj, folder_name)
+        function export_cavities_thickness(obj, folder_name)
+            
+            % Exporte les dimensions et épaisseurs des cavités dans un CSV
+            % Création du dossier si nécessaire
+        
+            config = obj.Configuration;
+        
+            % Récupération des épaisseurs des cavités
+            cavities_thickness = config.CavitiesThickness; % [m]
+            N = length(cavities_thickness);
+        
+            % Largeur et profondeur (habituellement identiques pour toi)
+            cav_width = config.CavitiesWidth;   % (si présent dans ton modèle)
+            cav_depth = config.CavitiesDepth;
+        
+            % --- Dossier d'export ---
+            coord_dir = fullfile(folder_name);
+            if ~exist(coord_dir,'dir')
+                mkdir(coord_dir);
+            end
+        
+            % Dossier des coordonnées
+            coord_dir = fullfile(folder_name, '\Coordonnées des perforations');
+            if ~exist(coord_dir, 'dir')
+                mkdir(coord_dir);
+            end
+
+            % Chemin correct du CSV
+            filename = fullfile(coord_dir, 'cavites.csv');
+            fileID = fopen(filename,'w');
+        
+            if fileID == -1
+                error('[✗] Impossible de créer cavites.csv dans %s', coord_dir);
+            end
+        
+            % En-têtes
+            fprintf(fileID, 'Index,Width_mm,Depth_mm,Thickness_mm\n');
+        
+            % Export
+            for i = 1:N
+                fprintf(fileID, '%d,%.3f,%.3f,%.3f\n', ...
+                    i, ...
+                    cav_width*1e3, ...
+                    cav_depth*1e3, ...
+                    cavities_thickness(i)*1e3);
+            end
+        
+            fclose(fileID);
+            fprintf('[✓] Fichier cavites.csv exporté : %s\n', filename);
+        end
+
+        function launch_in_solidworks(obj, root, folder_name)
             % Lancer l'export et le script Python avec création de dossiers et ouverture de l'explorateur
         
             % === 1. Définition des chemins ===
-            base_root = 'E:\OneDrive - ETS\CRIAQ-REAR\Maitrise LB\MATLAB\Classes\MDOF_classes\MLPSBH_classes\RectangularMLPSBH\Configurations';
+            base_root = [root, '\Solidworks'];
             output_dir = fullfile(base_root, folder_name);
         
             % === 2. Création du dossier principal si nécessaire ===
@@ -137,10 +194,11 @@ classdef classMPPSBH_Rectangular_subdiv < classelement
             end
         
             % === 3. Exporter les coordonnées ===
-            obj.export_plate_hole_coordinates(folder_name);
+            obj.export_plate_hole_coordinates(output_dir);
+            obj.export_cavities_thickness(output_dir); % <-- à rajouter
         
             % === 4. Appel du script Python ===
-            py_script = 'E:\OneDrive - ETS\CRIAQ-REAR\Maitrise LB\MATLAB\Classes\MDOF_classes\MLPSBH_classes\RectangularMLPSBH\MATLAB to SOLIDWORKS\build_MPPSBH_from_json.py';
+            py_script = [root, '\Classes\MDOF_classes\MPPSBH_classes\RectangularMPPSBH\MATLAB to SOLIDWORKS\build_MPPSBH_from_json.py'];
             command = sprintf('python "%s" "%s"', py_script, output_dir);
         
             fprintf('[▶] Lancement du script Python :\n%s\n', command);
@@ -282,14 +340,14 @@ classdef classMPPSBH_Rectangular_subdiv < classelement
             externalDepth = 37.8;
             
             % Extraire les dimensions de la cavité
-            cavityWidth = config.CavitiesWidth * 1e3;
-            cavityDepth = config.CavitiesDepth * 1e3;
+            % cavityWidth = config.CavitiesWidth * 1e3;
+            % cavityDepth = config.CavitiesDepth * 1e3;
             
             % Nombre de plaques
             numPlates = config.NumberOfPlates;
 
             % Paramètre de kerf
-            kerf = 0.2; % Exemple : ajuster selon votre machine laser, ici 0.3 mm
+            % kerf = 0.2; % Exemple : ajuster selon votre machine laser, ici 0.3 mm
             
             % Générer un fichier DXF pour chaque plaque
             for plateIdx = 1:numPlates
@@ -481,10 +539,11 @@ classdef classMPPSBH_Rectangular_subdiv < classelement
             config.MainPoresWidth = perso_interp_config(main_pores_width, number_of_plates + 1);
             config.MainPoresDepth = perso_interp_config(main_pores_depth, number_of_plates + 1);
             config.PlatesHolesRadius = perso_interp_config(plates_holes_radius, number_of_plates);
-            config.PlatesPorosity = perso_interp_config(plates_perforated_part_porosity, number_of_plates);         
+            config.PlatesPorosity = perso_interp_config(plates_perforated_part_porosity, number_of_plates);  
+            config.CavityModel = 'Lumped Volume';
         end
 
-        function config = create_explicit_rectangular_pattern_config(surface, number_of_plates, cavities_depth, cavities_width, plates_holes_radius, plates_width_holes_distance, plates_depth_holes_distance, plates_depth_holes_number, plates_width_holes_number, plates_thickness, cavities_thickness) 
+        function config = create_explicit_rectangular_pattern_config(surface, number_of_plates, cavities_depth, cavities_width, plates_holes_radius, plates_width_holes_distance, plates_depth_holes_distance, plates_depth_holes_number, plates_width_holes_number, plates_thickness, cavities_thickness, varargin) 
 
             config = {};
             config.Surface = surface;
@@ -510,6 +569,46 @@ classdef classMPPSBH_Rectangular_subdiv < classelement
             % Définition de la porosité à partir de la répartition des perforations
             Nh = pd .* pw; % nombre total de perforations
             config.PlatesPorosity = pi * hr.^2 .* Nh ./ (mpw(1:end-1) .* mpd(1:end-1));
+
+            if nargin > 11
+                config.CavityModel = varargin{1};
+            else
+                config.CavityModel = 'Lu';
+            end
+        end
+
+        function config = create_explicit_slit_pattern_config(surface, number_of_plates, cavities_depth, cavities_width, plates_holes_radius, plates_width_holes_distance, plates_depth_holes_distance, plates_depth_holes_number, plates_width_holes_number, plates_thickness, cavities_thickness, varargin) 
+
+            config = {};
+            config.Surface = surface;
+            [config.NumberOfPlates, N] = deal(number_of_plates);
+
+            % Paramètres globaux
+            config.CavitiesDepth = cavities_depth;
+            config.CavitiesWidth = cavities_width;
+
+            % Paramètres variables en fonction des cellules
+            config.PlatesThickness = perso_interp_config(plates_thickness, N);
+            config.CavitiesThickness = perso_interp_config(cavities_thickness, N);
+            [config.PlatesHolesRadius, hr] = deal(perso_interp_config(plates_holes_radius, N)); % r
+            [config.PlatesDepthHolesNumber, pd] = deal(perso_interp_config(plates_depth_holes_number, N)); % m
+            [config.PlatesWidthHolesNumber, pw] = deal(perso_interp_config(plates_width_holes_number, N)); % n
+
+            [config.PlatesWidthHolesDistance, dw] = deal(perso_interp_config(plates_width_holes_distance, N)); % d
+            [config.PlatesDepthHolesDistance, dd] = deal(perso_interp_config(plates_depth_holes_distance, N)); % d
+
+            [config.MainPoresWidth, mpw] = deal(perso_interp_config({pw .* dw}, N + 1));
+            [config.MainPoresDepth, mpd] = deal(perso_interp_config({pd .* dd}, N + 1));
+            
+            % Définition de la porosité à partir de la répartition des perforations
+            Nh = pd .* pw; % nombre total de perforations
+            config.PlatesPorosity = pi * hr.^2 .* Nh ./ (mpw(1:end-1) .* mpd(1:end-1));
+
+            if nargin > 11
+                config.CavityModel = varargin{1};
+            else
+                config.CavityModel = 'Plane Wave';
+            end
         end
 
         function config = create_explicit_rectangular_pattern_config_without_first_plate(surface, number_of_plates, cavities_depth, cavities_width, plates_holes_radius, ...
@@ -587,14 +686,14 @@ classdef classMPPSBH_Rectangular_subdiv < classelement
             config.PlatesRealPorosity = plates_perforated_surface / (cw * cd);
 
             % Méthode de prise en compte des cavités latérales
-            if nargin > 8
+            if nargin > 9
                 config.CavitiesMethod = repmat(varargin(1), 1, N);
             else
                 config.CavitiesMethod = repmat({'Volume'}, 1, N);
             end
 
             % Dimension de l'élement à la sortie
-            if nargin > 9
+            if nargin > 10
                 config.ElementWidth = varargin{2};
             end
         end
@@ -602,12 +701,11 @@ classdef classMPPSBH_Rectangular_subdiv < classelement
 
     methods (Static, Access = public) % Validation
         
-        function validate()
+        function validate(env)
 
-            % close all 
-            figure()
-            hold on
-            title('Validation Rectangular MPPSBH');
+            % figure()
+            % hold on
+            % title('Validation Rectangular MPPSBH');
             
             % Paramètres de la configuration
             R = 30e-3;
@@ -618,23 +716,23 @@ classdef classMPPSBH_Rectangular_subdiv < classelement
             t = 0.2e-3;
             phi = 0.03;
             
-            % création de l'environnement
-            env = create_environnement(23, 100800, 22, 1, 5000, 5000, 140);
+            % % création de l'environnement
+            % env = create_environnement(23, 100800, 22, 1, 5000, 5000, 'SPL', 140);
 
             %% Profil linéaire
-            config = classMPPSBH_Rectangular_subdiv.create_config( ...
+            config = classMPPSBH_Rectangular.create_config(30e-3^2,  ...
                 N, R, R, {{R, rend, N+1, 1}}, {{R, rend, N+1, 1}}, ...
                 {d/2}, {phi}, {t}, {L/N - t});
             
             % calcul de la réponse des modèles analytiques
-            alpha_model = classMPPSBH_Rectangular_subdiv(config).absorption_coefficient(env);
-            alpha_model_HL = classMPPSBH_Rectangular_HL(config).absorption_coefficient(env);
-            alpha_model_HL_fp = classMPPSBH_Rectangular_HL_first_plate(config).absorption_coefficient(env);
-
+            alpha_model = classMPPSBH_Rectangular(config).absorption_coefficient(env);
+            % classMPPSBH_Rectangular_iter2(config).absorption_coefficient(env)
+            % alpha_model_HL = classMPPSBH_Rectangular_HL(config).absorption_coefficient(env);
+            % alpha_model_HL_fp = classMPPSBH_Rectangular_HL_first_plate(config).absorption_coefficient(env);
 
             plot(env.w / (2*pi), alpha_model, 'Color', 'g', 'LineWidth', 1, 'DisplayName', 'Modèle linéaire');
-            plot(env.w / (2*pi), alpha_model_HL, 'Color', 'g', 'LineWidth', 1, 'DisplayName', 'Modèle forts niveaux');
-            plot(env.w / (2*pi), alpha_model_HL_fp, 'Color', 'g', 'LineWidth', 1, 'DisplayName', 'Modèle forts niveaux sur la première plaque');
+            % plot(env.w / (2*pi), alpha_model_HL, 'Color', 'g', 'LineWidth', 1, 'DisplayName', 'Modèle forts niveaux');
+            % plot(env.w / (2*pi), alpha_model_HL_fp, 'Color', 'g', 'LineWidth', 1, 'DisplayName', 'Modèle forts niveaux sur la première plaque');
 
             %% Profil quadratique
 

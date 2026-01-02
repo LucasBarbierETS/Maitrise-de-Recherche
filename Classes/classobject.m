@@ -2,7 +2,7 @@ classdef classobject
    
     properties
 
-        HandleAppBuilder
+        HandleAppBuilder = @(app, class_sblm) AppSubelement.class_to_app(app, class_sblm);
         HandleAppConfig
         Configuration   
     end
@@ -44,10 +44,10 @@ classdef classobject
             mask_outside = abs(det_TM - 1) > 1e-3;
             det_TM(mask_outside) = NaN;
             
-            % % Optionnel : Avertissement si certaines valeurs sont NaN
-            % if any(mask_outside, 'all')
-            %     warning('Certaines valeurs du déterminant sont hors de l''intervalle [1 - 1e-3, 1 + 1e-3] et ont été remplacées par NaN.');
-            % end
+            % Optionnel : Avertissement si certaines valeurs sont NaN
+            if any(mask_outside, 'all')
+                warning('Certaines valeurs du déterminant sont hors de l''intervalle [1 - 1e-3, 1 + 1e-3] et ont été remplacées par NaN.');
+            end
 
             % % Debog : Affichage du déterminant
             % perso_figure('Déterminant de la matrice de transfert d''un sous-élement dans classsubelement/inverse_transfer_matrix')

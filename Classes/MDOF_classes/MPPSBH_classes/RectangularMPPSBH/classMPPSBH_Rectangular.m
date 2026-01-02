@@ -34,7 +34,9 @@ classdef classMPPSBH_Rectangular < classelement
                     obj.Configuration.ListOfObjects{end+1} = classcavity_trapezoidal_subdiv(classcavity_trapezoidal_subdiv.create_config(ct(i)/2, mpw(i), mpd(i), wc, dc));
     
                     % Cavité cubique en parallèle
-                    annular_cavity = classannularcavity_cubical(classannularcavity_rectangular_frustum.create_config(mpw(i), mpd(i), mpw(i+1), mpd(i+1), cavw, cavd, ct(i)));
+
+                    % annular_cavity = classannularcavity_cubical(classannularcavity_rectangular_frustum.create_config(mpw(i), mpd(i), mpw(i+1), mpd(i+1), cavw, cavd, ct(i)));
+                    annular_cavity = classannularcavity_cubical(classannularcavity_rectangular_frustum.create_config(mpw(i), mpd(i), mpw(i+1), mpd(i+1), cavw, cavd, ct(i), 'Plane Wave Corrected'));
                     obj.Configuration.ListOfObjects{end+1} = classjunction(classjunction.create_config(annular_cavity, wc * dc));
         
                     % Cavité trapezoidale
@@ -537,10 +539,11 @@ classdef classMPPSBH_Rectangular < classelement
             config.MainPoresWidth = perso_interp_config(main_pores_width, number_of_plates + 1);
             config.MainPoresDepth = perso_interp_config(main_pores_depth, number_of_plates + 1);
             config.PlatesHolesRadius = perso_interp_config(plates_holes_radius, number_of_plates);
-            config.PlatesPorosity = perso_interp_config(plates_perforated_part_porosity, number_of_plates);         
+            config.PlatesPorosity = perso_interp_config(plates_perforated_part_porosity, number_of_plates);  
+            config.CavityModel = 'Lumped Volume';
         end
 
-        function config = create_explicit_rectangular_pattern_config(surface, number_of_plates, cavities_depth, cavities_width, plates_holes_radius, plates_width_holes_distance, plates_depth_holes_distance, plates_depth_holes_number, plates_width_holes_number, plates_thickness, cavities_thickness) 
+        function config = create_explicit_rectangular_pattern_config(surface, number_of_plates, cavities_depth, cavities_width, plates_holes_radius, plates_width_holes_distance, plates_depth_holes_distance, plates_depth_holes_number, plates_width_holes_number, plates_thickness, cavities_thickness, varargin) 
 
             config = {};
             config.Surface = surface;
@@ -566,6 +569,12 @@ classdef classMPPSBH_Rectangular < classelement
             % Définition de la porosité à partir de la répartition des perforations
             Nh = pd .* pw; % nombre total de perforations
             config.PlatesPorosity = pi * hr.^2 .* Nh ./ (mpw(1:end-1) .* mpd(1:end-1));
+
+            if nargin > 11
+                config.CavityModel = varargin{1};
+            else
+                config.CavityModel = 'Lumped Volume';
+            end
         end
 
         function config = create_explicit_slit_pattern_config(surface, number_of_plates, cavities_depth, cavities_width, plates_holes_radius, plates_width_holes_distance, plates_depth_holes_distance, plates_depth_holes_number, plates_width_holes_number, plates_thickness, cavities_thickness, varargin) 
