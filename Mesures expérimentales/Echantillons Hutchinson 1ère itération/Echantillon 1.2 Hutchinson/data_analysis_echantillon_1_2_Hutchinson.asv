@@ -134,6 +134,38 @@ end
 
 disp(T);
 
+perso_figure('Validation expérimentale - Echantillon 1.2 Hutchinson - 100-150 dB');
+subplot(2, 1, 1)
+title('Prototype 1.2')
+hold on
+
+plot(f, alpha2_110, 'DisplayName', '110 dB');
+plot(f, alpha2_120, 'DisplayName', '120 dB');
+plot(f, alpha2_130, 'DisplayName', '130 dB');
+plot(f, alpha2_140, 'DisplayName', '140 dB');
+plot(f, alpha2_145, 'DisplayName', '145 dB');
+plot(f, alpha2_150, 'DisplayName', '150 dB');
+perso_configure_alpha_figure(fmax);
+xlim([f(1), 3500])
+legend('Location', 'best');
+
+subplot(2, 1, 2)
+title('Résistance de surface normalisée')
+hold on
+xlabel('Fréquence (Hz)')
+ylabel('Re(Zs/Z0)')
+yline(1, '--k', 'HandleVisibility', 'off');
+xlim([f(1), 3500])
+legend('Location', 'best');
+
+plot(f, real(Zs2_110), 'DisplayName', '110 dB');
+plot(f, real(Zs2_120), 'DisplayName', '120 dB');
+plot(f, real(Zs2_130), 'DisplayName', '130 dB');
+plot(f, real(Zs2_140), 'DisplayName', '140 dB');
+plot(f, real(Zs2_145), 'DisplayName', '145 dB');
+plot(f, real(Zs2_150), 'DisplayName', '150 dB');
+
+
 %% Définition de la configuration géométrique
 
 % Configuration analytique

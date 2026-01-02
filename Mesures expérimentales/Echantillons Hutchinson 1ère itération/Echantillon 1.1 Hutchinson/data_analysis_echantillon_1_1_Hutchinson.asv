@@ -137,9 +137,9 @@ plot(f, alpha1_130, 'DisplayName', 'Mesures expérimentales');
 % legend()
 
 % Modèle non-linéaire appliqué à toutes les plaques 
-alpha_first = classMPPSBH_Rectangular_iter2(config1).absorption_coefficient(handle_env(132, 0), struct('HL_method', 'first'));
-alpha_all = classMPPSBH_Rectangular_iter2(config1).absorption_coefficient(handle_env(132, 0), struct('HL_method', 'all'));
-alpha_rp = classMPPSBH_Rectangular_iter2(config1).absorption_coefficient(handle_env(132, 0), struct('HL_method', 'retropropagation'));
+alpha_first = classMPPSBH_Rectangular_iter2(config1).absorption_coefficient(handle_env(133, 0), struct('HL_method', 'first'));
+alpha_all = classMPPSBH_Rectangular_iter2(config1).absorption_coefficient(handle_env(133, 0), struct('HL_method', 'all'));
+alpha_rp = classMPPSBH_Rectangular_iter2(config1).absorption_coefficient(handle_env(133, 0), struct('HL_method', 'retropropagation'));
 plot(env.w/(2*pi), alpha_first, 'DisplayName', 'Modèle analytique PP');
 plot(env.w/(2*pi), alpha_all, 'DisplayName', 'Modèle analytique TP');
 plot(env.w/(2*pi), alpha_rp, 'DisplayName', 'Modèle analytique RP');

@@ -1,17 +1,17 @@
 %% Lancement du serveur COMSOL 
 
-try
-    v = mphversion;
-catch
-    try
-        addpath('C:\Program Files\COMSOL\COMSOL63\Multiphysics\mli');
-        system('start comsolmphserver');
-        mphstart;
-        import com.comsol.model.*
-        import com.comsol.model.util.*
-    catch
-    end
-end
+% try
+%     v = mphversion;
+% catch
+%     try
+%         addpath('C:\Program Files\COMSOL\COMSOL63\Multiphysics\mli');
+%         system('start comsolmphserver');
+%         mphstart;
+%         import com.comsol.model.*
+%         import com.comsol.model.util.*
+%     catch
+%     end
+% end
 
 %% Ajout des chemins d'accès
 
@@ -23,7 +23,7 @@ elseif isfolder('C:\Users\lucas.barbier\Documents\Maitrise ETS\Répertoire GitHu
     root = 'C:\Users\lucas.barbier\Documents\Maitrise ETS\Répertoire GitHub';
 end
 
-perso_add_all_paths(root);
+% perso_add_all_paths(root);
 
 %% Création de l'environnement
 
@@ -34,8 +34,8 @@ hum = 50; % Humidité relative
 
 % Support fréquentiel
 fmin = 1;
-fmax = 2000;
-points = 200;
+fmax = 4000;
+points = 4000;
 % points = 100;
 
 % Niveau sonore

@@ -2,7 +2,7 @@ classdef classobject
    
     properties
 
-        HandleAppBuilder
+        HandleAppBuilder = @(app, class_sblm) AppSubelement.class_to_app(app, class_sblm);
         HandleAppConfig
         Configuration   
     end

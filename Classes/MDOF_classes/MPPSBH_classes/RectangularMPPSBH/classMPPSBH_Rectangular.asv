@@ -573,7 +573,7 @@ classdef classMPPSBH_Rectangular < classelement
             if nargin > 11
                 config.CavityModel = varargin{1};
             else
-                config.CavityModel = 'Lumped Volume';
+                config.CavityModel = 'Lu';
             end
         end
 

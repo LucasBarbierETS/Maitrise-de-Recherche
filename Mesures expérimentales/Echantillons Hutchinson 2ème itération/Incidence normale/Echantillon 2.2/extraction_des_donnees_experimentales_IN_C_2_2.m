@@ -37,9 +37,15 @@ MPPSBH_LV = classMPPSBH_Rectangular_iter2(config_2_2_LV);
 
 % perso_figure('Validation expérimentale - C2.2 - 100 dB'); hold on % Affichage individuel
 perso_figure('Comparaison expérimental - numérique'); subplot(4, 2, 2); hold on % Affichage groupé
-% plot(env.w/(2*pi), MPPSBH_PW.absorption_coefficient(env), 'DisplayName', 'Modèle analytique linéaire - PT');
-% plot(env.w/(2*pi), MPPSBH_PWC.absorption_coefficient(env), 'DisplayName', 'Modèle analytique linéaire - PT corrigée');
-% plot(env.w/(2*pi), MPPSBH_LV.absorption_coefficient(env), 'DisplayName', 'Modèle analytique linéaire - AV');
+
+options_HL = struct('HL_method', 'all');
+plot(env.w/(2*pi), MPPSBH_PW.absorption_coefficient(env, {}), 'DisplayName', 'Modèle analytique linéaire - PT');
+plot(env.w/(2*pi), MPPSBH_PWC.absorption_coefficient(env, {}), 'DisplayName', 'Modèle analytique linéaire - PT corrigée');
+plot(env.w/(2*pi), MPPSBH_LV.absorption_coefficient(env, {}), 'DisplayName', 'Modèle analytique linéaire - AV');
+plot(env.w/(2*pi), MPPSBH_PW.absorption_coefficient(handle_env(140, 0), options_HL), 'DisplayName', 'Modèle analytique forts niveaux - PT');
+plot(env.w/(2*pi), MPPSBH_PWC.absorption_coefficient(handle_env(140, 0), options_HL), 'DisplayName', 'Modèle analytique forts niveaux - PT corrigée');
+plot(env.w/(2*pi), MPPSBH_LV.absorption_coefficient(handle_env(140, 0), options_HL), 'DisplayName', 'Modèle analytique forts niveaux - AV');
+
 
 %% Modèle 2D-TV
 

@@ -134,69 +134,69 @@ phi = 0.1;
 % % 
 % % Tube3D_ap.plot_alpha('Modèle numérique 3D - AP - répartition uniforme');
 
-% %% Profil à porosité décroissante (quadratique)
-% 
-% subplot(1, 2, 2);
-% hold on
-% title('Profil à porosité décroissante (quadratique)');
-% 
-% w = linspace(W, wend, N);
-% real_phi = linspace(W, wend, N).^2/W^2 * phi;
-% 
-% % config_MMPP = classMMPP.create_config(W^2, N,...
-% %     {d/2}, {phi}, {t}, {L/N - t});
-% 
-% config_MPPSBH_MMPP = classMPPSBH_Rectangular.create_config(W^2, N,...
-%     W, W, {W}, {W}, ...
-%     {d/2}, {real_phi}, {t}, {L/N - t});
-% 
-% config_Square = classMPPSBH_Rectangular.create_config(W^2, N,...
-%     W, W, {{W, wend, N, 1}}, {{W, wend, N, 1}}, ...
+%% Profil à porosité décroissante (quadratique)
+
+subplot(1, 2, 2);
+hold on
+title('Profil à porosité décroissante (quadratique)');
+
+w = linspace(W, wend, N);
+real_phi = linspace(W, wend, N).^2/W^2 * phi;
+
+% config_MMPP = classMMPP.create_config(W^2, N,...
 %     {d/2}, {phi}, {t}, {L/N - t});
+
+config_MPPSBH_MMPP = classMPPSBH_Rectangular.create_config(W^2, N,...
+    W, W, {W}, {W}, ...
+    {d/2}, {real_phi}, {t}, {L/N - t});
+
+config_Square = classMPPSBH_Rectangular.create_config(W^2, N,...
+    W, W, {{W, wend, N, 1}}, {{W, wend, N, 1}}, ...
+    {d/2}, {phi}, {t}, {L/N - t});
+
+config_Slit = classMPPSBH_Rectangular.create_config(W^2, N,...
+    W, W, {w.^2/W}, {W}, ...
+    {d/2}, {phi}, {t}, {L/N - t});
+
+% MMPP = classMMPP(config_MMPP);
+MPPSBH_MMPP = classMPPSBH_Rectangular(config_MPPSBH_MMPP);
+MPPSBH_Square = classMPPSBH_Rectangular(config_Square);
+MPPSBH_Slit = classMPPSBH_Rectangular(config_Slit);
+
+% calcul de la réponse des modèles analytiques
+% alpha_model_MMPP = MMPP.absorption_coefficient(env);
+alpha_model_MPPSBH_MMPP = MPPSBH_MMPP.absorption_coefficient(env);
+alpha_model_MPPSBH_square = MPPSBH_Square.absorption_coefficient(env);
+alpha_model_MPPSBH_slit = MPPSBH_Slit.absorption_coefficient(env);
+
+% plot(env.w / (2*pi), alpha_model_MMPP, 'Color', 'b', 'LineWidth', 1, 'DisplayName', 'Modèle linéaire - classMMPP');
+plot(env.w / (2*pi), alpha_model_MPPSBH_MMPP, 'Color', 'b', 'LineWidth', 1, 'DisplayName', 'Modèle linéaire - uniforme');
+plot(env.w / (2*pi), alpha_model_MPPSBH_square, '--g', 'LineWidth', 1, 'DisplayName', 'Modèle linéaire - carré');
+plot(env.w / (2*pi), alpha_model_MPPSBH_slit, '--r', 'LineWidth', 1, 'DisplayName', 'Modèle linéaire - fente');
+
+% % Modèle 3D-AP 
 % 
-% config_Slit = classMPPSBH_Rectangular.create_config(W^2, N,...
-%     W, W, {w.^2/W}, {W}, ...
-%     {d/2}, {phi}, {t}, {L/N - t});
+% env_FEM = handle_env_FEM(100);
 % 
-% % MMPP = classMMPP(config_MMPP);
-% MPPSBH_MMPP = classMPPSBH_Rectangular(config_MPPSBH_MMPP);
-% MPPSBH_Square = classMPPSBH_Rectangular(config_Square);
-% MPPSBH_Slit = classMPPSBH_Rectangular(config_Slit);
+% if exist([folder_path, '\profil linéaire - MMPP - modèle numérique 3D-AP.mph'], 'file')
+%     Tube3D_ap = ImpedanceTube3D.load_model(mphload([folder_path, '\profil linéaire - MMPP - modèle numérique 3D-AP.mph']));
+% else
+%     Tube3D_ap = ImpedanceTube3D(ImpedanceTube3D.create_config({MPPSBH_MMPP}));
+%     Tube3D_ap = Tube3D_ap.launch_tube_measurement_ap(env_FEM);
+%     mphsave(Tube3D_ap.Configuration.ComsolModel, [folder_path, '\profil linéaire - MMPP - modèle numérique 3D-AP.mph']);
+% % end
 % 
-% % calcul de la réponse des modèles analytiques
-% % alpha_model_MMPP = MMPP.absorption_coefficient(env);
-% alpha_model_MPPSBH_MMPP = MPPSBH_MMPP.absorption_coefficient(env);
-% alpha_model_MPPSBH_square = MPPSBH_Square.absorption_coefficient(env);
-% alpha_model_MPPSBH_slit = MPPSBH_Slit.absorption_coefficient(env);
-% 
-% % plot(env.w / (2*pi), alpha_model_MMPP, 'Color', 'b', 'LineWidth', 1, 'DisplayName', 'Modèle linéaire - classMMPP');
-% plot(env.w / (2*pi), alpha_model_MPPSBH_MMPP, 'Color', 'b', 'LineWidth', 1, 'DisplayName', 'Modèle linéaire - uniforme');
-% plot(env.w / (2*pi), alpha_model_MPPSBH_square, '--g', 'LineWidth', 1, 'DisplayName', 'Modèle linéaire - carré');
-% plot(env.w / (2*pi), alpha_model_MPPSBH_slit, '--r', 'LineWidth', 1, 'DisplayName', 'Modèle linéaire - fente');
-% 
-% % % Modèle 3D-AP 
-% % 
-% % env_FEM = handle_env_FEM(100);
-% % 
-% % if exist([folder_path, '\profil linéaire - MMPP - modèle numérique 3D-AP.mph'], 'file')
-% %     Tube3D_ap = ImpedanceTube3D.load_model(mphload([folder_path, '\profil linéaire - MMPP - modèle numérique 3D-AP.mph']));
-% % else
-% %     Tube3D_ap = ImpedanceTube3D(ImpedanceTube3D.create_config({MPPSBH_MMPP}));
-% %     Tube3D_ap = Tube3D_ap.launch_tube_measurement_ap(env_FEM);
-% %     mphsave(Tube3D_ap.Configuration.ComsolModel, [folder_path, '\profil linéaire - MMPP - modèle numérique 3D-AP.mph']);
-% % % end
-% % 
-% % Tube3D_ap.plot_alpha('Modèle numérique 3D - AP - répartition uniforme');
+% Tube3D_ap.plot_alpha('Modèle numérique 3D - AP - répartition uniforme');
 
 %%%%%%%%%%%%%%%%%%%%%%%% Etude de l'impact du nombre de plaques %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 perso_figure('Etude de l''impact du nombre de plaques - Coefficient d''absorption');
 
-% %% Profil à porosité constante
-% 
-% % subplot(1, 2, 1);
-% hold on
-perso_figure('Profil constant');
+%% Profil à porosité constante
+          
+subplot(1, 2, 1);
+hold on
+title('Profil constant');
 
 config = @(N) classMPPSBH_Rectangular.create_config(W^2, N,...
     W, W, {wc}, {wc}, ...
@@ -206,31 +206,29 @@ N_var = [2, 4, 8, 16, 32];
 
 for i= 1:length(N_var)
 
-    MPPSBH = classMPPSBH_Rectangular_iter2(config(N_var(i)));
-    alpha_model = MPPSBH.absorption_coefficient(env, {});
-    subplot(2, 1, 1); hold on
+    MPPSBH = classMPPSBH_Rectangular(config(N_var(i)));
+    alpha_model = MPPSBH.absorption_coefficient(env);
     plot(env.w / (2*pi), alpha_model, 'LineWidth', 1, 'DisplayName', ['Modèle linéaire - ', num2str(N_var(i)), ' plaques']);
-    subplot(2, 1, 2); hold on
-    plot(env.w/(2*pi), real(MPPSBH.surface_impedance(env, {})/env.air.parameters.Z0), 'LineWidth', 1, 'DisplayName', [num2str(N_var(i)), ' plaques']);
+    perso_figure('Etude de l''impact du nombre de plaques - Surface d'im);
+    perso_plot_surface_impedance(env.w/(2*pi), MPPSBH_Autre.surface_impedance(env), env, 'C0.2-Int-Ext - disposition interne-externe');
 end
 
 %% Profil à décroissance linéaire
 
-% subplot(1, 2, 2);
+subplot(1, 2, 2);
+hold on
+title('Profil à décroissance linéaire');
 
-perso_figure('Profil à décroissance linéaire');
 config = @(N) classMPPSBH_Rectangular.create_config(W^2, N,...
     W, W, {{W, wend, N, 1}}, {{W, wend, N, 1}}, ...
     {d/2}, {phi}, {t}, {L/N - t});
 
 for i= 1:length(N_var)
-   
-    MPPSBH = classMPPSBH_Rectangular_iter2(config(N_var(i)));
-    alpha_model = MPPSBH.absorption_coefficient(env, {});
-    subplot(2, 1, 1); hold on
+
+    MPPSBH = classMPPSBH_Rectangular(config(N_var(i)));
+    alpha_model = MPPSBH.absorption_coefficient(env);
     plot(env.w / (2*pi), alpha_model, 'LineWidth', 1, 'DisplayName', ['Modèle linéaire - ', num2str(N_var(i)), ' plaques']);
-    subplot(2, 1, 2); hold on
-    plot(env.w/(2*pi), real(MPPSBH.surface_impedance(env, {})/env.air.parameters.Z0), 'LineWidth', 1, 'DisplayName', [num2str(N_var(i)), ' plaques']);
+
 end
 
 %%%%%%%%%%%%%%%%%%%%%%%% Etude de l'effet trou noir acoustique %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
